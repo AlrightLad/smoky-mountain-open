@@ -1207,6 +1207,103 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .pn-putts-btn.active .pn-putts-val{color:var(--cream)}
 
 /* ──────────────────────────────────────────────────────────────────────────
+   W1.S4 — Live Scorecard / Play Now active-scoring surface
+   (CLUBHOUSE_SPEC-HQ-3g.1). Editorial Clubhouse composition over the
+   battle-tested scoring engine in playnow-scoring.js. Desktop: two-panel
+   (read-only card rail + entry pad). Mobile/tablet: single-column, touch-first
+   (the one HQ view where touch optimization is mandatory — tablet-at-cart).
+   ────────────────────────────────────────────────────────────────────────── */
+.ls-wrap{max-width:640px;margin:0 auto;padding:18px 16px 0}
+.ls-pad{min-width:0}
+
+/* Masthead — compact, ~100px */
+.ls-mast{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding-bottom:14px;border-bottom:1px solid var(--cb-chalk-3);margin-bottom:16px}
+.ls-mast__lead{min-width:0}
+.ls-mast__eyebrow{display:flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:8px}
+.ls-mast__pulse{width:7px;height:7px;border-radius:50%;background:var(--cb-moss);animation:lsPulse 1.8s ease-in-out infinite}
+@keyframes lsPulse{0%{box-shadow:0 0 0 0 rgba(var(--birdie-rgb),.45)}70%{box-shadow:0 0 0 6px rgba(var(--birdie-rgb),0)}100%{box-shadow:0 0 0 0 rgba(var(--birdie-rgb),0)}}
+.ls-mast__course{font-family:var(--font-display);font-style:italic;font-weight:700;font-size:26px;line-height:1.02;letter-spacing:-.5px;color:var(--cb-ink);margin:0;overflow-wrap:break-word}
+.ls-mast__meta{font-family:var(--font-mono);font-size:11.5px;font-weight:500;letter-spacing:.4px;color:var(--cb-mute);margin-top:5px}
+.ls-mast__score{flex-shrink:0;text-align:right}
+.ls-mast__score-num{font-family:var(--font-display);font-weight:700;font-size:34px;line-height:1;color:var(--cb-brass)}
+.ls-mast__score-lbl{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--cb-mute);margin-top:3px}
+
+/* Hole selector dots */
+.ls-holes{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;padding:2px 0 14px;margin:0 -2px}
+.ls-holes::-webkit-scrollbar{display:none}
+.ls-dot{flex:0 0 auto;width:34px;height:34px;border-radius:50%;border:1.5px solid var(--cb-chalk-3);background:transparent;color:var(--cb-mute);font-family:var(--font-mono);font-size:12px;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:center;transition:border-color .15s,color .15s,background .15s}
+.ls-dot:active{transform:scale(.92)}
+.ls-dot.is-scored{border-color:var(--cb-moss);color:var(--cb-moss);background:rgba(var(--birdie-rgb),.08)}
+.ls-dot.is-current{border-color:var(--cb-brass);color:var(--cb-chalk);background:var(--cb-brass);box-shadow:0 1px 6px rgba(var(--gold-rgb),.35)}
+
+/* Hole context strip */
+.ls-hole{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px}
+.ls-hole__eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-ink);margin-bottom:4px}
+.ls-hole__meta{font-family:var(--font-mono);font-size:12px;font-weight:500;letter-spacing:.5px;color:var(--cb-mute)}
+.ls-adjust{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--cb-mute);background:transparent;border:1px solid var(--cb-chalk-3);border-radius:8px;padding:7px 11px;cursor:pointer;-webkit-tap-highlight-color:transparent;min-height:34px;flex-shrink:0;transition:color .15s,border-color .15s}
+.ls-adjust:active{transform:scale(.96)}
+.ls-adjust.is-open{color:var(--cb-brass);border-color:rgba(var(--gold-rgb),.45)}
+
+/* BL-001 inline par/yardage editor */
+.ls-holeedit{margin:10px 0 4px;padding:14px;background:var(--cb-chalk-2);border:1px solid rgba(var(--gold-rgb),.22);border-radius:12px}
+.ls-holeedit__row{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.ls-holeedit__row:last-of-type{margin-bottom:0}
+.ls-holeedit__lbl{font-size:13px;font-weight:600;color:var(--cb-ink)}
+.ls-holeedit__input{width:104px;text-align:center;font-size:15px;font-weight:600;color:var(--cb-ink);background:var(--cb-chalk);border:1px solid var(--cb-chalk-3);border-radius:8px;padding:11px 8px;-webkit-appearance:none;min-height:44px}
+.ls-holeedit__note{font-size:10px;color:var(--cb-mute);margin-top:10px;line-height:1.4}
+
+/* Parbaugh stroke indicator */
+.ls-stroke{display:flex;align-items:center;justify-content:space-between;margin:12px 0 0;padding:8px 12px;border-radius:8px;background:var(--cb-chalk-2);border:1px solid var(--cb-chalk-3);font-size:11px;font-weight:600;color:var(--cb-mute)}
+.ls-stroke.is-on{background:rgba(var(--gold-rgb),.1);border-color:rgba(var(--gold-rgb),.28);color:var(--cb-brass)}
+.ls-stroke__tag{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cb-mute);opacity:.8}
+
+/* Score hero — 56×56 brass steppers flank a 96px Fraunces numeral */
+.ls-score{display:flex;align-items:center;justify-content:center;gap:20px;margin:18px 0 22px}
+.ls-step{flex:0 0 56px;width:56px;height:56px;border-radius:16px;border:1.5px solid var(--cb-brass);background:transparent;color:var(--cb-brass);font-size:28px;font-weight:300;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;transition:background .16s,transform .12s}
+.ls-step:active{transform:scale(.92);background:rgba(var(--gold-rgb),.12)}
+.ls-score__center{flex:0 0 auto;min-width:128px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ls-score__num{font-family:var(--font-display);font-size:96px;font-weight:600;line-height:.86;letter-spacing:-2px;color:var(--cb-ink)}
+.ls-score__diff{font-family:var(--font-mono);font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-top:8px}
+.ls-score__diff.is-under{color:var(--cb-moss)}
+.ls-score__diff.is-par{color:var(--cb-mute)}
+.ls-score__diff.is-over{color:var(--cb-claret)}
+.ls-score__num.is-empty{color:var(--cb-mute);opacity:.45;font-weight:500;line-height:.7}
+.ls-score__hint{font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute);margin-top:10px}
+
+/* FIR / GIR / Putts row */
+.ls-stats{display:flex;gap:8px;margin-bottom:18px}
+
+/* Desktop-only read-only scorecard rail (hidden < 980px) */
+.ls-rail{display:none}
+.ls-rail__head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--cb-chalk-3)}
+.ls-rail__eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass)}
+.ls-rail__tot{display:flex;align-items:baseline;gap:7px}
+.ls-rail__tot-num{font-family:var(--font-display);font-weight:700;font-size:24px;color:var(--cb-ink);line-height:1}
+.ls-rail__tot-diff{font-family:var(--font-mono);font-size:12px;font-weight:700}
+.ls-rail__tot-diff.is-under{color:var(--cb-moss)}
+.ls-rail__tot-diff.is-par{color:var(--cb-mute)}
+.ls-rail__tot-diff.is-over{color:var(--cb-claret)}
+.ls-rail__list{display:flex;flex-direction:column;gap:1px}
+.ls-rail__row{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:9px 10px;background:transparent;border:none;border-radius:8px;cursor:pointer;font:inherit;transition:background .14s}
+.ls-rail__row:hover{background:var(--cb-chalk-2)}
+.ls-rail__row.is-current{background:rgba(var(--gold-rgb),.1)}
+.ls-rail__h{flex:0 0 26px;font-family:var(--font-mono);font-size:12px;font-weight:700;color:var(--cb-ink)}
+.ls-rail__p{flex:1;font-family:var(--font-mono);font-size:11px;color:var(--cb-mute);letter-spacing:.3px}
+.ls-rail__s{flex:0 0 auto;font-family:var(--font-display);font-size:18px;font-weight:700;min-width:24px;text-align:right}
+.ls-rail__s.is-empty{font-family:var(--font-mono);font-size:13px;font-weight:500;color:var(--cb-chalk-3)}
+.ls-rail__s.is-scoring{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cb-brass)}
+.ls-rail__s.is-under{color:var(--cb-moss)}
+.ls-rail__s.is-par{color:var(--cb-ink)}
+.ls-rail__s.is-over{color:var(--cb-claret)}
+.ls-rail__turn{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-mute);padding:8px 10px 4px;opacity:.7}
+
+@media(min-width:980px){
+  .ls-wrap{display:flex;align-items:flex-start;gap:36px;max-width:1080px;padding-top:24px}
+  .ls-rail{display:block;flex:0 0 300px;position:sticky;top:84px;background:var(--cb-chalk);border:1px solid var(--cb-chalk-3);border-radius:16px;padding:18px 16px;max-height:calc(100vh - 140px);overflow-y:auto}
+  .ls-pad{flex:1;max-width:600px}
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
    HQ Home banded grid — Ship 5 Gate 2 simplified (v8.15.3)
    Home-only consumer per Q2 ruling (P18: primitives extracted on second
    consumer, not authored on first).

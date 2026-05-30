@@ -8,6 +8,68 @@
 function renderLiveScoring() {
   try { _renderLiveScoringInner(); } catch(e) { pbWarn("[PlayNow] Render error:", e.message, e.stack); }
 }
+
+// Score-numeral + diff-label inner HTML for #liveScoreNum. Shared by the initial
+// render and the surgical _redrawScoreCard repaint so the markup stays in sync
+// across both paths (CLUBHOUSE_SPEC-HQ-3g.1).
+function _scoreHeroInner(scoreVal, par) {
+  var has = scoreVal !== "" && scoreVal != null;
+  if (!has) {
+    // Empty state: a muted glyph plus a hint keeps the hero the same height as
+    // the scored state and reads as "awaiting input" rather than a divider rule.
+    return '<div class="ls-score__num is-empty">·</div>' +
+           '<div class="ls-score__hint">Tap to score</div>';
+  }
+  var s = '<div class="ls-score__num">' + scoreVal + '</div>';
+  var d = parseInt(scoreVal, 10) - par;
+  var labels = {"-4":"Condor","-3":"Albatross","-2":"Eagle","-1":"Birdie","0":"Par","1":"Bogey","2":"Double","3":"Triple"};
+  var label = labels[d.toString()] || (d > 0 ? '+' + d : '' + d);
+  var cls = d < 0 ? 'is-under' : d === 0 ? 'is-par' : 'is-over';
+  s += '<div class="ls-score__diff ' + cls + '">' + label + '</div>';
+  return s;
+}
+
+// Desktop-only read-only scorecard rail (hidden <980px via CSS). Re-renders only
+// on hole navigation, so the current hole shows "scoring" rather than a stale
+// number — the live numeral lives in the entry pad's hero (P9 visible-truth).
+function _renderCardRailInner(defaultPar, totalSoFar, parSoFar, holesPlayed) {
+  var startH = liveState.holesMode === "back9" ? 9 : 0;
+  var endH = liveState.holesMode === "18" ? 18 : (liveState.holesMode === "back9" ? 18 : 9);
+  var diff = holesPlayed > 0 ? (totalSoFar - parSoFar) : null;
+  var diffStr = diff === null ? '' : (diff > 0 ? '+' + diff : diff === 0 ? 'E' : '' + diff);
+  var diffCls = diff === null ? '' : (diff < 0 ? 'is-under' : diff === 0 ? 'is-par' : 'is-over');
+
+  var s = '<div class="ls-rail__head">';
+  s += '<div class="ls-rail__eyebrow">Scorecard</div>';
+  s += '<div class="ls-rail__tot"><span class="ls-rail__tot-num">' + (totalSoFar || '—') + '</span>';
+  if (diff !== null) s += '<span class="ls-rail__tot-diff ' + diffCls + '">' + diffStr + '</span>';
+  s += '</div></div>';
+
+  s += '<div class="ls-rail__list">';
+  for (var i = startH; i < endH; i++) {
+    var hd = liveState.holes && liveState.holes[i];
+    var rp = (hd && hd.par) ? hd.par : (defaultPar[i] || 4);
+    var sc = liveState.scores[i];
+    var isCur = i === liveState.currentHole;
+    var scored = sc !== "" && sc != null;
+    var scoreCell, scoreCls;
+    if (isCur) { scoreCell = 'scoring'; scoreCls = 'is-scoring'; }
+    else if (scored) {
+      scoreCell = sc;
+      var rd = parseInt(sc, 10) - rp;
+      scoreCls = rd < 0 ? 'is-under' : rd === 0 ? 'is-par' : 'is-over';
+    } else { scoreCell = '—'; scoreCls = 'is-empty'; }
+    s += '<button class="ls-rail__row' + (isCur ? ' is-current' : '') + '" onclick="liveNavJump(' + i + ')"' + (isCur ? ' aria-current="true"' : '') + '>';
+    s += '<span class="ls-rail__h">' + (i + 1) + '</span>';
+    s += '<span class="ls-rail__p">par ' + rp + '</span>';
+    s += '<span class="ls-rail__s ' + scoreCls + '">' + scoreCell + '</span>';
+    s += '</button>';
+    if (i === 8 && endH === 18) s += '<div class="ls-rail__turn">Back nine</div>';
+  }
+  s += '</div>';
+  return s;
+}
+
 function _renderLiveScoringInner() {
   var hole = liveState.currentHole;
   var player = PB.getPlayer(liveState.player);
@@ -41,123 +103,103 @@ function _renderLiveScoringInner() {
   }
 
   var h = '';
+  var diffNow = holesPlayed > 0 ? (totalSoFar - parSoFar) : null;
 
-  // Top bar with course name and running score
-  h += '<div style="padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">';
-  h += '<div><div style="font-size:13px;font-weight:600">' + liveState.course + '</div>';
-  h += '<div style="font-size:10px;color:var(--muted);margin-top:1px">' + (player ? player.name : '') + ' · ' + PB.fmtLabel(liveState.format) + '</div></div>';
-  h += '<div style="text-align:right"><div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--gold)">' + (totalSoFar || "—") + '</div>';
-  if (holesPlayed > 0) {
-    var diff = totalSoFar - parSoFar;
-    h += '<div style="font-size:10px;color:' + (diff > 0 ? 'var(--red)' : diff < 0 ? 'var(--birdie)' : 'var(--muted)') + '">' + (diff > 0 ? '+' : '') + diff + ' thru ' + holesPlayed + '</div>';
+  h += '<div class="ls-wrap">';
+
+  // ── Desktop-only scorecard rail (read-only; hidden <980px) ──
+  h += '<aside class="ls-rail" aria-label="Scorecard so far">' + _renderCardRailInner(defaultPar, totalSoFar, parSoFar, holesPlayed) + '</aside>';
+
+  // ── Entry pad ──
+  h += '<div class="ls-pad">';
+
+  // Editorial masthead
+  h += '<header class="ls-mast">';
+  h += '<div class="ls-mast__lead">';
+  h += '<div class="ls-mast__eyebrow"><span class="ls-mast__pulse" aria-hidden="true"></span>Live · Round in progress</div>';
+  h += '<h1 class="ls-mast__course">' + escHtml(liveState.course || 'Your round') + '</h1>';
+  var metaBits = [];
+  if (liveState.tee) metaBits.push(escHtml(liveState.tee));
+  metaBits.push('Par ' + (liveState.par || 72));
+  metaBits.push(PB.fmtLabel(liveState.format));
+  h += '<div class="ls-mast__meta">' + metaBits.join(' · ') + '</div>';
+  h += '</div>';
+  if (diffNow !== null) {
+    h += '<div class="ls-mast__score">';
+    h += '<div class="ls-mast__score-num">' + (diffNow > 0 ? '+' + diffNow : diffNow === 0 ? 'E' : diffNow) + '</div>';
+    h += '<div class="ls-mast__score-lbl">thru ' + holesPlayed + '</div>';
+    h += '</div>';
   }
-  h += '</div></div>';
+  h += '</header>';
 
-  // Hole selector — bigger tap targets
+  // Hole selector dots
   var selectorStart = liveState.holesMode === "back9" ? 9 : 0;
   var selectorEnd = liveState.holesMode === "18" ? 18 : (liveState.holesMode === "back9" ? 18 : 9);
-  h += '<div style="padding:8px 12px;display:flex;gap:3px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none">';
+  h += '<div class="ls-holes" role="tablist" aria-label="Holes">';
   for (var d = selectorStart; d < selectorEnd; d++) {
     var scored = liveState.scores[d] !== "";
     var isCurrent = d === hole;
-    var dotColor = isCurrent ? 'var(--gold)' : scored ? 'var(--birdie)' : 'var(--border)';
-    var dotBg = isCurrent ? 'rgba(var(--gold-rgb),.18)' : scored ? 'rgba(var(--birdie-rgb),.1)' : 'transparent';
-    h += '<div onclick="liveNavJump(' + d + ')" style="min-width:32px;height:32px;border-radius:16px;border:1.5px solid ' + dotColor + ';background:' + dotBg + ';display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:' + dotColor + ';cursor:pointer;flex-shrink:0;-webkit-tap-highlight-color:transparent">' + (d+1) + '</div>';
+    var dotCls = 'ls-dot' + (isCurrent ? ' is-current' : scored ? ' is-scored' : '');
+    h += '<button class="' + dotCls + '" onclick="liveNavJump(' + d + ')" role="tab" aria-selected="' + (isCurrent ? 'true' : 'false') + '"' + (isCurrent ? ' aria-current="true"' : '') + '>' + (d+1) + '</button>';
   }
   h += '</div>';
 
-  // Hole header — 18 Birdies style
-  h += '<div style="padding:12px 16px 0">';
-
-  // Hole info card
-  h += '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:14px">';
-  // Top row: hole number + tee label
-  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">';
-  h += '<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:2px">Hole ' + (hole+1) + '</div>';
-  h += '<div style="display:flex;align-items:center;gap:8px">';
-  if (liveState.tee) h += '<div style="font-size:9px;color:var(--muted2);background:var(--bg2);padding:2px 8px;border-radius:10px;border:1px solid var(--border)">' + escHtml(liveState.tee) + '</div>';
-  // BL-001 — "Adjust" toggle reveals the inline par/yardage editor below the stats.
+  // Hole context strip
+  h += '<div class="ls-hole">';
+  h += '<div class="ls-hole__lead">';
+  h += '<div class="ls-hole__eyebrow">Hole ' + (hole+1) + '</div>';
+  var hbits = ['Par ' + par];
+  if (yardage) hbits.push(yardage + ' yds');
+  if (holeHdcp) hbits.push('Hdcp ' + holeHdcp);
+  h += '<div class="ls-hole__meta">' + hbits.join(' · ') + '</div>';
+  h += '</div>';
+  // BL-001 — "Adjust" toggle reveals the inline par/yardage editor below.
   var heOpen = !!holeEditOpen[hole];
-  h += '<button id="pn-holeedit-toggle-' + hole + '" onclick="toggleHoleEdit(' + hole + ')" aria-expanded="' + (heOpen ? 'true' : 'false') + '" style="display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:' + (heOpen ? 'var(--gold)' : 'var(--muted)') + ';background:transparent;border:1px solid ' + (heOpen ? 'rgba(var(--gold-rgb),.35)' : 'var(--border)') + ';border-radius:10px;padding:4px 9px;cursor:pointer;-webkit-tap-highlight-color:transparent">';
-  h += '<svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M11.5 2.5l2 2L5 13l-2.6.6.6-2.6z"/></svg>';
+  h += '<button id="pn-holeedit-toggle-' + hole + '" class="ls-adjust' + (heOpen ? ' is-open' : '') + '" onclick="toggleHoleEdit(' + hole + ')" aria-expanded="' + (heOpen ? 'true' : 'false') + '">';
+  h += '<svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M11.5 2.5l2 2L5 13l-2.6.6.6-2.6z"/></svg>';
   h += (heOpen ? 'Done' : 'Adjust') + '</button>';
   h += '</div>';
-  h += '</div>';
-  // Stats row: Par / Yardage / Hdcp
-  h += '<div style="display:flex;align-items:center;gap:0">';
-  h += '<div style="flex:1;text-align:center;border-right:1px solid var(--border)">';
-  h += '<div style="font-family:var(--font-display);font-size:36px;font-weight:700;color:var(--cream);line-height:1">' + par + '</div>';
-  h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px">Par</div>';
-  h += '</div>';
-  if (yardage) {
-    h += '<div style="flex:1;text-align:center;border-right:1px solid var(--border)">';
-    h += '<div style="font-size:24px;font-weight:700;color:var(--cream);line-height:1">' + yardage + '</div>';
-    h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px">Yards</div>';
-    h += '</div>';
-  }
-  if (holeHdcp) {
-    h += '<div style="flex:1;text-align:center">';
-    h += '<div style="font-size:24px;font-weight:700;color:var(--cream);line-height:1">' + holeHdcp + '</div>';
-    h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px">Hdcp</div>';
-    h += '</div>';
-  }
-  h += '</div>';
-  // BL-001 — inline par/yardage editor, revealed by the header "Adjust" toggle.
+
+  // BL-001 — inline par/yardage editor, revealed by the "Adjust" toggle.
   // Writes to the round-scoped liveState.holes copy; a full re-render on each
   // commit refreshes every par-derived value (diff label, running +/-, turn
   // summary, par-3 FIR gating, and the saved round's holePars -> differential).
   if (holeEditOpen[hole]) {
-    h += '<div id="pn-holeedit-' + hole + '" style="margin-top:12px;padding:12px 14px;background:var(--bg2);border:1px solid rgba(var(--gold-rgb),.2);border-radius:10px">';
-    h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">';
-    h += '<span style="font-size:12px;color:var(--cream);font-weight:600">Par</span>';
+    h += '<div id="pn-holeedit-' + hole + '" class="ls-holeedit">';
+    h += '<div class="ls-holeedit__row">';
+    h += '<span class="ls-holeedit__lbl">Par</span>';
     h += '<div class="adv-stepper">';
     h += '<button class="adv-step-btn" onclick="adjustHolePar(' + hole + ',-1)"' + (par <= 3 ? ' disabled' : '') + ' aria-label="Decrease par">−</button>';
     h += '<span class="adv-step-val" id="pn-holepar-val-' + hole + '">' + par + '</span>';
     h += '<button class="adv-step-btn" onclick="adjustHolePar(' + hole + ',1)"' + (par >= 6 ? ' disabled' : '') + ' aria-label="Increase par">+</button>';
     h += '</div></div>';
-    h += '<div style="display:flex;align-items:center;justify-content:space-between">';
-    h += '<span style="font-size:12px;color:var(--cream);font-weight:600">Yards</span>';
-    h += '<input type="number" inputmode="numeric" id="pn-holeyards-' + hole + '" value="' + (yardage || '') + '" placeholder="—" onchange="setHoleYardage(' + hole + ',this.value)" style="width:100px;text-align:center;font-size:15px;font-weight:600;color:var(--cream);background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 8px;-webkit-appearance:none;min-height:44px">';
+    h += '<div class="ls-holeedit__row">';
+    h += '<span class="ls-holeedit__lbl">Yards</span>';
+    h += '<input type="number" inputmode="numeric" id="pn-holeyards-' + hole + '" value="' + (yardage || '') + '" placeholder="—" onchange="setHoleYardage(' + hole + ',this.value)" class="ls-holeedit__input">';
     h += '</div>';
-    h += '<div style="font-size:9px;color:var(--muted);margin-top:10px;line-height:1.4">Applies to this round only. The course record stays unchanged.</div>';
+    h += '<div class="ls-holeedit__note">Applies to this round only. The course record stays unchanged.</div>';
     h += '</div>';
   }
+
   // Parbaugh stroke indicator
   if (liveState.format === "parbaugh" && holeHdcp) {
     if (strokesOnHole > 0) {
-      h += '<div style="margin-top:10px;padding:6px 10px;background:rgba(var(--gold-rgb),.1);border:1px solid rgba(var(--gold-rgb),.25);border-radius:6px;display:flex;align-items:center;justify-content:space-between">';
-      h += '<span style="font-size:11px;color:var(--gold);font-weight:600">+' + strokesOnHole + ' stroke' + (strokesOnHole > 1 ? 's' : '') + ' · Net par ' + netPar + '</span>';
-      h += '<span style="font-size:9px;color:var(--muted)">Parbaugh</span></div>';
+      h += '<div class="ls-stroke is-on"><span>+' + strokesOnHole + ' stroke' + (strokesOnHole > 1 ? 's' : '') + ' · Net par ' + netPar + '</span><span class="ls-stroke__tag">Parbaugh</span></div>';
     } else {
-      h += '<div style="margin-top:10px;padding:6px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:space-between">';
-      h += '<span style="font-size:11px;color:var(--muted)">No stroke · Net par ' + netPar + '</span>';
-      h += '<span style="font-size:9px;color:var(--muted)">Parbaugh</span></div>';
+      h += '<div class="ls-stroke"><span>No stroke · Net par ' + netPar + '</span><span class="ls-stroke__tag">Parbaugh</span></div>';
     }
   }
-  h += '</div>'; // end hole info card
 
-  // Score stepper — full width row, huge tap targets
+  // Score hero — 56×56 brass steppers flank a 96px Fraunces numeral
   var currentScore = liveState.scores[hole];
-  h += '<div style="margin-bottom:18px">';
-  h += '<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;text-align:center;margin-bottom:8px">Score</div>';
-  h += '<div style="display:flex;align-items:stretch;gap:0;border:1.5px solid var(--border);border-radius:14px;overflow:hidden;height:76px">';
-  h += '<div onclick="adjustLiveScore(-1)" style="flex:1;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:300;color:var(--muted);cursor:pointer;background:var(--bg3);-webkit-tap-highlight-color:transparent;user-select:none;border-right:1px solid var(--border)">−</div>';
-  h += '<div id="liveScoreNum" style="flex:1.2;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg2)">';
-  h += '<div style="font-family:var(--font-display);font-size:46px;font-weight:700;color:var(--gold);line-height:1">' + (currentScore || "—") + '</div>';
-  if (currentScore !== "") {
-    var scoreDiff = parseInt(currentScore) - par;
-    var labels = {"-3":"Albatross","-2":"Eagle","-1":"Birdie","0":"Par","1":"Bogey","2":"Double","3":"Triple"};
-    var label = labels[scoreDiff.toString()] || (scoreDiff > 0 ? '+' + scoreDiff : scoreDiff);
-    var labelColor = scoreDiff < 0 ? 'var(--birdie)' : scoreDiff === 0 ? 'var(--muted)' : 'var(--red)';
-    h += '<div style="font-size:10px;color:' + labelColor + ';font-weight:600;margin-top:2px;letter-spacing:.3px">' + label + '</div>';
-  }
-  h += '</div>';
-  h += '<div onclick="adjustLiveScore(1)" style="flex:1;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:300;color:var(--muted);cursor:pointer;background:var(--bg3);-webkit-tap-highlight-color:transparent;user-select:none;border-left:1px solid var(--border)">+</div>';
-  h += '</div>';
+  h += '<div class="ls-score">';
+  h += '<button class="ls-step" onclick="adjustLiveScore(-1)" aria-label="Decrease score">−</button>';
+  h += '<div id="liveScoreNum" class="ls-score__center" role="status" aria-live="polite">' + _scoreHeroInner(currentScore, par) + '</div>';
+  h += '<button class="ls-step" onclick="adjustLiveScore(1)" aria-label="Increase score">+</button>';
   h += '</div>';
 
   // FIR / GIR / Putts — binary toggles, direct-DOM update on tap (v8.2.2)
-  h += '<div style="display:flex;gap:8px;margin-bottom:20px">';
+  h += '<div class="ls-stats">';
   var firActive = !!liveState.fir[hole];
   var firCls = isPar3 ? 'pn-fg-btn disabled' : ('pn-fg-btn' + (firActive ? ' active' : ''));
   var firAttr = isPar3 ? '' : ' onclick="toggleFir(' + hole + ')"';
@@ -302,7 +344,8 @@ function _renderLiveScoringInner() {
   h += '<button class="btn" style="flex:1;font-size:11px;background:rgba(var(--red-rgb),.15);color:var(--red)" onclick="clearLiveState(\'abandoned\');updatePresence._force=true;updatePresence();Router.go(\'rounds\')">Quit</button></div></div>';
   h += '<button class="btn full" style="background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);color:var(--red);font-size:11px;margin-bottom:80px" onclick="document.getElementById(\'quit-confirm\').style.display=\'block\'">Quit round</button>';
 
-  h += '</div>';
+  h += '</div>'; // end .ls-pad
+  h += '</div>'; // end .ls-wrap
 
   // Finish options panel (before submit)
   h += '<div id="finish-options" style="display:none;position:fixed;bottom:56px;left:0;right:0;z-index:200;padding:12px 16px;background:var(--bg2);border-top:1px solid var(--border)">';
@@ -420,16 +463,9 @@ function _redrawScoreCard(hole, par) {
   var scoreVal = liveState.scores[hole];
   var scoreNumEl = document.getElementById("liveScoreNum");
   if (scoreNumEl) {
-    // scoreNum wraps two children: the big number and the diff label. Rebuild both.
-    var inner = '<div style="font-family:var(--font-display);font-size:46px;font-weight:700;color:var(--gold);line-height:1">' + (scoreVal || '\u2014') + '</div>';
-    if (scoreVal !== "") {
-      var scoreDiff = parseInt(scoreVal) - par;
-      var labels = {"-3":"Albatross","-2":"Eagle","-1":"Birdie","0":"Par","1":"Bogey","2":"Double","3":"Triple"};
-      var label = labels[scoreDiff.toString()] || (scoreDiff > 0 ? '+' + scoreDiff : scoreDiff);
-      var labelColor = scoreDiff < 0 ? 'var(--birdie)' : scoreDiff === 0 ? 'var(--muted)' : 'var(--red)';
-      inner += '<div style="font-size:10px;color:' + labelColor + ';font-weight:600;margin-top:2px;letter-spacing:.3px">' + label + '</div>';
-    }
-    scoreNumEl.innerHTML = inner;
+    // #liveScoreNum wraps the big numeral + diff label. _scoreHeroInner is the
+    // single source of truth shared with the initial render.
+    scoreNumEl.innerHTML = _scoreHeroInner(scoreVal, par);
     scoreNumEl.classList.remove("score-pop");
     void scoreNumEl.offsetWidth;
     scoreNumEl.classList.add("score-pop");
