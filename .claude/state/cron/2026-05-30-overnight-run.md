@@ -903,3 +903,103 @@ Ran ~5 state-changing operations (regen-all + engineer.json + critic.json + this
 NOT staged (live concurrent-session / other-tooling territory, via explicit pathspec): `.claude/state/emu-unified-2026-05-29.log`, `.claude/state/overnight-agent/reports/2026-05-30.md`, `.claude/state/stop-decisions/2026-05-30.ndjson`, `verify-rounds-82363.png`.
 
 No code changes in cycle BD. No proposals. No FIQ writes. No bug-report state moves (inbox absent). app-health overall FLAT at 87.1 (A-); diff purely metadata this cycle (verbatim read + grep confirm).
+
+---
+
+# Cycle BE — overnight triage (2026-05-30T14:01Z)
+
+**Branch:** heartbeat-only (runbook "BOTH queues empty → steps 3–5 only"). ELEVENTH cycle of the 2026-05-30 date (AU 04:04Z · AV 05:01Z · AW 06:01Z · AX 07:00Z · AY 08:01Z · AZ 09:01Z · BA 10:02Z · BB 11:01Z · BC 12:01Z · BD 13:01Z · **BE 14:01Z**). BD→BE gap ≈ 60 min — **45th consecutive ~1h-cadence cycle** since cycle M.
+
+## Steps 1 + 2 — Triage (skipped, queues empty)
+
+Verified by my own directory-absence checks THIS cycle (not echoed from BD):
+
+- `.claude/state/founder-input-queue/` — **dir MISSING**
+- `.claude/state/bug-reports/` tree (no `inbox/`, no `triaged/`) — **MISSING**
+- `.claude/state/proactive-backlog.md` — **MISSING**
+- `.claude/state/founder_input_queue.json` — **MISSING**
+- `.claude/state/proposals/pending/` — only `.gitkeep` (0 real proposals)
+
+**91st consecutive empty-inbox cycle.** No FIQ entries to grade, no bug reports to diagnose, no proposals to author. Per runbook, skip steps 1–2.
+
+## Step 3a — regen-all heartbeat
+
+`scripts/regen-all.ps1` ran end-to-end `2026-05-30T14:01:35Z` → **`ALL DASHBOARDS REGENERATED at 2026-05-30T14:01:41Z`** with **`=== ALL CHECKS PASSED ===`** + round-trip test **PASS**. **46th consecutive clean canonical regen-all (cycles L–BE.)** Heartbeat `regen-all-last-pass.json` written.
+
+- Telemetry: `events=17311 handoffs=1 bubbles=7 proposals_pending=0`, `meter_status=wired-real` → **HALT-25 NOT in effect**.
+- Token aggregate (all-time): `real=13,053,077,799 estimated=15,113,490 manual=0`.
+- One **informational** `~` (not a failure): `user-context-gate` flags `main-flows.html` modified 22314.1 min after last user-context capture (`2026-05-14T23-07-48Z`) — benign on a heartbeat-only night.
+- `regen-main-flows` emitted its standing WARN of 6 orphan components (`actor.guest`, `actor.invitee`, `dist.capacitor-ios`, `ext.open-meteo`, `fn.expire-suspensions`, `fn.join-league`) — long-standing informational, not a regression; round-trip still verifies 6 cols / 47 components / 62 flows / 248 steps, all refs resolve.
+- **Founder-checklist count MOVED this cycle:** `regen-founder-checklist` reported `open=4 (red=0 yellow=4 green=0) closed_total=27` — a real change from cycles BA–BD's `open=6 (red=0 yellow=4 green=2) closed_total=25`. Two green items closed (closed 25→27, green 2→0), driven by the concurrent session's edits to the 12 dirty `.claude/state/task-queue/founder/*.md` source items. Not heartbeat-caused; red=0 so nothing ship-blocking. Surfaced honestly rather than echoing the stale `open=6` figure.
+
+### Honest diff characterization (cycle BE) — TWO change classes, not a uniform "metadata-only" echo
+
+This cycle the working-tree diff has **two distinct classes**, and I deliberately did **not** stretch a single "purely metadata" framing across both:
+
+**Class 1 — `docs/reports/app-health.html` IS purely metadata.** Verified by reading the `git diff` verbatim AND grepping for `+/-` on `overall_score`/`overall_grade`/`score`/`weak_point`/`dimension` lines (**zero matches**). Exactly two hunks:
+1. `generated_at` `2026-05-30T13:38:15.143790Z` → `14:01:40.500817Z`
+2. `audit_trigger` pointer re-pointed: `2ae2ede3` (*"fix(calendar): harmonize color taxonomy — one color per concept, distinguishable categories (v8.23.65)"*, `trigger=app-commit`, `is_app_commit=true`, `app_files_touched=[public/sw.js, src/core/utils.js, src/pages/caddynotes.js, src/pages/calendar.js, src/styles/components.css]`, 6 files) → `1e4fa728` (*"cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)"*, `trigger=cron`, `is_app_commit=false`, `app_files_touched=[]`, 4 files)
+
+`overall_score` stays **87.1 (A-)**, `overall_grade` A-, all 12 dimension scores byte-unchanged (they appear only as unchanged context lines).
+
+**Class 2 — `templates/dashboards/founder-checklist.template.html` is NOT mine and NOT metadata.** Run-start `git status` (14:01:25Z) did **not** list this template; after my regen it shows **+30/-1** lines ADDING a hand-authored `.fc-guide` collapsible *"New here? How a developer uses this checklist"* onboarding section (CSS block + `<details>` walkthrough + a rewritten hero paragraph reframed around "who can clear it"). **Decisive proof this is not my regen's output:** `grep -c` of BOTH the committed (`git show HEAD:scripts/regen-founder-checklist.py`) AND the working-tree generator for `fc-guide|New here? How a developer|fc-guide-step-label` returns **0** — the generator literally cannot emit that block, and it is not itself dirty. Therefore the guide block is the **live concurrent session's direct hand-edit** to the template, landed during my cycle window (cf. the cycle-AZ "live-edit-during-cycle" precedent), **entangled** in one file with my regen's legitimate checklist count update (open 6→4 etc.). Because I cannot cleanly isolate my count-regen contribution from the concurrent author's in-flight onboarding-feature authoring within a single file, I left the **entire `founder-checklist.template.html` UNSTAGED** — committing it would finalize another author's unreviewed, Founder-facing onboarding feature, crossing the runbook *"DO NOT auto-anything that crosses a Founder-decision boundary"* line.
+
+## Step 3b — Wellness refresh
+
+- `.claude/state/wellness/engineer.json` — updated for cycle BE (counters ~1,450k tokens cumulative / 1.0h discrete-context; status `active`; `thresholds_crossed=['tokens_consumed']` preserved 55th cross-cycle; full cycle-BE `_note` incl. the two-class diff honesty).
+- `.claude/state/wellness/critic.json` — updated for cycle BE. Critic participated via the closing METRIC_INTEGRITY_PROTOCOL 3.1 attestation + independent verification, this cycle forcing the generator `grep -c` (=0) that proved the founder-checklist guide block is concurrent-author WIP, not regen output — catching what a reflexive "purely metadata" echo would have mis-committed. Counters ~325k tokens cumulative / 1.0h; status `active`; threshold preserved.
+
+## Step 4 — Session journal
+
+**This section** (cycle BE appended to the existing 2026-05-30 date journal).
+
+## Cycle BE counts
+
+| Metric | Count |
+|---|---|
+| FIQ entries triaged | 0 (queue absent) |
+| Bug reports processed | 0 (inbox absent) |
+| New proposals authored | 0 |
+| Wellness state changes | 2 (engineer.json + critic.json cycle BE refresh) |
+
+FIQ grade distribution: A=0 B=0 C=0 D=0 F=0 (no entries graded — queue absent).
+
+## Blockers requiring Founder attention (cycle BE)
+
+**No ship-blocking issues introduced by triage.** Awareness / carry-over items:
+
+1. **Concurrent session is editing LIVE and shipped v8.23.63 → v8.23.65.** Since cycle BD (HEAD `b0bfa5a9`), the concurrent session committed through `1e4fa728` (current HEAD), shipping v8.23.64 (wager type-icons glyph→SVG, `8076e988`) and v8.23.65 (calendar color taxonomy harmonize, `2ae2ede3`). It is **also actively hand-authoring** a founder-checklist onboarding guide and editing 12 `task-queue/founder/*.md` items *right now* (those appeared dirty mid-cycle). Normal post-commit / in-flight Founder review, not a triage blocker.
+2. **`templates/dashboards/founder-checklist.template.html` carries an in-flight onboarding-guide hand-edit (concurrent session).** Left **unstaged** this cycle (proven via generator `grep -c`=0 that my regen could not have produced the `.fc-guide` block; entangled with my count-regen so the whole file is left for the concurrent author / Founder). Self-resolves the moment that session commits its onboarding work.
+3. **`src/pages/members-detail.js` remains over the AMD-027 800-line budget (842).** Existing architecture weak_point, **not** triage-caused. **No proposal manufactured** — authoring an AMD-027 split proposal for a file another author is actively shipping would be both ship-count gaming (Rule 2) and a collision risk.
+4. **Founder-checklist `open=4` (down from 6; red=0 yellow=4 green=0 closed=27)** — residual concurrent-ship drift; red=0 so nothing ship-blocking.
+5. **Carry-over — concurrent emulator log `.claude/state/emu-unified-2026-05-29.log`** is dirty (a live emulator session's territory). Deliberately **not staged**.
+6. **Carry-over — untracked other-tooling artifacts**: `.claude/state/overnight-agent/reports/2026-05-30.md` + `.claude/state/stop-decisions/2026-05-30.ndjson` (concurrent-session / other-tooling output). Deliberately **not staged**.
+7. **Carry-over — writer-side BOM fix (`scripts/common.ps1`)** remains unauthored as a proposal. Consumer-side `utf-8-sig` tolerance has held 46 consecutive clean regen-all runs (cycles L–BE). Deliberately not auto-promoted without a Founder priority signal.
+8. **Carry-over — journal-date convention (UTC vs Founder-local)** for filename + commit date. Not in tension this cycle (both = 2026-05-30) but unresolved as policy.
+9. **Carry-over — wellness token-counter semantics** — `thresholds_crossed=['tokens_consumed']` persists (engineer ~1,450k / critic ~325k cumulative since last rest); status remains `active` because heartbeat-only nights are genuinely light. Founder-decision still LIVE: (a) reset per cron fire, (b) raise threshold, (c) auto-trigger rest when crossed-while-active, (d) leave current convention (current path).
+10. **Cron cadence** — cycles M–BE steady at ~1h (45 consecutive). Awareness only.
+
+## Cycle BE Critic metric-integrity attestation (per `METRIC_INTEGRITY_PROTOCOL § 3.1`)
+
+1. **"Did every bug report processed get a real diagnosis with cited evidence?"** N/A — zero bug reports tonight (inbox tree absent, verified by directory checks this cycle). Cannot wave off what doesn't exist.
+2. **"Did every new proposal cite a specific screen/state/edge-case?"** N/A — zero new proposals tonight. The `members-detail.js` over-budget, the founder-checklist onboarding edit (concurrent author's), and the BOM fix were all deliberately *not* promoted rather than inflated into proposals.
+3. **"Did the FIQ grades reflect rubric dimensions honestly?"** N/A — zero FIQ entries tonight. Queue absent.
+
+**Heartbeat-only self-check — is tonight's substantive output real?** YES, and this cycle the integrity discipline did genuine work. A 46th consecutive clean canonical regen-all confirms the gate is durable. The new substantive observation: the working-tree diff this cycle is **two classes**, and rather than reflexively echoing BB–BD's "purely metadata" framing across everything, I separated them — confirmed `app-health.html` IS metadata-only (verbatim read + score-line grep), then **proved** `founder-checklist.template.html` is NOT my output via `grep -c`=0 of the generator (committed + working) for the guide text, attributing the `.fc-guide` onboarding block to a live concurrent hand-edit and leaving the whole file unstaged. The founder-checklist count movement (open 6→4, closed 25→27) was surfaced honestly rather than echoing the stale figure. Every claim is anchored to a quoted regen-all log line, a `git diff` hunk read verbatim, a `grep`/`grep -c` result, a `git log`/`git status` line, or a `test -e`/`test -d` absence check. No invented productivity, and no lazy boilerplate where the facts diverged from prior cycles.
+
+**Critic attests cleanly: substantive heartbeat cycle, two-class diff honestly separated (app-health metadata-only by read+grep; founder-checklist template proven concurrent-author WIP by generator grep=0 and correctly left unstaged), ship closes.**
+
+## Pause-discipline note (cycle BE)
+
+Ran ~5 state-changing operations (regen-all + engineer.json + critic.json + this journal + the commit). **No API-error / org-cap signal** appeared in any tool result. Per the F1a defensive heuristic — *"the actual choice is judgment, not threshold-driven … over-pause beats under-pause"* — exiting clean at op 5 would have left a dirty, uncommitted tree (worse outcome) with no quota pressure to justify it, so I completed the commit. Documented here for retrospective review.
+
+## Files changed in this cycle BE run
+
+- `.claude/state/wellness/engineer.json` — cycle BE update
+- `.claude/state/wellness/critic.json` — cycle BE update
+- `.claude/state/cron/2026-05-30-overnight-run.md` — this journal (cycle BE section appended)
+- `docs/reports/app-health.html` — regen output (metadata `generated_at` + `audit_trigger` commit-pointer `2ae2ede3`→`1e4fa728`; overall score/grade + all 12 dimension scores byte-unchanged at 87.1 A-)
+
+NOT staged (live concurrent-session / other-tooling territory, via explicit pathspec): `templates/dashboards/founder-checklist.template.html` (concurrent session's in-flight `.fc-guide` onboarding hand-edit, proven via generator `grep -c`=0; entangled with my count-regen so the whole file is left), the 12 `.claude/state/task-queue/founder/*.md` files (concurrent checklist source edits), `.claude/state/emu-unified-2026-05-29.log`, `.claude/state/overnight-agent/reports/2026-05-30.md`, `.claude/state/stop-decisions/2026-05-30.ndjson`.
+
+No code changes in cycle BE. No proposals. No FIQ writes. No bug-report state moves (inbox absent). app-health overall FLAT at 87.1 (A-); diff this cycle is two classes — app-health metadata-only (read+grep), founder-checklist template proven concurrent-author WIP (generator grep=0) and left unstaged.
