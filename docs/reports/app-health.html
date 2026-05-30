@@ -821,7 +821,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-30T11:51:03.568385Z",
+  "generated_at": "2026-05-30T11:58:12.872107Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 87.1,
   "overall_grade": "A-",
@@ -1008,17 +1008,18 @@
     }
   ],
   "audit_trigger": {
-    "sha": "fbffab5b",
-    "subject": "fix(chat): clear 3px composer/bottom-nav overlap on no-safe-area viewport (v8.23.58)",
-    "committed_at": "2026-05-30T07:50:40-04:00",
+    "sha": "6d6f49c1",
+    "subject": "fix(chat): center empty Trash Talk feed in its frame instead of pinning over a void (v8.23.59)",
+    "committed_at": "2026-05-30T07:57:49-04:00",
     "trigger": "app-commit",
     "is_app_commit": true,
     "app_files_touched": [
       "public/sw.js",
       "src/core/utils.js",
+      "src/pages/chat.js",
       "src/styles/components.css"
     ],
-    "total_files_touched": 4
+    "total_files_touched": 5
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
