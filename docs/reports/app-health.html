@@ -821,7 +821,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-30T12:55:34.761679Z",
+  "generated_at": "2026-05-30T13:01:43.445508Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 87.1,
   "overall_grade": "A-",
@@ -1008,24 +1008,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "4386ae64",
-    "subject": "fix: honest 9-hole to-par across all surfaces (v8.23.63)",
-    "committed_at": "2026-05-30T08:55:10-04:00",
-    "trigger": "app-commit",
-    "is_app_commit": true,
-    "app_files_touched": [
-      "public/sw.js",
-      "src/core/handicap.js",
-      "src/core/router-sharecard.js",
-      "src/core/utils.js",
-      "src/pages/caddynotes.js",
-      "src/pages/calendar.js",
-      "src/pages/chat-calendar.js",
-      "src/pages/feed.js",
-      "src/pages/home-hq.js",
-      "src/pages/members-detail.js"
-    ],
-    "total_files_touched": 12
+    "sha": "b0bfa5a9",
+    "subject": "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)",
+    "committed_at": "2026-05-30T08:56:38-04:00",
+    "trigger": "cron",
+    "is_app_commit": false,
+    "app_files_touched": [],
+    "total_files_touched": 4
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
