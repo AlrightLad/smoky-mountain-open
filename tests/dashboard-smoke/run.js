@@ -59,6 +59,7 @@ const EXPECTED_NAV_LINKS = [
   'design-system.html',
   'token-usage.html',
   'sessions.html',
+  'legal.html',
   'founder-checklist.html',
 ];
 
@@ -188,9 +189,9 @@ async function checkPage(browser, file) {
   if (pageErrors.length > 0) {
     issues.push(`${pageErrors.length} page error(s): ` + pageErrors.slice(0, 3).map((e) => e.name + ': ' + e.message.slice(0, 80)).join(' | '));
   }
-  // design-system.html is a static reference page with no JSON data block — exempt.
-  // app-health.html embeds its data block too — both should still parse if present.
-  const isStaticPage = file === 'design-system.html';
+  // design-system.html + legal.html are static reference pages with no JSON
+  // data block — exempt. app-health.html embeds its data block too.
+  const isStaticPage = file === 'design-system.html' || file === 'legal.html';
   if (!isStaticPage) {
     if (!dataBlock.exists) {
       issues.push('report-data block missing');

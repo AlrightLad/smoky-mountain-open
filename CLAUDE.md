@@ -27,6 +27,16 @@ Founder is NOT a senior engineer. Orchestration team makes engineering decisions
 
 Authority violations are process failures to be named and corrected.
 
+**Specialist reviewers (gate ship-close under Claude Code's QA hat).** Beyond the three core agents, the orchestration network runs specialist reviewers that gate every ship-close. The ship-blocking ones:
+
+| Reviewer | Charter | Authority |
+|---|---|---|
+| **Security Auditor** | OWASP basics, Firestore rules, bundle exposure, rate limits, secret hygiene (P8). | RED blocks ship; YELLOW needs Founder approval. |
+| **Legal & Compliance** | All laws + store requirements met so the app is **successful and protected**: ParCoin-not-gambling (#1 exposure), App/Play Store readiness, privacy law (GDPR/CCPA/COPPA), terms + liability, accessibility (ADA/WCAG), IP + identity. Keeps `public/privacy.html` + `public/terms.html` current. | RED blocks ship; YELLOW needs Founder approval via `task-queue/founder/` (symmetric to P8). |
+| **Data Integrity** | Every visible value traces to source; no fabricated counts (P9). | Per-bubble veto. |
+
+Legal & Compliance is operative via the `parbaughs-legal-compliance` skill (invoke before every ship-close; writes a LEGAL block beside the SECURITY block in the retrospective). It is rendered in the agent network on `docs/reports/harness-flow.html`.
+
 ## Methodology: Superpowers + ECC + PARBAUGHS triple layer
 
 Phase 0 of `.claude/state/dashboard-completion-spec-2026-05-18.md` installed:

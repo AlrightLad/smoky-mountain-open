@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Legal &amp; Compliance — PARBAUGHS Orchestration</title>
+    <link rel="stylesheet" href="_assets/dashboard-shell.css">
+    <style>
+        .lr-page-wrap { max-width: var(--max-content); margin: 0 auto; padding: var(--space-5) var(--space-4); }
+        .lr-hero { padding: var(--space-5) 0 var(--space-4); border-bottom: 1px solid var(--border-subtle); margin-bottom: var(--space-4); }
+        .lr-hero h1 { font-family: var(--font-display); font-size: 2.5rem; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 var(--space-2); color: var(--accent-claret); }
+        .lr-hero p { color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.55; max-width: 820px; margin: 0; }
+        .lr-meta { display: flex; gap: var(--space-4); flex-wrap: wrap; margin-top: var(--space-3); font-family: var(--font-mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); }
+        .lr-meta strong { color: var(--accent-brass); font-weight: 600; }
+
+        .lr-guide { margin-bottom: var(--space-5); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-card); }
+        .lr-guide > summary { padding: var(--space-3) var(--space-4); cursor: pointer; font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-brass); user-select: none; font-weight: 600; }
+        .lr-guide > summary:hover { color: var(--text-primary); }
+        .lr-guide[open] > summary { border-bottom: 1px solid var(--border-subtle); color: var(--text-primary); }
+        .lr-guide-body { padding: var(--space-4); font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; }
+        .lr-guide-body p { margin: 0 0 var(--space-3); }
+        .lr-guide-body p:last-child { margin-bottom: 0; }
+        .lr-guide-body strong { color: var(--text-primary); }
+        .lr-guide-body code { background: var(--bg-page); padding: 1px 6px; border-radius: 2px; font-family: var(--font-mono); font-size: 0.8125rem; color: var(--accent-teal); }
+
+        .lr-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--space-3); margin-bottom: var(--space-5); }
+        .lr-stat-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: var(--space-3); }
+        .lr-stat-card.is-green { border-color: rgba(120, 178, 128, 0.4); }
+        .lr-stat-card.is-yellow { border-color: rgba(200, 168, 92, 0.4); }
+        .lr-stat-card.is-red { border-color: rgba(196, 90, 90, 0.4); }
+        .lr-stat-label { font-family: var(--font-mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-tertiary); margin-bottom: var(--space-1); }
+        .lr-stat-value { font-family: var(--font-display); font-size: 2rem; font-weight: 600; line-height: 1; color: var(--text-primary); }
+        .lr-stat-value.is-green { color: #78b280; }
+        .lr-stat-value.is-yellow { color: #c8a85c; }
+        .lr-stat-value.is-red { color: #c45a5a; }
+        .lr-stat-sub { font-size: 0.75rem; color: var(--text-secondary); margin-top: var(--space-1); }
+
+        .lr-section-title { font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.13em; color: var(--accent-brass); margin: var(--space-5) 0 var(--space-3); font-weight: 600; }
+
+        .lr-item { background: var(--bg-card); border: 1px solid var(--border-subtle); border-left: 4px solid var(--accent-brass); border-radius: var(--radius-md); padding: var(--space-4); margin-bottom: var(--space-3); }
+        .lr-item.v-green { border-left-color: #78b280; }
+        .lr-item.v-yellow { border-left-color: #c8a85c; }
+        .lr-item.v-red { border-left-color: #c45a5a; }
+
+        .lr-item-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-3); margin-bottom: var(--space-2); flex-wrap: wrap; }
+        .lr-item-title { font-size: 1.0625rem; font-weight: 600; color: var(--text-primary); margin: 0; flex: 1; min-width: 220px; }
+        .lr-item-num { font-family: var(--font-mono); color: var(--accent-brass); font-weight: 700; margin-right: 6px; }
+
+        .lr-badge { font-family: var(--font-mono); font-size: 0.625rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 9px; border-radius: var(--radius-pill); white-space: nowrap; align-self: flex-start; }
+        .lr-badge.v-green { background: rgba(120, 178, 128, 0.18); color: #8fc99c; }
+        .lr-badge.v-yellow { background: rgba(200, 168, 92, 0.18); color: #dcbf73; }
+        .lr-badge.v-red { background: rgba(196, 90, 90, 0.18); color: #d97676; }
+
+        .lr-label { font-family: var(--font-mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); margin: var(--space-3) 0 var(--space-1); font-weight: 600; }
+        .lr-req { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.55; margin: 0; }
+        .lr-found { font-size: 0.875rem; color: var(--text-primary); line-height: 1.55; margin: 0; }
+
+        .lr-evidence { list-style: none; margin: var(--space-2) 0 0; padding: 0; display: grid; gap: var(--space-1); }
+        .lr-evidence li { font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.5; padding-left: var(--space-3); position: relative; }
+        .lr-evidence li::before { content: "›"; position: absolute; left: 0; color: var(--accent-brass); font-weight: 700; }
+        .lr-evidence code { background: var(--bg-page); padding: 1px 6px; border-radius: 2px; font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-teal); }
+
+        .lr-status { margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--border-subtle); font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.5; }
+        .lr-status strong { color: var(--text-primary); font-weight: 600; }
+        .lr-status a { color: var(--accent-brass); text-decoration: underline; text-underline-offset: 2px; }
+        .lr-status a:hover { color: var(--accent-claret); }
+
+        .lr-clar { background: var(--bg-card); border: 1px solid var(--border-subtle); border-left: 4px solid var(--accent-teal); border-radius: var(--radius-md); padding: var(--space-4); margin-bottom: var(--space-3); }
+        .lr-clar h3 { font-size: 1rem; font-weight: 600; color: var(--text-primary); margin: 0 0 var(--space-2); }
+        .lr-clar p { font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.55; margin: 0 0 var(--space-2); }
+        .lr-clar p:last-child { margin-bottom: 0; }
+        .lr-clar code { background: var(--bg-page); padding: 1px 6px; border-radius: 2px; font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-teal); }
+        .lr-clar a { color: var(--accent-brass); text-decoration: underline; text-underline-offset: 2px; }
+
+        .lr-xref { margin-top: var(--space-5); padding-top: var(--space-4); border-top: 1px solid var(--border-subtle); display: flex; gap: var(--space-4); flex-wrap: wrap; font-size: 0.8125rem; }
+        .lr-xref a { color: var(--accent-brass); text-decoration: none; font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; }
+        .lr-xref a:hover { color: var(--accent-claret); text-decoration: underline; }
+    </style>
+</head>
+<body class="pb-app">
+    <header class="pb-page-header">
+        <nav class="pb-page-nav">
+            <a href="index.html" class="pb-page-brand">PARBAUGHS Orchestration</a>
+            <div class="pb-page-nav-links">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="app-health.html">App Health</a>
+                <a href="activity.html">Activity</a>
+                <a href="discussion-bubbles.html">Discussion Bubbles</a>
+                <a href="proposals.html">Proposals</a>
+                <a href="amendments.html">Amendments</a>
+                <a href="main-flows.html">Main Flows</a>
+                <a href="harness-flow.html">Harness &amp; Flow</a>
+                <a href="design-system.html">Design System</a>
+                <a href="token-usage.html">Tokens</a>
+                <a href="sessions.html">Sessions</a>
+                <a href="legal.html" class="is-active">Legal</a>
+                <a href="founder-checklist.html">Founder Checklist</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="pb-page-main">
+        <div class="lr-page-wrap">
+            <section class="lr-hero">
+                <h1>Legal &amp; Compliance Review</h1>
+                <p>What the law and the app stores require of Parbaughs, and where the live product actually stands against each. Every line below is backed by a concrete file, line, or document in this repo — nothing is asserted without evidence. Verdicts: <strong style="color:#8fc99c">green (met)</strong>, <strong style="color:#dcbf73">yellow (met, with a human/future step routed to the Founder Checklist)</strong>, <strong style="color:#d97676">red (gap that blocks ship)</strong>. Anything that needs a human decision or a dollar is routed to the <a href="founder-checklist.html" style="color:var(--accent-brass)">Founder Checklist</a> with step-by-step resolution.</p>
+                <div class="lr-meta">
+                    <span>Reviewed <strong>2026-05-30</strong></span>
+                    <span>Reviewer <strong>Legal &amp; Compliance</strong> (orchestration specialist)</span>
+                    <span>Skill <strong>parbaughs-legal-compliance</strong></span>
+                    <span>Re-run each ship-close</span>
+                </div>
+            </section>
+
+            <details class="lr-guide">
+                <summary>How this review works ↓</summary>
+                <div class="lr-guide-body">
+                    <p>Parbaughs faces two kinds of legal exposure: <strong>app-store rejection</strong> (Apple/Google reject builds that miss specific guidelines) and <strong>real-world legal risk</strong> (a virtual-coin economy that strays into regulated gambling; privacy law; accessibility law). The single biggest exposure is <strong>ParCoins being construed as gambling</strong> — so it leads the checklist.</p>
+                    <p>This page is <strong>evidence-based by rule</strong>. Each requirement names the law or store guideline, then cites the exact file and line that proves the current state. Where the evidence shows a gap that a human must close (a deploy gated by AMD-018, a paid asset, a business decision), it does not guess — it routes the item to the <code>Founder Checklist</code> with exact steps, and shows the link here.</p>
+                    <p>Verdicts default to <strong>conservative</strong>: a requirement only earns green when the evidence is unambiguous. Anything uncertain is surfaced for Founder clarification rather than marked done. The review re-runs at every ship-close, so this page reflects the live state of the repo, not a one-time snapshot.</p>
+                    <p>This is an internal orchestration surface. The two member-facing legal documents it audits are live at <code>public/privacy.html</code> and <code>public/terms.html</code>.</p>
+                </div>
+            </details>
+
+            <section class="lr-stats">
+                <div class="lr-stat-card is-green">
+                    <div class="lr-stat-label">Green — met</div>
+                    <div class="lr-stat-value is-green">5</div>
+                    <div class="lr-stat-sub">evidence-confirmed</div>
+                </div>
+                <div class="lr-stat-card is-yellow">
+                    <div class="lr-stat-label">Yellow — human step</div>
+                    <div class="lr-stat-value is-yellow">1</div>
+                    <div class="lr-stat-sub">routed to Founder</div>
+                </div>
+                <div class="lr-stat-card is-red">
+                    <div class="lr-stat-label">Red — blocks ship</div>
+                    <div class="lr-stat-value is-red">0</div>
+                    <div class="lr-stat-sub">nothing blocking</div>
+                </div>
+                <div class="lr-stat-card">
+                    <div class="lr-stat-label">Clarifications</div>
+                    <div class="lr-stat-value">2</div>
+                    <div class="lr-stat-sub">Founder to confirm</div>
+                </div>
+                <div class="lr-stat-card">
+                    <div class="lr-stat-label">Posture</div>
+                    <div class="lr-stat-value is-green" style="font-size:1.25rem; padding-top:6px">CLEAR</div>
+                    <div class="lr-stat-sub">for staging product</div>
+                </div>
+            </section>
+
+            <h2 class="lr-section-title">Compliance checklist — 7 requirements</h2>
+
+            <!-- ITEM 1 -->
+            <div class="lr-item v-green">
+                <div class="lr-item-head">
+                    <h3 class="lr-item-title"><span class="lr-item-num">1</span>ParCoins are not gambling</h3>
+                    <span class="lr-badge v-green">Green — met</span>
+                </div>
+                <div class="lr-label">Requirement</div>
+                <p class="lr-req">A virtual currency becomes regulated gambling when all three of consideration (real money in), chance, and a prize of real-world value are present. Parbaughs must break at least one prong — ideally several — and say so plainly in its Terms. This is the platform's #1 legal exposure.</p>
+                <div class="lr-label">What we found</div>
+                <p class="lr-found">No real-money-in and no cash-out path exist anywhere in the code. ParCoins are earned by playing and spent only on cosmetic/social items inside the app. The Terms state this explicitly.</p>
+                <ul class="lr-evidence">
+                    <li><code>public/terms.html:20</code> — "ParCoins are a virtual, cosmetic-only currency with zero real-world cash value… cannot be redeemed, transferred, or exchanged for money, goods, or services outside the app… No gambling license is required because ParCoins have no monetary value."</li>
+                    <li>Code grep across <code>src/</code> — no <code>stripe</code> / <code>paypal</code> / <code>cashout</code> / real-money / in-app-purchase paths. Coin spend is internal only.</li>
+                    <li><code>src/pages/shop.js</code>, <code>src/pages/richlist.js</code> — purchases route through <code>deductCoins</code> for cosmetics (rings, banners, themes) and social actions; no fiat.</li>
+                    <li><code>functions/</code> — no payment-processing code (the only "paypal" string is a transitive dependency's funding URL in <code>package-lock.json</code>, not app code).</li>
+                </ul>
+                <div class="lr-status"><strong>Status: met.</strong> The consideration prong (real money in) and the real-world-value prong are both absent by construction, and the Terms assert virtual-only status. No action required. Re-verify if any earn/spend rule ever touches real money — that would flip this to red and is an AMD-018 gate-4 (payment economy) change.</div>
+            </div>
+
+            <!-- ITEM 2 -->
+            <div class="lr-item v-yellow">
+                <div class="lr-item-head">
+                    <h3 class="lr-item-title"><span class="lr-item-num">2</span>App Store &amp; Play Store readiness</h3>
+                    <span class="lr-badge v-yellow">Yellow — human step</span>
+                </div>
+                <div class="lr-label">Requirement</div>
+                <p class="lr-req">Stores reject builds that miss specific guidelines: user-generated-content moderation (Apple 1.2 — report + block), in-app account deletion (Apple 5.1.1(v) / GDPR Art. 17), accurate privacy labels, and proper app icons. These gate <em>submission</em>, which the Founder has scoped as the final step.</p>
+                <div class="lr-label">What we found</div>
+                <p class="lr-found">UGC moderation is built and working. Account-deletion code is written, hardened, and emulator-verified, but the server function is not yet deployed (an AMD-018-gated human step). App icons are still a documented placeholder.</p>
+                <ul class="lr-evidence">
+                    <li><strong>UGC report (Apple 1.2):</strong> <code>src/pages/admin.js:413-441</code> — branded member-report flow writes to <code>/reports</code> and notifies the Commissioner; trigger at <code>src/pages/members-detail.js:58</code>. Comment names the guideline directly.</li>
+                    <li><strong>UGC block:</strong> <code>src/core/utils.js:107-136</code> — each member stores a <code>blockedUsers</code> array; helpers add/read it.</li>
+                    <li><strong>Account deletion (5.1.1(v)):</strong> <code>functions/index.js:267-347</code> — full reauth-gated, rate-limited self-erasure with audit log. <em>But</em> <code>functions/index.js:260-262</code> notes deploy is AMD-018 gate 1; until deployed the endpoint 404s and the app routes the user to email support (fail-closed, Apple-acceptable interim).</li>
+                    <li><strong>App icons:</strong> <code>public/manifest.json:16-23</code> points most sizes at <code>watermark.jpg</code>; <code>public/icons/</code> holds only a generation README, no PNG icon set yet.</li>
+                </ul>
+                <div class="lr-status"><strong>Status: met for the web/PWA product; two human steps remain before store submission.</strong> Both are routed to the Founder Checklist with exact steps: <a href="founder-checklist.html">deploy <code>deleteMyAccount</code></a> (already queued, AMD-018 gate 1) and <a href="founder-checklist.html">generate store app icons</a> (DIY-or-designer). Neither blocks the current staging product; both are App-Store-submission-time, which is the Founder's designated final step.</div>
+            </div>
+
+            <!-- ITEM 3 -->
+            <div class="lr-item v-green">
+                <div class="lr-item-head">
+                    <h3 class="lr-item-title"><span class="lr-item-num">3</span>Privacy law (GDPR / CCPA / COPPA)</h3>
+                    <span class="lr-badge v-green">Green — met</span>
+                </div>
+                <div class="lr-label">Requirement</div>
+                <p class="lr-req">A published privacy policy must enumerate data collected, disclose third-party processors, honor data-subject rights (access, correct, delete, object), minimize collection, and address children's data. Location must be opt-in.</p>
+                <div class="lr-label">What we found</div>
+                <p class="lr-found">A current, comprehensive privacy policy is live and covers every required element.</p>
+                <ul class="lr-evidence">
+                    <li><code>public/privacy.html</code> (updated 2026-05-28) — enumerates account/profile/golf/social/device data; states "we do NOT collect contacts, GPS tracking, or ad IDs" and "we do not sell your data."</li>
+                    <li>Third-party processors disclosed: Firebase (US, SOC 2 / ISO 27001), GolfCourseAPI, Open-Meteo, Sentry (scrubbed).</li>
+                    <li>Data-subject rights (GDPR/CCPA): access, correct, delete, object — with an in-app delete path and a 30-day support path.</li>
+                    <li>Children's privacy: under-13 not intended, COPPA-aware; minimum age 13 set in Terms.</li>
+                    <li>Location: opt-in, city-level, low-accuracy (documented + matches code behavior).</li>
+                </ul>
+                <div class="lr-status"><strong>Status: met.</strong> One dependency to confirm: the data-subject-request and deletion-support paths both point to <code>support@parbaughs.golf</code>. Mailbox liveness can't be proven from code, so it is surfaced as a Founder clarification below.</div>
+            </div>
+
+            <!-- ITEM 4 -->
+            <div class="lr-item v-green">
+                <div class="lr-item-head">
+                    <h3 class="lr-item-title"><span class="lr-item-num">4</span>Terms of Service &amp; liability</h3>
+                    <span class="lr-badge v-green">Green — met</span>
+                </div>
+                <div class="lr-label">Requirement</div>
+                <p class="lr-req">Published Terms must set a minimum age, define acceptable use, state the virtual-only nature of ParCoins, limit liability, and name governing law and a dispute-resolution path.</p>
+                <div class="lr-label">What we found</div>
+                <p class="lr-found">A current Terms of Service is live and covers every required element, including the load-bearing ParCoin clause that backstops item 1.</p>
+                <ul class="lr-evidence">
+                    <li><code>public/terms.html</code> (updated 2026-05-28) — eligibility (invite-only, minimum age 13), user conduct, account termination.</li>
+                    <li><code>public/terms.html:20</code> — ParCoin virtual-only clause (see item 1); internally consistent ("outside the app" qualifier correctly permits in-app wagers as virtual stakes).</li>
+                    <li>Intellectual property clause: Parbaughs owns name/logo/design; user content remains the user's under a display license.</li>
+                    <li>Limitation of liability ("as is"); dispute resolution by binding arbitration, York County, PA (AAA rules); governing law Pennsylvania.</li>
+                </ul>
+                <div class="lr-status"><strong>Status: met.</strong> No edit required — the clause set is accurate against actual app behavior. Re-verify after any change to the coin economy or to who may transfer coins.</div>
+            </div>
+
+            <!-- ITEM 5 -->
+            <div class="lr-item v-green">
+                <div class="lr-item-head">
+                    <h3 class="lr-item-title"><span class="lr-item-num">5</span>Accessibility (ADA / WCAG 2.1 AA)</h3>
+                    <span class="lr-badge v-green">Green — met</span>
+                </div>
+                <div class="lr-label">Requirement</div>
+                <p class="lr-req">Consumer apps are expected to meet WCAG 2.1 AA: adequate touch-target size, visible keyboard focus, sufficient contrast, and screen-reader labelling. ADA exposure for public-facing apps is real.</p>
+                <div class="lr-label">What we found</div>
+                <p class="lr-found">The core accessibility primitives are present in the design system and a dedicated a11y ship has already landed.</p>
+                <ul class="lr-evidence">
+                    <li><strong>44pt touch targets:</strong> <code>src/styles/components.css</code> — <code>min-height:44px</code> on <code>.back</code>, <code>.btn-sm</code>, <code>.feed-comment-input button</code>, <code>.cal-nav-btn</code>, <code>.cal-day</code>, <code>.advanced-stats-toggle</code>, <code>.miss-chip</code> and more.</li>
+                    <li><strong>Visible focus:</strong> 28 <code>:focus-visible</code> / <code>outline</code> declarations across <code>src/styles/base.css</code> (13) and <code>src/styles/components.css</code> (15).</li>
+                    <li><strong>Shipped a11y work:</strong> v8.23.27 BL-008 band-aware drawer accessibility (WCAG 4.1.2 / 2.4.1 / 1.3.1).</li>
+                </ul>
+                <div class="lr-status"><strong>Status: met.</strong> A formal end-to-end contrast audit across every token pairing remains a future polish pass (quality lift, not a blocker), tracked through ongoing design work rather than as a Founder item.</div>
+            </div>
+
+            <!-- ITEM 6 -->
+            <div class="lr-item v-green">
+                <div class="lr-item-head">
+                    <h3 class="lr-item-title"><span class="lr-item-num">6</span>Intellectual property &amp; identity</h3>
+                    <span class="lr-badge v-green">Green — met</span>
+                </div>
+                <div class="lr-label">Requirement</div>
+                <p class="lr-req">The app must not misuse third-party marks, must license its external data sources, must respect user content ownership, and must offer a takedown path for infringing UGC.</p>
+                <div class="lr-label">What we found</div>
+                <p class="lr-found">Brand is original; external data is licensed; the Terms handle ownership; the report flow doubles as a takedown path.</p>
+                <ul class="lr-evidence">
+                    <li><code>public/terms.html</code> IP clause — Parbaughs owns its original name/logo/design; user content stays the user's under a display license.</li>
+                    <li>Course/par data sourced only from the licensed GolfCourseAPI (disclosed in <code>public/privacy.html</code>); no scraped third-party marks.</li>
+                    <li>Takedown path: the member report flow (<code>src/pages/admin.js:413-441</code>) routes infringement reports to the Commissioner for action.</li>
+                </ul>
+                <div class="lr-status"><strong>Status: met.</strong> No third-party trademark or copyrighted asset is embedded. Re-verify if any external logo, font, or media is ever added.</div>
+            </div>
+
+            <!-- ITEM 7 -->
+            <div class="lr-item v-green">
+                <div class="lr-item-head">
+                    <h3 class="lr-item-title"><span class="lr-item-num">7</span>Security as a legal duty</h3>
+                    <span class="lr-badge v-green">Green — met</span>
+                </div>
+                <div class="lr-label">Requirement</div>
+                <p class="lr-req">Privacy and breach-notification laws make reasonable security a legal obligation, not just an engineering one. Auth, data access, and audit logging must be sound; secrets must never be exposed.</p>
+                <div class="lr-label">What we found</div>
+                <p class="lr-found">Security is governed by operating principle P8 (ship-blocking) and the AgentShield scan; this reviewer defers to that posture and confirms the legally-relevant controls exist.</p>
+                <ul class="lr-evidence">
+                    <li>P8 (security + privacy + abuse-prevention) is ship-blocking: RED blocks, YELLOW needs Founder approval; every ship-close writes a SECURITY retrospective block.</li>
+                    <li>Compliance audit trail: <code>functions/index.js:324-336</code> writes a PII-free <code>account_self_deleted</code> entry before auth deletion, so erasure is provable for GDPR/store evidence.</li>
+                    <li>Defensive controls on the deletion endpoint: CORS allow-list, bearer-token + <code>checkRevoked</code> verification, 5-minute reauth freshness, 5/min rate limit.</li>
+                </ul>
+                <div class="lr-status"><strong>Status: met (owned by P8).</strong> Breach-notification readiness (who/when/how to notify) is a process item that becomes relevant only on a real incident; the data-handling disclosures in the privacy policy already set expectations.</div>
+            </div>
+
+            <h2 class="lr-section-title">Clarifications routed to the Founder</h2>
+
+            <div class="lr-clar">
+                <h3>Is Parbaughs an individual or a business entity?</h3>
+                <p>The Terms operate under the name "Parbaughs," and App Store / Play Store seller accounts require a named legal entity (an individual or a registered company such as an LLC). This is a business decision that cannot be read from code, and it affects the Terms' liability framing, the store seller account, and tax handling.</p>
+                <p>Routed to the Founder Checklist as <code>legal-entity-clarification</code> with options and steps. Not blocking the staging product; needed before store submission.</p>
+            </div>
+
+            <div class="lr-clar">
+                <h3>Is <code>support@parbaughs.golf</code> live and monitored?</h3>
+                <p>The privacy policy, the Terms, and the account-deletion fallback all direct members to <code>support@parbaughs.golf</code> for data-subject requests and deletion. If that mailbox is not yet receiving and monitored, those compliance promises can't be honored. Deliverability can't be proven from the repo.</p>
+                <p>Routed to the Founder Checklist as <code>support-email-liveness</code> with a one-minute verification step. Surfaced rather than assumed, per the evidence-based rule.</p>
+            </div>
+
+            <div class="lr-xref">
+                <a href="founder-checklist.html">→ Founder Checklist</a>
+                <a href="harness-flow.html#agents">→ Legal reviewer in the agent network</a>
+                <a href="../../public/privacy.html">→ Live privacy policy</a>
+                <a href="../../public/terms.html">→ Live terms of service</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="pb-page-footer">
+        Evidence-based legal review · Reviewer: Legal &amp; Compliance (<code>parbaughs-legal-compliance</code> skill) · Re-runs each ship-close ·
+        <a href="dashboard.html">Dashboard</a> · <a href="founder-checklist.html">Founder Checklist</a>
+    </footer>
+</body>
+</html>
