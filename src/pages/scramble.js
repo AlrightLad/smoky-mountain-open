@@ -88,7 +88,9 @@ function renderTeamList() {
           h += '<div style="font-size:10px;color:var(--muted2)">';
           last3.filter(function(m){return m.score;}).forEach(function(m,i) {
             var d = m.score - 72;
-            var c = d <= 0 ? 'var(--birdie)' : 'var(--red)';
+            // Community-safe: under or at the team baseline reads quiet green, over stays
+            // neutral. Never alarm-red on a member's score, here or anywhere else.
+            var c = d <= 0 ? 'var(--birdie)' : 'var(--muted)';
             h += '<span style="color:' + c + ';margin-left:' + (i?4:0) + 'px">' + m.score + '</span>';
           });
           h += '<div style="font-size:9px;color:var(--muted2);margin-top:1px">Last ' + last3.filter(function(m){return m.score;}).length + '</div>';

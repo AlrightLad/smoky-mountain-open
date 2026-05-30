@@ -102,7 +102,9 @@ function renderCourseDetail(courseId) {
         var medal = idx === 0 ? 'var(--gold)' : idx === 1 ? 'var(--medal-silver)' : 'var(--medal-bronze)';
         var diff = e.score - (e.par || 72);
         var diffStr = diff === 0 ? 'E' : (diff > 0 ? '+' : '') + diff;
-        var diffColor = diff <= 0 ? 'var(--birdie)' : diff <= 5 ? 'var(--gold)' : 'var(--red)';
+        // Community-safe binary, matching every other surface: under or even reads quiet
+        // green, over stays neutral. Never alarm-red on a member's leaderboard line.
+        var diffColor = diff <= 0 ? 'var(--birdie)' : 'var(--muted)';
         lh += '<div style="display:flex;align-items:center;gap:10px;padding:8px 16px;border-bottom:1px solid var(--border2)">';
         lh += '<div style="width:22px;height:22px;border-radius:50%;background:' + medal + '18;border:1.5px solid ' + medal + ';display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:' + medal + ';flex-shrink:0">' + (idx+1) + '</div>';
         lh += '<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(e.name) + '</div>';

@@ -632,7 +632,9 @@ function drawScrambleCanvas(canvas, teamName, score, course, format) {
   var BG=cssVar('--bg'), GOLD=cssVar('--gold'), CREAM=cssVar('--cream'), MUTED=cssVar('--muted'), BORDER=cssRgba('--gold-rgb','.18');
   var par = 72; var diff = score - par;
   var diffStr = diff === 0 ? "E" : (diff > 0 ? "+" + diff : "" + diff);
-  var diffColor = diff > 0 ? cssVar('--red') : diff < 0 ? cssVar('--live') : GOLD;
+  // Community-safe: under reads green, even gold, over stays neutral. Never alarm-red on
+  // a shared score card, matching the individual round card and every in-app surface.
+  var diffColor = diff > 0 ? MUTED : diff < 0 ? cssVar('--live') : GOLD;
   ctx.fillStyle = BG; ctx.fillRect(0,0,S,S);
   var grad = ctx.createLinearGradient(0,0,S,S);
   grad.addColorStop(0,cssRgba('--gold-rgb','.05')); grad.addColorStop(1,"rgba(0,0,0,0)");
