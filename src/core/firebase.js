@@ -716,7 +716,17 @@ function enterApp() {
   loadRoundsFromFirestore();
   startRoundsListener(); // real-time listener keeps rounds in sync across devices
   loadCustomDrillsFromFirestore();
-  loadLiveState(); // restore any in-progress round that survived a crash or page reload
+  // loadLiveState lives in the deferred page bundle (playnow.js, not CORE), so a
+  // fast auth callback (returning member, persisted session, cold cache) can run
+  // enterApp before that bundle loads. An unguarded call throws ReferenceError and
+  // aborts enterApp BEFORE the Router.go("home") below, blanking the app shell on
+  // first load. Guard it; if the bundle isn't present yet, retry briefly so the
+  // in-progress-round restore still fires. Remote /liverounds listener is backstop.
+  (function _restoreLiveStateWhenReady(tries) {
+    if (typeof loadLiveState === "function") { loadLiveState(); return; }
+    if (tries >= 50) return; // ~6s ceiling
+    setTimeout(function() { _restoreLiveStateWhenReady(tries + 1); }, 120);
+  })(0);
   // Check for newly earned achievements after data loads (deferred)
   setTimeout(checkAndAwardNewAchievements, 4000);
   setTimeout(function() { updateProfileBar(); }, 100);
@@ -756,7 +766,14 @@ function updateProfileBar() {
     if (currentUser && !photoCache["member:" + currentUser.uid] && photoCache["member:" + p.id]) {
       photoCache["member:" + currentUser.uid] = photoCache["member:" + p.id];
     }
-    var _pbRingS = typeof playerRingStyle === "function" ? playerRingStyle(p) : "border:2px solid " + playerFrameColor(p);
+    // playerRingStyle + playerFrameColor both live in router.js (CORE). In dev it
+    // loads as a separate module, so this early call (via preloadMemberPhotos →
+    // firebase-photos.js) can run before they're in scope. Fall back to no ring
+    // rather than throwing, which would abort updateProfileBar and drop the avatar
+    // + level badge below. In production both exist in the CORE bundle.
+    var _pbRingS = typeof playerRingStyle === "function"
+      ? playerRingStyle(p)
+      : (typeof playerFrameColor === "function" ? "border:2px solid " + playerFrameColor(p) : "");
     avatarEl.innerHTML = Router.getAvatar(p);
     avatarEl.style.cssText += ';' + _pbRingS;
   } else {
