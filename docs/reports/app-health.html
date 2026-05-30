@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-30T16:21:04.770226Z",
+  "generated_at": "2026-05-30T16:59:54.905342Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 87.1,
   "overall_grade": "A-",
@@ -976,11 +976,11 @@
     "A12_operational": {
       "score": 60,
       "status": "yellow",
-      "label": "pipeline=red · 8 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=red · 10 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "8 of last 10 cron watcher runs hit skip-dirty",
+          "what": "10 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -993,7 +993,7 @@
   },
   "attention_items": [
     {
-      "what": "8 of last 10 cron watcher runs hit skip-dirty",
+      "what": "10 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
@@ -1002,25 +1002,26 @@
   "founder_attention": [],
   "agent_attention": [
     {
-      "what": "8 of last 10 cron watcher runs hit skip-dirty",
+      "what": "10 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "4c411887",
-    "subject": "feat(home): felt-green Clubhouse hero â€” Wave 2 design coherence flagship (v8.23.67)",
-    "committed_at": "2026-05-30T12:20:40-04:00",
+    "sha": "1c4732b0",
+    "subject": "feat: HQ Home lead-column professionalization (v8.23.68)",
+    "committed_at": "2026-05-30T12:59:28-04:00",
     "trigger": "app-commit",
     "is_app_commit": true,
     "app_files_touched": [
       "public/sw.js",
       "src/core/utils.js",
       "src/pages/caddynotes.js",
-      "src/pages/home-hq.js"
+      "src/pages/home-hq.js",
+      "src/pages/home-rail-newuser.js"
     ],
-    "total_files_touched": 8
+    "total_files_touched": 6
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
