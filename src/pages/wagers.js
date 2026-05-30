@@ -6,13 +6,23 @@
    ================================================ */
 
 var WAGER_TYPES = {
-  stroke:   {label: "Stroke Play",    desc: "Lower total score wins",                        icon: "S"},
-  best9:    {label: "Best 9",         desc: "Best front or back 9 wins",                     icon: "9"},
-  pars:     {label: "Most Pars",      desc: "Most pars (or better) wins",                    icon: "P"},
-  putts:    {label: "Fewest Putts",   desc: "Fewer total putts wins",                        icon: "T"},
-  nassau:   {label: "Nassau",         desc: "3 bets: front 9, back 9, and total",            icon: "N"},
-  beatscore:{label: "Beat Their Score",desc: "Bet you can beat their best at a specific course", icon: "B"}
+  stroke:   {label: "Stroke Play",     desc: "Lower total score wins",                          icon: '<path d="M6 21V4"/><path d="M6 4l10 3-10 3"/><path d="M3 21h18"/>'},
+  best9:    {label: "Best 9",          desc: "Best front or back 9 wins",                       icon: '<path d="M4 15a8 8 0 0 1 16 0"/><line x1="3" y1="15" x2="21" y2="15"/>'},
+  pars:     {label: "Most Pars",       desc: "Most pars (or better) wins",                      icon: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/>'},
+  putts:    {label: "Fewest Putts",    desc: "Fewer total putts wins",                          icon: '<circle cx="12" cy="8" r="3"/><ellipse cx="12" cy="17" rx="7" ry="2.2"/>'},
+  nassau:   {label: "Nassau",          desc: "3 bets: front 9, back 9, and total",              icon: '<path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/>'},
+  beatscore:{label: "Beat Their Score",desc: "Bet you can beat their best at a specific course", icon: '<path d="M6 4h12v3a6 6 0 0 1-12 0z"/><path d="M12 13v3"/><path d="M8.5 19h7"/>'}
 };
+
+// Wrap a wager type's line-art glyph (inner SVG markup) in a sized, currentColor
+// stroke SVG. Mirrors the v8.23.15 icon-coherence convention (24-grid line art
+// that inherits its container tint) so wager type-icons read identically on
+// iPhone and Android instead of the old letter monograms.
+function wagerTypeIcon(key, size) {
+  var t = WAGER_TYPES[key];
+  var inner = (t && t.icon) ? t.icon : '<circle cx="12" cy="12" r="8"/><path d="M9.5 9.5a2.5 2.5 0 0 1 4 1.8c0 1.2-1.5 1.7-2 2.7"/><path d="M12 17h.01"/>';
+  return '<svg viewBox="0 0 24 24" width="' + size + '" height="' + size + '" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + inner + '</svg>';
+}
 
 Router.register("wagers", function(params) {
   if (params && params.create) { renderCreateWager(params.opponent); return; }
@@ -113,7 +123,7 @@ function _renderWagerCard(w, uid) {
   // Header: type icon + opponent + amount
   h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
   h += '<div style="display:flex;align-items:center;gap:10px">';
-  h += '<div style="width:32px;height:32px;border-radius:50%;background:rgba(var(--gold-rgb),.1);border:1px solid rgba(var(--gold-rgb),.2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--gold)">' + type.icon + '</div>';
+  h += '<div style="width:32px;height:32px;border-radius:50%;background:rgba(var(--gold-rgb),.1);border:1px solid rgba(var(--gold-rgb),.2);display:flex;align-items:center;justify-content:center;color:var(--gold)">' + wagerTypeIcon(w.type, 16) + '</div>';
   h += '<div><div style="font-size:13px;font-weight:700;color:var(--cream)">' + escHtml(myName) + ' vs ' + escHtml(oppName) + '</div>';
   h += '<div style="font-size:10px;color:var(--muted)">' + type.label + (w.course ? ' · ' + escHtml(w.course) : '') + '</div></div></div>';
   h += '<div style="text-align:right"><div style="font-size:16px;font-weight:700;color:var(--gold)">' + coinAmt + '</div>';
@@ -160,7 +170,7 @@ function renderCreateWager(presetOpponent) {
   Object.keys(WAGER_TYPES).forEach(function(key) {
     var wt = WAGER_TYPES[key];
     h += '<div onclick="selectWagerType(\'' + key + '\')" id="wt-' + key + '" style="cursor:pointer;padding:12px;border:1px solid var(--border);border-radius:var(--radius);text-align:center;transition:border-color .15s">';
-    h += '<div style="font-size:20px;font-weight:800;color:var(--gold);margin-bottom:2px">' + wt.icon + '</div>';
+    h += '<div style="color:var(--gold);margin-bottom:6px">' + wagerTypeIcon(key, 26) + '</div>';
     h += '<div style="font-size:11px;font-weight:600;color:var(--cream)">' + wt.label + '</div>';
     h += '<div style="font-size:9px;color:var(--muted);margin-top:2px">' + wt.desc + '</div>';
     h += '</div>';
