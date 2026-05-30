@@ -639,7 +639,19 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .chat-author{font-size:var(--text-sm);font-weight:700;color:var(--gold)}
 .chat-text{font-size:var(--text-base);color:var(--cream);margin-top:2px;line-height:1.4}
 .chat-time{font-size:var(--text-xs);color:var(--muted2);margin-top:2px}
-.chat-input-row{display:flex;gap:var(--sp-2);padding:var(--sp-3) var(--sp-4);padding-bottom:calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--border);position:sticky;bottom:0;background:var(--bg);z-index:10}
+/* v8.23.57 — Clubhouse chat fills its vertical frame like a real group chat.
+   The feed used to collapse to its content height (max-height, no min), leaving
+   the composer floating mid-screen with a tall void of empty chalk beneath it.
+   Now the page is a flex column sized to the viewport below the sticky top bar,
+   with overflow contained: the feed (flex:1) grows to fill and scrolls
+   internally, top strip (header/calendar/coming-up) keeps natural height, and
+   the composer anchors at the bottom. padding-bottom reserves room for the
+   fixed tab bar so the composer never hides behind it. Mirrors the shipped
+   .dm-page-wrap pattern (single-surface chat) for the multi-section Clubhouse. */
+[data-page="chat"]{display:flex;flex-direction:column;height:calc(100vh - 52px);height:calc(100dvh - 52px);overflow:hidden;padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+[data-page="chat"] > *{flex-shrink:0}
+#chatFeed{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.chat-input-row{display:flex;gap:var(--sp-2);padding:var(--sp-3) var(--sp-4);padding-bottom:var(--sp-3);border-top:1px solid var(--border);background:var(--bg);z-index:10}
 .chat-input-row input{flex:1;padding:10px 14px;background:var(--bg2);border:1px solid var(--cb-mute-2);border-radius:var(--r-5);color:var(--cream);font-size:var(--text-base);outline:none;font-family:var(--font-ui)}
 .chat-input-row input:focus{border-color:var(--gold);box-shadow:0 0 0 2px rgba(var(--gold-rgb),.2)}
 .chat-input-row button{padding:10px 16px;background:var(--gold);color:var(--bg);border:none;border-radius:var(--r-5);font:700 12px 'Inter',sans-serif;cursor:pointer}

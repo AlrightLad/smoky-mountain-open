@@ -81,7 +81,7 @@ Router.register("chat", function() {
   
   // Chat feed
   h += '<div style="margin:0 16px 6px"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Trash Talk</div></div>';
-  h += '<div id="chatFeed" class="section" style="max-height:55vh;overflow-y:auto">' + skeletonFeed() + '</div>';
+  h += '<div id="chatFeed" class="section">' + skeletonFeed() + '</div>';
   h += '<div class="chat-input-row"><input type="text" id="chatInput" placeholder="Talk trash..." onkeydown="if(event.key===\'Enter\')sendChat()"><button onclick="sendChat()">Send</button></div>';
   document.querySelector('[data-page="chat"]').innerHTML = h;
 
