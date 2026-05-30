@@ -28,6 +28,9 @@ function renderMemberDetailWithData(p) {
     return '<div class="section"><div class="sec-head" onclick="toggleSection(\'ps-' + id + '\')" style="cursor:pointer"><span class="sec-title">' + title + '</span><span class="sec-link" id="ps-' + id + '-toggle" style="display:inline-flex;transition:transform .2s' + (startOpen ? ';transform:rotate(90deg)' : '') + '">' + chevronSvg + '</span></div><div id="ps-' + id + '"' + (startOpen ? '' : ' style="display:none"') + '>' + content + '</div></div>';
   }
 
+  // Singularize a stat label when the count is exactly 1 (regular -s plurals).
+  function plur(n, singular) { return n === 1 ? singular : singular + "s"; }
+
   // Get achievements and level early for frame/title
   var achievements = [];
   try { achievements = PB.getAchievements(pid) || []; } catch(e) {}
@@ -172,14 +175,15 @@ function renderMemberDetailWithData(p) {
   // .stat-val div (the count-up animation target). The prior <span> wrapper
   // was destroyed by initCountAnimations setting textContent on it, which
   // wiped the inner stat-box entirely — v7.8.4 regression of v7.8.0's hook.
-  h += '<div class="stat-box"><div class="stat-val" data-stat="round-count" data-count="' + rounds.length + '">0</div><div class="stat-label">Rounds</div></div>';
+  h += '<div class="stat-box"><div class="stat-val" data-stat="round-count" data-count="' + rounds.length + '">0</div><div class="stat-label">' + plur(rounds.length, "Round") + '</div></div>';
   // Courses stat is clickable — drops to Our Courses view (best rounds per course).
   // Same pattern as M3 (standings Courses button).
   var coursesIsNum = !isNaN(parseFloat(unique)) && isFinite(unique) && unique !== "—";
-  h += '<div class="stat-box" style="cursor:pointer" onclick="window._courseViewMode=\'ours\';Router.go(\'courses\')"><div class="stat-val"' + (coursesIsNum ? ' data-count="' + unique + '"' : '') + '>' + (coursesIsNum ? '0' : unique) + '</div><div class="stat-label">Courses <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M3 9l6-6M5 3h4v4"/></svg></div></div>';
+  h += '<div class="stat-box" style="cursor:pointer" onclick="window._courseViewMode=\'ours\';Router.go(\'courses\')"><div class="stat-val"' + (coursesIsNum ? ' data-count="' + unique + '"' : '') + '>' + (coursesIsNum ? '0' : unique) + '</div><div class="stat-label">' + (coursesIsNum ? plur(parseFloat(unique), "Course") : "Courses") + ' <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M3 9l6-6M5 3h4v4"/></svg></div></div>';
   var ewIds = [pid]; if (p.claimedFrom) ewIds.push(p.claimedFrom);
   var eventWinsCount = PB.getTrips().filter(function(t){ return t.champion && ewIds.indexOf(t.champion) !== -1; }).length;
-  h += statBox(eventWinsCount || p.wins || 0, "Wins");
+  var winsCount = eventWinsCount || p.wins || 0;
+  h += statBox(winsCount, plur(winsCount, "Win"));
   h += '</div>';
 
   // ── PROFILE TABS ──
