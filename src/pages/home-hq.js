@@ -105,6 +105,14 @@ function _renderEditorialGreetingHero(ctx) {
   // real focal point instead of one undifferentiated light plane. Critical text
   // (greeting, stat value, captions) stays full-contrast chalk; brass-2 carries
   // only the large/decorative accents so legibility holds on the dark felt.
+  //
+  // v8.23.68 (masthead-coherence): the "The Parbaughs · Clubhouse" eyebrow was
+  // REMOVED. The page-shell hqHome masthead directly above already carries the
+  // publication identity (edition eyebrow + "Parbaughs" wordmark + league deck +
+  // date). Repeating the wordmark + a second brass uppercase eyebrow here read as
+  // two stacked nameplates. Clean role split: masthead = publication identity;
+  // this felt panel = the reader's PERSONAL scoreboard. It now leads with the
+  // greeting, the one element the masthead never carries.
   var _hqHour = new Date().getHours();
   // Time-of-day greeting variant — mirrors mobile home's _greetingForTime.
   // "Welcome back" reserved for late night since the masthead carries the
@@ -115,8 +123,6 @@ function _renderEditorialGreetingHero(ctx) {
     + 'border:1px solid rgba(var(--cb-brass-rgb), .32);'
     + 'border-radius:18px;box-shadow:var(--el-4);'
     + 'padding:32px 36px">';
-  // Brass masthead label
-  h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:2.5px;color:var(--cb-brass-2);text-transform:uppercase;margin-bottom:16px">The Parbaughs · Clubhouse</div>';
   // Greeting — Fraunces, chalk; name in brass-2 gold
   h += '<div style="font-family:var(--font-display);font-size:var(--hq-hero-size);font-weight:var(--hq-hero-weight);line-height:1.04;letter-spacing:-2px;color:var(--text-inverse);margin-bottom:12px">';
   h += _hqGreet + ', <em style="font-style:italic;font-weight:700;color:var(--cb-brass-2)">' + escHtml(ctx.firstName) + '</em>.';
@@ -245,15 +251,13 @@ function _hqHeroPullquote(ctx) {
     } else {
       caption = "Down from " + priorWeek + " last week. Hit the course.";
     }
-  } else if (indiv.length < 3) {
+  } else {
+    // indiv.length < 3 — provisional. (>=5 / >=3 caught above; this is the
+    // exhaustive remainder, so no separate <3 guard is needed.)
     var n = 3 - indiv.length;
     eyebrow = "FIRST ROUNDS";
     statValue = String(indiv.length);
     caption = n + " more round" + (n === 1 ? "" : "s") + " until your handicap is official.";
-  } else {
-    eyebrow = "HANDICAP";
-    statValue = ctx.handicap != null ? Number(ctx.handicap).toFixed(1) : "—";
-    caption = "Your handicap sits at " + statValue + ".";
   }
 
   // v8.23.67 (Wave 2): felt-hero scoreboard line. Lives INSIDE the felt panel
@@ -505,22 +509,32 @@ function _renderSeasonLadderTop10(ctx, opts) {
   return h;
 }
 
+// v8.23.68 (lead-column professionalization): the leader is the gold standard.
+// Rank + points for #1 render in --cb-brass (the league's gold; --cb-brass NOT
+// --cb-brass-2 because this row sits on the cream lead column, where brass-2 —
+// tuned for dark felt — washes out). Points across all rows bump to 14px/600 so
+// the competition metric reads as the row's anchor, not an afterthought. The
+// "isMe" brass-tint background is unchanged; if you ARE the leader, the gold
+// rank/points compound with it — a deliberate "you're on top" reinforcement.
 function _hqLadderRow(s, rank, leaderPts, isMe) {
   var name = s.username || s.name || "Member";
   var pts = s.points || 0;
   var gap = leaderPts - pts;
+  var isLeader = rank === 1;
   var bg = isMe ? "background:rgba(var(--cb-brass-rgb),.10);" : "";
-  var rule = "padding-left:12px;";
-  var weight = isMe ? "600" : "500";
+  var rankColor = isLeader ? "var(--cb-brass)" : "var(--cb-mute)";
+  var rankWeight = isLeader ? "700" : "600";
+  var nameWeight = (isMe || isLeader) ? "600" : "500";
+  var ptsColor = isLeader ? "var(--cb-brass)" : "var(--cb-ink)";
   var click = s.id ? ' onclick="Router.go(\'members\',{id:\'' + s.id + '\'})"' : "";
-  var h = '<div' + click + ' style="' + bg + rule + 'padding-right:12px;height:var(--hq-ladder-row-height);display:flex;align-items:center;gap:10px;cursor:pointer;border-radius:var(--r-1)">';
-  h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:600;color:var(--cb-mute);width:24px;flex-shrink:0">' + rank + '</div>';
+  var h = '<div' + click + ' style="' + bg + 'padding-left:12px;padding-right:12px;height:var(--hq-ladder-row-height);display:flex;align-items:center;gap:10px;cursor:pointer;border-radius:var(--r-1)">';
+  h += '<div style="font-family:var(--font-mono);font-size:12px;font-weight:' + rankWeight + ';color:' + rankColor + ';width:24px;flex-shrink:0;font-variant-numeric:tabular-nums">' + rank + '</div>';
   // Avatar — initial fallback (24×24)
   var initial = (name.charAt(0) || "?").toUpperCase();
   h += '<div style="width:24px;height:24px;border-radius:50%;background:var(--cb-chalk-3);color:var(--cb-charcoal);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:11px;font-weight:700;flex-shrink:0">' + escHtml(initial) + '</div>';
-  h += '<div style="flex:1;min-width:0;font-family:var(--font-ui);font-size:13px;font-weight:' + weight + ';color:var(--cb-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(name) + '</div>';
-  h += '<div style="font-family:var(--font-mono);font-size:13px;color:var(--cb-ink);text-align:right;font-variant-numeric:tabular-nums">' + pts + '</div>';
-  h += '<div style="font-family:var(--font-mono);font-size:10px;color:var(--cb-mute);width:50px;text-align:right;font-variant-numeric:tabular-nums">' + (rank === 1 ? "—" : "−" + gap) + '</div>';
+  h += '<div style="flex:1;min-width:0;font-family:var(--font-ui);font-size:13px;font-weight:' + nameWeight + ';color:var(--cb-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(name) + '</div>';
+  h += '<div style="font-family:var(--font-mono);font-size:14px;font-weight:600;color:' + ptsColor + ';text-align:right;font-variant-numeric:tabular-nums">' + pts + '</div>';
+  h += '<div style="font-family:var(--font-mono);font-size:10px;color:var(--cb-mute);width:50px;text-align:right;font-variant-numeric:tabular-nums">' + (isLeader ? "—" : "−" + gap) + '</div>';
   h += '</div>';
   return h;
 }

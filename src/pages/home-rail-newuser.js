@@ -193,11 +193,18 @@ function _renderWelcomeHero(ctx) {
   var monthName = ["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"][d.getMonth()];
   var eyebrow = "MEMBER #" + memberNum + " · " + monthName + " " + d.getFullYear();
 
+  // v8.23.68 (lead-column professionalization): both subheads rewritten so the
+  // hero never restates the masthead deck. The masthead (_hqMastheadSubhead)
+  // owns the league framing ("A small league with big games…" / "{leader}
+  // leads…"); this hero is the reader's PERSONAL welcome, so it points forward
+  // to their first action. The prior empty-state copy was verbatim-identical to
+  // the masthead deck, and the populated copy said "here's how to get in" to a
+  // member who is already in.
   var subhead;
   if (memberCount > 0 && courseCount > 0) {
-    subhead = memberCount + " members. " + courseCount + " courses played. One season already underway. Here's how to get in.";
+    subhead = memberCount + " members, " + courseCount + " courses played so far. Log your first round to join the season.";
   } else {
-    subhead = "A small league with big games. Log a round to claim your spot.";
+    subhead = "You're early. Log your first round and the season starts with you.";
   }
 
   var h = '<div>';
