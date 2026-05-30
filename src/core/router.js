@@ -683,21 +683,33 @@ enterApp = function() {
   initFirebaseListeners();
   // ── ParCoin: daily login streak coins ──
   setTimeout(awardDailyLogin, 2000);
-  // Check profile completion — send one-time reminder notification
+  // Check profile completion — send one-time reminder notification.
+  // Dedup is DURABLE: query Firestore for an existing profile_reminder before
+  // sending. The in-memory flag alone reset every session, so an incomplete
+  // profile spawned a fresh reminder on every app-open and flooded the panel.
   setTimeout(function() {
     if (!db || !currentUser || !currentProfile) return;
     var profComplete = currentProfile.bio && currentProfile.range && currentProfile.homeCourse;
     if (profComplete) return;
-    // Only send once per session — in-memory dedup (notification already persisted in Firestore)
-    if (window._sentProfileNotif) return;
+    if (window._sentProfileNotif) return; // same-session fast-path
     window._sentProfileNotif = true;
-    sendNotification(currentUser.uid, {
-      type: "profile_reminder",
-      title: "Complete Your Profile",
-      message: "Add your bio, score range, and home course to earn XP and unlock the Getting Settled achievement!",
-      page: "members",
-      params: {edit: currentUser.uid}
-    });
+    var uid = currentUser.uid;
+    db.collection("notifications")
+      .where("toUserId", "==", uid)
+      .where("type", "==", "profile_reminder")
+      .limit(1)
+      .get()
+      .then(function(snap) {
+        if (!snap.empty) return; // reminder already exists — never re-send
+        sendNotification(uid, {
+          type: "profile_reminder",
+          title: "Complete Your Profile",
+          message: "Add your bio, score range, and home course to earn XP and unlock the Getting Settled achievement!",
+          page: "members",
+          params: {edit: uid}
+        });
+      })
+      .catch(function() {});
   }, 5000); // Delay 5s so it doesn't fire on initial load
 };
 

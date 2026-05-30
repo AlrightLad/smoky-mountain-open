@@ -509,14 +509,14 @@ function _renderStatsStrip(totalRounds, handicap, bestRound, bestRoundId, isNew)
   var roundsClickable = !isNew && totalRounds > 0;
   h += '<div' + (roundsClickable ? ' class="tappable" onclick="Router.go(\'roundhistory\')"' : '') + ' style="padding:var(--sp-3) 10px;background:var(--cb-chalk-2);border-radius:10px;' + (roundsClickable ? 'cursor:pointer' : '') + '">';
   h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:6px">ROUNDS</div>';
-  h += '<div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cb-ink);line-height:1">' + roundsStr + '</div>';
+  h += '<div data-stat="round-count" data-count="' + roundsStr + '" style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cb-ink);line-height:1">' + roundsStr + '</div>';
   if (roundsCaption) h += '<div style="font-family:var(--font-mono);font-size:8.5px;font-weight:600;letter-spacing:0.8px;color:' + roundsColor + ';text-transform:uppercase;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + roundsCaption + '</div>';
   h += '</div>';
 
   // HCP
   h += '<div style="padding:var(--sp-3) 10px;background:var(--cb-chalk-2);border-radius:10px">';
   h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:6px">HCP</div>';
-  h += '<div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cb-ink);line-height:1">' + hcapStr + '</div>';
+  h += '<div data-stat="handicap" style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cb-ink);line-height:1">' + hcapStr + '</div>';
   if (hcapCaption) h += '<div style="font-family:var(--font-mono);font-size:8.5px;font-weight:600;letter-spacing:0.8px;color:' + hcapColor + ';text-transform:uppercase;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + hcapCaption + '</div>';
   h += '</div>';
 
@@ -524,7 +524,7 @@ function _renderStatsStrip(totalRounds, handicap, bestRound, bestRoundId, isNew)
   var bestClickable = !!bestRoundId;
   h += '<div' + (bestClickable ? ' class="tappable" onclick="Router.go(\'rounds\',{roundId:\'' + escHtml(bestRoundId) + '\'})"' : '') + ' style="padding:var(--sp-3) 10px;background:var(--cb-chalk-2);border-radius:10px;' + (bestClickable ? 'cursor:pointer' : '') + '">';
   h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:6px">BEST</div>';
-  h += '<div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cb-ink);line-height:1">' + bestStr + '</div>';
+  h += '<div data-stat="best-round" style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cb-ink);line-height:1">' + bestStr + '</div>';
   if (bestCaption) h += '<div style="font-family:var(--font-mono);font-size:8.5px;font-weight:600;letter-spacing:0.8px;color:' + bestColor + ';text-transform:uppercase;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + bestCaption + '</div>';
   h += '</div>';
 

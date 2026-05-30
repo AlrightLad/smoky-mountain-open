@@ -46,14 +46,20 @@ async function loginAs(page, testUserKey) {
     const auth = document.getElementById('authScreen');
     return main && !main.classList.contains('hidden')
         && auth && auth.classList.contains('hidden');
-  }, { timeout: 15000 });
+  }, { timeout: 20000 });
 
   // Wait for fbMemberCache to be populated so the claimedFrom merge
   // has taken effect (this is what the v7.6.5 fix depends on).
+  // Timeout is generous (30s) because the emulator's long-polling transport
+  // (experimentalForceLongPolling, emulator-only) is slower than production
+  // WebChannel for the initial bulk members.get(), and the channel latency
+  // degrades as a full-sweep run accumulates browser contexts. Earlier specs
+  // (esp. 01-baseline, which logs in all 26 users) load the emulator enough
+  // that a 15s gate flaked late in each project's run. Production is unaffected.
   await page.waitForFunction((expected) => {
     return window.fbMemberCache
       && Object.keys(window.fbMemberCache).length >= expected;
-  }, users.length, { timeout: 15000 });
+  }, users.length, { timeout: 30000 });
 
   // Brief settle so the post-load home re-render completes.
   await page.waitForTimeout(300);

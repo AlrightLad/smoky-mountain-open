@@ -62,6 +62,13 @@ try {
     // Offline persistence disabled — causes stale IndexedDB cache issues for a real-time community app.
     // Firestore real-time listeners handle live sync; server is always authoritative.
     if (window.location.search.indexOf("emulator=1") !== -1) {
+      // Force long-polling in emulator mode. Playwright's webkit/headless
+      // contexts fail to establish a Firestore WebChannel stream, so the
+      // SDK waits ~15s before auto-falling-back to long-polling — which
+      // stalled every `{ source: 'server' }` fetch (and the loginAs
+      // fbMemberCache gate) past the E2E timeout. Forcing it skips the
+      // detection wait. Emulator-only; production keeps default detection.
+      db.settings({ experimentalForceLongPolling: true });
       // 2026-05-21 (Goal 2 A11 smoke fix hypothesis): use 127.0.0.1 not
       // localhost. Windows + Node 20+ resolves `localhost` to ::1 (IPv6)
       // by default; Firebase auth emulator binds to 127.0.0.1 (IPv4) only.
