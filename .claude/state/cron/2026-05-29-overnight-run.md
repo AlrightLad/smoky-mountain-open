@@ -2585,3 +2585,111 @@ Heartbeat-only self-check -- **Is tonight's substantive output real?** YES. The 
 NOT staged (concurrent-session / Founder-cleared territory per cycle-K precedent, via explicit pathspec per cycle-AB): `src/pages/home-rail-newuser.js` (modified -- in-flight feature-session edit), `.claude/state/emu-unified-2026-05-29.log` (modified -- concurrent emulator log).
 
 No code changes in cycle AR. No proposals. No FIQ writes. No bug-report state moves (inbox absent). app-health FLAT at 87.1 (A-) -- proven by the metadata-only (clock + commit-pointer) diff with all 12 dimensions byte-unchanged; A12 stays 60/RED carried over from AQ because the concurrent feature session is still dirty (watcher correctly skip-dirty 10/10), is self-resolving on that session's next commit, and was NOT caused by this triage cycle.
+
+---
+
+# Overnight triage — 2026-05-29 (cycle AS)
+
+**Started:** 2026-05-30T02:02:51Z (cron-fired; regen-all START)
+**Finished:** 2026-05-30T02:02:57Z (regen-all "ALL DASHBOARDS REGENERATED" timestamp)
+**Mode:** Heartbeat-only branch per runbook (FIQ + bug-reports inbox both absent)
+**Cycle:** AS (79th consecutive empty-inbox cycle; ~1h wall-clock gap from cycle AR's 01:01:10Z regen START — 33rd consecutive ~1h-cadence cycle since cycle M). THIRD cycle of the 2026-05-30 UTC date / TWENTY-SEVENTH triage cycle of the Founder-local 2026-05-29 evening (22:02 EDT, York PA UTC-4).
+
+**Journal-date convention (awareness — surfaced to Founder):** UTC clock is 2026-05-30 (02:02Z) but Founder-local date is still 2026-05-29 (22:02 EDT). Per the deliberate convention adopted by cycles AQ/AR (re-confirmed this cycle by reading their wellness notes), the **journal filename + commit date are keyed to Founder-local time**, so this cycle stays in `2026-05-29-overnight-run.md` and commits with date `2026-05-29`. All *internal* timestamps remain UTC. NOTE: there is a documented tension between cycle-S's earlier "keyed to UTC" framing and the AQ/AR/AS "keyed to Founder-local" framing for the filename/commit-date specifically. I chose continuity with the most-recent precedent to avoid fragmenting the evening's journal; **Founder may want to lock which convention is canonical** (see Blockers).
+
+## Inbox state at run-start (cycle AS)
+
+- `.claude/state/founder-input-queue/` — **directory does not exist** (`test -d` → NO)
+- `.claude/state/bug-reports/inbox/` — **directory does not exist**; the entire `.claude/state/bug-reports/` tree is absent (no `inbox/`, no `triaged/`)
+- `.claude/state/founder_input_queue.json` — **file does not exist**
+- `.claude/state/escalations/inbox/` + `.claude/state/escalations/pending/` — empty (`.gitkeep` only)
+- `.claude/state/proposals/pending/` — only `.gitkeep` (no pending proposals)
+- Working tree at run-start: `M src/pages/home-rail-newuser.js`, `M .claude/state/emu-unified-2026-05-29.log`, untracked `.pw-chromium.log` / `.pw-single.log` — all CONCURRENT feature-session artifacts (not this cycle's). HEAD = `2e866205`.
+
+Note: the only `FIQ-` ids discoverable by grep live in `docs/FOUNDER_INPUT_QUEUE.md` and are the **FIQ-001 template examples** inside that governance doc (schema illustration), NOT live queue entries. No runtime FIQ store exists.
+
+Per runbook: "If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 only and exit."
+
+## Step 1 — FIQ triage (cycle AS)
+
+- FIQ entries triaged: **0** (queue directory + json store both absent)
+- Grade breakdown: N/A — A:0 B:0 C:0 D:0 F:0
+- IDs: none
+
+## Step 2 — Bug-report triage (cycle AS)
+
+- Bug reports processed: **0** (inbox tree absent)
+- Dispositions: none
+- No P3e discussion bubbles opened (nothing to deliberate)
+
+## Step 3 — Heartbeat (cycle AS)
+
+### 3a — `scripts/regen-all.ps1`
+
+**Status:** PASS. Full end-to-end run 02:02:51Z → 02:02:57Z: **ALL CHECKS PASSED**, **round-trip test PASS**. Heartbeat `regen-all-last-pass.json` written `status:"PASS"`. **34th consecutive clean canonical regen-all (cycles L–AS).**
+
+- Telemetry snapshot: events=16600 handoffs=1 bubbles=7 proposals_pending=0, meter_status=wired-real → HALT-25 NOT in effect. Token aggregate (all-time): real=12,468,760,296 estimated=14,223,640 manual=0.
+- All ~30 guards green (round-trip 4-view swap + transcript tallies + nav 9-link, meter-wiring 7/7, founder-queue 7/7, quota-type-enum, cross-dash consistency proposals_pending=0, lifecycle schemas proposals shipped=7 + amendments applied=28, escalations applied=3, theme convergence no-raw-hex, no-charts, protected-layouts 5/5 + 23/23 + 17 swatches, W1.S1 primitives, proposal-readiness 0 deferred, install-scripts 7 parse, install-cmd-surface, scroll-reachability 5/0/0, quota-status auto-derived, pause-discipline clean, wiring 5/5).
+- One INFORMATIONAL `~` (not a failure): `user-context-gate` flags `main-flows.html` modified 21595.4 min after the last user-context capture (2026-05-14T23-07-48Z) — benign on a heartbeat-only night with no visual ship-close.
+
+### 3a-finding — FLAT app-health this cycle, proven by verbatim diff
+
+This cycle app-health was **UNCHANGED at 87.1 (A-)** — no score movement. PROVEN by reading `git diff HEAD docs/reports/app-health.html` verbatim (baseline = committed HEAD `2e866205`). The diff is 5-ins/5-del and contains ONLY:
+
+- `generated_at` `2026-05-30T01:05:38.418378Z` → `2026-05-30T02:02:56.681538Z` (clock).
+- `audit_trigger` commit-pointer block re-pointing `sha` `c93f3e01` → `2e866205` (subject `"Overnight triage 2026-05-29..."` → `"cron(routine): post-commit dashboard regen..."`, `committed_at` + `trigger` `"substrate-commit"` → `"cron"` updated to the post-commit cron regen commit).
+
+`overall_score` (87.1), `overall_grade` (A-), `pre_deduction`, `post_deduction`, and **all 12 dimension values incl. `A12_operational`** are **byte-unchanged**. So the 5-ins/5-del is a deterministic clock + commit-pointer re-render keyed to latest HEAD, **NOT** a dimension-value change. Reported as **flat** — the score genuinely did not move.
+
+**A12_operational stays at 60/RED** (carried over from cycles AQ/AR, proven by the byte-unchanged dimensions). Cause is unchanged: the persistent CONCURRENT feature session is STILL dirty at run-start (`M src/pages/home-rail-newuser.js` tracked edit + `M .claude/state/emu-unified-2026-05-29.log` emulator log, plus new untracked `.pw-chromium.log` / `.pw-diag.log` / `.pw-single.log` / `tests/e2e/_diag-fbmembercache.spec.js`), so the downloads-watcher correctly continues to skip a dirty tree. The watcher is behaving CORRECTLY; **there is no watcher bug**, and the carried-over RED is **self-resolving** the moment that session next commits (as cycle AP demonstrated 60→90). **No proposal authored** — manufacturing a remediation for a self-clearing concurrent-driven condition would be ship-count gaming per METRIC_INTEGRITY_PROTOCOL Rule 2. Surfaced as an awareness item only (see Blockers).
+
+### 3b — Wellness refresh
+
+- `.claude/state/wellness/engineer.json` — updated for cycle AS (counters ~1,000k tokens / 1.0h; status active; `_note` + `substantive_output_at_checkpoint` rewritten for the AS flat-score cycle, including the verbatim clock+commit-pointer-only diff read, the carried-over A12 60/RED attribution, and the journal-date convention note).
+- `.claude/state/wellness/critic.json` — updated for cycle AS (counters ~223k cumulative; status active; `_note` + `substantive_output_at_checkpoint` rewritten for the AS flat-cycle attestation, including blocking any phantom-movement framing, any defect-inventing framing of the correctly-behaving watcher, and validating the honest surfacing of the date-convention tension).
+
+## Step 4 — Session journal
+
+**This appended section.**
+
+## Cycle AS counts
+
+| Metric | Count |
+|---|---|
+| FIQ entries triaged | 0 |
+| Bug reports processed | 0 |
+| New proposals authored | 0 |
+| Wellness state changes | 2 (engineer.json + critic.json cycle AS refresh) |
+
+## Blockers requiring Founder attention (cycle AS)
+
+**No ship-blocking issues** (founder-checklist red=0). Awareness/carry-over items:
+
+1. **NEW (awareness, low) — journal-date convention is ambiguous across cycles.** **WHAT:** cycle-S keyed the journal filename + commit date to UTC; cycles AQ/AR/AS key them to Founder-local (EDT). **WHERE:** `.claude/state/cron/<date>-overnight-run.md` filename + the `Overnight triage <date>` commit message. **WHY:** at hours 00:00–04:00 UTC the two conventions disagree by a calendar day (UTC ahead of EDT). **WHAT-ACTION:** Founder picks the canonical convention (UTC per runbook step 4 literal, OR Founder-local per AQ/AR precedent) so future cron cycles stop straddling. Non-blocking; this cycle chose Founder-local for continuity.
+2. **Carry-over (awareness, self-resolving) — A12_operational remains RED (60) this cycle.** Unchanged from cycles AQ/AR: app-health stays 87.1 because the downloads-watcher continues to hit skip-dirty. **WHAT:** A12 operational dimension red. **WHERE:** `scripts/cron/logs/*-downloads-watcher.log`; surfaced in `docs/reports/app-health.html` attention_items. **WHY:** the concurrent feature session (`src/pages/home-rail-newuser.js` + `emu-unified-2026-05-29.log` + new `.pw-*.log` / `_diag-fbmembercache.spec.js`) is still dirty, and the watcher correctly declines a dirty tree. **WHAT-ACTION:** none required — it self-resolves when that session commits (recovered 60→90 in cycle AP exactly this way). Only if the session is abandoned mid-edit AND A12 stays red across several post-commit cycles would a routinePatterns-allowlist review be worth a proposal.
+3. **Carry-over — writer-side BOM fix (`common.ps1:117`) remains unauthored as a proposal.** Consumer-side `utf-8-sig` tolerance (aggregate-telemetry.py:70) has held all 34 consecutive clean regen-all runs (cycles L–AS). Deliberately not auto-promoted without Founder priority signal.
+4. **Carry-over — `scripts/aggregate-self-tests.py` post-commit warning** (flagged cycle L) — separate from regen-all's pipeline; out-of-scope for step 3a. Still flagged for a future cycle.
+5. **Cron cadence** — cycles M–AS all ~1h apart (33rd consecutive ~1h gap). No Founder action required; awareness only.
+
+No scope-creep candidates.
+
+## Cycle AS Critic metric-integrity attestation (per METRIC_INTEGRITY_PROTOCOL § 3.1)
+
+1. **"Did every bug report processed get a real diagnosis with cited evidence?"** N/A — zero bug reports tonight (inbox tree absent, verified by directory-absence checks; not waved off).
+2. **"Did every new proposal cite a specific screen/state/edge-case?"** N/A — zero new proposals. On a FLAT-score night the temptation is to manufacture a phantom movement or attach a remediation proposal to look diagnostic. The Critic refused: the carried-over A12 RED is a correctly-behaving watcher declining a dirty tree, self-resolving on the concurrent session's next commit — NOT a triage-findable defect. Manufacturing a proposal would be ship-count gaming per Rule 2.
+3. **"Did the FIQ grades reflect rubric dimensions honestly?"** N/A — zero live FIQ entries.
+
+Heartbeat-only self-check — **Is tonight's substantive output real?** YES. The discipline this cycle was proving a NON-MOVEMENT result with evidence and resisting the temptation to invent a phantom delta: app-health was FLAT at 87.1, PROVEN by reading `git diff HEAD docs/reports/app-health.html` verbatim (the 5-ins/5-del is the `generated_at` timestamp + `audit_trigger` commit-pointer ONLY; `overall_score` and all 12 dimensions incl. A12 byte-unchanged — not a score movement). The carried-over A12 60/RED was attributed to the *concurrent* feature session still being dirty (via `git status` showing live `home-rail-newuser.js` + `emu-unified` + new `.pw-*` edits, making the watcher correctly skip a dirty tree), NOT to an invented watcher bug and NOT to triage work. The cycle additionally surfaced the journal-date convention tension honestly rather than silently picking a side. The cycle staged only its own files via explicit pathspec, leaving the concurrent artifacts untouched. Every claim anchors to a quoted tool result earlier in this session.
+
+**Critic attests cleanly: substantive heartbeat cycle, ship closes.**
+
+## Files changed in this cycle AS run
+
+- `.claude/state/wellness/engineer.json` — cycle AS update
+- `.claude/state/wellness/critic.json` — cycle AS update
+- `.claude/state/cron/2026-05-29-overnight-run.md` — this journal (cycle AS section appended)
+- `docs/reports/app-health.html` — regen output (metadata-only re-render: `generated_at` timestamp + `audit_trigger` commit-pointer `c93f3e01`→`2e866205`; `overall_score` 87.1 and all 12 dimensions byte-unchanged)
+
+NOT staged (concurrent-session / Founder-cleared territory per cycle-K precedent, via explicit pathspec per cycle-AB): `src/pages/home-rail-newuser.js` (modified — in-flight feature-session edit), `.claude/state/emu-unified-2026-05-29.log` (modified — concurrent emulator log), `.pw-chromium.log` / `.pw-diag.log` / `.pw-single.log` (untracked — concurrent Playwright logs), `tests/e2e/_diag-fbmembercache.spec.js` (untracked — concurrent diagnostic spec).
+
+No code changes in cycle AS. No proposals. No FIQ writes. No bug-report state moves (inbox absent). app-health FLAT at 87.1 (A-) — proven by the metadata-only (clock + commit-pointer) diff with all 12 dimensions byte-unchanged; A12 stays 60/RED carried over from AQ/AR because the concurrent feature session is still dirty (watcher correctly skip-dirty), is self-resolving on that session's next commit, and was NOT caused by this triage cycle.
