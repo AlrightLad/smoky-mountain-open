@@ -4,7 +4,7 @@
    ================================================ */
 
 // ── App version — single source of truth ──
-var APP_VERSION = "8.23.50";
+var APP_VERSION = "8.23.51";
 
 // ══════════════════════════════════════════════════════════════════════════
 // LEAGUE ISOLATION — Nuclear approach. Makes leaking PHYSICALLY IMPOSSIBLE.
@@ -264,7 +264,7 @@ function toggleSection(id) {
 // ========== PWA SERVICE WORKER ==========
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('sw.js').then(function(reg) {
+    navigator.serviceWorker.register((window.__PB_BASE__ || '/') + 'sw.js').then(function(reg) {
       pbLog('[SW] Registered:', reg.scope);
     }).catch(function(err) {
       pbWarn('[SW] Registration failed:', err);
