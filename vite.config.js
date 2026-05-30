@@ -79,10 +79,12 @@ function getDeferredBundle() {
 
 function coreScriptsPlugin() {
   var isBuild = false;
+  var base = '/';
   return {
     name: 'parbaughs-core-scripts',
     configResolved: function(config) {
       isBuild = config.command === 'build';
+      base = config.base;
     },
     configureServer: function(server) {
       server.middlewares.use(function(req, res, next) {
@@ -115,9 +117,19 @@ function coreScriptsPlugin() {
         // Browser starts rendering with ~700KB initial HTML, then async-loads
         // ~1.3MB deferred chunk. Lighthouse FCP/LCP measure initial paint only.
         // The generateBundle phase below writes the deferred.js file.
+        // src MUST be base-prefixed. emitFile emits the deferred chunk outside
+        // Vite's asset pipeline, so Vite does not rewrite this src the way it
+        // rewrites its own assets (e.g. /assets/watermark-*.jpg). A bare
+        // relative "assets/deferred-*.js" resolves against the document URL —
+        // fine on GitHub Pages (served at /smoky-mountain-open/) but broken on
+        // Firebase staging, where the doc is served at /smoky-mountain-open/ via
+        // SPA rewrite while base=/ puts the file at /assets/...; the relative
+        // path then 404s into the catch-all rewrite and loads index.html as
+        // text/html (every deferred page silently dead). base + fileName yields
+        // /assets/... (staging) or /smoky-mountain-open/assets/... (prod).
         return [
           { tag: 'script', children: minifyBlock(coreCode + '\n' + immediateCode, 'core-immediate'), injectTo: 'body' },
-          { tag: 'script', attrs: { defer: true, src: getDeferredBundle().fileName }, injectTo: 'body' }
+          { tag: 'script', attrs: { defer: true, src: base + getDeferredBundle().fileName }, injectTo: 'body' }
         ];
       } else {
         var coreTags = CORE_FILES.map(function(f) {
