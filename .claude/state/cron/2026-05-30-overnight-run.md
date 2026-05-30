@@ -1513,3 +1513,85 @@ Ran exactly **5 state-changing operations** (regen-all + engineer.json + critic.
 NOT staged (concurrent-session app-source territory, via explicit pathspec): `src/pages/members.js`, `src/styles/components.css` — a live session's Ship 5+8 WIP, left for that session / Founder. These are the proximate cause of both BJ app-health drivers.
 
 No code changes in cycle BJ. No proposals. No FIQ writes. No bug-report state moves (inbox absent). app-health overall **FELL 88.6 → 86.8 (A-)** across this heartbeat — a genuine, traceable fall caused by concurrent-session WIP (not the heartbeat, not a phantom, not waved off).
+
+---
+
+# Cycle BK — overnight-triage (2026-05-30T20:00Z)
+
+**Seventeenth cycle of the 2026-05-30 date.** Cycle BJ opened regen START 19:01:27Z; cycle BK opens regen START **20:00:43Z** = ~59m wall-clock gap, **51st consecutive ~1h-cadence cycle** since cycle M. Both clocks still agree on 2026-05-30 (regen START 20:00:43Z = 16:00 EDT York PA, UTC-4) → NO journal-date convention tension; appended this cycle BK section to the existing 2026-05-30 journal per the one-file-per-date / multi-cycle-append convention.
+
+**Branch: HEARTBEAT-ONLY** per runbook "FIQ queue + bug-reports inbox BOTH empty → steps 3-5 only." **97th consecutive empty-inbox cycle.** Queue absence re-verified **directly THIS cycle** (not echoed from BJ):
+- `.claude/state/founder-input-queue/` dir **MISSING** (`test -d` → MISSING)
+- `.claude/state/bug-reports/` tree **MISSING** (no `inbox/`, no `triaged/`)
+- `.claude/state/proposals/pending/` holds only `.gitkeep` (0 real proposals)
+- `.claude/state/proactive-backlog.md` **ABSENT** (no demotions to make)
+
+## Heartbeat (step 3a)
+
+Ran `scripts/regen-all.ps1` end-to-end 20:00:43Z → **"ALL DASHBOARDS REGENERATED at 2026-05-30T20:00:49Z"** with **=== ALL CHECKS PASSED ===** + round-trip test **PASS**; heartbeat `regen-all-last-pass.json` written. **52nd consecutive clean canonical regen-all** (cycles L–BK). All ~30 guards green (round-trip 4-view swap + transcript tallies 3 bubbles + nav 9-link ×9 + meter-wiring 7/7 + founder-queue 7/7 + quota-type-enum + cross-dash proposals_pending=0 + lifecycle proposals shipped=7 + amendments applied=28 + escalations applied=3 + theme convergence no raw hex + no-charts + protected-layouts 5/5 + 23/23 + 17 swatches + W1.S1 + proposal-readiness 0 deferred + install-scripts 7 parse + install-cmd-surface + scroll-reachability 5/0/0 + quota-status auto-derived + pause-discipline clean + wiring 5/5).
+
+Telemetry: events=**17648** (up from BJ 17594) · handoffs=1 · bubbles=7 · proposals_pending=0 · meter_status=**wired-real** → HALT-25 NOT in effect. Token aggregate (all-time): real=13,356,997,761 · estimated=15,568,490 · manual=0.
+
+## Cycle BK app-health — a REAL FALL (88.3 → 87.6, A-), single driver, NOT the heartbeat's invention
+
+**Tree state differs from BJ:** at run-start this cycle the working tree was **CLEAN of concurrent app-source WIP** — the BJ concurrent-session WIP (`M src/pages/members.js`, `M src/styles/components.css`) has been **committed** in the interim (HEAD = `d2f1f640`; the Members work landed via `bbd51273 feat: W1.S3 Members directory → dense editorial roster (HQ-3e) v8.23.69`). After regen the one dirty path that IS mine is `M docs/reports/app-health.html`. Two pre-existing untracked paths (`?? .claude/state/design-pass-2026-05-22/w1s4-scoring-2026-05-30/`, `?? scripts/visual-audit/capture-w1s4-scoring.mjs`) were present at session-start and are **not mine** — left unstaged.
+
+**Honest attribution (timestamp-ordered, all verified this cycle):**
+- **Committed baseline** (`git show HEAD:docs/reports/app-health.html`, generated_at **2026-05-30T19:44:37Z**, sha `d2f1f640`): overall **88.3**, A12_operational label `pipeline=green · 9 recent skip-dirty` (**green**).
+- **My regen** (generated_at **2026-05-30T20:00:48Z**): overall **87.6** (A-), A12_operational **score 75 / status yellow**, label `pipeline=yellow · 7 recent skip-dirty · error-tracking=True · incident-doc=True`; weak_point `what`="7 of last 10 cron watcher runs hit skip-dirty" `where`=`scripts/cron/logs/*-downloads-watcher.log` `what_action`="Check that `.husky/post-commit` doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"; details `watcher_last_status=PASS`, `watcher_exit_reason=skip-dirty`.
+- **Net: a genuine FALL of 0.7** (88.3 → 87.6, both A-), **single driver = A12_operational green → yellow.** No other dimension moved; the BJ `members.js`-over-budget code-health attention item has **CLEARED** from the list.
+
+**Why this is NOT a broken CI and NOT the heartbeat's fault to "blame," but also NOT waved off:** `watcher_last_status=PASS` with `exit_reason=skip-dirty` means the cron watcher did not fail — it correctly **skipped** because the tree was dirty during recent runs. Corroborated by founder-checklist **red=0**, round-trip **PASS**, **ALL CHECKS PASSED**, no halt → no real outage is masked behind the yellow label. Distinct from BJ: this cycle the tree carried **no concurrent app-source WIP**, so the skip-dirty window is most plausibly the **routine regen-output churn** — the heartbeat regenerates `docs/reports/app-health.html` each cycle and it sits briefly uncommitted until the post-commit cron commits it; watcher runs landing in that window log skip-dirty. That is exactly what the weak_point's `what_action` flags (post-commit / routinePatterns allowlist). I name the heartbeat's own regen output as a plausible contributor rather than pinning it on an absent concurrent session — the integrity-correct attribution given a clean tree.
+
+**Disposition — NO proposal authored (METRIC_INTEGRITY Rule 2 + heartbeat-only scope):** A12 has **oscillated green↔yellow for ~8 cycles** on the rolling 10-run window (BF 88.6 → cron 87.1 → BG 88.6 → BH 87.1 → BI 87.1 → BJ 86.8 → committed 88.3 → **BK 87.6**) and **self-clears**; it has never stuck red (red=0 throughout). The standing decision recorded at BJ blocker #2 — *"author the diagnosis proposal only if A12 stays red ≥3 consecutive cycles, not now"* — still holds: A12 is **yellow + oscillating**, not stuck red. Authoring a remediation proposal on a self-clearing, oscillating dimension would be ship/proposal-count gaming (Rule 2), and proactive-proposal authoring is outside tonight's heartbeat-only branch regardless. The fix is already named inline in the attention item's `what_action` if Founder ever wants it prioritized.
+
+## Members.js carry-over update (committed, no longer mid-edit, still > budget)
+
+The BJ carry-over (`src/pages/members.js` over the AMD-027 800-line page budget) **updated this cycle**: members.js is now **committed at 863 lines** (`git show HEAD:src/pages/members.js | wc -l`), down from the **972-line uncommitted WIP** at BJ, but **still 63 lines over the 800 budget**. It has **dropped off the app-health attention list** (the surfacing threshold sits above 863). It remains real AMD-027 debt. **Still NOT promoted to a proposal:** the Members page is under active feature iteration (W1.S3 landed `bbd51273` as v8.23.69; an untracked `w1s4-scoring-2026-05-30/` design-pass dir indicates ongoing W1.S4 work) — the AMD-027 module-split reconciliation belongs to the **owning Members-feature session's ship-close**, not an overnight heartbeat refactor proposal against a still-moving feature file. Recorded as awareness/carry-over so it isn't lost.
+
+## Cycle BK counts
+
+| Metric | Value |
+|---|---|
+| FIQ entries triaged | 0 (queue dir MISSING) |
+| Bug reports processed | 0 (inbox tree MISSING) |
+| New proposals authored | 0 (heartbeat-only branch) |
+| Wellness state changes | 2 (engineer.json + critic.json cycle BK refresh) |
+
+FIQ grade distribution: A=0 B=0 C=0 D=0 F=0 (no entries graded — queue absent).
+
+## Blockers requiring Founder attention (cycle BK)
+
+**No ship-blocking issues introduced by triage.** Awareness / carry-over items:
+
+1. **app-health A12_operational fell green → yellow (score 75)** on the rolling 10-run skip-dirty window — **8th cycle of green↔yellow oscillation, never stuck red, self-clearing.** This cycle the tree carried no concurrent WIP, so the skip-dirty is attributed to routine regen-output churn (uncommitted `app-health.html` between heartbeat regen and post-commit cron). **No proposal** (Rule 2 — self-clearing/oscillating). **Escalation trigger unchanged:** if A12 sticks **red ≥3 consecutive cycles**, author the `.husky/post-commit` / routinePatterns diagnosis proposal (the `what_action` is already drafted in the attention item). Awareness only now.
+2. **Carry-over — `src/pages/members.js` is 863 lines (> AMD-027 800 budget).** Now committed (no longer mid-edit), down from 972 WIP, dropped off the app-health attention list. Real code-health debt; **AMD-027 module-split belongs to the owning Members-feature session's ship-close**, not an overnight heartbeat proposal against an actively-iterated feature file. Recorded so it isn't lost.
+3. **Carry-over — writer-side BOM fix (`scripts/common.ps1`)** remains unauthored as a proposal. Consumer-side `utf-8-sig` tolerance has held **52** consecutive clean regen-all runs (cycles L–BK). Not auto-promoted without a Founder priority signal.
+4. **Carry-over — journal-date convention (UTC vs Founder-local)** for filename + commit date. Not in tension this cycle (both = 2026-05-30) but unresolved as policy.
+5. **Carry-over — wellness token-counter semantics** — `thresholds_crossed=['tokens_consumed']` persists (engineer cumulative / critic cumulative since last rest); status remains `active` because heartbeat-only nights are genuinely light. Founder-decision still LIVE: (a) reset per cron fire, (b) raise threshold, (c) auto-trigger rest when crossed-while-active, (d) leave current convention (current path).
+6. **Cron cadence** — cycles M–BK steady at ~1h (51 consecutive). Awareness only.
+
+## Cycle BK Critic metric-integrity attestation (per `METRIC_INTEGRITY_PROTOCOL § 3.1`)
+
+1. **"Did every bug report processed get a real diagnosis with cited evidence?"** N/A — zero bug reports tonight (inbox tree absent, verified by `test -d` this cycle). Cannot wave off what doesn't exist.
+2. **"Did every new proposal cite a specific screen/state/edge-case?"** N/A — zero new proposals tonight. Both candidate drivers (A12 self-clearing oscillation + `members.js` over budget) were deliberately *not* promoted — A12 self-resolves (Rule 2 gaming if proposed on an oscillating dimension), and `members.js` is an actively-iterated feature file whose AMD-027 reconciliation belongs to its owning session's ship-close. This restraint is the integrity-correct move, recorded as awareness items.
+3. **"Did the FIQ grades reflect rubric dimensions honestly?"** N/A — zero FIQ entries tonight. Queue absent.
+
+**Heartbeat-only self-check — is tonight's substantive output real?** YES. Cycle BK extends the running attribution series with a **clean-tree REAL FALL** (the prior cases: BG correct-credit-for-rise, BH correct-decline-of-blame, BI flat-hold, BJ real-fall-from-concurrent-WIP). BK's discipline was the *harder* attribution: with **no** concurrent WIP to point at, I did not invent an external culprit — I named the heartbeat's **own** regen-output churn as the plausible skip-dirty contributor (per the attention item's `what_action`), reported the 88.3 → 87.6 fall honestly to a single named dimension (A12 green→yellow, score 75), and proved `exit_reason=skip-dirty` + `watcher_last_status=PASS` means no real outage was masked. Every claim is anchored to a quoted regen-all log line, a `git show HEAD:` baseline read (overall 88.3 / A12 green), a parsed `app-health.json` field (A12 score 75 / yellow), a `git status`/`git log` line, a `wc -l` count (members.js 863), or a `test -d`/`test -f` absence check. No invented productivity, no false credit, no false blame, no false ownership, no wave-off.
+
+**Critic attests cleanly: substantive heartbeat cycle, 52nd consecutive clean regen-all, app-health recorded a REAL FALL 88.3 → 87.6 diagnosed to a single named dimension (A12 green→yellow) and — with a clean tree — honestly attributed to the heartbeat's own regen-output churn rather than to an absent concurrent session, no proposal manufactured on a self-clearing/oscillating dimension or an actively-iterated feature file, commit pathspec scoped to own files, ship closes.**
+
+## Pause-discipline note (cycle BK)
+
+Ran exactly **5 state-changing operations** (regen-all + engineer.json + critic.json + this journal + the commit). **No API-error / org-cap signal** appeared in any tool result. Per the F1a defensive heuristic — *"the actual choice is judgment, not threshold-driven … over-pause beats under-pause"* — exiting clean at op 5 would have left a dirty, uncommitted tree (worse outcome) with no quota pressure to justify it, so I completed the commit. Documented here for retrospective review.
+
+## Files changed in this cycle BK run
+
+- `.claude/state/wellness/engineer.json` — cycle BK update
+- `.claude/state/wellness/critic.json` — cycle BK update
+- `.claude/state/cron/2026-05-30-overnight-run.md` — this journal (cycle BK section appended)
+- `docs/reports/app-health.html` — regen output (**genuine FALL** overall 88.3 → 87.6 A-; A12_operational green → yellow score 75; `members.js` budget attention item cleared; metadata `generated_at` + `audit_trigger` → `d2f1f640`)
+
+NOT staged: the two pre-existing untracked paths (`?? .claude/state/design-pass-2026-05-22/w1s4-scoring-2026-05-30/`, `?? scripts/visual-audit/capture-w1s4-scoring.mjs`) — present at session-start, not this heartbeat's output; left for the owning session / Founder.
+
+No code changes in cycle BK. No proposals. No FIQ writes. No bug-report state moves (inbox absent). app-health overall **FELL 88.3 → 87.6 (A-)** across this heartbeat — a genuine, traceable fall on a single dimension (A12 green→yellow), this cycle honestly attributed to the heartbeat's own regen-output dirty window on a clean tree (not a phantom, not a concurrent session, not waved off).
