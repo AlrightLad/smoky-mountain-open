@@ -85,10 +85,16 @@ function setSyncStatus(s) {
 
 function initSync() {
   if (!db) { setSyncStatus("offline"); return; }
-  // Don't show syncing bar on load — go silent until confirmed
+  // Don't show syncing bar on load — go silent until confirmed.
+  // A RESOLVED read means Firestore is reachable, so we are online regardless
+  // of whether the bootstrap doc exists yet. Seeding (when the doc is missing)
+  // is best-effort and must never downgrade a confirmed-online connection: a
+  // read-only member legitimately can't write the seed but is still online.
+  // Previously the missing-doc branch fell through to seedFirestore() whose
+  // rules-denied write flipped the footer to "Offline" on a live connection.
   db.collection("config").doc("app").get().then(function(doc) {
-    if (doc.exists) { setSyncStatus("online"); }
-    else { seedFirestore(); }
+    setSyncStatus("online");
+    if (!doc.exists) { seedFirestore(); }
   }).catch(function() { setSyncStatus("offline"); });
 }
 
@@ -106,7 +112,10 @@ function seedFirestore() {
     var doc = JSON.parse(JSON.stringify(t)); doc.createdAt = fsTimestamp();
     batch.set(db.collection("trips").doc(t.id), doc);
   });
-  batch.commit().then(function() { pbLog("[Sync] Seeded"); setSyncStatus("online"); }).catch(function() { setSyncStatus("offline"); });
+  // Seed is best-effort. Connectivity was already confirmed by the resolving
+  // read in initSync(), so a write failure here (e.g. Firestore rules denying
+  // a non-privileged member the bulk seed) must NOT report the app offline.
+  batch.commit().then(function() { pbLog("[Sync] Seeded"); setSyncStatus("online"); }).catch(function(e) { pbLog("[Sync] Seed skipped:", e && e.message); });
 }
 
 // Dual-write helpers — text data only, photos go to photos collection

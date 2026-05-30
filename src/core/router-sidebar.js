@@ -460,17 +460,36 @@ var connStatus = "live";
 
 function initConnStatus() {
   if (!db) return;
-  
-  // Only use browser online/offline events as a supplement, not the primary signal
-  // Firestore initSync already confirmed connectivity — don't override it
-  window.addEventListener("offline", function() { setSyncStatus("offline"); });
-  window.addEventListener("online", function() { 
-    // Re-verify with Firestore before claiming online
+
+  // A RESOLVED read proves Firestore is reachable (a missing doc still
+  // resolves). Shared by every recovery path so a transient offline self-heals
+  // instead of sticking until a full reload.
+  function reprobeConn() {
+    if (!db) return;
     db.collection("config").doc("app").get().then(function() {
       setSyncStatus("online");
     }).catch(function() { setSyncStatus("offline"); });
+  }
+
+  // Only use browser online/offline events as a supplement, not the primary signal
+  // Firestore initSync already confirmed connectivity — don't override it
+  window.addEventListener("offline", function() { setSyncStatus("offline"); });
+  window.addEventListener("online", reprobeConn);
+
+  // Re-probe when the tab regains focus. Covers Firestore-side blips and
+  // auth-token refreshes that never toggle navigator.onLine — the gap that
+  // left the footer stuck "Offline" with no recovery short of a reload.
+  document.addEventListener("visibilitychange", function() {
+    if (document.visibilityState === "visible") reprobeConn();
   });
-  
+
+  // While we believe we're offline but the browser reports a network, poll on
+  // a bounded interval until connectivity returns. No-op when online; cheap at
+  // league scale and self-terminating once a probe succeeds.
+  setInterval(function() {
+    if (typeof syncStatus !== "undefined" && syncStatus === "offline" && navigator.onLine) reprobeConn();
+  }, 30000);
+
   // Don't set initial state here — initSync already handled it
 }
 

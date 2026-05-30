@@ -47,12 +47,11 @@ Router.register("standings", function(params) {
 
   h += '<div class="section"><div class="sec-head"><span class="sec-title">Standings</span></div>';
   if (season.standings.length) {
-    // v8.22+ (design-pass 2026-05-22): highlight the viewer's own row so
-    // they can locate themselves at a glance in long leagues. Per Linear
-    // pattern: subtle brass-tinted background + brass left-border + small
-    // "YOU" chip. Currently we only emphasise 1st place; adding a viewer
-    // mark gives a second "find-me" affordance without disrupting the
-    // primary podium hierarchy.
+    // Highlight the viewer's own row so they can locate themselves at a
+    // glance in long leagues: gold-tinted full border + faint gold wash +
+    // "YOU" chip (full border, not a side-stripe — retired 2026-05-29). Only
+    // 1st place is otherwise emphasised; the viewer mark adds a second
+    // "find-me" affordance without disrupting the podium hierarchy.
     var viewerUid = (typeof currentUser !== "undefined" && currentUser) ? currentUser.uid : null;
     var viewerClaimed = (typeof currentProfile !== "undefined" && currentProfile) ? currentProfile.claimedFrom : null;
     season.standings.forEach(function(s, idx) {
