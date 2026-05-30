@@ -153,8 +153,12 @@ function _renderEmptySeriesState(w, height, pad, chartW, chartH, count) {
   s += '<line x1="0" y1="' + (pad.t + chartH) + '" x2="' + chartW + '" y2="' + (pad.t + chartH) + '" stroke="var(--cb-chalk-3)" stroke-width="1" stroke-dasharray="4 4"/>';
   // Dashed mid-line (placeholder for "where the trend will live")
   s += '<line x1="0" y1="' + midY + '" x2="' + chartW + '" y2="' + midY + '" stroke="var(--cb-chalk-3)" stroke-width="1" stroke-dasharray="4 4"/>';
-  // Centered progress copy
-  s += '<text x="' + (chartW / 2) + '" y="' + (midY - 8) + '" font-family="ui-monospace,monospace" font-size="11" font-weight="600" fill="var(--cb-mute)" text-anchor="middle" letter-spacing="1.5">' + count + ' OF 3 ROUNDS LOGGED</text>';
+  // Centered progress copy. Range-scoped phrasing: "LOGGED" implied zero total
+  // rounds even when the member has rounds outside this window or in excluded
+  // formats (scrambles are dropped from handicap math). Matches the rerender
+  // path's established "Not enough rounds in this range." truth.
+  var label = count === 0 ? 'NO ROUNDS IN THIS RANGE' : count + ' OF 3 ROUNDS IN THIS RANGE';
+  s += '<text x="' + (chartW / 2) + '" y="' + (midY - 8) + '" font-family="ui-monospace,monospace" font-size="11" font-weight="600" fill="var(--cb-mute)" text-anchor="middle" letter-spacing="1.5">' + label + '</text>';
   s += '</svg>';
   return s;
 }
@@ -177,8 +181,8 @@ function _renderHandicapTrendSeries(rangeFiltered, allRounds, chartWidth) {
 
   // v8.21.0 (Ship 5+6 Phase 4 / D1): empty state engineered for ZERO layout
   // shift. Same SVG container + viewBox + height as populated chart. Dashed
-  // baseline + dashed mid-line act as visual placeholder. Progress copy
-  // "N OF 3 ROUNDS LOGGED" centers in the chart area. When the 3rd round
+  // baseline + dashed mid-line act as visual placeholder. Range-scoped
+  // progress copy centers in the chart area. When the 3rd qualifying round
   // arrives, the SVG content swaps but outer dimensions stay identical.
   var w = width, height = 140;
   var pad = { t: 14, b: 22, l: 0, r: 32 };

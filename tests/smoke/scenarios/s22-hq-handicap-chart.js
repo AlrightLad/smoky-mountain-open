@@ -10,7 +10,7 @@
 // Soft "legal-states" assertion per CTO Decision 2:
 //   - chart container .hq-handicap-chart exists
 //   - inner [data-chart-id="handicap_home"] holds an <svg>
-//   - state is ONE OF: empty (text contains "OF 3 ROUNDS LOGGED") OR
+//   - state is ONE OF: empty (text contains "ROUNDS IN THIS RANGE") OR
 //     populated (any other svg children)
 //
 // BONUS — zero-shift contract:
@@ -32,13 +32,16 @@ module.exports = {
     var stateProbe = await page.evaluate(function() {
       var wrap = document.querySelector('.hq-handicap-chart');
       if (!wrap) return { found: false };
-      var chartBody = wrap.querySelector('[data-chart-id="handicap_home"]');
+      // Target the chart-container specifically: the range-toggle ALSO carries
+      // data-chart-id="handicap_home" and precedes the container in the DOM, so
+      // a bare attribute selector would match the toggle (no SVG) first.
+      var chartBody = wrap.querySelector('.chart-container[data-chart-id="handicap_home"]');
       var svg = chartBody ? chartBody.querySelector('svg') : null;
       if (!svg) return { found: true, chartBodyFound: !!chartBody, svgFound: false };
       var svgRect = svg.getBoundingClientRect();
       var bodyRect = chartBody.getBoundingClientRect();
       var svgText = (svg.textContent || '').trim();
-      var isEmptyState = /OF 3 ROUNDS LOGGED/i.test(svgText);
+      var isEmptyState = /ROUNDS IN THIS RANGE/i.test(svgText);
       // Populated chart has either polylines/paths beyond the dashed
       // lines, or circles for data points.
       var dataElements = svg.querySelectorAll('path, polyline, circle').length;
@@ -67,7 +70,7 @@ module.exports = {
       throw new Error('chart SVG has zero rendered size: ' + stateProbe.svgWidth + 'x' + stateProbe.svgHeight);
     }
     if (!stateProbe.isEmptyState && stateProbe.dataElementCount === 0) {
-      throw new Error('chart in undefined state: not empty (no "OF 3 ROUNDS LOGGED") and no data elements');
+      throw new Error('chart in undefined state: not empty (no "ROUNDS IN THIS RANGE") and no data elements');
     }
     var initialState = stateProbe.isEmptyState ? 'empty' : ('populated (' + stateProbe.dataElementCount + ' draw elements)');
 
@@ -91,7 +94,7 @@ module.exports = {
     if (!toggleProbe.skipped) {
       await page.waitForTimeout(400);
       var afterProbe = await page.evaluate(function() {
-        var chartBody = document.querySelector('[data-chart-id="handicap_home"]');
+        var chartBody = document.querySelector('.chart-container[data-chart-id="handicap_home"]');
         if (!chartBody) return { found: false };
         var rect = chartBody.getBoundingClientRect();
         return { found: true, bodyHeight: Math.round(rect.height) };
