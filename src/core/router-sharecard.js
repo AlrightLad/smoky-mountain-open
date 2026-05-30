@@ -27,7 +27,19 @@ function populateShareTemplateForRound(round) {
     tpl.querySelectorAll(".pbs-hn").forEach(function(el) { el.style.color = "rgba(" + (cssVar("--gold-rgb") || "201,168,76") + ",.6)"; });
   }
   var course = PB.getCourseByName(round.course);
-  var diff = Math.round((round.score - (round.rating || 72)) * 10) / 10;
+  // Par-relative (score minus par), integer — matches the round detail hero, feed, and
+  // rounds list. The old score-minus-rating produced an unlabeled decimal (e.g. +29.6)
+  // that disagreed with the "+26 to par" shown on the same screen. This card is the
+  // image members save to socials, so its number has to agree with the rest of the app.
+  // Par source: round.holePars sum > course par (halved for 9 holes) > 72.
+  var _spar = 72;
+  if (round.holePars && round.holePars.length) {
+    var _ps = 0; for (var _pi = 0; _pi < round.holePars.length; _pi++) { _ps += (parseInt(round.holePars[_pi]) || 0); }
+    if (_ps > 0) _spar = _ps;
+  } else if (course && course.par) {
+    _spar = (round.holesPlayed && round.holesPlayed <= 9) ? Math.round(course.par / 2) : course.par;
+  }
+  var diff = (round.score && _spar) ? round.score - _spar : 0;
   var diffStr = diff > 0 ? "+" + diff : diff === 0 ? "E" : "" + diff;
   var playerName = round.playerName || (currentProfile ? (currentProfile.name || currentProfile.username) : "A Parbaugh");
   var holeScores = round.holeScores || [];

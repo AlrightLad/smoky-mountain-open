@@ -350,9 +350,12 @@ function shareRoundCard(roundId) {
   var rounds = PB.getRounds();
   var round = rounds.find(function(r) { return r.id === roundId; });
   if (!round) return;
-  var diff = Math.round((round.score - (round.rating || 72)) * 10) / 10;
-  var label = diff === 0 ? "Even" : (diff > 0 ? "+" + diff : diff);
-  var text = round.playerName + " shot " + round.score + " (" + label + ") at " + round.course + " on " + round.date + ". The Parbaughs";
+  // Par-relative so the shared text agrees with what the app shows everywhere else
+  // (the old rating diff read an unlabeled decimal like +29.6). Phrased for non-golfers.
+  var _par = (typeof _hqRoundParTotal === "function") ? _hqRoundParTotal(round) : (round.holesPlayed && round.holesPlayed <= 9 ? 36 : 72);
+  var diff = (round.score && _par) ? round.score - _par : null;
+  var label = diff === null ? "" : (diff === 0 ? "even par" : (diff > 0 ? "+" + diff + " to par" : diff + " to par"));
+  var text = round.playerName + " shot " + round.score + (label ? " (" + label + ")" : "") + " at " + round.course + " on " + round.date + ". The Parbaughs";
 
   if (navigator.share) {
     navigator.share({ title: "Parbaugh Round", text: text, url: "https://alrightlad.github.io/smoky-mountain-open/" }).catch(function(){});
@@ -369,13 +372,19 @@ function renderRoundDetail(roundId) {
   if (!round) { Router.go("rounds"); return; }
 
   var commentary = PB.generateRoundCommentary(round);
-  var diff = Math.round((round.score - (round.rating || 72)) * 10) / 10;
   var player = PB.getPlayer(round.player);
 
   var courseObj = PB.getCourseByName(round.course);
   var roundTee = round.tee || (courseObj ? courseObj.tee : "") || "";
-  var diffColor = diff < 0 ? "var(--birdie)" : diff === 0 ? "var(--gold)" : "var(--red)";
-  var diffStr = diff === 0 ? "E" : (diff > 0 ? "+" + diff : "" + diff);
+  // Community-safe par-relative hero (mirrors the feed card this detail opens from
+  // and the rounds-list row above). Score-minus-PAR, not score-minus-rating: the old
+  // rating diff produced an unlabeled decimal (e.g. +29.6) that disagreed with the
+  // "+26 to par" the same round shows in the list/feed. Under or even reads quiet
+  // green; over stays neutral. No alarm-red on a member's own round.
+  var _par = (typeof _hqRoundParTotal === "function") ? _hqRoundParTotal(round) : (round.holesPlayed && round.holesPlayed <= 9 ? 36 : 72);
+  var diff = (round.score && _par) ? round.score - _par : null;
+  var diffColor = (diff !== null && diff <= 0) ? "var(--birdie)" : "var(--muted)";
+  var diffStr = diff === null ? "" : (diff === 0 ? "E" : (diff > 0 ? "+" + diff : String(diff)));
   var holeLabel = round.holesPlayed && round.holesPlayed <= 9 ? (round.holesMode === "back9" ? "Back 9" : "Front 9") : "18 holes";
   var fmtLabel = round.format && round.format !== "stroke" ? round.format.charAt(0).toUpperCase() + round.format.slice(1) : "Stroke";
 
@@ -389,7 +398,7 @@ function renderRoundDetail(roundId) {
   h += '<div style="font-size:14px;font-weight:600;color:var(--cream)">' + renderUsername(player || {name:round.playerName,id:''}, '', false) + '</div>';
   h += '<div style="font-size:12px;color:var(--muted);margin-top:2px">' + escHtml(round.course) + '</div>';
   h += '<div style="margin-top:12px"><span style="font-family:var(--font-display);font-size:56px;font-weight:800;color:var(--gold);line-height:1">' + round.score + '</span></div>';
-  h += '<div style="margin-top:6px"><span style="font-size:14px;font-weight:700;color:' + diffColor + ';background:' + diffColor + '15;padding:4px 14px;border-radius:var(--radius-full);border:1px solid ' + diffColor + '30">' + diffStr + '</span></div>';
+  if (diffStr) h += '<div style="margin-top:8px"><span style="font-family:var(--font-mono);font-size:13px;font-weight:600;letter-spacing:0.5px;color:' + diffColor + '">' + diffStr + ' to par</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);margin-top:10px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap">';
   h += '<span>' + round.date + '</span><span>·</span><span>' + holeLabel + '</span><span>·</span><span>' + fmtLabel + '</span>';
   if (roundTee) h += '<span>·</span><span>' + roundTee + '</span>';
