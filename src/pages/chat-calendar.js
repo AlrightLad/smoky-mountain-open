@@ -274,14 +274,18 @@ function refreshClubCal() {
           eh += '<div style="font-size:8px;color:var(--purple);font-weight:700;letter-spacing:.5px;margin-bottom:3px">ROUND' + (group.length > 1 ? 'S' : '') + '</div>';
           eh += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(course) + '</div>';
           group.forEach(function(r) {
-            var scoreColor = r.score <= 72 ? "var(--birdie)" : r.score >= 100 ? "var(--red)" : "var(--cream)";
+            // Community-safe par-relative: neutral score + signed delta, no red.
+            var _par = (typeof _hqRoundParTotal === "function") ? _hqRoundParTotal(r) : (r.holesPlayed && r.holesPlayed <= 9 ? 36 : 72);
+            var _diff = (r.score && _par) ? r.score - _par : null;
+            var _diffStr = _diff === null ? "" : (_diff === 0 ? "E" : (_diff > 0 ? "+" + _diff : String(_diff)));
+            var _diffColor = (_diff !== null && _diff <= 0) ? "var(--birdie)" : "var(--muted2)";
             var is9h = r.holesPlayed && r.holesPlayed <= 9;
             var hLabel = is9h ? (r.holesMode === "back9" ? " · Back 9" : " · Front 9") : "";
             var tLabel = r.tee ? r.tee + " Tees" : "";
             var meta = [tLabel, hLabel.replace(" · ","")].filter(Boolean).join(" · ");
             // Individual row click only when multiple rounds grouped
             var rowClick = group.length > 1 && r.roundId ? ' onclick="event.stopPropagation();Router.go(\'rounds\',{roundId:\'' + r.roundId + '\'})" style="cursor:pointer;display:flex;justify-content:space-between;padding:3px 0;font-size:11px"' : ' style="display:flex;justify-content:space-between;padding:3px 0;font-size:11px"';
-            eh += '<div' + rowClick + '><div><span style="color:var(--muted)">' + escHtml(r.player) + '</span>' + (meta ? '<span style="color:var(--muted2);font-size:9px"> · ' + meta + '</span>' : '') + '</div><span style="font-weight:600;color:' + scoreColor + '">' + (r.score || "—") + '</span></div>';
+            eh += '<div' + rowClick + '><div><span style="color:var(--muted)">' + escHtml(r.player) + '</span>' + (meta ? '<span style="color:var(--muted2);font-size:9px"> · ' + meta + '</span>' : '') + '</div><span style="font-weight:600;color:var(--cream)">' + (r.score || "—") + (_diffStr ? '<span style="font-family:var(--font-mono);font-size:9px;font-weight:600;color:' + _diffColor + ';margin-left:4px">' + _diffStr + '</span>' : '') + '</span></div>';
           });
           eh += '</div>';
         });

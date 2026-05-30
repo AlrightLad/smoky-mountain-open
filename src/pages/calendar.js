@@ -279,14 +279,18 @@ function _renderCalDayDetail(eventMap, ds) {
       dh += '<div style="font-size:8px;color:var(--birdie);font-weight:700;letter-spacing:.5px;margin-bottom:3px">ROUND' + (group.length>1?"S":"") + '</div>';
       dh += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(course) + '</div>';
       group.forEach(function(r) {
-        var sc = r.score<=72?"var(--birdie)":r.score>=100?"var(--red)":"var(--cream)";
+        // Community-safe par-relative: neutral score + signed delta, no red.
+        var _par = (typeof _hqRoundParTotal === "function") ? _hqRoundParTotal(r) : (r.holesPlayed && r.holesPlayed <= 9 ? 36 : 72);
+        var _diff = (r.score && _par) ? r.score - _par : null;
+        var _diffStr = _diff === null ? "" : (_diff === 0 ? "E" : (_diff > 0 ? "+" + _diff : String(_diff)));
+        var _diffColor = (_diff !== null && _diff <= 0) ? "var(--birdie)" : "var(--muted2)";
         var is9h = r.holesPlayed&&r.holesPlayed<=9;
         var hL = is9h ? (r.holesMode==="back9"?" \u00b7 Back 9":" \u00b7 Front 9") : "";
         var tL = r.tee ? r.tee + " Tees" : "";
         var meta = [tL, hL.replace(" \u00b7 ","")].filter(Boolean).join(" \u00b7 ");
         var isScramble = r.format==="scramble"||r.format==="scramble4";
         var rowClick = group.length>1&&r.roundId ? ' onclick="event.stopPropagation();Router.go(\'rounds\',{roundId:\''+r.roundId+'\'})" style="cursor:pointer;display:flex;justify-content:space-between;padding:3px 0;font-size:11px"' : ' style="display:flex;justify-content:space-between;padding:3px 0;font-size:11px"';
-        dh += '<div'+rowClick+'><div><span style="color:var(--muted)">' + escHtml(r.player) + (isScramble?" (Scramble)":"") + '</span>' + (meta?'<span style="color:var(--muted2);font-size:9px"> \u00b7 '+meta+'</span>':'') + '</div><span style="font-weight:600;color:'+sc+'">' + (r.score||"\u2014") + '</span></div>';
+        dh += '<div'+rowClick+'><div><span style="color:var(--muted)">' + escHtml(r.player) + (isScramble?" (Scramble)":"") + '</span>' + (meta?'<span style="color:var(--muted2);font-size:9px"> \u00b7 '+meta+'</span>':'') + '</div><span style="font-weight:600;color:var(--cream)">' + (r.score||"\u2014") + (_diffStr ? '<span style="font-family:var(--font-mono);font-size:9px;font-weight:600;color:'+_diffColor+';margin-left:4px">' + _diffStr + '</span>' : '') + '</span></div>';
       });
       dh += '</div>';
     });

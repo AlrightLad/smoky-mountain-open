@@ -267,7 +267,14 @@ function _renderRoundCard(item) {
   var holeLabel = is9h ? (item.holesMode === "back9" ? "Back 9" : "Front 9") : "";
   var teeLabel = item.tee ? item.tee + " Tees" : "";
   var meta = [teeLabel, holeLabel, item.format !== "stroke" ? item.format : ""].filter(Boolean).join(" \u00b7 ");
-  var scoreColor = item.score <= 72 ? "var(--birdie)" : item.score >= 100 ? "var(--alert)" : "var(--gold)";
+  // Community-safe par-relative score (mirrors home-hq recent-row). Big numeral
+  // stays neutral; small signed par-delta carries over/under. No alarm-red on
+  // the social feed ("community over competition"). Also fixes the old absolute
+  // <=72 threshold that mis-colored 9-hole rounds (e.g. a 44 = +8 over par-36).
+  var _par = (typeof _hqRoundParTotal === "function") ? _hqRoundParTotal(item) : (item.holesPlayed && item.holesPlayed <= 9 ? 36 : 72);
+  var _diff = (item.score && _par) ? item.score - _par : null;
+  var _diffStr = _diff === null ? "" : (_diff === 0 ? "E" : (_diff > 0 ? "+" + _diff : String(_diff)));
+  var _diffColor = (_diff !== null && _diff <= 0) ? "var(--birdie)" : "var(--muted)";
   var roundClick = item.roundId ? "Router.go(\'rounds\',{roundId:\'" + item.roundId + "\'})" : "";
 
   var h = '<div class="card" style="margin:6px 16px;overflow:hidden;' + cardCss + '">';
@@ -277,7 +284,10 @@ function _renderRoundCard(item) {
   h += renderAvatar(item.player, 40, true);
   h += '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">' + renderUsername(item.player, 'color:var(--cream);', true) + (item.isScramble ? ' <span style="font-size:9px;color:var(--muted);font-weight:400">(Scramble)</span>' : '') + '</div>';
   h += '<div style="font-size:10px;color:var(--muted)">' + feedTimeAgo(item.ts) + '</div></div>';
-  h += '<div style="text-align:right;flex-shrink:0"><div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:' + scoreColor + ';line-height:1">' + item.score + '</div></div>';
+  h += '<div style="text-align:right;flex-shrink:0">';
+  h += '<div style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cream);line-height:1;font-variant-numeric:lining-nums tabular-nums">' + item.score + '</div>';
+  if (_diffStr) h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:0.5px;color:' + _diffColor + ';margin-top:2px">' + _diffStr + '</div>';
+  h += '</div>';
   h += '</div>';
 
   // Course + meta
