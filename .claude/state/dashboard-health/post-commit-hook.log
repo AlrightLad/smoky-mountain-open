@@ -137,7 +137,16 @@ Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
   PASS  founder-checklist.html       6 open checklist items (>=1)
   PASS  main-flows.html              4557 main-flows content (>=1)
   PASS  proposals.html               4 proposal rows OR KPIs (>=1)
-de-c2c9-408e-b756-fb3d03ccb0ed.jsonl: +3 new entries (offset 708618→717112)
-[ingest-session-transcripts] scanned 244 JSONL file(s), found 3 new assistant turns
-[ingest-session-transcripts] wrote session-transcript-summary.json (294 buckets, 12726935022 total tokens, 248 sessions) [write-content-changed]
+  PASS  sessions.html                1 session cards (strict, NO empty-state fallback) (>=1)
+  PASS  token-usage.html             3 token rows OR cards (>=1)
+
+visual-gate: ALL 12 PAGES RENDER CONTENT
+ession-transcript-summary.json (294 buckets, 12726935022 total tokens, 248 sessions) [write-content-changed]
 [ingest-session-transcripts] SELF-TEST OK: 244 JSONLs → 12726935022 tokens across 294 buckets
+[write-regen-heartbeat] OK ts=2026-05-30T08:07:18Z source=post-commit-hook status=PASS
+
+--- P9.5 self-test ---
+[ingest-session-transcripts] scanned f23579de-c2c9-408e-b756-fb3d03ccb0ed.jsonl: +3 new entries (offset 717112\u2192728037)
+[ingest-session-transcripts] scanned 244 JSONL file(s), found 3 new assistant turns
+[ingest-session-transcripts] wrote session-transcript-summary.json (294 buckets, 12727253385 total tokens, 248 sessions) [write-content-changed]
+[ingest-session-transcripts] SELF-TEST OK: 244 JSONLs \u2192 12727253385 tokens across 294 buckets
