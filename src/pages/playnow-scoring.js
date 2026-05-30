@@ -292,7 +292,7 @@ function _renderLiveScoringInner() {
   // early taps via Router.toast — no state corruption risk.
   if (holesPlayed >= 1) {
     var totalHoles = liveState.holesMode === "front9" || liveState.holesMode === "back9" ? 9 : 18;
-    h += '<button id="liveBodyFinishBtn" onclick="showFinishOptions()" style="display:block;width:100%;margin-top:12px;padding:14px;background:linear-gradient(135deg,var(--birdie),var(--cb-green-3));color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;letter-spacing:0.3px;cursor:pointer">\u2714 Submit Round (<span id="liveBodyFinishCount">' + holesPlayed + '</span>/' + totalHoles + ')</button>';
+    h += '<button id="liveBodyFinishBtn" onclick="showFinishOptions()" style="display:block;width:100%;margin-top:12px;padding:12px;background:transparent;color:var(--gold);border:1px solid rgba(var(--gold-rgb),.3);border-radius:8px;font-size:13px;font-weight:600;letter-spacing:0.3px;cursor:pointer">\u2714 Finish round (<span id="liveBodyFinishCount">' + holesPlayed + '</span>/' + totalHoles + ')</button>';
   }
 
   // Quit confirm panel
