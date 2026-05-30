@@ -361,3 +361,88 @@ FIQ grade distribution: A=0 B=0 C=0 D=0 F=0 (no entries graded — queue absent)
 NOT staged (concurrent-session / other-tooling territory, via explicit pathspec): `.claude/state/emu-unified-2026-05-29.log`, `mobile-home-8.23.39.png`, `prodbundle-home-firstload-8.23.39.png`, `.claude/state/overnight-agent/reports/2026-05-30.md`, `.claude/state/stop-decisions/2026-05-30.ndjson`.
 
 No code changes in cycle AX. No proposals. No FIQ writes. No bug-report state moves (inbox absent). app-health overall FLAT at 87.1 (A-).
+
+---
+
+# Cycle AY — overnight triage (2026-05-30, 5th cycle of date)
+
+**Branch decision: inbox empty; heartbeat only.** FIQ + bug-reports inbox both ABSENT for the 85th consecutive cycle — verified directly this cycle (not echoed from AX): `.claude/state/founder-input-queue/` does not exist (`test -d` → MISSING); `.claude/state/bug-reports/` tree (no `inbox/`, no `triaged/`) does not exist; `proposals/pending/` holds only `.gitkeep` (0 real proposals). Per runbook "BOTH empty → steps 3-5 only."
+
+**Cadence:** Cycle AX opened regen START 07:00:48Z; cycle AY opens 08:01:13Z = ~60m25s wall-clock gap — **39th consecutive ~1h-cadence cycle** since cycle M. Both the UTC clock (08:01Z) and the Founder-local clock (04:01 EDT, York PA UTC-4) agree on 2026-05-30, so **no journal-date convention tension** — cycle AY appended to the existing 2026-05-30 date journal per the multi-cycle-per-date convention (AU+AV+AW+AX already in this file).
+
+## Step 1 — FIQ triage (cycle AY)
+
+- FIQ entries triaged: **0** (queue directory absent)
+- Grade breakdown: N/A — A:0 B:0 C:0 D:0 F:0
+- IDs: none
+
+## Step 2 — Bug-report triage (cycle AY)
+
+- Bug reports processed: **0** (inbox tree absent)
+- Dispositions: none
+- No P3e discussion bubbles opened (nothing to deliberate)
+
+## Step 3 — Heartbeat (cycle AY)
+
+### 3a — `scripts/regen-all.ps1`
+
+- Ran end-to-end 08:01:13Z → 08:01:19Z: **=== ALL CHECKS PASSED ===**, **round-trip test PASS**. 40th consecutive clean canonical regen-all (cycles L–AY).
+- Heartbeat `regen-all-last-pass.json` written.
+- Telemetry snapshot: events=16940 handoffs=1 bubbles=7 proposals_pending=0, meter_status=wired-real → HALT-25 NOT in effect. Token aggregate (all-time): real=12,712,997,178 estimated=14,710,620 manual=0.
+- All ~30 guards green (round-trip 4-view swap + transcript tallies 3 bubbles + nav 9-link ×9 + meter-wiring 7/7 + founder-queue 7/7 + quota-type-enum + cross-dash proposals_pending=0 + lifecycle proposals shipped=7 + amendments applied=28 + escalations applied=3 + theme convergence no raw hex + no-charts + protected-layouts 5/5 + 23/23 + 17 swatches + W1.S1 + proposal-readiness 0 deferred + install-scripts 7 parse + install-cmd-surface + scroll-reachability 5/0/0 + quota-status auto-derived + pause-discipline clean + wiring 5/5).
+- App health: **A- (87.1)**, 1 attention item. Founder-checklist: open=6 (red=0 yellow=4 green=2) closed_total=25.
+- One INFORMATIONAL `~` (not a failure): `user-context-gate` flags `main-flows.html` modified 21953.7 min after the last user-context capture (2026-05-14T23-07-48Z). Benign on a heartbeat-only night.
+
+**Working-tree diff after regen — `docs/reports/app-health.html` is PURELY metadata.** Proven by reading the diff verbatim AND grepping it for `overall_score` / `overall_grade` / `score` / `status` / `pre_deduction` / `post_deduction` / `dimension` changes (returns EMPTY). The only `+/-` lines are: (a) `generated_at` 2026-05-30T07:56:45.764231Z → 08:01:18.458925Z, and (b) `audit_trigger` commit-pointer re-pointing `sha` `fdcc124c` (*"fix(v8.23.43): single source of truth for round format labels"*, `committed_at` 03:56:22-04:00, `is_app_commit` true, 7 `app_files_touched`, `total_files_touched` 8) → `3d211a99` (*"cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)"*, `committed_at` 03:57:48-04:00, `is_app_commit` false, `app_files_touched` [], `total_files_touched` 4) — `git log` confirms `3d211a99` is the current cron-regen HEAD and `fdcc124c` the v8.23.43 fix. All 12 dimension values byte-unchanged; **overall stays 87.1 (A-)**. The prior `generated_at` 07:56:45Z falls AFTER cycle AX's regen close (07:00:53Z) and BEFORE cycle AY's 08:01:13Z START — confirming the independent 5-min cron watcher regenerated app-health between AX and AY with the score holding flat (pointing `audit_trigger` at the v8.23.43 fix `fdcc124c`); cycle AY's regen then re-points it forward to the cron-regen HEAD `3d211a99`. Not a triage-introduced change.
+
+### 3b — Wellness refresh
+
+- `.claude/state/wellness/engineer.json` — updated for cycle AY (counters ~1,290k tokens cumulative / 1.0h discrete-context; status `active`; thresholds_crossed=['tokens_consumed'] preserved 49th cross-cycle; full cycle-AY `_note` + `substantive_output_at_checkpoint`).
+- `.claude/state/wellness/critic.json` — updated for cycle AY. Critic participated via the closing METRIC_INTEGRITY_PROTOCOL 3.1 attestation + independent verbatim-diff verification. Counters ~275k tokens cumulative / 1.0h; status `active`; threshold preserved.
+
+## Step 4 — Session journal
+
+**This section** (cycle AY appended to the existing 2026-05-30 date journal).
+
+## Cycle AY counts
+
+| Metric | Count |
+|---|---|
+| FIQ entries triaged | 0 (queue absent) |
+| Bug reports processed | 0 (inbox absent) |
+| New proposals authored | 0 |
+| Wellness state changes | 2 (engineer.json + critic.json cycle AY refresh) |
+
+FIQ grade distribution: A=0 B=0 C=0 D=0 F=0 (no entries graded — queue absent).
+
+## Blockers requiring Founder attention (cycle AY)
+
+**No ship-blocking issues introduced by triage.** Awareness / carry-over items:
+
+1. **Concurrent session advanced to v8.23.43.** Untracked `verify-v8.23.43-livescoring-header.png` plus the committed `fdcc124c` *"fix(v8.23.43): single source of truth for round format labels"* show the concurrent session moved past the v8.23.39 state AX described (the v8.23.39 PNGs are now committed/gone). Plus `.claude/state/overnight-agent/reports/2026-05-30.md` and `.claude/state/stop-decisions/2026-05-30.ndjson` remain untracked other-tooling artifacts. These are **not our WIP** — left untouched and unstaged. Founder review of those commits/artifacts is normal post-commit review, not a triage blocker.
+2. **`A12_operational` / founder-checklist `open=6`** — residual concurrent-ship drift (red=0 yellow=4 green=2 closed=25); red=0 so nothing ship-blocking. **No proposal manufactured** — authoring one for a self-resolving condition would be ship-count gaming per METRIC_INTEGRITY_PROTOCOL Rule 2.
+3. **Carry-over — concurrent emulator log `.claude/state/emu-unified-2026-05-29.log`** is dirty (a live emulator session's territory). Deliberately **not staged**.
+4. **Carry-over — writer-side BOM fix (`scripts/common.ps1`) remains unauthored as a proposal.** Consumer-side `utf-8-sig` tolerance has now held 40 consecutive clean regen-all runs (cycles L–AY). Deliberately not auto-promoted without a Founder priority signal.
+5. **Carry-over — journal-date convention (UTC vs Founder-local) for filename + commit date.** Not in tension this cycle (both = 2026-05-30) but unresolved as policy; Founder may want to lock which is canonical.
+6. **Cron cadence** — cycles M–AY steady at ~1h (39 consecutive). Awareness only.
+
+## Cycle AY Critic metric-integrity attestation (per `METRIC_INTEGRITY_PROTOCOL § 3.1`)
+
+1. **"Did every bug report processed get a real diagnosis with cited evidence?"** N/A — zero bug reports tonight (inbox tree absent, verified by directory checks this cycle). Cannot wave off what doesn't exist.
+2. **"Did every new proposal cite a specific screen/state/edge-case?"** N/A — zero new proposals tonight. The founder-checklist drift and the BOM fix were both deliberately *not* promoted (self-resolving concurrent-ship territory / no Founder priority) rather than inflated into proposals.
+3. **"Did the FIQ grades reflect rubric dimensions honestly?"** N/A — zero FIQ entries tonight. Queue absent.
+
+**Heartbeat-only self-check — is tonight's substantive output real?** YES, modestly. A 40th consecutive clean canonical regen-all confirms the gate is durable. The app-health drift was inspected hunk-by-hunk AND grepped for score/status/dimension changes to *prove* it is metadata-only (clock + commit-pointer; overall flat at 87.1). The genuinely useful observation this cycle: the prior `generated_at` 07:56:45Z post-dates cycle AX's close (07:00:53Z) and pre-dates AY's START (08:01:13Z) — proving the 5-min cron watcher regenerated app-health between AX and AY with the score holding flat, transiently pointing `audit_trigger` at the v8.23.43 fix before AY re-points it to the cron-regen HEAD. Every claim is anchored to a quoted regen-all log line, a `git diff` hunk read verbatim, a `git log`/`git status` line, or a `test -d` directory-absence check. No invented productivity on an empty-queue night.
+
+**Critic attests cleanly: substantive heartbeat cycle, ship closes.**
+
+## Files changed in this cycle AY run
+
+- `.claude/state/wellness/engineer.json` — cycle AY update
+- `.claude/state/wellness/critic.json` — cycle AY update
+- `.claude/state/cron/2026-05-30-overnight-run.md` — this journal (cycle AY section appended)
+- `docs/reports/app-health.html` — regen output (metadata-only: `generated_at` timestamp + `audit_trigger` commit-pointer `fdcc124c`→`3d211a99`; `total_files_touched` 8→4; score/grade/dimensions byte-unchanged)
+
+NOT staged (concurrent-session / other-tooling territory, via explicit pathspec): `.claude/state/emu-unified-2026-05-29.log`, `verify-v8.23.43-livescoring-header.png`, `.claude/state/overnight-agent/reports/2026-05-30.md`, `.claude/state/stop-decisions/2026-05-30.ndjson`.
+
+No code changes in cycle AY. No proposals. No FIQ writes. No bug-report state moves (inbox absent). app-health overall FLAT at 87.1 (A-).
