@@ -64,9 +64,20 @@ function buildHandicapGraph(rounds, pid) {
     return result;
   }
 
-  var minH = Math.floor(Math.min.apply(null, validPts.map(function(g) { return g.hcap; })) - 2);
-  var maxH = Math.ceil(Math.max.apply(null, validPts.map(function(g) { return g.hcap; })) + 2);
-  if (maxH - minH < 5) { minH -= 2; maxH += 3; }
+  // v8.23.56 — "Nice" integer-step Y domain so gridlines land on evenly spaced
+  // whole strokes. The old floor/ceil(+/-2) bounds fed fractional ticks through
+  // toFixed(0), which rounded unevenly (e.g. 23,21.75,20.5,19.25,18 rendered as
+  // "23,22,21,19,18", silently skipping 20) and misrepresented the axis. Centering
+  // the data in an integer-stepped domain also keeps a steady handicap as a
+  // centered flat line instead of one stranded near the top of an over-padded card.
+  var gridSteps = 4;
+  var hcaps = validPts.map(function(g) { return g.hcap; });
+  var dataMin = Math.min.apply(null, hcaps);
+  var dataMax = Math.max.apply(null, hcaps);
+  var stepH = Math.max(1, Math.ceil(((dataMax + 1) - (dataMin - 1)) / gridSteps));
+  var midH = (dataMin + dataMax) / 2;
+  var minH = Math.round(midH - (stepH * gridSteps) / 2);
+  var maxH = minH + stepH * gridSteps;
   var range = maxH - minH;
 
   var svgW = 320, svgH = 165, padL = 32, padR = 14, padT = 22, padB = 40;
@@ -87,8 +98,7 @@ function buildHandicapGraph(rounds, pid) {
   svg += '<stop offset="100%" stop-color="rgba(var(--gold-rgb),0)"/>';
   svg += '</linearGradient></defs>';
 
-  // Dashed grid lines + Y-axis labels
-  var gridSteps = 4;
+  // Dashed grid lines + Y-axis labels (gridSteps + integer domain computed above)
   for (var g = 0; g <= gridSteps; g++) {
     var gy = padT + (chartH / gridSteps) * g;
     var val = maxH - (range / gridSteps) * g;
