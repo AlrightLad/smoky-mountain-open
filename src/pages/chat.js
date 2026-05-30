@@ -116,7 +116,7 @@ var calRangeMode = false;
 // Extracted to src/pages/chat-calendar.js per W1.A5. Originally lines 116-469 of this file.
 
 function renderChatMessages(messages) {
-  if (!messages.length) return '<div class="card"><div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--muted)"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><div class="empty-text">No messages yet. Start the trash talk.</div></div></div>';
+  if (!messages.length) return '<div class="card chat-empty-card"><div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--muted)"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><div class="empty-text">No messages yet. Start the trash talk.</div></div></div>';
   
   var ch = '';
   messages.forEach(function(msg) {

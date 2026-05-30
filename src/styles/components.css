@@ -650,7 +650,12 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
    .dm-page-wrap pattern (single-surface chat) for the multi-section Clubhouse. */
 [data-page="chat"]{display:flex;flex-direction:column;height:calc(100vh - 52px);height:calc(100dvh - 52px);overflow:hidden;padding-bottom:calc(66px + max(env(safe-area-inset-bottom, 20px), 20px))}
 [data-page="chat"] > *{flex-shrink:0}
-#chatFeed{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#chatFeed{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column}
+/* v8.23.59 — Empty Trash Talk feed centers in its frame instead of pinning to
+   the top over a void (which read as a failed load). Only the lone empty card
+   carries the auto margins; real messages have none, so they still flow from
+   the top of the feed. */
+#chatFeed > .chat-empty-card{margin-top:auto;margin-bottom:auto}
 .chat-input-row{display:flex;gap:var(--sp-2);padding:var(--sp-3) var(--sp-4);padding-bottom:var(--sp-3);border-top:1px solid var(--border);background:var(--bg);z-index:10}
 .chat-input-row input{flex:1;padding:10px 14px;background:var(--bg2);border:1px solid var(--cb-mute-2);border-radius:var(--r-5);color:var(--cream);font-size:var(--text-base);outline:none;font-family:var(--font-ui)}
 .chat-input-row input:focus{border-color:var(--gold);box-shadow:0 0 0 2px rgba(var(--gold-rgb),.2)}
