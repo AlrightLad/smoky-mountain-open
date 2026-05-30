@@ -1,154 +1,294 @@
-// ========== CALENDAR ==========
-// v5.37.5: Restored original design + event creation form + updated dot colors
-// Tap a date to browse events. No range selection mode.
-// Multi-day events created via form, show as gold dots on each day.
+// ========== CALENDAR (W1.S8 — editorial Clubhouse, CLUBHOUSE_SPEC-HQ-3f) ==========
+// The league's scheduling surface: tee times, trips, events, plus logged rounds
+// and range sessions. Editorial masthead (month/year + truthful counts), scope
+// rail (month nav + Grid/List toggle + create CTA), full-width month grid with
+// event chips OR a chronological list, empty-month state, day-detail drill-in,
+// inline create form, and the scheduling chat. Every value renders from a real
+// source (liveTeeTimes, PB.getTrips, _liveCalEvents, PB.getRounds,
+// liveRangeSessions, scheduling_chat) — no stubbed data (P9).
+
+if (typeof calView === "undefined") var calView = "grid"; // 'grid' | 'list'
+
+var CAL_MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+var CAL_MON3 = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+var CAL_DAYS_FULL = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+var CAL_DAY_HEAD = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]; // week starts Sunday (3f.1.5)
+
+function _calTodayStr() {
+  var t = new Date();
+  return t.getFullYear() + "-" + String(t.getMonth() + 1).padStart(2, "0") + "-" + String(t.getDate()).padStart(2, "0");
+}
+function _calDS(y, m, d) {
+  return y + "-" + String(m + 1).padStart(2, "0") + "-" + String(d).padStart(2, "0");
+}
 
 Router.register("calendar", function() {
-  var monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-  var dayLabels = ["S","M","T","W","T","F","S"];
-  var dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-  var monNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  var today = new Date();
-  var todayStr = today.getFullYear() + "-" + String(today.getMonth()+1).padStart(2,"0") + "-" + String(today.getDate()).padStart(2,"0");
-  var _myUid = currentUser ? currentUser.uid : null;
+  var todayStr = _calTodayStr();
+  var league = (typeof window !== "undefined" && window._activeLeagueName) || "Parbaughs";
+  var season = (typeof PB !== "undefined" && PB.getCurrentSeason) ? (PB.getCurrentSeason().label || "") : "";
 
-  var h = '<div class="cal-month-header"><button class="cal-nav-btn" onclick="calPrev()">\u2039</button>';
-  h += '<div class="cal-month-title">' + monthNames[calMonth] + ' ' + calYear + '</div>';
-  h += '<button class="cal-nav-btn" onclick="calNext()">\u203A</button></div>';
-  h += '<div class="cal-weekdays">'; dayLabels.forEach(function(d){h += '<div class="cal-weekday">'+d+'</div>';}); h += '</div>';
+  var h = '<button type="button" class="cal-skip" onclick="var el=document.getElementById(\'cal-body\');if(el){el.focus();el.scrollIntoView();}">Skip to calendar</button>';
+  h += '<div class="cal-wrap">';
 
-  var firstDay = new Date(calYear, calMonth, 1).getDay();
-  var daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
-
-  // Build event map
-  var eventMap = _calBuildEventMap();
-
-  // Render grid with multi-colored dots
-  // Colors: gold=event, green=round, blue=range, pink=tee
-  h += '<div class="cal-grid">';
-  for (var i=0;i<firstDay;i++) h += '<div class="cal-day empty"></div>';
-  for (var d=1;d<=daysInMonth;d++) {
-    var ds=calYear+"-"+String(calMonth+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
-    var isT=ds===todayStr,isS=ds===calSelectedDate;
-    var evs=eventMap[ds]||[];
-    var bg=isS?"var(--gold)":isT?"rgba(var(--gold-rgb),.13)":"transparent";
-    var cl=isS?"var(--bg)":isT?"var(--gold)":"var(--cream)";
-    var dots=[];
-    var ht={};
-    evs.forEach(function(ev){
-      if(ev.type==="event"&&!ht.e){dots.push("var(--gold)");ht.e=1;}
-      if(ev.type==="round"&&!ht.r){dots.push("var(--birdie)");ht.r=1;}
-      if(ev.type==="range"&&!ht.rng){dots.push("var(--blue)");ht.rng=1;}
-      if(ev.type==="tee"&&!ht.t){dots.push("var(--pink)");ht.t=1;}
-    });
-    var dH='';
-    if(dots.length===1)dH='<div style="width:4px;height:4px;border-radius:50%;background:'+dots[0]+';margin:1px auto 0"></div>';
-    else if(dots.length>1){dH='<div style="display:flex;justify-content:center;gap:2px;margin-top:1px">';dots.slice(0,4).forEach(function(c){dH+='<div style="width:3px;height:3px;border-radius:50%;background:'+c+'"></div>';});dH+='</div>';}
-    h+='<div class="cal-day'+(isT?' today':'')+(isS?' selected':'')+'" onclick="selectCalDay(\''+ds+'\')" style="color:'+cl+';background:'+bg+'">'+d+dH+'</div>';
-  }
+  // ── Masthead ──
+  h += '<div class="roster-masthead">';
+  h += '<div class="roster-eyebrow">' + escHtml(String(league).toUpperCase()) + (season ? ' · ' + escHtml(season.toUpperCase()) : '') + '</div>';
+  h += '<h1 class="roster-headline" id="calHeadline">' + CAL_MONTHS[calMonth] + ' ' + calYear + '.</h1>';
+  h += '<div class="cal-subdeck" id="calSubdeck">' + _calSubdeck(_calMeta(todayStr)) + '</div>';
   h += '</div>';
 
-  // Day detail container (updated in-place by _updateCalendarInPlace)
-  h += '<div id="cal-day-detail" style="padding:0 16px">';
-  if (calSelectedDate && eventMap[calSelectedDate]) {
-    h += _renderCalDayDetail(eventMap, calSelectedDate);
-  }
+  // ── Scope rail ──
+  h += _calScopeHTML(todayStr);
+  h += '<div class="cal-meta" id="calMeta">' + _calMetaLine(_calMeta(todayStr)) + '</div>';
+
+  // ── Inline create form (hidden by default) ──
+  h += _calCreateFormHTML(calSelectedDate || todayStr);
+
+  // ── Body: grid or list ──
+  h += '<div id="cal-body" tabindex="-1" class="cal-body">';
+  h += (calView === "list") ? _calListHTML(todayStr) : _calGridHTML(todayStr);
   h += '</div>';
 
-  // Action buttons — premium styled, consistent sizing
-  h += '<div style="display:flex;gap:10px;padding:12px 16px">';
-  h += '<button onclick="Router.go(\'tee-create\')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 8px;background:linear-gradient(135deg,var(--pink),rgba(var(--pink-rgb),.8));border:none;border-radius:var(--radius);color:#fff;font:600 11px/1 Inter,sans-serif;cursor:pointer"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></svg>Tee Time</button>';
-  h += '<button onclick="showCalEventForm()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 8px;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:var(--radius);color:var(--bg);font:600 11px/1 Inter,sans-serif;cursor:pointer"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15l8-12"/><path d="M4 3l8 4-8 4V3z"/></svg>Event</button>';
-  h += '<button onclick="Router.go(\'range\')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 8px;background:linear-gradient(135deg,var(--blue),var(--blue));border:none;border-radius:var(--radius);color:#fff;font:600 11px/1 Inter,sans-serif;cursor:pointer"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="3"/><circle cx="8" cy="8" r="6"/></svg>Range</button>';
+  // ── Day detail (grid mode, when a day is selected) ──
+  h += '<div id="cal-day-detail" class="cal-detail">';
+  var em0 = _calBuildEventMap();
+  if (calView === "grid" && calSelectedDate && em0[calSelectedDate]) h += _renderCalDayDetail(em0, calSelectedDate);
   h += '</div>';
 
-  // Event creation form (hidden by default)
-  h += '<div id="calEventForm" style="display:none;padding:0 16px 12px">';
-  h += '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px">';
-  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px"><div style="font-size:14px;font-weight:700;color:var(--cream)">New Event</div><button style="background:none;border:none;color:var(--muted);font-size:18px;cursor:pointer;padding:4px 8px" onclick="hideCalEventForm()">\u00d7</button></div>';
-  h += '<div class="ff"><label class="ff-label">Event name</label><input class="ff-input" id="calEvName" placeholder="e.g. Weekend Tournament"></div>';
-  h += '<div class="ff"><label class="ff-label">Location</label><input class="ff-input" id="calEvLocation" placeholder="e.g. Briarwood Golf Club"></div>';
-  h += '<div style="display:flex;gap:8px">';
-  h += '<div class="ff" style="flex:1"><label class="ff-label">Start date</label><input class="ff-input" type="date" id="calEvStart" value="' + (calSelectedDate || todayStr) + '"></div>';
-  h += '<div class="ff" style="flex:1"><label class="ff-label">End date (optional)</label><input class="ff-input" type="date" id="calEvEnd"></div>';
-  h += '</div>';
-  h += '<div class="ff"><label class="ff-label">Description</label><textarea class="ff-input" id="calEvDesc" placeholder="Details..." rows="2"></textarea></div>';
-  h += '<div class="ff"><label class="ff-label">Type</label><select class="ff-input" id="calEvType"><option value="event">Event</option><option value="tournament">Tournament</option><option value="trip">Trip</option><option value="social">Social</option></select></div>';
-  h += '<button class="btn full green" onclick="saveCalEvent()" style="margin-top:8px">Create Event</button>';
-  h += '</div></div>';
-
-  // Legend
-  h += '<div style="display:flex;gap:10px;padding:4px 16px;font-size:9px;color:var(--muted2)">';
-  h += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--gold);vertical-align:middle;margin-right:3px"></span>Event</span>';
-  h += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--birdie);vertical-align:middle;margin-right:3px"></span>Round</span>';
-  h += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--blue);vertical-align:middle;margin-right:3px"></span>Range</span>';
-  h += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--pink);vertical-align:middle;margin-right:3px"></span>Tee Time</span>';
+  // ── Secondary quick-add (real dedicated routes) ──
+  h += '<div class="cal-quickadd">';
+  h += '<button type="button" class="cal-qa" onclick="Router.go(\'tee-create\')"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></svg> Tee time</button>';
+  h += '<button type="button" class="cal-qa" onclick="Router.go(\'range\')"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="3"/><circle cx="8" cy="8" r="6"/></svg> Range session</button>';
   h += '</div>';
 
-  // Upcoming events
-  var upcomingEvents = [];
-  liveTeeTimes.forEach(function(t) { if (t.status==="cancelled"||t.date<todayStr) return; upcomingEvents.push({date:t.date,title:t.courseName||"Tee Time",time:t.time||"",type:"tee"}); });
-  PB.getTrips().forEach(function(trip) { if(!trip.startDate)return; var ed=trip.endDate||trip.startDate; if(trip.startDate>=todayStr||ed>=todayStr) upcomingEvents.push({date:trip.startDate>=todayStr?trip.startDate:todayStr,title:trip.name,time:trip.startDate<=todayStr&&ed>=todayStr?"Happening now":"",type:"trip",tripId:trip.id}); });
-  upcomingEvents.sort(function(a,b){return a.date>b.date?1:-1;});
-  if (upcomingEvents.length) {
-    h += '<div style="padding:8px 16px"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Coming Up</div>';
-    h += '<div style="display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:4px">';
-    upcomingEvents.slice(0,5).forEach(function(ev) {
-      var dateObj = new Date(ev.date+"T12:00:00");
-      var dayDiff = Math.ceil((dateObj-today)/86400000);
-      var dayLabel = dayDiff===0?"Today":dayDiff===1?"Tomorrow":monNames[dateObj.getMonth()]+" "+dateObj.getDate();
-      var dotColor = ev.type==="trip"?"var(--gold)":"var(--pink)";
-      var clickAction = ev.type==="trip"&&ev.tripId ? "Router.go(\'scorecard\',{tripId:\'"+ev.tripId+"\'})" : "Router.go(\'teetimes\')";
-      h += '<div onclick="'+clickAction+'" style="flex-shrink:0;min-width:130px;padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer">';
-      h += '<div style="display:flex;align-items:center;gap:5px;margin-bottom:3px"><div style="width:5px;height:5px;border-radius:50%;background:'+dotColor+'"></div>';
-      h += '<span style="font-size:9px;color:var(--gold);font-weight:600">'+dayLabel+'</span></div>';
-      h += '<div style="font-size:11px;font-weight:600;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+escHtml(ev.title)+'</div>';
-      if (ev.time) h += '<div style="font-size:9px;color:var(--muted);margin-top:2px">'+ev.time+'</div>';
-      h += '</div>';
-    });
-    h += '</div></div>';
-  }
-
-  // Scheduling chat
-  h += '<div style="padding:8px 16px"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Scheduling Chat</div></div>';
-  h += '<div id="calChatFeed" style="max-height:300px;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 16px"><div style="text-align:center;font-size:10px;color:var(--muted);padding:20px">Loading...</div></div>';
-  h += '<div style="display:flex;gap:8px;padding:8px 16px;border-top:1px solid var(--border)">';
-  h += '<input class="ff-input" id="calChatInput" placeholder="Discuss scheduling..." style="flex:1;margin:0;font-size:12px;padding:9px 14px;border-radius:20px" onkeydown="if(event.key===\'Enter\')sendCalChat()">';
-  h += '<button aria-label="Send scheduling message" title="Send" style="background:var(--gold);border:none;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0" onclick="sendCalChat()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--bg)" stroke-width="2" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>';
+  // ── Legend ──
+  h += '<div class="cal-legend">';
+  h += '<span><i class="cal-dot cal-dot--sched"></i>Scheduled</span>';
+  h += '<span><i class="cal-dot cal-dot--round"></i>Round played</span>';
+  h += '<span><i class="cal-dot cal-dot--range"></i>Range</span>';
   h += '</div>';
+
+  // ── Scheduling chat ──
+  h += '<section class="cal-chat" aria-label="Scheduling chat">';
+  h += '<div class="cal-sec-head"><h2 class="cal-sec-title">Scheduling</h2><div class="cal-sec-sub">Coordinate tee times and trips with the league.</div></div>';
+  h += '<div id="calChatFeed" class="cal-chat__feed"><div class="cal-chat__loading">Loading</div></div>';
+  h += '<div class="cal-chat__composer">';
+  h += '<input class="cal-chat__input" id="calChatInput" placeholder="Discuss scheduling..." aria-label="Scheduling message" onkeydown="if(event.key===\'Enter\')sendCalChat()">';
+  h += '<button type="button" class="cal-chat__send" aria-label="Send scheduling message" title="Send" onclick="sendCalChat()"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>';
+  h += '</div>';
+  h += '</section>';
+
+  h += '</div>'; // .cal-wrap
   document.querySelector('[data-page="calendar"]').innerHTML = h;
 
-  if (db) {
-    leagueQuery("scheduling_chat").orderBy("createdAt","desc").limit(20).get().then(function(snap) {
-      var feed = document.getElementById("calChatFeed");
-      if (!feed) return;
-      if (snap.empty) {
-        // v8.22+ (design-pass 2026-05-22): match the dashed-card empty-state
-        // pattern used elsewhere (courses, feed). Gives the scheduling chat
-        // some visual presence + invites the first message instead of just
-        // disclaiming "nothing here".
-        feed.innerHTML = '<div style="margin:14px 0;padding:24px 16px;text-align:center;background:var(--bg2);border:1px dashed var(--border);border-radius:8px">' +
-          '<div style="font-family:var(--font-display);font-size:14px;font-weight:600;color:var(--cream);margin-bottom:4px">No messages yet.</div>' +
-          '<div style="font-size:10.5px;color:var(--muted);line-height:1.5;max-width:240px;margin:0 auto">Use the box below to coordinate tee times, swap thoughts on next week\u2019s round, or call your shot.</div>' +
-          '</div>';
-        return;
-      }
-      var ch = '';
-      snap.forEach(function(doc) {
-        var msg = doc.data();
-        var author = msg.authorName || "Member";
-        var ts = msg.createdAt ? feedTimeAgo(tsMillis(msg.createdAt)) : "";
-        ch += '<div style="padding:6px 0;border-bottom:1px solid var(--border)">';
-        ch += '<div style="display:flex;justify-content:space-between"><span style="font-size:10px;font-weight:600;color:var(--gold)">' + escHtml(author) + '</span>';
-        ch += '<span style="font-size:9px;color:var(--muted2)">' + ts + '</span></div>';
-        ch += '<div style="font-size:11px;color:var(--cream);margin-top:2px">' + escHtml(msg.text || "") + '</div></div>';
-      });
-      feed.innerHTML = ch;
-    });
-  }
+  _calLoadChat();
 });
 
-// ── Build event map from all sources ──
+// ── Scope rail (month nav + view toggle + create CTA) ──
+function _calScopeHTML(todayStr) {
+  var prevM = (calMonth + 11) % 12, nextM = (calMonth + 1) % 12;
+  var onThisMonth = (todayStr.slice(0, 7) === _calDS(calYear, calMonth, 1).slice(0, 7));
+  var s = '<div class="cal-scope">';
+  s += '<div class="cal-monthnav">';
+  s += '<button type="button" class="cal-navlink" aria-label="Previous month, ' + CAL_MONTHS[prevM] + '" onclick="calPrev()">← ' + CAL_MON3[prevM] + '</button>';
+  s += '<button type="button" class="cal-todaypill' + (onThisMonth ? ' cal-todaypill--on' : '') + '" onclick="calToday()">Today</button>';
+  s += '<button type="button" class="cal-navlink" aria-label="Next month, ' + CAL_MONTHS[nextM] + '" onclick="calNext()">' + CAL_MON3[nextM] + ' →</button>';
+  s += '</div>';
+  s += '<div class="cal-viewtoggle" role="group" aria-label="View mode">';
+  s += '<button type="button" id="calVtGrid" class="cal-vt' + (calView === "grid" ? " cal-vt--on" : "") + '" aria-pressed="' + (calView === "grid") + '" onclick="setCalView(\'grid\')">Grid</button>';
+  s += '<button type="button" id="calVtList" class="cal-vt' + (calView === "list" ? " cal-vt--on" : "") + '" aria-pressed="' + (calView === "list") + '" onclick="setCalView(\'list\')">List</button>';
+  s += '</div>';
+  s += '<button type="button" class="cal-create" onclick="showCalEventForm()">+ New event</button>';
+  s += '</div>';
+  return s;
+}
+
+// ── Truthful activity counts (computed from source arrays, not the day-map) ──
+function _calMeta(todayStr) {
+  var mPrefix = _calDS(calYear, calMonth, 1).slice(0, 7);
+  var monthStart = mPrefix + "-01";
+  var monthEnd = _calDS(calYear, calMonth, new Date(calYear, calMonth + 1, 0).getDate());
+  var d7 = new Date(todayStr + "T12:00:00"); d7.setDate(d7.getDate() + 7);
+  var in7 = _calDS(d7.getFullYear(), d7.getMonth(), d7.getDate());
+
+  var monthScheduled = 0, roundsThisMonth = 0, next7 = 0, upcoming = 0;
+  function tally(date) {
+    if (date && date.slice(0, 7) === mPrefix) monthScheduled++;
+    if (date && date >= todayStr && date <= in7) next7++;
+    if (date && date >= todayStr) upcoming++;
+  }
+  // Tee times
+  (liveTeeTimes || []).forEach(function(t) { if (t.status === "cancelled") return; tally(t.date); });
+  // Calendar events (use start date as the scheduling anchor)
+  if (typeof _liveCalEvents !== "undefined") _liveCalEvents.forEach(function(ev) { tally(ev.startDate); });
+  // Trips (overlap test for "this month"; start date for next7 / upcoming)
+  (PB.getTrips() || []).forEach(function(trip) {
+    if (!trip.startDate) return;
+    var ed = trip.endDate || trip.startDate;
+    if (trip.startDate <= monthEnd && ed >= monthStart) monthScheduled++;
+    if (trip.startDate >= todayStr && trip.startDate <= in7) next7++;
+    if (ed >= todayStr) upcoming++;
+  });
+  // Rounds logged this month (history, counted separately from "scheduled")
+  (PB.getRounds() || []).forEach(function(r) { if (r.date && r.date.slice(0, 7) === mPrefix) roundsThisMonth++; });
+
+  return { monthScheduled: monthScheduled, roundsThisMonth: roundsThisMonth, next7: next7, upcoming: upcoming };
+}
+
+function _calSubdeck(m) {
+  var parts = [];
+  if (m.monthScheduled > 0) parts.push(m.monthScheduled + (m.monthScheduled === 1 ? " event scheduled" : " events scheduled"));
+  if (m.roundsThisMonth > 0) parts.push(m.roundsThisMonth + (m.roundsThisMonth === 1 ? " round logged" : " rounds logged"));
+  if (!parts.length) return "Nothing on the books yet this month.";
+  return parts.join(" · ");
+}
+function _calMetaLine(m) {
+  return m.monthScheduled + " this month · " + m.next7 + " next 7 days · " + m.upcoming + " upcoming";
+}
+
+// ── Event chip (grid cell + list reuse a shared chip vocabulary) ──
+function _calChipHTML(ev) {
+  var cls = "cal-chip", dot = "cal-dot--sched", primary = "", secondary = "";
+  if (ev.type === "tee") {
+    primary = ev.time ? ev.time : "Tee time";
+    secondary = (ev.title || "") + (ev.spots ? " · " + (ev.accepted || 0) + "/" + ev.spots : "");
+    if (ev.spots && ev.accepted >= ev.spots) cls += " cal-chip--full";
+  } else if (ev.type === "event") {
+    primary = ev.title || "Event";
+    secondary = ev.location || "";
+  } else if (ev.type === "round") {
+    dot = "cal-dot--round"; primary = ev.title || "Round"; secondary = ev.player || "";
+  } else if (ev.type === "range") {
+    dot = "cal-dot--range"; primary = "Range"; secondary = ev.player || "";
+  }
+  var s = '<span class="' + cls + '"><i class="cal-dot ' + dot + '"></i>';
+  s += '<span class="cal-chip__t">' + escHtml(primary) + '</span>';
+  if (secondary) s += '<span class="cal-chip__s">' + escHtml(secondary) + '</span>';
+  s += '</span>';
+  return s;
+}
+
+// Order events scheduled-first within a day, dedupe trips/events by title.
+function _calDayEvents(em, ds) {
+  var raw = em[ds] || [];
+  var order = { tee: 0, event: 1, round: 2, range: 3 };
+  var seen = {}, out = [];
+  raw.slice().sort(function(a, b) { return (order[a.type] || 9) - (order[b.type] || 9); }).forEach(function(ev) {
+    if (ev.type === "event") { if (seen[ev.title]) return; seen[ev.title] = 1; }
+    out.push(ev);
+  });
+  return out;
+}
+
+// ── Grid view ──
+function _calGridHTML(todayStr) {
+  var em = _calBuildEventMap();
+  var firstDay = new Date(calYear, calMonth, 1).getDay();        // 0=Sun
+  var daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+  var prevDays = new Date(calYear, calMonth, 0).getDate();
+  var cells = [];
+
+  // Leading overflow (prev month tail)
+  for (var i = 0; i < firstDay; i++) cells.push({ over: true, n: prevDays - firstDay + 1 + i });
+  // In-month days
+  for (var d = 1; d <= daysInMonth; d++) cells.push({ n: d, ds: _calDS(calYear, calMonth, d) });
+  // Trailing overflow (next month head) to fill the final week
+  while (cells.length % 7 !== 0) cells.push({ over: true, n: cells.length - firstDay - daysInMonth + 1 });
+
+  var hasAny = Object.keys(em).some(function(k) { return k.slice(0, 7) === todayStr.slice(0, 7) ? false : false; }) || daysInMonth > 0;
+
+  var s = '<table class="cal-table" role="grid" aria-label="' + CAL_MONTHS[calMonth] + ' ' + calYear + '">';
+  s += '<thead><tr role="row">';
+  CAL_DAY_HEAD.forEach(function(dn) { s += '<th scope="col" role="columnheader" class="cal-th">' + dn + '</th>'; });
+  s += '</tr></thead><tbody>';
+
+  for (var c = 0; c < cells.length; c++) {
+    if (c % 7 === 0) s += '<tr role="row">';
+    var cell = cells[c];
+    if (cell.over) {
+      s += '<td role="gridcell" class="cal-cell cal-cell--over"><span class="cal-datenum">' + cell.n + '</span></td>';
+    } else {
+      var isToday = cell.ds === todayStr;
+      var isSel = cell.ds === calSelectedDate;
+      var evs = _calDayEvents(em, cell.ds);
+      var label = CAL_DAYS_FULL[new Date(cell.ds + "T12:00:00").getDay()] + " " + CAL_MON3[calMonth] + " " + cell.n + (evs.length ? ", " + evs.length + (evs.length === 1 ? " event" : " events") : ", no events");
+      s += '<td role="gridcell" class="cal-cell' + (isToday ? " cal-cell--today" : "") + (isSel ? " cal-cell--sel" : "") + '">';
+      s += '<button type="button" class="cal-cellbtn" aria-label="' + escHtml(label) + '" aria-pressed="' + isSel + '" onclick="selectCalDay(\'' + cell.ds + '\')">';
+      s += '<span class="cal-cell-top"><span class="cal-datenum">' + cell.n + '</span>' + (isToday ? '<span class="cal-today-eyebrow">TODAY</span>' : '') + '</span>';
+      if (evs.length) {
+        s += '<span class="cal-chips">';
+        evs.slice(0, 3).forEach(function(ev) { s += _calChipHTML(ev); });
+        if (evs.length > 3) s += '<span class="cal-more">+' + (evs.length - 3) + ' more</span>';
+        s += '</span>';
+      }
+      s += '</button></td>';
+    }
+    if (c % 7 === 6) s += '</tr>';
+  }
+  s += '</tbody></table>';
+
+  // Empty-month editorial block (3f.3)
+  var meta = _calMeta(todayStr);
+  if (meta.monthScheduled === 0 && meta.roundsThisMonth === 0) {
+    s += '<div class="cal-empty">';
+    s += '<div class="cal-empty__eyebrow">NO EVENTS THIS MONTH</div>';
+    s += '<div class="cal-empty__h">The course is quiet.</div>';
+    s += '<div class="cal-empty__b">Schedule a tee time and the league will see it on the day.</div>';
+    s += '<button type="button" class="cal-empty__cta" onclick="showCalEventForm()">+ New event</button>';
+    s += '</div>';
+  }
+  return s;
+}
+
+// ── List view (chronological, grouped by day; upcoming first) ──
+function _calListHTML(todayStr) {
+  var em = _calBuildEventMap();
+  var keys = Object.keys(em).sort(); // ascending date
+  var upcoming = keys.filter(function(k) { return k >= todayStr; });
+  var past = keys.filter(function(k) { return k < todayStr; });
+
+  if (!upcoming.length && !past.length) {
+    return '<div class="cal-empty"><div class="cal-empty__eyebrow">NOTHING SCHEDULED</div><div class="cal-empty__h">The course is quiet.</div><div class="cal-empty__b">Schedule a tee time and it will show up here.</div><button type="button" class="cal-empty__cta" onclick="showCalEventForm()">+ New event</button></div>';
+  }
+
+  function dayBlock(ds) {
+    var dt = new Date(ds + "T12:00:00");
+    var eyebrow = CAL_MON3[dt.getMonth()].toUpperCase() + " " + dt.getDate() + " · " + CAL_DAYS_FULL[dt.getDay()].toUpperCase();
+    var blk = '<div class="cal-listday">' + eyebrow + '</div>';
+    _calDayEvents(em, ds).forEach(function(ev) {
+      var eyebrowType = ev.type === "tee" ? "TEE TIME" : ev.type === "event" ? (ev.tripId ? "TRIP" : "EVENT") : ev.type === "round" ? "ROUND" : "RANGE";
+      var title = ev.type === "tee" ? ((ev.time ? ev.time + " at " : "") + (ev.title || "Tee time")) : (ev.title || (ev.type === "range" ? "Range session" : "Event"));
+      var sub = "";
+      if (ev.type === "tee") sub = (ev.spots ? (ev.accepted || 0) + "/" + ev.spots + " confirmed" : "") + (ev.players && ev.players.length ? " · " + ev.players.join(", ") : "");
+      else if (ev.type === "event") sub = [ev.location, ev.dates, (ev.players && ev.players.length ? ev.players.length + " attending" : "")].filter(Boolean).join(" · ");
+      else if (ev.type === "round") sub = [ev.player, ev.score ? "shot " + ev.score : ""].filter(Boolean).join(" · ");
+      else if (ev.type === "range") sub = [ev.player, ev.duration ? ev.duration + " min" : ""].filter(Boolean).join(" · ");
+      var click = "";
+      if (ev.type === "tee") click = "Router.go('teetimes')";
+      else if (ev.type === "event" && ev.tripId) click = "Router.go('scorecard',{tripId:'" + ev.tripId + "'})";
+      else if (ev.type === "round" && ev.roundId) click = "Router.go('rounds',{roundId:'" + ev.roundId + "'})";
+      else if (ev.type === "range" && ev.sessionId) click = "Router.go('range-detail',{sessionId:'" + ev.sessionId + "'})";
+      var dotCls = ev.type === "round" ? "cal-dot--round" : ev.type === "range" ? "cal-dot--range" : "cal-dot--sched";
+      blk += '<' + (click ? 'button type="button"' : 'div') + ' class="cal-lcard"' + (click ? ' onclick="' + click + '"' : '') + '>';
+      blk += '<div class="cal-lcard__eyebrow"><i class="cal-dot ' + dotCls + '"></i>' + eyebrowType + '</div>';
+      blk += '<div class="cal-lcard__title">' + escHtml(title) + '</div>';
+      if (sub) blk += '<div class="cal-lcard__sub">' + escHtml(sub) + '</div>';
+      blk += '</' + (click ? 'button' : 'div') + '>';
+    });
+    return blk;
+  }
+
+  var s = '';
+  if (past.length) s += '<div class="cal-listpast">' + past.length + ' past ' + (past.length === 1 ? "day" : "days") + ' on record below the upcoming slate.</div>';
+  upcoming.forEach(function(ds) { s += dayBlock(ds); });
+  if (past.length) {
+    s += '<div class="cal-listsep">Past</div>';
+    past.slice().reverse().forEach(function(ds) { s += dayBlock(ds); });
+  }
+  return s;
+}
+
+// ── Build event map from all sources (unchanged data path — P9) ──
 function _calBuildEventMap() {
   var eventMap = {};
   var _myUid = currentUser ? currentUser.uid : null;
@@ -159,19 +299,19 @@ function _calBuildEventMap() {
 
   // Tee times
   liveTeeTimes.forEach(function(t) {
-    if (t.status==="cancelled") return;
+    if (t.status === "cancelled") return;
     var accepted = t.responses ? Object.keys(t.responses).filter(function(k){return t.responses[k]==="accepted"}) : [];
     var names = []; accepted.forEach(function(uid) { var m = PB.getPlayer(uid); if(m) names.push(m.name||m.username||"Member"); });
     addEv(t.date, {type:"tee", title:t.courseName||"Tee Time", time:t.time||"", spots:t.spots||4, accepted:accepted.length, players:names});
   });
 
-  // Trips (multi-day events) — gold dot on each day in range
+  // Trips (multi-day events) — one chip per day in range
   PB.getTrips().forEach(function(trip) {
     if (!trip.startDate) return;
     var sd = new Date(trip.startDate+"T12:00:00"), ed = trip.endDate ? new Date(trip.endDate+"T12:00:00") : sd;
     var mN = []; if(trip.members) trip.members.forEach(function(uid){var m=PB.getPlayer(uid);if(m)mN.push(m.name||m.username||"Member");});
     var _sd2=new Date(trip.startDate+"T12:00:00"),_ed2=trip.endDate?new Date(trip.endDate+"T12:00:00"):_sd2;
-    var _fmtDates=monNames[_sd2.getMonth()]+" "+_sd2.getDate()+(trip.endDate&&trip.endDate!==trip.startDate?"\u2013"+(_ed2.getMonth()===_sd2.getMonth()?_ed2.getDate():monNames[_ed2.getMonth()]+" "+_ed2.getDate())+", "+_ed2.getFullYear():", "+_sd2.getFullYear());
+    var _fmtDates=monNames[_sd2.getMonth()]+" "+_sd2.getDate()+(trip.endDate&&trip.endDate!==trip.startDate?"–"+(_ed2.getMonth()===_sd2.getMonth()?_ed2.getDate():monNames[_ed2.getMonth()]+" "+_ed2.getDate())+", "+_ed2.getFullYear():", "+_sd2.getFullYear());
     for (var dt=new Date(sd); dt<=ed; dt.setDate(dt.getDate()+1)) {
       var ds=dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0");
       var dayOfWeek = dayNames[dt.getDay()];
@@ -182,14 +322,15 @@ function _calBuildEventMap() {
     }
   });
 
-  // User-created calendar events (from Firestore calendar_events collection)
+  // User-created calendar events (Firestore calendar_events collection)
   if (typeof _liveCalEvents !== "undefined") {
     _liveCalEvents.forEach(function(ev) {
       var sd = ev.startDate, ed = ev.endDate || ev.startDate;
       var dStart = new Date(sd + "T12:00:00"), dEnd = new Date(ed + "T12:00:00");
+      var evDates = monNames[dStart.getMonth()] + " " + dStart.getDate() + (sd !== ed ? "–" + (dEnd.getMonth() === dStart.getMonth() ? dEnd.getDate() : monNames[dEnd.getMonth()] + " " + dEnd.getDate()) + ", " + dEnd.getFullYear() : ", " + dStart.getFullYear());
       for (var dt = new Date(dStart); dt <= dEnd; dt.setDate(dt.getDate() + 1)) {
         var ds = dt.getFullYear() + "-" + String(dt.getMonth() + 1).padStart(2, "0") + "-" + String(dt.getDate()).padStart(2, "0");
-        addEv(ds, { type: "event", title: ev.name || "Event", location: ev.location || "", dates: sd === ed ? sd : sd + " \u2013 " + ed, eventId: ev._id || "" });
+        addEv(ds, { type: "event", title: ev.name || "Event", location: ev.location || "", dates: evDates, eventId: ev._id || "" });
       }
     });
   }
@@ -212,57 +353,52 @@ function _calBuildEventMap() {
   return eventMap;
 }
 
-// ── Render day detail HTML ──
+// ── Day-detail panel (Clubhouse-tokened drill-in) ──
 function _renderCalDayDetail(eventMap, ds) {
-  var dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-  var monNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
   var dayEvs = eventMap[ds] || [];
   if (!dayEvs.length) return '';
-
   var selDate = new Date(ds + "T12:00:00");
-  var dh = '<div style="padding:12px 0 4px;font-size:14px;font-weight:700;color:var(--cream)">' + dayNames[selDate.getDay()] + ', ' + monNames[selDate.getMonth()] + ' ' + selDate.getDate() + '</div>';
+  var dh = '<div class="cal-detail__head">' + CAL_DAYS_FULL[selDate.getDay()] + ', ' + CAL_MON3[selDate.getMonth()] + ' ' + selDate.getDate() + '</div>';
 
   var teeEvs = dayEvs.filter(function(e){return e.type==="tee"});
   var eventEvs = dayEvs.filter(function(e){return e.type==="event"});
   var roundEvs = dayEvs.filter(function(e){return e.type==="round"});
   var rangeEvs = dayEvs.filter(function(e){return e.type==="range"});
 
-  // Events
+  // Events / trips
   var seenTitles = {};
   eventEvs.forEach(function(ev) {
     if (seenTitles[ev.title]) return; seenTitles[ev.title] = true;
     var _ck = (ev.dayCourses&&ev.dayCourses.length&&ev.dayCourses[0].key)?ev.dayCourses[0].key:"";
-    var _cl = ev.tripId ? "Router.go(\'scorecard\',{tripId:\'"+ev.tripId+"\'" + (_ck?",course:\'"+_ck+"\'":"") + "})" : "";
-    dh += '<div style="background:var(--bg3);border:1px solid rgba(var(--gold-rgb),.32);border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer" onclick="'+_cl+'">';
-    dh += '<div style="font-size:8px;color:var(--gold);font-weight:700;letter-spacing:.5px;margin-bottom:3px">EVENT</div>';
-    dh += '<div style="font-size:13px;font-weight:600;color:var(--cream)">' + escHtml(ev.title) + '</div>';
-    if (ev.location) dh += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(ev.location) + '</div>';
-    if (ev.dates) dh += '<div style="font-size:10px;color:var(--muted)">' + ev.dates + '</div>';
-    if (ev.players&&ev.players.length) dh += '<div style="font-size:10px;color:var(--muted);margin-top:3px">' + ev.players.length + ' attending: ' + ev.players.join(", ") + '</div>';
-    if (ev.champion) dh += '<div style="font-size:10px;color:var(--gold);margin-top:3px">Champion: ' + escHtml(ev.champion) + '</div>';
+    var _cl = ev.tripId ? "Router.go('scorecard',{tripId:'"+ev.tripId+"'" + (_ck?",course:'"+_ck+"'":"") + "})" : "";
+    dh += '<' + (_cl ? 'button type="button"' : 'div') + ' class="cal-dcard"' + (_cl ? ' onclick="'+_cl+'"' : '') + '>';
+    dh += '<div class="cal-dcard__eyebrow"><i class="cal-dot cal-dot--sched"></i>' + (ev.tripId ? 'TRIP' : 'EVENT') + '</div>';
+    dh += '<div class="cal-dcard__title">' + escHtml(ev.title) + '</div>';
+    if (ev.location) dh += '<div class="cal-dcard__meta">' + escHtml(ev.location) + '</div>';
+    if (ev.dates) dh += '<div class="cal-dcard__meta">' + ev.dates + '</div>';
+    if (ev.players&&ev.players.length) dh += '<div class="cal-dcard__meta">' + ev.players.length + ' attending: ' + escHtml(ev.players.join(", ")) + '</div>';
+    if (ev.champion) dh += '<div class="cal-dcard__meta cal-dcard__champ">Champion: ' + escHtml(ev.champion) + '</div>';
     if (ev.dayCourses&&ev.dayCourses.length) {
       ev.dayCourses.forEach(function(dc) {
-        dh += '<div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);display:flex;align-items:center;gap:6px">';
-        dh += '<svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="var(--blue)" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></svg>';
-        dh += '<span style="font-size:11px;color:var(--blue);font-weight:600">' + escHtml(dc.n||"Course") + '</span>';
-        if (dc.f) dh += '<span style="font-size:9px;color:var(--muted2)"> \u00b7 ' + escHtml(dc.f) + '</span>';
+        dh += '<div class="cal-dcard__course"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></svg><span>' + escHtml(dc.n||"Course") + '</span>';
+        if (dc.f) dh += '<span class="cal-dcard__fmt"> · ' + escHtml(dc.f) + '</span>';
         dh += '</div>';
       });
     } else if (ev.tripId) {
-      dh += '<div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);font-size:10px;color:var(--muted)"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="var(--muted)" stroke-width="1.5" style="vertical-align:middle"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></svg> No round scheduled, travel or rest day</div>';
+      dh += '<div class="cal-dcard__course cal-dcard__course--rest">No round scheduled, travel or rest day</div>';
     }
-    dh += '</div>';
+    dh += '</' + (_cl ? 'button' : 'div') + '>';
   });
 
-  // Tee times
+  // Tee times (only if no event already shown for the day)
   if (!eventEvs.length) {
     teeEvs.forEach(function(ev) {
-      dh += '<div style="background:var(--bg3);border:1px solid rgba(var(--pink-rgb),.32);border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer" onclick="Router.go(\'teetimes\')">';
-      dh += '<div style="font-size:8px;color:var(--pink);font-weight:700;letter-spacing:.5px;margin-bottom:3px">TEE TIME</div>';
-      dh += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(ev.title) + '</div>';
-      if (ev.time) dh += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + ev.time + '</div>';
-      if (ev.players&&ev.players.length) dh += '<div style="font-size:10px;color:var(--pink);margin-top:3px">' + ev.accepted + '/' + ev.spots + ' going: ' + ev.players.join(", ") + '</div>';
-      dh += '</div>';
+      dh += '<button type="button" class="cal-dcard" onclick="Router.go(\'teetimes\')">';
+      dh += '<div class="cal-dcard__eyebrow"><i class="cal-dot cal-dot--sched"></i>TEE TIME</div>';
+      dh += '<div class="cal-dcard__title">' + escHtml(ev.title) + '</div>';
+      if (ev.time) dh += '<div class="cal-dcard__meta">' + escHtml(ev.time) + '</div>';
+      if (ev.players&&ev.players.length) dh += '<div class="cal-dcard__meta">' + ev.accepted + '/' + ev.spots + ' going: ' + escHtml(ev.players.join(", ")) + '</div>';
+      dh += '</button>';
     });
   }
 
@@ -273,98 +409,95 @@ function _renderCalDayDetail(eventMap, ds) {
     Object.keys(cg).forEach(function(course) {
       var group = cg[course];
       var boxClick = group.length===1&&group[0].roundId ? ' onclick="Router.go(\'rounds\',{roundId:\''+group[0].roundId+'\'})"' : '';
-      dh += '<div style="background:var(--bg3);border:1px solid rgba(var(--cb-moss-rgb),.32);border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer"'+boxClick+'>';
-      dh += '<div style="font-size:8px;color:var(--birdie);font-weight:700;letter-spacing:.5px;margin-bottom:3px">ROUND' + (group.length>1?"S":"") + '</div>';
-      dh += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(course) + '</div>';
+      dh += '<' + (boxClick ? 'button type="button"' : 'div') + ' class="cal-dcard"'+boxClick+'>';
+      dh += '<div class="cal-dcard__eyebrow"><i class="cal-dot cal-dot--round"></i>ROUND' + (group.length>1?"S":"") + '</div>';
+      dh += '<div class="cal-dcard__title">' + escHtml(course) + '</div>';
       group.forEach(function(r) {
-        // Community-safe par-relative: neutral score + signed delta, no red.
         var _par = roundParTotal(r);
         var _diff = (r.score && _par) ? r.score - _par : null;
         var _diffStr = _diff === null ? "" : (_diff === 0 ? "E" : (_diff > 0 ? "+" + _diff : String(_diff)));
-        var _diffColor = (_diff !== null && _diff <= 0) ? "var(--birdie)" : "var(--muted2)";
+        var _diffPos = (_diff !== null && _diff <= 0);
         var is9h = r.holesPlayed&&r.holesPlayed<=9;
-        var hL = is9h ? (r.holesMode==="back9"?" \u00b7 Back 9":" \u00b7 Front 9") : "";
+        var hL = is9h ? (r.holesMode==="back9"?"Back 9":"Front 9") : "";
         var tL = r.tee ? r.tee + " Tees" : "";
-        var meta = [tL, hL.replace(" \u00b7 ","")].filter(Boolean).join(" \u00b7 ");
+        var meta = [tL, hL].filter(Boolean).join(" · ");
         var isScramble = r.format==="scramble"||r.format==="scramble4";
-        var rowClick = group.length>1&&r.roundId ? ' onclick="event.stopPropagation();Router.go(\'rounds\',{roundId:\''+r.roundId+'\'})" style="cursor:pointer;display:flex;justify-content:space-between;padding:3px 0;font-size:11px"' : ' style="display:flex;justify-content:space-between;padding:3px 0;font-size:11px"';
-        dh += '<div'+rowClick+'><div><span style="color:var(--muted)">' + escHtml(r.player) + (isScramble?" (Scramble)":"") + '</span>' + (meta?'<span style="color:var(--muted2);font-size:9px"> \u00b7 '+meta+'</span>':'') + '</div><span style="font-weight:600;color:var(--cream)">' + (r.score||"\u2014") + (_diffStr ? '<span style="font-family:var(--font-mono);font-size:9px;font-weight:600;color:'+_diffColor+';margin-left:4px">' + _diffStr + '</span>' : '') + '</span></div>';
+        var rowClick = group.length>1&&r.roundId ? ' onclick="event.stopPropagation();Router.go(\'rounds\',{roundId:\''+r.roundId+'\'})"' : '';
+        dh += '<div class="cal-droundrow"'+rowClick+'><span class="cal-droundrow__who">' + escHtml(r.player) + (isScramble?" (Scramble)":"") + (meta?'<span class="cal-droundrow__meta"> · '+escHtml(meta)+'</span>':'') + '</span><span class="cal-droundrow__score">' + (r.score||"—") + (_diffStr ? '<span class="cal-droundrow__diff'+(_diffPos?' cal-droundrow__diff--pos':'')+'">' + _diffStr + '</span>' : '') + '</span></div>';
       });
-      dh += '</div>';
+      dh += '</' + (boxClick ? 'button' : 'div') + '>';
     });
   }
 
   // Range sessions
   rangeEvs.forEach(function(ev) {
-    var rDest = ev.sessionId ? "Router.go(\'range-detail\',{sessionId:\'"+ev.sessionId+"\'})" : "Router.go(\'range\')";
-    dh += '<div style="background:var(--bg3);border:1px solid rgba(var(--blue-rgb),.32);border-radius:4px;padding:10px 12px;margin-bottom:6px;cursor:pointer" onclick="'+rDest+'">';
-    dh += '<div style="font-size:8px;color:var(--blue);font-weight:700;letter-spacing:.5px;margin-bottom:3px">RANGE SESSION</div>';
-    dh += '<div style="font-size:12px;font-weight:600;color:var(--cream)">' + (ev.duration||0) + ' min</div>';
-    if (ev.player) dh += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(ev.player) + '</div>';
-    dh += '</div>';
+    var rDest = ev.sessionId ? "Router.go('range-detail',{sessionId:'"+ev.sessionId+"'})" : "Router.go('range')";
+    dh += '<button type="button" class="cal-dcard" onclick="'+rDest+'">';
+    dh += '<div class="cal-dcard__eyebrow"><i class="cal-dot cal-dot--range"></i>RANGE SESSION</div>';
+    dh += '<div class="cal-dcard__title">' + (ev.duration||0) + ' min</div>';
+    if (ev.player) dh += '<div class="cal-dcard__meta">' + escHtml(ev.player) + '</div>';
+    dh += '</button>';
   });
 
   return dh;
 }
 
-// ── Simple tap to view — no range mode ──
-function calPrev(){calMonth--;if(calMonth<0){calMonth=11;calYear--;}calSelectedDate=null;_updateCalendarInPlace();}
-function calNext(){calMonth++;if(calMonth>11){calMonth=0;calYear++;}calSelectedDate=null;_updateCalendarInPlace();}
-function selectCalDay(ds){calSelectedDate=(calSelectedDate===ds)?null:ds;_updateCalendarInPlace();}
+// ── Navigation + view state ──
+function calPrev(){ calMonth--; if(calMonth<0){calMonth=11;calYear--;} calSelectedDate=null; _updateCalendarInPlace(); }
+function calNext(){ calMonth++; if(calMonth>11){calMonth=0;calYear++;} calSelectedDate=null; _updateCalendarInPlace(); }
+function calToday(){ var t=new Date(); calMonth=t.getMonth(); calYear=t.getFullYear(); calSelectedDate=null; _updateCalendarInPlace(); }
+function selectCalDay(ds){ calSelectedDate=(calSelectedDate===ds)?null:ds; _updateCalendarInPlace(); }
+function setCalView(v){ if(v!==calView){ calView=v; calSelectedDate=null; _updateCalendarInPlace(); } }
 
 function _updateCalendarInPlace() {
-  var monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-  var today = new Date();
-  var todayStr = today.getFullYear() + "-" + String(today.getMonth()+1).padStart(2,"0") + "-" + String(today.getDate()).padStart(2,"0");
+  var todayStr = _calTodayStr();
+  var meta = _calMeta(todayStr);
 
-  // Update month title
-  var titleEl = document.querySelector(".cal-month-title");
-  if (titleEl) titleEl.textContent = monthNames[calMonth] + " " + calYear;
+  var headEl = document.getElementById("calHeadline");
+  if (headEl) headEl.textContent = CAL_MONTHS[calMonth] + " " + calYear + ".";
+  var subEl = document.getElementById("calSubdeck");
+  if (subEl) subEl.innerHTML = _calSubdeck(meta);
+  var metaEl = document.getElementById("calMeta");
+  if (metaEl) metaEl.textContent = _calMetaLine(meta);
 
-  // Rebuild event map
-  var eventMap = _calBuildEventMap();
+  // Sync scope-rail toggle + today-pill state
+  var onThisMonth = (todayStr.slice(0, 7) === _calDS(calYear, calMonth, 1).slice(0, 7));
+  var pill = document.querySelector(".cal-todaypill");
+  if (pill) pill.classList.toggle("cal-todaypill--on", onThisMonth);
+  var vg = document.getElementById("calVtGrid"), vl = document.getElementById("calVtList");
+  if (vg) { vg.classList.toggle("cal-vt--on", calView === "grid"); vg.setAttribute("aria-pressed", calView === "grid"); }
+  if (vl) { vl.classList.toggle("cal-vt--on", calView === "list"); vl.setAttribute("aria-pressed", calView === "list"); }
 
-  // Rebuild grid
-  var firstDay = new Date(calYear, calMonth, 1).getDay();
-  var daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
-  var gridEl = document.querySelector(".cal-grid");
-  if (!gridEl) return;
-  var gh = '';
-  for (var i=0;i<firstDay;i++) gh += '<div class="cal-day empty"></div>';
-  for (var d=1;d<=daysInMonth;d++) {
-    var ds=calYear+"-"+String(calMonth+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
-    var isT=ds===todayStr,isS=ds===calSelectedDate;
-    var evs=eventMap[ds]||[];
-    var bg=isS?"var(--gold)":isT?"rgba(var(--gold-rgb),.13)":"transparent";
-    var cl=isS?"var(--bg)":isT?"var(--gold)":"var(--cream)";
-    var dots=[];
-    var ht={};
-    evs.forEach(function(ev){
-      if(ev.type==="event"&&!ht.e){dots.push("var(--gold)");ht.e=1;}
-      if(ev.type==="round"&&!ht.r){dots.push("var(--birdie)");ht.r=1;}
-      if(ev.type==="range"&&!ht.rng){dots.push("var(--blue)");ht.rng=1;}
-      if(ev.type==="tee"&&!ht.t){dots.push("var(--pink)");ht.t=1;}
-    });
-    var dH='';
-    if(dots.length===1)dH='<div style="width:4px;height:4px;border-radius:50%;background:'+dots[0]+';margin:1px auto 0"></div>';
-    else if(dots.length>1){dH='<div style="display:flex;justify-content:center;gap:2px;margin-top:1px">';dots.slice(0,4).forEach(function(c){dH+='<div style="width:3px;height:3px;border-radius:50%;background:'+c+'"></div>';});dH+='</div>';}
-    gh+='<div class="cal-day'+(isT?' today':'')+(isS?' selected':'')+'" onclick="selectCalDay(\''+ds+'\')" style="color:'+cl+';background:'+bg+'">'+d+dH+'</div>';
-  }
-  gridEl.innerHTML = gh;
+  var bodyEl = document.getElementById("cal-body");
+  if (bodyEl) bodyEl.innerHTML = (calView === "list") ? _calListHTML(todayStr) : _calGridHTML(todayStr);
 
-  // Rebuild day detail
   var detailEl = document.getElementById("cal-day-detail");
-  if (!detailEl) return;
-  if (!calSelectedDate || !eventMap[calSelectedDate]) { detailEl.innerHTML = ''; return; }
-  detailEl.innerHTML = _renderCalDayDetail(eventMap, calSelectedDate);
+  if (detailEl) {
+    var em = _calBuildEventMap();
+    detailEl.innerHTML = (calView === "grid" && calSelectedDate && em[calSelectedDate]) ? _renderCalDayDetail(em, calSelectedDate) : "";
+  }
 }
 
-// ── Event creation form ──
+// ── Inline create form ──
+function _calCreateFormHTML(defaultDate) {
+  var f = '<div id="calEventForm" class="cal-form" style="display:none">';
+  f += '<div class="cal-form__head"><div class="cal-form__title">New event</div><button type="button" class="cal-form__x" aria-label="Close" onclick="hideCalEventForm()">×</button></div>';
+  f += '<div class="ff"><label class="ff-label" for="calEvName">Event name</label><input class="ff-input" id="calEvName" placeholder="e.g. Weekend Tournament"></div>';
+  f += '<div class="ff"><label class="ff-label" for="calEvLocation">Location</label><input class="ff-input" id="calEvLocation" placeholder="e.g. Briarwood Golf Club"></div>';
+  f += '<div class="cal-form__row">';
+  f += '<div class="ff"><label class="ff-label" for="calEvStart">Start date</label><input class="ff-input" type="date" id="calEvStart" value="' + escHtml(defaultDate) + '"></div>';
+  f += '<div class="ff"><label class="ff-label" for="calEvEnd">End date (optional)</label><input class="ff-input" type="date" id="calEvEnd"></div>';
+  f += '</div>';
+  f += '<div class="ff"><label class="ff-label" for="calEvDesc">Description</label><textarea class="ff-input" id="calEvDesc" placeholder="Details..." rows="2"></textarea></div>';
+  f += '<div class="ff"><label class="ff-label" for="calEvType">Type</label><select class="ff-input" id="calEvType"><option value="event">Event</option><option value="tournament">Tournament</option><option value="trip">Trip</option><option value="social">Social</option></select></div>';
+  f += '<button type="button" class="cal-form__save" onclick="saveCalEvent()">Create event</button>';
+  f += '</div>';
+  return f;
+}
 function showCalEventForm() {
   var form = document.getElementById("calEventForm");
-  if (form) form.style.display = "block";
+  if (form) { form.style.display = "block"; form.scrollIntoView({ behavior: "smooth", block: "nearest" }); var n = document.getElementById("calEvName"); if (n) n.focus(); }
 }
-
 function hideCalEventForm() {
   var form = document.getElementById("calEventForm");
   if (form) form.style.display = "none";
@@ -398,7 +531,6 @@ function saveCalEvent() {
   db.collection("calendar_events").add(leagueDoc("calendar_events", doc)).then(function() {
     Router.toast("Event created!");
     hideCalEventForm();
-    // Add to live list and refresh
     if (typeof _liveCalEvents === "undefined") window._liveCalEvents = [];
     _liveCalEvents.push(doc);
     _updateCalendarInPlace();
@@ -419,8 +551,29 @@ function _loadCalendarEvents() {
     if (_liveCalEvents.length && Router.getPage() === "calendar") _updateCalendarInPlace();
   }).catch(function() {});
 }
-// Load on first script execution — will run after Firebase auth resolves
 setTimeout(_loadCalendarEvents, 2000);
+
+// ── Scheduling chat ──
+function _calLoadChat() {
+  if (!db) return;
+  leagueQuery("scheduling_chat").orderBy("createdAt","desc").limit(20).get().then(function(snap) {
+    var feed = document.getElementById("calChatFeed");
+    if (!feed) return;
+    if (snap.empty) {
+      feed.innerHTML = '<div class="cal-chat__empty"><div class="cal-chat__empty-h">No messages yet.</div><div class="cal-chat__empty-b">Use the box below to coordinate tee times, swap thoughts on next week’s round, or call your shot.</div></div>';
+      return;
+    }
+    var ch = '';
+    snap.forEach(function(doc) {
+      var msg = doc.data();
+      var author = msg.authorName || "Member";
+      var ts = msg.createdAt ? feedTimeAgo(tsMillis(msg.createdAt)) : "";
+      ch += '<div class="cal-chat__msg"><div class="cal-chat__msg-top"><span class="cal-chat__author">' + escHtml(author) + '</span><span class="cal-chat__ts">' + ts + '</span></div>';
+      ch += '<div class="cal-chat__text">' + escHtml(msg.text || "") + '</div></div>';
+    });
+    feed.innerHTML = ch;
+  });
+}
 
 function sendCalChat() {
   var input = document.getElementById("calChatInput");
@@ -434,7 +587,7 @@ function sendCalChat() {
     authorName: currentProfile ? PB.getDisplayName(currentProfile) : "Member",
     createdAt: fsTimestamp()
   })).then(function() {
-    Router.go("calendar");
+    _calLoadChat();
   }).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't send your message.")); });
 }
 
