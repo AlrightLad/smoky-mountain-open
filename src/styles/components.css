@@ -247,6 +247,56 @@ input.s:disabled,
 .m-arrow{color:var(--muted2);font-size:var(--text-lg)}
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   ROSTER (Members directory) — CLUBHOUSE_SPEC-HQ-3e dense table (W1.S3)
+   Spec token aliases (3e doc name → live base.css): --cb-line → --cb-chalk-3;
+   --cb-chalk-deep → --cb-chalk-2. Avatar ring is renderAvatar's per-player
+   playerRingStyle (founders keep their treatment) rather than a flat brass ring.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.roster-skip{position:absolute;left:-9999px;top:0;background:var(--cb-ink);color:var(--cb-chalk);padding:8px 14px;border-radius:0 0 8px 0;font-family:var(--font-mono);font-size:12px;z-index:50}
+.roster-skip:focus{left:0}
+.roster-masthead{padding:28px 16px 12px}
+.roster-eyebrow{font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:14px}
+.roster-headline{font-family:var(--font-display);font-size:var(--hq-hero-size);font-style:italic;font-weight:700;line-height:0.98;letter-spacing:-2px;color:var(--cb-ink);margin:0}
+
+.roster-scope{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:6px 16px 4px}
+.roster-tabs{display:flex;gap:18px;align-items:center}
+.roster-tab{font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute);background:none;border:none;padding:6px 0;cursor:pointer;border-bottom:2px solid transparent;display:inline-flex;align-items:center;gap:7px}
+.roster-tab--active{color:var(--cb-ink);border-bottom-color:var(--cb-brass)}
+.roster-tab__pulse{width:6px;height:6px;border-radius:50%;background:var(--cb-moss);display:inline-block}
+.roster-controls{display:flex;gap:10px;margin-left:auto;align-items:center;flex-wrap:wrap}
+.roster-search{font-family:var(--font-ui);font-size:14px;padding:9px 13px;background:var(--cb-chalk-2);border:1px solid var(--cb-chalk-3);border-radius:8px;color:var(--cb-ink);min-width:0;width:200px}
+.roster-search::placeholder{color:var(--cb-mute)}
+.roster-search:focus{outline:none;border-color:var(--cb-brass);box-shadow:0 0 0 3px rgba(var(--cb-brass-rgb),0.12)}
+.roster-sort{font-family:var(--font-mono);font-size:11px;letter-spacing:0.5px;padding:9px 11px;background:var(--cb-chalk-2);border:1px solid var(--cb-chalk-3);border-radius:8px;color:var(--cb-charcoal);cursor:pointer;text-transform:uppercase}
+.roster-sort:focus{outline:none;border-color:var(--cb-brass)}
+
+.roster-table{width:100%;border-collapse:collapse;margin-top:4px}
+.roster-table thead th{font-family:var(--font-mono);font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute);text-align:left;padding:10px;border-bottom:1px solid var(--cb-chalk-3);white-space:nowrap}
+.roster-table th.roster-num,.roster-table td.roster-num{text-align:right}
+.roster-table th.roster-ctr,.roster-table td.roster-ctr{text-align:center}
+.roster-row{height:64px;cursor:pointer;border-bottom:1px solid var(--cb-chalk-3);transition:background var(--duration-fast) var(--ease-default)}
+.roster-row:hover{background:var(--cb-chalk-2)}
+.roster-row:focus-visible{outline:2px solid var(--cb-brass);outline-offset:-2px}
+.roster-row td{padding:8px 10px;vertical-align:middle}
+.roster-cell-av{width:56px}
+.roster-name{font-family:var(--font-display);font-style:italic;font-weight:500;font-size:16px;color:var(--cb-ink);line-height:1.15;display:flex;align-items:center;gap:5px}
+.roster-handle{font-family:var(--font-mono);font-size:11px;color:var(--cb-mute);letter-spacing:0.3px;margin-top:3px}
+.roster-hcap{font-family:var(--font-display);font-weight:600;font-size:18px;color:var(--cb-ink);font-variant-numeric:tabular-nums}
+.roster-hcap--none{color:var(--cb-mute-2);font-size:15px}
+.roster-rounds{font-family:var(--font-mono);font-size:13px;color:var(--cb-charcoal);font-variant-numeric:tabular-nums}
+.roster-activity{font-family:var(--font-mono);font-size:11px;color:var(--cb-mute);letter-spacing:0.3px}
+.roster-status-dot{width:8px;height:8px;border-radius:50%;background:var(--cb-moss);display:inline-block;box-shadow:0 0 0 3px rgba(var(--cb-moss-rgb),0.18)}
+.roster-live{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--cb-brass);white-space:nowrap}
+.roster-chevron{color:var(--cb-mute-2)}
+.roster-empty-row td{padding:40px 16px;text-align:center;font-family:var(--font-ui);color:var(--cb-mute);font-style:italic}
+
+@media (max-width:640px){
+  .roster-col-rounds,.roster-col-activity{display:none}
+  .roster-search{width:140px}
+  .roster-scope{gap:10px}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    PROFILE DETAIL
    ═══════════════════════════════════════════════════════════════════════════ */
 .pd-banner{text-align:center;padding:20px 16px 16px}

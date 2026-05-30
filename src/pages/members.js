@@ -31,7 +31,11 @@ function renderMemberList() {
   var players = PB.getPlayers();
   
   // Show loading while fetching Firebase members
-  document.querySelector('[data-page="members"]').innerHTML = '<div class="sh"><h2>Parbaugh members</h2></div>' + skeletonMemberRow() + skeletonMemberRow() + skeletonMemberRow() + skeletonMemberRow();
+  document.querySelector('[data-page="members"]').innerHTML =
+    '<div class="hq-grid"><div class="hq-grid__main">' +
+    _rosterMasthead(null) +
+    '<div style="padding:48px 16px;text-align:center;font-family:var(--font-ui);color:var(--cb-mute);font-style:italic">Loading the roster…</div>' +
+    '</div></div>';
   
   if (db) {
     db.collection("members").get({ source: 'server' }).then(function(snap) {
@@ -92,178 +96,251 @@ function renderMemberList() {
       
       pbLog("[Members] Final list:", filtered.length, filtered.map(function(p){return p.name||p.username}).join(", "));
       
-      var h2 = '<div class="sh"><h2>Parbaugh members</h2></div>';
-      renderMemberListHtml(filtered, h2);
+      renderMemberListHtml(filtered);
     }).catch(function(e) {
       console.error("[Members] Firebase load failed:", e);
-      var h = '<div class="sh"><h2>Parbaugh members</h2></div>';
-      renderMemberListHtml(players, h);
+      renderMemberListHtml(players);
     });
   } else {
-    var h = '<div class="sh"><h2>Parbaugh members</h2></div>';
-    renderMemberListHtml(players, h);
+    renderMemberListHtml(players);
   }
 }
 
-function renderMemberListHtml(players, h) {
-  var totalCount = players.filter(function(p){return !isBannedRole(p);}).length;
-  
-  // Header with count
-  h = '<div class="sh"><h2>Members <span style="font-size:14px;color:var(--muted);font-weight:400">' + totalCount + '</span></h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
-  
-  // Search bar
-  h += '<div style="padding:0 16px 12px"><input type="text" id="memberSearch" class="ff-input" placeholder="Search members..." oninput="filterMemberList()" style="background:var(--bg3);border:1px solid var(--border);font-size:13px;padding:10px 14px"></div>';
-  
-  // Sort controls
-  h += '<div style="padding:0 16px 12px;display:flex;gap:6px;flex-wrap:wrap">';
-  var sorts = [
-    {key:"level",label:"Level"},
-    {key:"rounds",label:"Rounds"},
-    {key:"handicap",label:"Handicap"},
-    {key:"alpha",label:"A-Z"}
-  ];
-  sorts.forEach(function(s) {
-    var isActive = (s.key === "level"); // default sort
-    h += '<button class="btn-sm ' + (isActive ? 'green' : 'outline') + '" id="sort-' + s.key + '" style="font-size:10px;padding:4px 10px" onclick="sortMemberList(\'' + s.key + '\')">' + s.label + '</button>';
+// ── ROSTER (Members directory) — CLUBHOUSE_SPEC-HQ-3e dense table (W1.S3) ──
+// Replaces the prior card grid. Every visible value traces to source (P9):
+// handicap + rounds from PB.getPlayerRounds; "last seen" from the most recent
+// round timestamp; live status from onlineMembers; rail leaders/active derived
+// from the same per-player round set. No fabricated columns.
+
+// Per-player view model. lastTs = most recent round (ms); weekCount = rounds in
+// the trailing 7 days. Both derive from real round timestamps/dates only.
+function _rosterModel(p) {
+  var rounds = [];
+  try { rounds = PB.getPlayerRounds(p.id) || []; } catch(e) { rounds = []; }
+  var hcap = null;
+  try { hcap = PB.calcHandicap(rounds); } catch(e) { hcap = null; }
+  var lastTs = 0, weekCount = 0;
+  var weekAgo = Date.now() - 604800000;
+  rounds.forEach(function(r) {
+    var t = r.timestamp || (r.date ? new Date(r.date + "T12:00:00").getTime() : 0);
+    if (t > lastTs) lastTs = t;
+    if (t >= weekAgo) weekCount++;
   });
-  h += '</div>';
-  
-  // Member list container
-  h += '<div id="memberListContainer">';
-  
-  // Sort: founding members first, then by level
-  var sortedPlayers = players.filter(function(p){return !isBannedRole(p);}).slice();
-  sortedPlayers.sort(function(a, b) {
-    var aFounder = a.founding || a.isFoundingFour ? 1 : 0;
-    var bFounder = b.founding || b.isFoundingFour ? 1 : 0;
-    if (aFounder !== bFounder) return bFounder - aFounder;
-    var aLvl = 1, bLvl = 1;
-    try { aLvl = (PB.getPlayerLevel(a.id) || {level:1}).level; } catch(e) {}
-    try { bLvl = (PB.getPlayerLevel(b.id) || {level:1}).level; } catch(e) {}
-    return bLvl - aLvl;
-  });
-  
-  h += buildMemberCards(sortedPlayers);
-  h += '</div>';
-  
-  h += '<div class="section">' + renderInviteMemberButton() + '</div>';
-  document.querySelector('[data-page="members"]').innerHTML = h;
-  
-  // Store players for search/sort
-  window._memberListPlayers = sortedPlayers;
-  window._memberListSort = "level";
+  var online = !!(typeof onlineMembers !== "undefined" && onlineMembers && onlineMembers[p.id]);
+  return {
+    p: p,
+    name: p.username || p.name || "Member",
+    isFounder: !!(p.founding || p.isFoundingFour),
+    hcap: hcap,
+    rounds: rounds.length,
+    lastTs: lastTs,
+    weekCount: weekCount,
+    online: online
+  };
 }
 
-function buildMemberCards(players) {
+// Render a display name, muting any Discord-style #XXXX discriminator (W4.I1).
+function _rosterNameHtml(name) {
+  var hashIdx = name.lastIndexOf('#');
+  if (hashIdx > 0 && /^#\d{1,4}$/.test(name.slice(hashIdx))) {
+    return escHtml(name.slice(0, hashIdx)) + '<span style="opacity:0.5;font-weight:500;letter-spacing:0.5px">' + escHtml(name.slice(hashIdx)) + '</span>';
+  }
+  return escHtml(name);
+}
+
+// Editorial masthead. count === null during the loading state (count unknown).
+function _rosterMasthead(count) {
+  var label = 'THE PARBAUGHS';
+  if (count !== null && count !== undefined) label += ' · ' + count + (count === 1 ? ' MEMBER' : ' MEMBERS');
+  return '<button type="button" class="roster-skip" onclick="var el=document.getElementById(\'rosterTableRegion\');if(el){el.focus();el.scrollIntoView();}">Skip to roster</button>' +
+    '<div class="roster-masthead">' +
+    '<div class="roster-eyebrow">' + label + '</div>' +
+    '<h1 class="roster-headline">The roster.</h1>' +
+    '</div>';
+}
+
+// Scope rail: All/Live tabs, search, native sort select. Reads current
+// tab/sort from window state so re-renders preserve selection.
+function _rosterScope() {
+  var tab = window._rosterTab || 'all';
+  var sort = window._rosterSort || 'alpha';
+  var models = window._rosterModels || [];
+  var liveCount = 0;
+  models.forEach(function(m) { if (m.online) liveCount++; });
+  var h = '<div class="roster-scope">';
+  h += '<div class="roster-tabs" role="tablist">';
+  h += '<button type="button" class="roster-tab' + (tab === 'all' ? ' roster-tab--active' : '') + '" data-tab="all" onclick="rosterSetTab(\'all\')">All members</button>';
+  h += '<button type="button" class="roster-tab' + (tab === 'live' ? ' roster-tab--active' : '') + '" data-tab="live" onclick="rosterSetTab(\'live\')"><span class="roster-tab__pulse"></span>Live now' + (liveCount ? (' (' + liveCount + ')') : '') + '</button>';
+  h += '</div>';
+  h += '<div class="roster-controls">';
+  h += '<input type="text" id="rosterSearch" class="roster-search" placeholder="Search members" oninput="filterRoster()" aria-label="Search members">';
+  h += '<select class="roster-sort" aria-label="Sort roster" onchange="rosterSetSort(this.value)">';
+  var opts = [["alpha", "Username A–Z"], ["handicap", "Handicap low→high"], ["rounds", "Most rounds"], ["recent", "Recently active"]];
+  opts.forEach(function(o) { h += '<option value="' + o[0] + '"' + (sort === o[0] ? ' selected' : '') + '>' + o[1] + '</option>'; });
+  h += '</select>';
+  h += '</div>';
+  h += '</div>';
+  return h;
+}
+
+// Sort a model list by the active key. Ties resolve A-Z; null handicaps sink.
+function _rosterSortModels(models, key) {
+  var s = models.slice();
+  if (key === 'handicap') {
+    s.sort(function(a, b) {
+      if ((a.hcap === null || a.hcap === undefined) && (b.hcap === null || b.hcap === undefined)) return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+      if (a.hcap === null || a.hcap === undefined) return 1;
+      if (b.hcap === null || b.hcap === undefined) return -1;
+      return a.hcap - b.hcap;
+    });
+  } else if (key === 'rounds') {
+    s.sort(function(a, b) { return (b.rounds - a.rounds) || a.name.toLowerCase().localeCompare(b.name.toLowerCase()); });
+  } else if (key === 'recent') {
+    s.sort(function(a, b) { return (b.lastTs - a.lastTs) || a.name.toLowerCase().localeCompare(b.name.toLowerCase()); });
+  } else {
+    s.sort(function(a, b) { return a.name.toLowerCase().localeCompare(b.name.toLowerCase()); });
+  }
+  return s;
+}
+
+// Build <tbody> rows. colspan must track the 6-column header.
+function _rosterRows(models) {
+  if (!models.length) {
+    return '<tr class="roster-empty-row"><td colspan="6">No members match your search.</td></tr>';
+  }
+  var star = ' <svg viewBox="0 0 12 12" width="10" height="10" style="vertical-align:middle;margin-left:3px"><path d="M6 1l1.5 3 3.5.5-2.5 2.5.6 3.5L6 9l-3.1 1.5.6-3.5L1 4.5 4.5 4z" fill="var(--cb-brass)" stroke="none"/></svg>';
   var h = '';
-  // v8.22+ (design-pass 2026-05-22): tier visual separators. Prior
-  // implementation just dropped a 'Members' label when transitioning OUT
-  // of founders. This obscures the structure — members reading the list
-  // can't tell where founders end + the main league begins until they
-  // notice the missing star. New treatment: emit an explicit eyebrow at
-  // the START of each tier (FOUNDING FOUR / MEMBERS) with count + brass
-  // hairline above. Linear-style category headers.
-  var lastTier = null;
-  var foundingCount = players.filter(function(p){return p.founding || p.isFoundingFour;}).length;
-  var memberCount = players.length - foundingCount;
-  players.forEach(function(p, idx) {
-    var isFounder = p.founding || p.isFoundingFour;
-    var tier = isFounder ? "founder" : "member";
-    if (tier !== lastTier) {
-      var label, count;
-      if (tier === "founder") {
-        label = "FOUNDING FOUR";
-        count = foundingCount;
-      } else {
-        label = "MEMBERS";
-        count = memberCount;
-      }
-      h += '<div style="display:flex;align-items:baseline;justify-content:space-between;padding:' + (lastTier ? '18px' : '4px') + ' 16px 8px;border-top:' + (lastTier ? '1px solid var(--border)' : 'none') + ';margin-top:' + (lastTier ? '6px' : '0') + ';padding-top:' + (lastTier ? '14px' : '4px') + '">';
-      h += '<div style="font-family:var(--font-mono);font-size:9px;color:var(--gold,var(--cb-brass));letter-spacing:2px;font-weight:700;text-transform:uppercase">' + label + '</div>';
-      h += '<div style="font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:1px;font-weight:600">' + count + '</div>';
-      h += '</div>';
-      lastTier = tier;
-    }
-    
-    var avg = PB.getPlayerAvg(p.id);
-    var rounds = PB.getPlayerRounds(p.id);
-    var hcap = PB.calcHandicap(rounds);
-    var plvl = {level:1};
-    try { plvl = PB.calcLevelFromXP(PB.getPlayerXPForDisplay(p.id)) || {level:1}; } catch(e) {}
-    h += '<div class="card member-card" data-name="' + escHtml((p.name||"").toLowerCase() + " " + (p.username||"").toLowerCase()) + '" onclick="Router.go(\'members\',{id:\'' + p.id + '\'})">';
-    h += '<div class="member-row"><div style="position:relative">' + renderAvatar(p, 40, false);
-    h += '<div style="position:absolute;bottom:-3px;right:-3px;background:var(--gold);color:var(--bg);font-size:7px;font-weight:800;border-radius:6px;padding:1px 3px;border:1.5px solid var(--bg);line-height:1.3;min-width:12px;text-align:center;z-index:2;pointer-events:none">' + (plvl.level||1) + '</div>';
-    h += '</div><div class="m-info">';
-    h += '<div class="m-name">' + escHtml(p.username || p.name);
-    if (isFounder) h += ' <svg viewBox="0 0 12 12" width="10" height="10" style="vertical-align:middle;margin-left:2px"><path d="M6 1l1.5 3 3.5.5-2.5 2.5.6 3.5L6 9l-3.1 1.5.6-3.5L1 4.5 4.5 4z" fill="var(--gold)" stroke="none"/></svg>';
-    h += '</div>';
-    if (p.equippedTitle && p.equippedTitle !== "Member" && p.equippedTitle !== "Rookie") h += '<div class="m-nick">' + escHtml(p.equippedTitle) + '</div>';
-    // v8.0: "Founder" is the platform-wide role (Zach). The opal-ring
-    // visual treatment lands in v8.0.1. For rc2.2, just the text label.
-    else if (isFounderRole(p)) h += '<div class="m-nick">Founder</div>';
-    else if (platformRoleOf(p) === "suspended") h += '<div class="m-nick" style="color:var(--red)">Suspended</div>';
-    h += '<div class="m-stats">' + (hcap !== null ? 'HCP ' + hcap + ' · ' : '') + (avg ? 'Avg ' + avg + ' · ' : '') + rounds.length + ' rds</div>';
-    h += '</div><div class="m-arrow">></div></div></div>';
+  models.forEach(function(m) {
+    var p = m.p;
+    var sub = '';
+    if (p.equippedTitle && p.equippedTitle !== "Member" && p.equippedTitle !== "Rookie") sub = escHtml(p.equippedTitle);
+    else if (typeof isFounderRole === "function" && isFounderRole(p)) sub = "Founder";
+    else if (typeof platformRoleOf === "function" && platformRoleOf(p) === "suspended") sub = "Suspended";
+    var hcapCell = (m.hcap !== null && m.hcap !== undefined)
+      ? '<span class="roster-hcap">' + m.hcap + '</span>'
+      : '<span class="roster-hcap roster-hcap--none">—</span>';
+    var lastAct = m.lastTs ? feedTimeAgo(m.lastTs) : '—';
+    var statusCell = m.online
+      ? '<span class="roster-live"><span class="roster-status-dot" aria-hidden="true"></span>Live now</span>'
+      : '<span class="roster-activity" aria-hidden="true">—</span>';
+    var hcapTxt = (m.hcap !== null && m.hcap !== undefined) ? 'handicap ' + m.hcap : 'no handicap yet';
+    var actTxt = m.lastTs ? 'last active ' + lastAct : 'no rounds yet';
+    var aria = m.name + ', ' + hcapTxt + ', ' + m.rounds + (m.rounds === 1 ? ' round' : ' rounds') + ', ' + actTxt + ', ' + (m.online ? 'live now' : 'not live');
+    var go = "Router.go('members',{id:'" + p.id + "'})";
+    h += '<tr class="roster-row" tabindex="0" aria-label="' + escHtml(aria) + '" data-name="' + escHtml(m.name.toLowerCase()) + '" onclick="' + go + '" onkeydown="if(event.key===\'Enter\'){' + go + '}">';
+    h += '<td class="roster-cell-av">' + renderAvatar(p, 40, false) + '</td>';
+    h += '<td><div class="roster-name">' + _rosterNameHtml(m.name) + (m.isFounder ? star : '') + '</div>' + (sub ? '<div class="roster-handle">' + sub + '</div>' : '') + '</td>';
+    h += '<td class="roster-num">' + hcapCell + '</td>';
+    h += '<td class="roster-num roster-col-rounds"><span class="roster-rounds">' + m.rounds + '</span></td>';
+    h += '<td class="roster-col-activity"><span class="roster-activity">' + lastAct + '</span></td>';
+    h += '<td class="roster-ctr">' + statusCell + '</td>';
+    h += '</tr>';
   });
   return h;
 }
 
-function filterMemberList() {
-  var query = (document.getElementById("memberSearch").value || "").toLowerCase().trim();
-  var cards = document.querySelectorAll(".member-card");
-  cards.forEach(function(card) {
-    var name = card.getAttribute("data-name") || "";
-    card.style.display = !query || name.indexOf(query) !== -1 ? "" : "none";
-  });
+// One agate-rail leaderboard row (rank · avatar · name · value).
+function _railRow(rank, p, valueHtml) {
+  var go = "Router.go('members',{id:'" + p.id + "'})";
+  var nm = p.username || p.name || "Member";
+  return '<div style="display:flex;align-items:center;gap:10px;padding:7px 0;cursor:pointer" onclick="' + go + '">' +
+    '<span style="font-family:var(--font-mono);font-size:11px;color:var(--cb-mute-2);min-width:14px">' + rank + '</span>' +
+    renderAvatar(p, 28, false) +
+    '<span style="flex:1;min-width:0;font-family:var(--font-display);font-style:italic;font-size:15px;color:var(--cb-ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + _rosterNameHtml(nm) + '</span>' +
+    '<span style="font-family:var(--font-display);font-weight:600;font-size:15px;color:var(--cb-brass);font-variant-numeric:tabular-nums">' + valueHtml + '</span>' +
+    '</div>';
 }
 
-function sortMemberList(key) {
-  var players = window._memberListPlayers;
-  if (!players) return;
-  window._memberListSort = key;
-  
-  // Update button states
-  ["level","rounds","handicap","alpha"].forEach(function(k) {
-    var btn = document.getElementById("sort-" + k);
-    if (btn) btn.className = "btn-sm " + (k === key ? "green" : "outline");
+// Agate rail (≥960px only — hidden by .hq-grid__rail-right below that).
+function _rosterRail(models) {
+  var h = '';
+  var hc = models.filter(function(m) { return m.hcap !== null && m.hcap !== undefined; }).slice();
+  hc.sort(function(a, b) { return a.hcap - b.hcap; });
+  hc = hc.slice(0, 3);
+  var act = models.filter(function(m) { return m.weekCount > 0; }).slice();
+  act.sort(function(a, b) { return b.weekCount - a.weekCount; });
+  act = act.slice(0, 3);
+
+  if (hc.length) {
+    h += '<div class="hq-rail-module"><div class="hq-rail-module__eyebrow">Handicap leaders</div>';
+    hc.forEach(function(m, i) { h += _railRow(i + 1, m.p, '' + m.hcap); });
+    h += '</div>';
+  }
+  if (act.length) {
+    h += '<div class="hq-rail-module"><div class="hq-rail-module__eyebrow">Most active · 7 days</div>';
+    act.forEach(function(m, i) { h += _railRow(i + 1, m.p, m.weekCount + (m.weekCount === 1 ? ' rd' : ' rds')); });
+    h += '</div>';
+  }
+  h += '<div class="hq-rail-module"><div class="hq-rail-module__eyebrow">Clubhouse</div>' +
+    '<p style="font-family:var(--font-display);font-style:italic;font-size:17px;line-height:1.4;color:var(--cb-charcoal);margin:8px 0 0">"Community over competition. Always."</p></div>';
+  return h;
+}
+
+function renderMemberListHtml(players) {
+  var visible = players.filter(function(p) { return !isBannedRole(p); });
+  var models = visible.map(_rosterModel);
+  window._rosterModels = models;
+  window._rosterTab = 'all';
+  window._rosterSort = 'alpha';
+
+  var initial = _rosterSortModels(models, 'alpha');
+
+  var h = '<div class="hq-grid">';
+  h += '<div class="hq-grid__main">';
+  h += _rosterMasthead(visible.length);
+  h += _rosterScope();
+  h += '<div id="rosterTableRegion" tabindex="-1">';
+  h += '<table class="roster-table">';
+  h += '<thead><tr>';
+  h += '<th class="roster-cell-av" scope="col" aria-label="Avatar"></th>';
+  h += '<th scope="col">Member</th>';
+  h += '<th class="roster-num" scope="col">Hcp</th>';
+  h += '<th class="roster-num roster-col-rounds" scope="col">Rounds</th>';
+  h += '<th class="roster-col-activity" scope="col">Last seen</th>';
+  h += '<th class="roster-ctr" scope="col">Status</th>';
+  h += '</tr></thead>';
+  h += '<tbody id="rosterBody">' + _rosterRows(initial) + '</tbody>';
+  h += '</table>';
+  h += '</div>';
+  h += '<div class="section">' + renderInviteMemberButton() + '</div>';
+  h += '</div>';
+  h += '<aside class="hq-grid__rail-right" aria-label="Roster highlights">' + _rosterRail(models) + '</aside>';
+  h += '</div>';
+  document.querySelector('[data-page="members"]').innerHTML = h;
+}
+
+function rosterSetTab(tab) {
+  window._rosterTab = tab;
+  var tabs = document.querySelectorAll('.roster-tab');
+  for (var i = 0; i < tabs.length; i++) {
+    var isActive = tabs[i].getAttribute('data-tab') === tab;
+    tabs[i].className = 'roster-tab' + (isActive ? ' roster-tab--active' : '');
+  }
+  filterRoster();
+}
+
+function rosterSetSort(key) {
+  window._rosterSort = key;
+  filterRoster();
+}
+
+// Single render path for tab + search + sort. Rebuilds tbody from the cached
+// model list so no per-row DOM mutation drift accumulates.
+function filterRoster() {
+  var models = window._rosterModels || [];
+  var searchEl = document.getElementById("rosterSearch");
+  var q = (searchEl ? searchEl.value : "").toLowerCase().trim();
+  var tab = window._rosterTab || 'all';
+  var sort = window._rosterSort || 'alpha';
+  var out = [];
+  models.forEach(function(m) {
+    if (tab === 'live' && !m.online) return;
+    if (q && m.name.toLowerCase().indexOf(q) === -1) return;
+    out.push(m);
   });
-  
-  var sorted = players.slice();
-  sorted.sort(function(a, b) {
-    // Founders always first
-    var aF = a.founding || a.isFoundingFour ? 1 : 0;
-    var bF = b.founding || b.isFoundingFour ? 1 : 0;
-    if (aF !== bF) return bF - aF;
-    
-    if (key === "level") {
-      var aL = 1, bL = 1;
-      try { aL = (PB.getPlayerLevel(a.id)||{level:1}).level; } catch(e) {}
-      try { bL = (PB.getPlayerLevel(b.id)||{level:1}).level; } catch(e) {}
-      return bL - aL;
-    }
-    if (key === "rounds") {
-      return PB.getPlayerRounds(b.id).length - PB.getPlayerRounds(a.id).length;
-    }
-    if (key === "handicap") {
-      var aH = PB.calcHandicap(PB.getPlayerRounds(a.id));
-      var bH = PB.calcHandicap(PB.getPlayerRounds(b.id));
-      if (aH === null && bH === null) return 0;
-      if (aH === null) return 1;
-      if (bH === null) return -1;
-      return aH - bH; // lower handicap first
-    }
-    if (key === "alpha") {
-      return (a.name||"").localeCompare(b.name||"");
-    }
-    return 0;
-  });
-  
-  var container = document.getElementById("memberListContainer");
-  if (container) container.innerHTML = buildMemberCards(sorted);
-  
-  // Re-apply search filter
-  var query = (document.getElementById("memberSearch").value || "").trim();
-  if (query) filterMemberList();
+  out = _rosterSortModels(out, sort);
+  var body = document.getElementById("rosterBody");
+  if (body) body.innerHTML = _rosterRows(out);
 }
 
 function renderMemberDetail(pid) {

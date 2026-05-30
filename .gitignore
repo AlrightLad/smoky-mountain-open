@@ -40,6 +40,8 @@ logs/
 /firebase-debug.log
 /firestore-debug.log
 /pubsub-debug.log
+/.claude/state/dev-server.log
+/.claude/state/dev-server.err.log
 /tests/smoke/output/
 
 # Pre-watcher-test artifacts (remove after test rollback)
