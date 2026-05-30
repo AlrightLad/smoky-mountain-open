@@ -31,14 +31,13 @@ Router.register("calendar", function() {
     var ds=calYear+"-"+String(calMonth+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
     var isT=ds===todayStr,isS=ds===calSelectedDate;
     var evs=eventMap[ds]||[];
-    var bg=isS?"var(--gold)":"transparent";
+    var bg=isS?"var(--gold)":isT?"rgba(var(--gold-rgb),.13)":"transparent";
     var cl=isS?"var(--bg)":isT?"var(--gold)":"var(--cream)";
     var dots=[];
-    if(isT&&!isS) dots.push("var(--live)");
     var ht={};
     evs.forEach(function(ev){
       if(ev.type==="event"&&!ht.e){dots.push("var(--gold)");ht.e=1;}
-      if(ev.type==="round"&&!ht.r){dots.push("#4CAF50");ht.r=1;}
+      if(ev.type==="round"&&!ht.r){dots.push("var(--birdie)");ht.r=1;}
       if(ev.type==="range"&&!ht.rng){dots.push("var(--blue)");ht.rng=1;}
       if(ev.type==="tee"&&!ht.t){dots.push("var(--pink)");ht.t=1;}
     });
@@ -58,8 +57,8 @@ Router.register("calendar", function() {
 
   // Action buttons — premium styled, consistent sizing
   h += '<div style="display:flex;gap:10px;padding:12px 16px">';
-  h += '<button onclick="Router.go(\'tee-create\')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 8px;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:var(--radius);color:var(--bg);font:600 11px/1 Inter,sans-serif;cursor:pointer"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></svg>Tee Time</button>';
-  h += '<button onclick="showCalEventForm()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 8px;background:linear-gradient(135deg,var(--birdie),var(--cb-green-3));border:none;border-radius:var(--radius);color:#fff;font:600 11px/1 Inter,sans-serif;cursor:pointer"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15l8-12"/><path d="M4 3l8 4-8 4V3z"/></svg>Event</button>';
+  h += '<button onclick="Router.go(\'tee-create\')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 8px;background:linear-gradient(135deg,var(--pink),rgba(var(--pink-rgb),.8));border:none;border-radius:var(--radius);color:#fff;font:600 11px/1 Inter,sans-serif;cursor:pointer"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5"/></svg>Tee Time</button>';
+  h += '<button onclick="showCalEventForm()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 8px;background:linear-gradient(135deg,var(--gold),var(--gold2));border:none;border-radius:var(--radius);color:var(--bg);font:600 11px/1 Inter,sans-serif;cursor:pointer"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 15l8-12"/><path d="M4 3l8 4-8 4V3z"/></svg>Event</button>';
   h += '<button onclick="Router.go(\'range\')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:12px 8px;background:linear-gradient(135deg,var(--blue),var(--blue));border:none;border-radius:var(--radius);color:#fff;font:600 11px/1 Inter,sans-serif;cursor:pointer"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="3"/><circle cx="8" cy="8" r="6"/></svg>Range</button>';
   h += '</div>';
 
@@ -81,10 +80,9 @@ Router.register("calendar", function() {
   // Legend
   h += '<div style="display:flex;gap:10px;padding:4px 16px;font-size:9px;color:var(--muted2)">';
   h += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--gold);vertical-align:middle;margin-right:3px"></span>Event</span>';
-  h += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#4CAF50;vertical-align:middle;margin-right:3px"></span>Round</span>';
+  h += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--birdie);vertical-align:middle;margin-right:3px"></span>Round</span>';
   h += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--blue);vertical-align:middle;margin-right:3px"></span>Range</span>';
   h += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--pink);vertical-align:middle;margin-right:3px"></span>Tee Time</span>';
-  h += '<span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--live);vertical-align:middle;margin-right:3px"></span>Today</span>';
   h += '</div>';
 
   // Upcoming events
@@ -337,13 +335,13 @@ function _updateCalendarInPlace() {
     var ds=calYear+"-"+String(calMonth+1).padStart(2,"0")+"-"+String(d).padStart(2,"0");
     var isT=ds===todayStr,isS=ds===calSelectedDate;
     var evs=eventMap[ds]||[];
-    var bg=isS?"var(--gold)":"transparent";
+    var bg=isS?"var(--gold)":isT?"rgba(var(--gold-rgb),.13)":"transparent";
     var cl=isS?"var(--bg)":isT?"var(--gold)":"var(--cream)";
     var dots=[];
     var ht={};
     evs.forEach(function(ev){
       if(ev.type==="event"&&!ht.e){dots.push("var(--gold)");ht.e=1;}
-      if(ev.type==="round"&&!ht.r){dots.push("#4CAF50");ht.r=1;}
+      if(ev.type==="round"&&!ht.r){dots.push("var(--birdie)");ht.r=1;}
       if(ev.type==="range"&&!ht.rng){dots.push("var(--blue)");ht.rng=1;}
       if(ev.type==="tee"&&!ht.t){dots.push("var(--pink)");ht.t=1;}
     });
