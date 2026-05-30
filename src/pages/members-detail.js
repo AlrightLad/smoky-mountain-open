@@ -776,23 +776,53 @@ function renderMemberDetailWithData(p) {
   // Async load ParCoin transaction history (self-only — private per rules)
   var histEl = isOwnProfile ? document.getElementById("parcoin-history-" + pid) : null;
   if (histEl) {
-    loadTransactionHistory(pid, 10).then(function(txns) {
+    loadTransactionHistory(pid, 30).then(function(txns) {
       if (!txns.length) {
         histEl.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No earnings yet, play a round to start earning!</div>';
         return;
       }
-      var th = '';
-      txns.forEach(function(t) {
-        var dateStr = "";
-        if (t.createdAt && t.createdAt.toDate) {
+      // Collapse consecutive runs of the same earning into one digest row. A
+      // week of daily logins reads as "Daily login ×7 · +7" rather than seven
+      // identical rows, so the varied earnings (round bonuses, achievements)
+      // actually surface. txns are newest-first, so the first in a run is the
+      // latest and each subsequent one is older. Count + summed amount keep it
+      // truthful (P9) — nothing is hidden, just condensed.
+      function fmtDate(t) {
+        if (t && t.createdAt && t.createdAt.toDate) {
           var d = t.createdAt.toDate();
-          dateStr = (d.getMonth()+1) + "/" + d.getDate();
+          return (d.getMonth()+1) + "/" + d.getDate();
         }
+        return "";
+      }
+      // Strip a baked-in "at null"/"at undefined" course fragment from older
+      // round-bonus labels (the course name was unresolved when the ledger row
+      // was written). Showing "Completed 18H round (98)" is more truthful than
+      // surfacing the literal word "null" (P9).
+      function cleanLabel(s) {
+        return String(s || "").replace(/ at (null|undefined)(?=\s*\(|$)/i, "");
+      }
+      var groups = [];
+      txns.forEach(function(t) {
+        var label = cleanLabel(t.label || t.reason || "Earned");
+        var last = groups[groups.length - 1];
+        if (last && last.label === label) {
+          last.count += 1;
+          last.amount += (t.amount || 0);
+          last.earliest = t;
+        } else {
+          groups.push({ label: label, count: 1, amount: (t.amount || 0), latest: t, earliest: t });
+        }
+      });
+      var th = '';
+      groups.forEach(function(g) {
+        var lateStr = fmtDate(g.latest), earlyStr = fmtDate(g.earliest);
+        var dateStr = (g.count > 1 && earlyStr && lateStr && earlyStr !== lateStr) ? (earlyStr + " – " + lateStr) : lateStr;
+        var countBadge = g.count > 1 ? ' <span style="font-size:9px;font-weight:700;color:var(--muted2)">×' + g.count + '</span>' : '';
         th += '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">';
-        th += '<div style="flex:1;min-width:0"><div style="font-size:11px;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(t.label || t.reason) + '</div>';
+        th += '<div style="flex:1;min-width:0"><div style="font-size:11px;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(g.label) + countBadge + '</div>';
         if (dateStr) th += '<div style="font-size:9px;color:var(--muted2)">' + dateStr + '</div>';
         th += '</div>';
-        th += '<div style="font-size:13px;font-weight:700;color:var(--gold);flex-shrink:0;margin-left:8px">+' + t.amount + '</div>';
+        th += '<div style="font-size:13px;font-weight:700;color:var(--gold);flex-shrink:0;margin-left:8px">+' + g.amount + '</div>';
         th += '</div>';
       });
       histEl.innerHTML = '<div class="card"><div class="card-body" style="padding:10px 14px">' + th + '</div></div>';
