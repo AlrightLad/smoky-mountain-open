@@ -1302,3 +1302,111 @@ Ran exactly **5 state-changing operations** (regen-all + engineer.json + critic.
 NOT staged (concurrent-session / other-tooling territory, via explicit pathspec): `.claude/state/design-iteration/2026-05-22-staging-live/staging-home-1920.png`, `.claude/state/emu-unified-2026-05-29.log`, and the 6 untracked verify PNGs (`auth-state-check.png`, `hq-home-full-2026-05-30.png`, `hq-home-v8.23.68.png`, `state-recheck.png`, `verify-ladder-zoom.png`, `verify-newuser-hero.png`, `verify-v8.23.68-ladder.png`) — a live session's artifacts and the proximate cause of A12=60/yellow, left for that session / Founder.
 
 No code changes in cycle BH. No proposals. No FIQ writes. No bug-report state moves (inbox absent). app-health overall **FLAT at 87.1 (A-)** across this heartbeat; the 88.6→87.1 / A12 90→60 fall was a pre-run concurrent cron-regen, correctly **NOT** blamed on the heartbeat.
+
+---
+
+# Overnight triage — 2026-05-30 (cycle BI)
+
+**Started:** 2026-05-30T18:01:17Z (cron-fired; regen-all START)
+**Finished:** 2026-05-30T18:01:24Z (regen-all "ALL DASHBOARDS REGENERATED" timestamp)
+**Mode:** Heartbeat-only branch per runbook (FIQ + bug-reports inbox both absent)
+**Cycle:** BI (95th consecutive empty-inbox cycle; BH regen START 17:01:27Z → BI 18:01:17Z = ~59m50s wall-clock gap — **49th consecutive ~1h-cadence cycle** since cycle M). **Fifteenth cycle of the 2026-05-30 date** (AU 04:04Z → BH 17:01Z → BI 18:01Z). Both the UTC clock (18:01Z) and the Founder-local clock (14:01 EDT, York PA UTC-4) agree on 2026-05-30 this cycle, so there is **no journal-date convention tension**. Appended to the existing 2026-05-30 date journal per the one-file-per-date / multi-cycle-append convention (AU–BH all in this file).
+
+## Inbox state at run-start (cycle BI)
+
+- `.claude/state/founder-input-queue/` — **directory does not exist** (`test -d` → MISSING)
+- `.claude/state/bug-reports/` — **entire tree absent** (no `inbox/`, no `triaged/`)
+- `.claude/state/proposals/pending/` — only `.gitkeep` (no pending proposals)
+- `.claude/state/proactive-backlog.md` — **absent** (no demotions to make)
+- Working tree at run-start: DIRTY with **concurrent-session/other-tooling artifacts only** — `M .claude/state/design-iteration/2026-05-22-staging-live/staging-home-1920.png`, `M .claude/state/emu-unified-2026-05-29.log`; untracked `.claude/state/founder-decisions/` + `scripts/founder-decide.ps1`. HEAD = `0fe5ec79`.
+
+Per runbook: "If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 only and exit."
+
+## Step 1 — FIQ triage (cycle BI)
+
+- FIQ entries triaged: **0** (queue directory absent)
+- Grade breakdown: N/A — A:0 B:0 C:0 D:0 F:0
+- IDs: none
+
+## Step 2 — Bug-report triage (cycle BI)
+
+- Bug reports processed: **0** (inbox tree absent)
+- Dispositions: none
+- No P3e discussion bubbles opened (nothing to deliberate)
+
+## Step 3 — Heartbeat (cycle BI)
+
+### 3a — `scripts/regen-all.ps1`
+
+- Ran end-to-end 18:01:17Z → 18:01:24Z: **=== ALL CHECKS PASSED ===**, **round-trip test PASS**. **50th consecutive** clean canonical regen-all (cycles L–BI).
+- Heartbeat `regen-all-last-pass.json` written.
+- Telemetry snapshot: events=17535 (up from BH 17480) handoffs=1 bubbles=7 proposals_pending=0, meter_status=wired-real → HALT-25 NOT in effect. Token aggregate (all-time): real=13,278,753,633 estimated=15,409,890 manual=0.
+- All ~30 guards green (round-trip 4-view swap + transcript tallies 3 bubbles + nav 9-link ×9 + meter-wiring 7/7 + founder-queue 7/7 + quota-type-enum + cross-dash proposals_pending=0 + lifecycle shipped=7 + amendments applied=28 + escalations applied=3 + theme convergence no raw hex + no-charts + protected-layouts 5/5 + 23/23 + 17 swatches + W1.S1 + proposal-readiness 0 deferred + install-scripts 7 parse + install-cmd-surface + scroll-reachability 5/0/0 + quota-status auto-derived + pause-discipline clean + wiring 5/5).
+- App health: **A- (87.1)**, 1 attention item (A12_operational, `what`="10 of last 10 cron watcher runs hit skip-dirty"). Founder-checklist: **open=4 (red=0 yellow=4 green=0) closed_total=28** (down from BH open=5 / closed=27 — one item closed by the concurrent founder-decide workflow; red=0, nothing ship-blocking).
+- One INFORMATIONAL `~` (not a failure): `user-context-gate` flags `main-flows.html` modified 22553.8 min after the last user-context capture (2026-05-14T23-07-48Z). Benign on a heartbeat-only night with no visual ship-close.
+
+**FLAT-HOLD attribution (the BI case after BG's rise + BH's fall — a three-cycle triad).** This cycle there was **no rise/fall event** in my regen window. The run-start COMMITTED baseline (`app-health.html` `generated_at` 2026-05-30T17:47:23.644011Z, `audit_trigger` sha **62e45d4d** *"fix(founder-checklist): render full walkthroughs + wire deleteMyAccount deploy verify"*, substrate-commit, total_files_touched 6) ALREADY read overall **87.1 / A12=60/yellow** BEFORE this regen; my 18:01:23Z regen ALSO computed **87.1 / A12=60/yellow / 1 attention item** — so the heartbeat **HELD FLAT at 87.1**. The honest discipline this cycle was to report a flat hold rather than fabricate a phantom rise/fall narrative. The BG/BH 88.6↔87.1 oscillation did not recur in this window.
+
+**Visible cause of A12=60/yellow (unchanged, traceable, not fabricated):** attention item `dimension`=A12_operational `what`="10 of last 10 cron watcher runs hit skip-dirty" `what_action`="Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated" — because the working tree carries concurrent-session/other-tooling artifacts (`staging-home-1920.png`, `emu-unified-2026-05-29.log`), so every cron watcher run hits skip-dirty. **red=0 throughout, self-clearing** the moment the concurrent session commits/cleans. **No proposal manufactured** on a self-resolving oscillating dimension (METRIC_INTEGRITY_PROTOCOL Rule 2); the existing attention-item `what_action` already documents the remedy if it ever sticks red across ≥3 consecutive cycles.
+
+**Honest diff characterization — THIS heartbeat's `app-health.html` diff IS purely metadata.** Two change groups: (a) `generated_at` 17:47:23.644011Z → 18:01:23.412471Z; (b) `audit_trigger` **62e45d4d** (substrate-commit, total 6) → **0fe5ec79** (*"cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)"*, cron, 0 app files, total 4). A score-line grep (`overall_score`/`overall_grade`/`score`/`status`/`pre_deduction`/`post_deduction`/`dimension`/`attention`) on the diff returns **EMPTY** → all 12 dimension scores **and** overall byte-unchanged at 87.1.
+
+**Concurrent-territory ownership catch.** During the regen window, `M .claude/state/task-queue/founder/deploy-deleteMyAccount-function.md` appeared (adds `cost: $0` + `execute_by: agent` frontmatter). It was **NOT** dirty at run-start. A writer-grep confirmed the **only** thing on disk that writes `execute_by` is the untracked concurrent `scripts/founder-decide.ps1` (`regen-founder-checklist.py` references `task-queue/founder/` for READS but contains no `execute_by`/`cost:` writer). So this edit is **concurrent-session territory, NOT my heartbeat output** — clustered with the untracked `founder-decisions/` dir + `founder-decide.ps1`. Correctly left **unstaged**. This is a false-ownership guard symmetric to BG/BH's false-credit/false-blame guards.
+
+### 3b — Wellness refresh
+
+- `.claude/state/wellness/engineer.json` — cycle BI update (counters ~1,700k tokens cumulative / 1.0h discrete-context; status `active`; `thresholds_crossed=['tokens_consumed']` preserved **59th** cross-cycle; full cycle-BI `_note` incl. the FLAT-HOLD attribution + A12 visible-cause + metadata-only diff honesty + concurrent-territory ownership catch).
+- `.claude/state/wellness/critic.json` — cycle BI update. Critic participated via the closing METRIC_INTEGRITY_PROTOCOL 3.1 attestation + independent verification, this cycle confirming via timestamp ordering that the committed baseline already read 87.1 (flat hold, no event to credit/blame) AND confirming via writer-grep that the `deploy-deleteMyAccount-function.md` edit belongs to the concurrent `founder-decide.ps1`. Counters ~345k tokens cumulative / 1.0h; status `active`; threshold preserved.
+
+## Step 4 — Session journal
+
+**This section** (cycle BI appended to the existing 2026-05-30 date journal).
+
+## Cycle BI counts
+
+| Metric | Count |
+|---|---|
+| FIQ entries triaged | 0 (queue absent) |
+| Bug reports processed | 0 (inbox absent) |
+| New proposals authored | 0 |
+| Wellness state changes | 2 (engineer.json + critic.json cycle BI refresh) |
+
+FIQ grade distribution: A=0 B=0 C=0 D=0 F=0 (no entries graded — queue absent).
+
+## Blockers requiring Founder attention (cycle BI)
+
+**No ship-blocking issues introduced by triage.** Awareness / carry-over items:
+
+1. **app-health A12_operational steady at 60/yellow** (BF 88.6 → cron 87.1 → BG 88.6 → BH 87.1 → **BI 87.1 flat**) on the rolling 10-run skip-dirty window. **red=0 throughout, self-clearing.** Caused by the dirty tree (concurrent-session staging PNG + emu log). The existing attention-item `what_action` documents the remedy if it ever sticks red. **No proposal manufactured** on a self-resolving dimension. *If* a future cycle finds A12 stuck red across ≥3 consecutive cycles, that is the signal to author the `.husky/post-commit` / `routinePatterns` diagnosis proposal — not now.
+2. **Founder-checklist `open=4` (red=0 yellow=4 green=0 closed=28)** — one item closed since BH (open=5/closed=27) by the concurrent founder-decide workflow; red=0, nothing ship-blocking.
+3. **Carry-over — a live concurrent session is building a "founder-decide" workflow** (`scripts/founder-decide.ps1`, `.claude/state/founder-decisions/`, and frontmatter edits — `cost: $0` + `execute_by: agent` — to `task-queue/founder/deploy-deleteMyAccount-function.md`). Deliberately **not staged** by this heartbeat; left for that session / Founder. Awareness only.
+4. **Carry-over — concurrent-session artifacts dirty the tree** (`staging-home-1920.png`, `emu-unified-2026-05-29.log`). The proximate cause of A12=60/yellow.
+5. **Carry-over — writer-side BOM fix (`scripts/common.ps1`)** remains unauthored as a proposal. Consumer-side `utf-8-sig` tolerance has held **50** consecutive clean regen-all runs (cycles L–BI). Deliberately not auto-promoted without a Founder priority signal.
+6. **Carry-over — journal-date convention (UTC vs Founder-local)** for filename + commit date. Not in tension this cycle (both = 2026-05-30) but unresolved as policy.
+7. **Carry-over — wellness token-counter semantics** — `thresholds_crossed=['tokens_consumed']` persists (engineer ~1,700k / critic ~345k cumulative since last rest); status remains `active` because heartbeat-only nights are genuinely light. Founder-decision still LIVE: (a) reset per cron fire, (b) raise threshold, (c) auto-trigger rest when crossed-while-active, (d) leave current convention (current path).
+8. **Cron cadence** — cycles M–BI steady at ~1h (49 consecutive). Awareness only.
+
+## Cycle BI Critic metric-integrity attestation (per `METRIC_INTEGRITY_PROTOCOL § 3.1`)
+
+1. **"Did every bug report processed get a real diagnosis with cited evidence?"** N/A — zero bug reports tonight (inbox tree absent, verified by directory checks this cycle). Cannot wave off what doesn't exist.
+2. **"Did every new proposal cite a specific screen/state/edge-case?"** N/A — zero new proposals tonight. The A12 yellow was deliberately *not* promoted into a proposal (self-clearing, red=0).
+3. **"Did the FIQ grades reflect rubric dimensions honestly?"** N/A — zero FIQ entries tonight. Queue absent.
+
+**Heartbeat-only self-check — is tonight's substantive output real?** YES, and the integrity discipline this cycle completes a **three-cycle attribution triad** with BG and BH. BG took correct **credit** for a real A12 RISE (60→90, overall 87.1→88.6). BH correctly **declined blame** for a pre-cron FALL (88.6→87.1). BI is the **FLAT-HOLD** case: no event occurred — the run-start committed baseline (`generated_at` 17:47:23Z, sha 62e45d4d) already read 87.1 / A12=60/yellow, my 18:01:23Z regen also computed 87.1 / A12=60/yellow, so the heartbeat held flat. The honest move was to report no movement rather than fabricate a phantom rise/fall. A 50th consecutive clean canonical regen-all confirms the gate is durable. The substantive verification this cycle was the **concurrent-territory ownership catch**: `deploy-deleteMyAccount-function.md` was edited during my window, and a writer-grep proved the `execute_by`/`cost` fields came from the untracked concurrent `founder-decide.ps1` (not `regen-founder-checklist.py`, which has no such writer) — so it was correctly attributed to that session and left unstaged. Every claim is anchored to a quoted regen-all log line, a `git diff` hunk read verbatim, a `grep`/writer-grep result, a `git status`/`git log` line, or a `test -d` directory-absence check. No invented productivity, no false credit, no false blame, no false ownership.
+
+**Critic attests cleanly: substantive heartbeat cycle, app-health held FLAT at 87.1 with no phantom rise/fall narrative (the BI flat-hold completing the BG-rise / BH-fall triad), A12=60/yellow + its dirty-tree cause flagged honestly, no proposal manufactured on a self-resolving dimension, app-health honestly characterized as metadata-only via an empty score-line grep, the `deploy-deleteMyAccount-function.md` edit correctly attributed to the concurrent `founder-decide.ps1` and left unstaged, commit pathspec scoped to own files, ship closes.**
+
+## Pause-discipline note (cycle BI)
+
+Ran exactly **5 state-changing operations** (regen-all + engineer.json + critic.json + this journal + the commit). **No API-error / org-cap signal** appeared in any tool result. Per the F1a defensive heuristic — *"the actual choice is judgment, not threshold-driven … over-pause beats under-pause"* — exiting clean at op 5 would have left a dirty, uncommitted tree (worse outcome) with no quota pressure to justify it, so I completed the commit. Documented here for retrospective review.
+
+## Files changed in this cycle BI run
+
+- `.claude/state/wellness/engineer.json` — cycle BI update
+- `.claude/state/wellness/critic.json` — cycle BI update
+- `.claude/state/cron/2026-05-30-overnight-run.md` — this journal (cycle BI section appended)
+- `docs/reports/app-health.html` — regen output (metadata `generated_at` + `audit_trigger` commit-pointer `62e45d4d`→`0fe5ec79`; score-line grep EMPTY → all 12 dimensions + overall byte-unchanged at 87.1)
+
+NOT staged (concurrent-session / other-tooling territory, via explicit pathspec): `.claude/state/design-iteration/2026-05-22-staging-live/staging-home-1920.png`, `.claude/state/emu-unified-2026-05-29.log`, the untracked `.claude/state/founder-decisions/` dir + `scripts/founder-decide.ps1`, and `.claude/state/task-queue/founder/deploy-deleteMyAccount-function.md` (edited by the concurrent `founder-decide.ps1` during this run, NOT my heartbeat — verified by writer-grep) — a live session's artifacts, left for that session / Founder.
+
+No code changes in cycle BI. No proposals. No FIQ writes. No bug-report state moves (inbox absent). app-health overall **FLAT at 87.1 (A-)** across this heartbeat; no rise/fall event occurred in my window (the BG/BH oscillation did not recur — flat-hold correctly reported, not a phantom narrative).
