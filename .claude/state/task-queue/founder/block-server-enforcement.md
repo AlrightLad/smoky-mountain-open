@@ -6,6 +6,9 @@ authored_at: 2026-05-29T12:30:00Z
 authored_by: agent
 founder_action_required: true
 gate: AMD-018 gate 2 (Firestore rules deploy)
+cost: $0
+execute_by: agent
+execute_by_reason: agent authors + emulator-verifies the firestore.rules diff; applying it needs the gate-protected.sh rules-edit bypass (part of the bootstrap), then the agent deploys
 ---
 
 # Server-enforce member blocking (App Store 1.2 — Phase 2 hardening)

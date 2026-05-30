@@ -5,6 +5,9 @@ priority: MEDIUM
 authored_at: 2026-05-24T14:30:00Z
 authored_by: agent
 founder_action_required: true
+cost: $0
+execute_by: founder
+execute_by_reason: regenerate a token in the Sentry web portal (no agent session) + write it to .env (gate-protected); both are secret material
 verify_command: "node scripts/sentry-fetch-events.mjs"
 verify_expected: "full payload written to"
 ---

@@ -5,6 +5,9 @@ priority: MEDIUM
 authored_at: 2026-05-23T14:00:00Z
 authored_by: agent
 founder_action_required: true
+cost: $0
+execute_by: founder
+execute_by_reason: handles a service-account secret (gate 6); the agent must never read or pipe raw credential material
 ---
 
 # GitHub Actions staging deploy — needs FIREBASE_SERVICE_ACCOUNT_STAGING secret
