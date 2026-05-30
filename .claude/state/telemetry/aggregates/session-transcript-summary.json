@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-05-30T22:35:10.713438+00:00",
+  "generated_at": "2026-05-30T23:08:29.213237+00:00",
   "schema_version": 1,
   "source": "~/.claude/projects/C--Users-Zach-smoky-mountain-open/*.jsonl",
-  "session_count": 262,
-  "bucket_count": 309,
-  "all_time_total_tokens": 13502198535,
+  "session_count": 263,
+  "bucket_count": 310,
+  "all_time_total_tokens": 13529022674,
   "by_day_total": {
     "2026-04-17": 294853821,
     "2026-04-20": 362592283,
@@ -34,12 +34,12 @@
     "2026-05-27": 0,
     "2026-05-28": 29959892,
     "2026-05-29": 1125370428,
-    "2026-05-30": 1042276147
+    "2026-05-30": 1069100286
   },
   "by_model_total": {
     "claude-opus-4-7": 11336701903,
     "<synthetic>": 0,
-    "claude-opus-4-8": 2165496632
+    "claude-opus-4-8": 2192320771
   },
   "buckets": {
     "0c5538f6-fa47-44fc-9519-28830b98ff03|2026-05-13|claude-opus-4-7": {
@@ -3777,14 +3777,14 @@
       "session_id": "a3e3471a-7db9-4c9d-a1f1-37284a43520d",
       "day": "2026-05-30",
       "model": "claude-opus-4-8",
-      "turn_count": 7393,
-      "input_tokens": 304857,
-      "output_tokens": 9225388,
-      "cache_read_input_tokens": 869116975,
-      "cache_creation_input_tokens": 33030459,
-      "total": 911677679,
+      "turn_count": 7580,
+      "input_tokens": 313395,
+      "output_tokens": 9544476,
+      "cache_read_input_tokens": 889594118,
+      "cache_creation_input_tokens": 34432167,
+      "total": 933884156,
       "first_ts": "2026-05-30T01:45:58.886Z",
-      "last_ts": "2026-05-30T22:34:43.784Z"
+      "last_ts": "2026-05-30T23:08:06.051Z"
     },
     "3c2ac5b0-70f4-4435-b13b-40243a5de0ce|2026-05-30|claude-opus-4-8": {
       "session_id": "3c2ac5b0-70f4-4435-b13b-40243a5de0ce",
@@ -4058,6 +4058,19 @@
       "total": 6863029,
       "first_ts": "2026-05-30T22:00:09.389Z",
       "last_ts": "2026-05-30T22:07:57.921Z"
+    },
+    "ca45cc7d-9184-48f7-8bd8-89ccb0e68e0c|2026-05-30|claude-opus-4-8": {
+      "session_id": "ca45cc7d-9184-48f7-8bd8-89ccb0e68e0c",
+      "day": "2026-05-30",
+      "model": "claude-opus-4-8",
+      "turn_count": 48,
+      "input_tokens": 46908,
+      "output_tokens": 85789,
+      "cache_read_input_tokens": 4114472,
+      "cache_creation_input_tokens": 370493,
+      "total": 4617662,
+      "first_ts": "2026-05-30T23:00:11.796Z",
+      "last_ts": "2026-05-30T23:08:17.242Z"
     }
   }
 }
