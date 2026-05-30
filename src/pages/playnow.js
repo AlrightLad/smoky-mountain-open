@@ -370,8 +370,10 @@ Router.register("playnow", function(params) {
 function renderPlaySetup() {
   var h = '<div class="sh"><h2>Play now</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
 
-  h += '<div style="text-align:center;padding:16px"><div style="font-family:var(--font-display);font-size:18px;color:var(--gold)">Start a round</div><div style="font-size:11px;color:var(--muted);margin-top:4px;letter-spacing:.3px">Score hole by hole as you play</div>';
-  h += '<div style="margin-top:10px"><span style="font-size:11px;color:var(--gold);cursor:pointer;text-decoration:underline" onclick="Router.go(\'scramble-live\')">Or start a Scramble Round →</span></div></div>';
+  // Single hierarchy: the .sh "Play now" title is the only heading. This is a
+  // quiet supporting line, not a second gold display heading competing with it,
+  // and it stays left-aligned to match the form labels below.
+  h += '<div style="padding:0 2px 16px"><div style="font-size:12px;color:var(--muted);letter-spacing:.2px;line-height:1.5">Score hole by hole as you play, or <span style="color:var(--gold);cursor:pointer;text-decoration:underline;text-underline-offset:2px" onclick="Router.go(\'scramble-live\')">start a Scramble round →</span></div></div>';
 
   h += '<div class="form-section">';
   // Player is always the current user — try multiple identification methods
