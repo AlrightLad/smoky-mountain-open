@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv, minifySync } from 'vite';
 import { resolve } from 'path';
 import { readFileSync, readdirSync } from 'fs';
+import { createHash } from 'crypto';
 
 // 2026-05-29 A8 perf lift: the inline CORE+IMMEDIATE block (transformIndexHtml)
 // and deferred.js (generateBundle) are emitted as raw concatenated source via
@@ -54,6 +55,28 @@ var DEFERRED_PAGES = [
 
 var PAGE_FILES = IMMEDIATE_PAGES.concat(DEFERRED_PAGES);
 
+// Content-addressed deferred bundle. The emitted file keeps a fixed asset name
+// outside Rollup's hashing pipeline, but firebase.json serves /assets/*.js as
+// `immutable, max-age=1yr`. A fixed name + reused URL + immutable cache pins
+// returning users to whatever deferred.js they first downloaded — new page code
+// never reaches them (only index.html, served no-cache, updates). Hashing the
+// filename makes the immutable header truthful: new content => new URL => fresh
+// fetch, and the always-fresh index.html points at the new URL, self-healing any
+// already-stuck client. Memoized so the minify+hash runs once and the injected
+// <script src> (transformIndexHtml) and emitFile (generateBundle) stay in lockstep
+// regardless of hook order.
+var _deferredBundle = null;
+function getDeferredBundle() {
+  if (_deferredBundle) return _deferredBundle;
+  var code = DEFERRED_PAGES.map(function(f) {
+    return readFileSync(resolve('src/pages', f), 'utf-8');
+  }).join('\n');
+  var minified = minifyBlock(code, 'deferred');
+  var hash = createHash('sha256').update(minified).digest('hex').slice(0, 8);
+  _deferredBundle = { fileName: 'assets/deferred-' + hash + '.js', source: minified };
+  return _deferredBundle;
+}
+
 function coreScriptsPlugin() {
   var isBuild = false;
   return {
@@ -94,7 +117,7 @@ function coreScriptsPlugin() {
         // The generateBundle phase below writes the deferred.js file.
         return [
           { tag: 'script', children: minifyBlock(coreCode + '\n' + immediateCode, 'core-immediate'), injectTo: 'body' },
-          { tag: 'script', attrs: { defer: true, src: 'assets/deferred.js' }, injectTo: 'body' }
+          { tag: 'script', attrs: { defer: true, src: getDeferredBundle().fileName }, injectTo: 'body' }
         ];
       } else {
         var coreTags = CORE_FILES.map(function(f) {
@@ -137,13 +160,11 @@ export default defineConfig(function(configEnv) {
       // browser can render the initial HTML before that script downloads.
       name: 'parbaughs-deferred-chunk',
       generateBundle: function(options, bundle) {
-        var deferredCode = DEFERRED_PAGES.map(function(f) {
-          return readFileSync(resolve('src/pages', f), 'utf-8');
-        }).join('\n');
+        var d = getDeferredBundle();
         this.emitFile({
           type: 'asset',
-          fileName: 'assets/deferred.js',
-          source: minifyBlock(deferredCode, 'deferred')
+          fileName: d.fileName,
+          source: d.source
         });
       }
     },
