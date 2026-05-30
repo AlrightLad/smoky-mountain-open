@@ -401,7 +401,7 @@ function renderPlaySetup() {
   h += '<div class="ff"><label class="ff-label">Holes</label><select class="ff-input" id="pn-holes"><option value="18">18 holes</option><option value="front9">Front 9 (holes 1–9)</option><option value="back9">Back 9 (holes 10–18)</option></select></div>';
   h += '<div id="pn-scramble-team-section"></div>';
 
-  h += '<button class="btn full green" onclick="startLiveRound()" style="margin-top:8px">Tee it up</button>';
+  h += '<button class="btn full green" onclick="startLiveRound()" style="margin-top:8px;font-size:15px;padding:15px 20px;letter-spacing:.4px">Tee it up</button>';
   h += '</div>';
 
   document.querySelector('[data-page="playnow"]').innerHTML = h;
