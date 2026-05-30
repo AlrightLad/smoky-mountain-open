@@ -98,20 +98,32 @@ function _hqDaysSinceLastRound(myRounds) {
 // with date/weather prefix REMOVED — date lives in masthead chrome (page-shell
 // hqHome variant), weather lives in masthead pill. Both are now single-source.
 function _renderEditorialGreetingHero(ctx) {
-  var h = '<div>';
-  // Headline — Fraunces, scales 36/44/52/56 across bands
-  h += '<div style="font-family:var(--font-display);font-size:var(--hq-hero-size);font-weight:var(--hq-hero-weight);line-height:1.05;letter-spacing:-2px;color:var(--cb-ink);margin-bottom:14px">';
-  // v8.22+ (design-pass 2026-05-22): time-of-day greeting variant — mirrors
-  // mobile home's _greetingForTime. Editorial Fraunces register preserved;
-  // only the lead word changes. "Welcome back" reserved for late night since
-  // the masthead carries the day/edition already.
+  // v8.23.67 (Wave 2 design coherence): the flat editorial greeting becomes a
+  // felt-green hero PANEL — the Parbaughs country-club scoreboard moment. Dark
+  // billiard-felt surface (theme-aware via --surface-inverse + --cb-green-2),
+  // chalk text, brass-2 gold accents, --el-4 depth. Gives the above-the-fold a
+  // real focal point instead of one undifferentiated light plane. Critical text
+  // (greeting, stat value, captions) stays full-contrast chalk; brass-2 carries
+  // only the large/decorative accents so legibility holds on the dark felt.
   var _hqHour = new Date().getHours();
+  // Time-of-day greeting variant — mirrors mobile home's _greetingForTime.
+  // "Welcome back" reserved for late night since the masthead carries the
+  // day/edition already.
   var _hqGreet = _hqHour < 12 ? "Good morning" : (_hqHour < 17 ? "Good afternoon" : (_hqHour < 22 ? "Good evening" : "Welcome back"));
-  h += _hqGreet + ', <em style="font-style:italic;font-weight:700">' + escHtml(ctx.firstName) + '</em>.';
+  var h = '<div style="position:relative;overflow:hidden;'
+    + 'background:linear-gradient(150deg, var(--cb-green-2) 0%, var(--surface-inverse) 56%, var(--cb-green-2) 100%);'
+    + 'border:1px solid rgba(var(--cb-brass-rgb), .32);'
+    + 'border-radius:18px;box-shadow:var(--el-4);'
+    + 'padding:32px 36px">';
+  // Brass masthead label
+  h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:2.5px;color:var(--cb-brass-2);text-transform:uppercase;margin-bottom:16px">The Parbaughs · Clubhouse</div>';
+  // Greeting — Fraunces, chalk; name in brass-2 gold
+  h += '<div style="font-family:var(--font-display);font-size:var(--hq-hero-size);font-weight:var(--hq-hero-weight);line-height:1.04;letter-spacing:-2px;color:var(--text-inverse);margin-bottom:12px">';
+  h += _hqGreet + ', <em style="font-style:italic;font-weight:700;color:var(--cb-brass-2)">' + escHtml(ctx.firstName) + '</em>.';
   h += '</div>';
-  // Subhead — scales 15/16/17/18
-  h += '<div style="font-family:var(--font-ui);font-size:var(--hq-subhead-size);font-weight:500;color:var(--cb-charcoal);max-width:380px;line-height:1.45;margin-bottom:22px">' + escHtml(_hqHeroSubhead(ctx)) + '</div>';
-  // Pull-quote
+  // Subhead — chalk, dimmed via opacity (theme-agnostic)
+  h += '<div style="font-family:var(--font-ui);font-size:var(--hq-subhead-size);font-weight:500;color:var(--text-inverse);opacity:.80;max-width:440px;line-height:1.45">' + escHtml(_hqHeroSubhead(ctx)) + '</div>';
+  // Brass hairline + stat scoreboard row
   h += _hqHeroPullquote(ctx);
   h += '</div>';
   return h;
@@ -244,14 +256,18 @@ function _hqHeroPullquote(ctx) {
     caption = "Your handicap sits at " + statValue + ".";
   }
 
-  // H5 (2026-05-22 polish) — value font bumped 22 -> 32px so the panel's
-  // headline number anchors the visual weight. Per CTO review 2026-05-06:
-  // 'should anchor visual weight as the panel's headline number'.
+  // v8.23.67 (Wave 2): felt-hero scoreboard line. Lives INSIDE the felt panel
+  // (see _renderEditorialGreetingHero), so it carries no own surface chrome —
+  // a brass hairline divider, then a horizontal scoreboard: oversized chalk
+  // value on the left, brass-2 eyebrow + chalk caption stacked on the right.
+  // Avoids the nested-card treatment the prior chalk-2 panel-in-panel created.
   // font-variant-numeric for lining tabular figures (matches stats quartet).
-  var h = '<div style="background:var(--cb-chalk-2);border:1px solid rgba(var(--cb-brass-rgb),.28);padding:18px 22px;border-radius:8px">';
-  h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:8px">' + escHtml(eyebrow) + '</div>';
-  h += '<div style="font-family:var(--font-display);font-size:32px;font-weight:700;color:var(--cb-ink);line-height:1.05;margin-bottom:6px;font-variant-numeric:lining-nums tabular-nums">' + escHtml(statValue) + '</div>';
-  h += '<div style="font-family:var(--font-ui);font-size:12px;color:var(--cb-charcoal);line-height:1.4">' + escHtml(caption) + '</div>';
+  var h = '<div style="display:flex;align-items:center;gap:18px;margin-top:22px;padding-top:20px;border-top:1px solid rgba(var(--cb-brass-rgb), .28)">';
+  h += '<div style="font-family:var(--font-display);font-size:46px;font-weight:700;color:var(--text-inverse);line-height:1;font-variant-numeric:lining-nums tabular-nums;flex:0 0 auto">' + escHtml(statValue) + '</div>';
+  h += '<div style="min-width:0">';
+  h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2px;color:var(--cb-brass-2);text-transform:uppercase;margin-bottom:5px">' + escHtml(eyebrow) + '</div>';
+  h += '<div style="font-family:var(--font-ui);font-size:13px;color:var(--text-inverse);opacity:.82;line-height:1.4">' + escHtml(caption) + '</div>';
+  h += '</div>';
   h += '</div>';
   return h;
 }
