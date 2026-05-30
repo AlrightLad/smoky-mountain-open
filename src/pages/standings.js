@@ -72,9 +72,9 @@ Router.register("standings", function(params) {
       h += '<div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center">';
       h += '<div style="display:flex;align-items:center;gap:14px">';
       h += '<div style="font-size:16px;width:32px;text-align:center;font-weight:800;color:' + medalColor + '">' + medal + '</div>';
-      h += '<div><div style="font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px">' + s.username;
+      h += '<div><div style="font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px"><span style="max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(s.username) + '</span>';
       if (isViewer) {
-        h += '<span style="font-family:var(--font-mono);font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--gold);background:rgba(var(--gold-rgb),0.14);padding:2px 6px;border-radius:3px">YOU</span>';
+        h += '<span style="flex-shrink:0;font-family:var(--font-mono);font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--gold);background:rgba(var(--gold-rgb),0.14);padding:2px 6px;border-radius:3px">YOU</span>';
       }
       h += '</div>';
       h += '<div style="font-size:10px;color:var(--muted);margin-top:3px">' + s.rounds + ' rds · Avg: ' + (s.avg||"—") + ' · Best: ' + (s.best||"—") + '</div>';

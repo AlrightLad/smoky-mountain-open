@@ -190,4 +190,5 @@ docs/reports/sessions.html
 # critique-probe ignore policy above).
 /.pw-*.log
 /staging-boot-smoke-*.png
+/critique-*.png
 .claude/state/critique-resume-*/
