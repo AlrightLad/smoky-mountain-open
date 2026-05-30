@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-30T20:25:20.711344Z",
+  "generated_at": "2026-05-30T21:01:20.688905Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 86.8,
   "overall_grade": "A-",
@@ -981,11 +981,11 @@
     "A12_operational": {
       "score": 60,
       "status": "yellow",
-      "label": "pipeline=red · 7 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=red · 6 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "7 of last 10 cron watcher runs hit skip-dirty",
+          "what": "6 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -998,7 +998,7 @@
   },
   "attention_items": [
     {
-      "what": "7 of last 10 cron watcher runs hit skip-dirty",
+      "what": "6 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
@@ -1007,26 +1007,26 @@
   "founder_attention": [],
   "agent_attention": [
     {
-      "what": "7 of last 10 cron watcher runs hit skip-dirty",
+      "what": "6 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "90a91d76",
-    "subject": "feat: W1.S4 Live Scorecard / Play Now redesign (CLUBHOUSE_SPEC-HQ-3g) v8.23.70",
-    "committed_at": "2026-05-30T16:24:29-04:00",
+    "sha": "f2205fa3",
+    "subject": "feat: W1.S6 Parcoin Shop redesign to editorial Clubhouse (HQ-3m)",
+    "committed_at": "2026-05-30T17:00:58-04:00",
     "trigger": "app-commit",
     "is_app_commit": true,
     "app_files_touched": [
       "public/sw.js",
       "src/core/utils.js",
       "src/pages/caddynotes.js",
-      "src/pages/playnow-scoring.js",
+      "src/pages/shop.js",
       "src/styles/components.css"
     ],
-    "total_files_touched": 26
+    "total_files_touched": 11
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
