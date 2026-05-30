@@ -313,11 +313,15 @@ input.s:disabled,
 .ff-input:focus{border-color:var(--gold);box-shadow:0 0 0 2px rgba(var(--gold-rgb),.1)}
 textarea.ff-input{min-height:60px;resize:vertical}
 /* Native OS dropdown arrow is stripped by base.css select{appearance:none};
-   restore a chevron affordance so a form select reads as changeable (not a
-   static display field). Baked in default --cb-mute (#7A766B): every theme
-   uses a light chalk field background, so the one tone reads on all of them.
-   .ff select.ff-input (0,2,1) outranks the mobile .ff select padding rule. */
-select.ff-input,.ff select.ff-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%237A766B' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;background-size:16px 16px;padding-right:40px}
+   restore a chevron affordance so a labeled form select reads as changeable
+   (not a static display field). Scoped to .ff (the labeled-field wrapper): the
+   chevron needs ~40px right padding for clearance, but compact inline selects
+   without a .ff parent (courses par grid, scorekeeper picker, trip course rows)
+   carry their own tight inline padding and center-align short text, so an arrow
+   there would collide with the value. Baked-in --cb-mute (#7A766B): every theme
+   uses a light chalk field background, so the one tone reads on all six.
+   .ff select.ff-input (0,2,1) outranks the mobile .ff select rule (base.css:510). */
+.ff select.ff-input{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%237A766B' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;background-size:16px 16px;padding-right:40px}
 .ff-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
 /* ═══════════════════════════════════════════════════════════════════════════
