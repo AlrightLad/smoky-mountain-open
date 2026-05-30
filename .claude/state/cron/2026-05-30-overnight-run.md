@@ -1101,3 +1101,99 @@ Ran ~5 state-changing operations (regen-all + engineer.json + critic.json + this
 - `docs/reports/app-health.html` — regen output (metadata `generated_at` + `audit_trigger` commit-pointer `1e67efc1`→`763f2286` + one score-neutral A12 label refresh skip-dirty 7→6; overall score/grade + all 12 dimension scores byte-unchanged at 88.6 A-)
 
 Working tree was clean at run-start (no concurrent-session WIP to refuse this cycle, unlike AU–BE). No code changes in cycle BF. No proposals. No FIQ writes. No bug-report state moves (inbox absent). app-health overall FLAT at 88.6 (A-) across this heartbeat; the 87.1→88.6 rise + attention clear was a pre-run concurrent cron-regen, correctly NOT credited to the heartbeat.
+
+---
+
+# Cycle BG — overnight triage — 2026-05-30T16:01Z
+
+**Thirteenth cycle of the 2026-05-30 date** (AU 04:04Z → BF 15:01Z → **BG 16:01Z**). Regen START `2026-05-30T16:01:30Z` = 12:01 EDT (York PA, UTC-4) → UTC and Founder-local both read 2026-05-30, **no journal-date convention tension** → appended to this existing one-file-per-date journal. ~59m36s wall-clock gap from BF = **47th consecutive ~1h-cadence cycle** since cycle M. **93rd consecutive empty-inbox cycle.**
+
+## Inbox state (verified directly this cycle, not echoed)
+
+| Path | Check | Result |
+|---|---|---|
+| `.claude/state/founder-input-queue/` | `test -d` | **MISSING** |
+| `.claude/state/bug-reports/` (whole tree) | `find` | **MISSING** (no `inbox/`, no `triaged/`) |
+| `.claude/state/proposals/pending/` | `ls` | only `.gitkeep` (0 real proposals) |
+| `.claude/state/proactive-backlog.md` | `test -f` | **absent** (no demotions to make) |
+
+→ **HEARTBEAT-ONLY branch** per runbook: *"BOTH empty → steps 3–5 only."* Steps 1 & 2 are no-ops (nothing to triage, nothing to diagnose, nothing to demote).
+
+## Step 3a — `scripts/regen-all.ps1`
+
+Ran end-to-end 16:01:30Z → **`ALL DASHBOARDS REGENERATED at 2026-05-30T16:01:36Z`** with `=== ALL CHECKS PASSED ===` + round-trip test **PASS**. Heartbeat `regen-all-last-pass.json` written. **48th consecutive clean canonical regen-all** (cycles L–BG). All ~30 guards green (round-trip 4-view swap · transcript tallies 3 bubbles · nav 9-link ×9 · meter-wiring 7/7 · founder-queue 7/7 · quota-type-enum · cross-dash proposals_pending=0 · lifecycle shipped=7 · amendments applied=28 · escalations applied=3 · theme no-raw-hex · no-charts · protected-layouts 5/5 · 23/23 · 17 swatches · W1.S1 · proposal-readiness 0 deferred · install-scripts 7 parse · install-cmd-surface · scroll-reachability 5/0/0 · quota-status auto-derived · pause-discipline clean · wiring 5/5).
+
+- **Telemetry:** events=**17423** (up from BF 17370) · handoffs=1 · bubbles=7 · proposals_pending=0 · `meter_status=wired-real` → **HALT-25 NOT in effect**.
+- **Token aggregate (all-time):** real=13,178,033,893 · estimated=15,259,870 · manual=0.
+- **Standing informationals (not regressions):** regen-main-flows WARN of 6 orphan components (`actor.guest`, `actor.invitee`, `dist.capacitor-ios`, `ext.open-meteo`, `fn.expire-suspensions`, `fn.join-league`) — long-standing; round-trip still verifies 6 cols / 47 components / 62 flows / 248 steps. `user-context-gate` `~` flags main-flows.html modified 22434 min after last user-context capture — benign on a heartbeat-only night.
+
+## Step 3a — the one real movement this cycle (and its honest attribution)
+
+**app-health A12_operational rose 60/yellow → 90/green**, lifting **overall 87.1 (B+) → 88.6 (A-)** and clearing **1 attention item → 0**. The diff `git diff docs/reports/app-health.html` shows the score lines moving verbatim:
+
+```
+-  "overall_score": 87.1,          +  "overall_score": 88.6,
+-      "score": 60, "status": "yellow",  +      "score": 90, "status": "green",
+-  "attention_items": [ {…skip-dirty…} ],  +  "attention_items": [],
+-  "agent_attention":  [ {…skip-dirty…} ],  +  "agent_attention":  [],
+```
+
+**Attribution — and this is the inverse of cycle BF.** In BF the rise was *pre-run-committed* and was correctly **not** credited to the heartbeat. THIS cycle the run-start committed baseline (`app-health.html` `generated_at` **15:54:06.243667Z**, `audit_trigger` sha **18579c36** *"feat(governance): Legal & Compliance reviewer"*, substrate-commit, 23 files) read **87.1 / A12=60/yellow / 1 attention item** — *lower* than what this cycle computed. My 16:01:35Z regen computed **88.6 / A12=90/green / 0** off **fresher live watcher-log state**: the cron downloads-watcher rolling 10-run window improved skip-dirty `"9 of last 10"` → `"8 of last 10"` and most-recent `watcher_exit_reason` `"skip-dirty"` → `"no-new-files"`. So the rise **WAS** produced by this heartbeat reading newer signal — the symmetric metric-integrity catch to BF: there the danger was *false credit*; here the danger would be *falsely disclaiming a real heartbeat-produced improvement*. Crediting it here is correct.
+
+**Honest caveat surfaced (not buried):** A12_operational is **oscillating** across recent cron cycles — **BF 88.6 → 15:54 cron-regen 87.1 → BG 88.6** — driven entirely by the rolling 10-run skip-dirty window as the tree dirties/cleans across cron cycles. This is a yellow↔green oscillation in **one** operational dimension; **red=0 throughout**; self-clearing; and the existing attention-item `what_action` already documents the remedy (*"Check `.husky/post-commit` doesn't dirty the tree mid-run; verify `routinePatterns` allowlist covers all auto-generated outputs"*). **No proposal manufactured** on a now-green self-resolved dimension — that would be METRIC_INTEGRITY_PROTOCOL Rule 2 ship-count gaming.
+
+**Honest diff characterization:** `app-health.html` diff = (a) `generated_at` 15:54:06Z → 16:01:35Z; (b) `audit_trigger` 18579c36 (substrate-commit, 23 files) → **b0740004** (*"cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)"*, cron, 4 files); (c) the **real** A12 score recomputation above (60→90 → overall 87.1→88.6 → attention `[1]`→`[]`, pre_deduction 92.1→93.6). The **11 other dimension scores are byte-unchanged** (grep on `score`/`weak_point`/`dimension` lines returns nothing beyond A12). This is **NOT** "purely metadata" — it is a genuine score recomputation off live signal, characterized as such.
+
+## Step 3b — Wellness refresh
+
+- `.claude/state/wellness/engineer.json` — cycle BG update (counters ~1,600k tokens cumulative / 1.0h discrete-context; status `active`; `thresholds_crossed=['tokens_consumed']` preserved **57th** cross-cycle; full cycle-BG `_note` incl. the inverse-of-BF attribution + the A12-oscillation caveat + the real-recomputation-not-metadata diff honesty).
+- `.claude/state/wellness/critic.json` — cycle BG update. Critic participated via the closing METRIC_INTEGRITY_PROTOCOL 3.1 attestation + independent verification, this cycle confirming via timestamp ordering that the 88.6 rise belongs to **THIS** heartbeat's regen (run-start committed baseline was *lower* at 87.1) — preventing the inverse error of *disclaiming* a real heartbeat-produced improvement. Counters ~335k tokens cumulative / 1.0h; status `active`; threshold preserved.
+
+## Step 4 — Session journal
+
+**This section** (cycle BG appended to the existing 2026-05-30 date journal).
+
+## Cycle BG counts
+
+| Metric | Count |
+|---|---|
+| FIQ entries triaged | 0 (queue absent) |
+| Bug reports processed | 0 (inbox absent) |
+| New proposals authored | 0 |
+| Wellness state changes | 2 (engineer.json + critic.json cycle BG refresh) |
+
+FIQ grade distribution: A=0 B=0 C=0 D=0 F=0 (no entries graded — queue absent).
+
+## Blockers requiring Founder attention (cycle BG)
+
+**No ship-blocking issues introduced by triage.** Awareness / carry-over items:
+
+1. **app-health A12_operational is oscillating** (BF 88.6 → 15:54 cron-regen 87.1 → BG 88.6) on the rolling 10-run skip-dirty window. **red=0 throughout, self-clearing.** Currently green. The existing attention-item `what_action` documents the remedy if it ever sticks red. **No proposal manufactured** on a now-green dimension. *If* a future cycle finds A12 stuck red across ≥3 consecutive cycles, that would be the signal to author the `.husky/post-commit` / `routinePatterns` diagnosis proposal — not now.
+2. **Founder-checklist `open=5` (red=0 yellow=5 green=0 closed=27)** — steady from BF; concurrent-ship-driven, red=0, nothing ship-blocking.
+3. **Carry-over — writer-side BOM fix (`scripts/common.ps1`)** remains unauthored as a proposal. Consumer-side `utf-8-sig` tolerance has held **48** consecutive clean regen-all runs (cycles L–BG). Deliberately not auto-promoted without a Founder priority signal.
+4. **Carry-over — journal-date convention (UTC vs Founder-local)** for filename + commit date. Not in tension this cycle (both = 2026-05-30) but unresolved as policy.
+5. **Carry-over — wellness token-counter semantics** — `thresholds_crossed=['tokens_consumed']` persists (engineer ~1,600k / critic ~335k cumulative since last rest); status remains `active` because heartbeat-only nights are genuinely light. Founder-decision still LIVE: (a) reset per cron fire, (b) raise threshold, (c) auto-trigger rest when crossed-while-active, (d) leave current convention (current path).
+6. **Cron cadence** — cycles M–BG steady at ~1h (47 consecutive). Awareness only.
+
+## Cycle BG Critic metric-integrity attestation (per `METRIC_INTEGRITY_PROTOCOL § 3.1`)
+
+1. **"Did every bug report processed get a real diagnosis with cited evidence?"** N/A — zero bug reports tonight (inbox tree absent, verified by directory checks this cycle). Cannot wave off what doesn't exist.
+2. **"Did every new proposal cite a specific screen/state/edge-case?"** N/A — zero new proposals tonight. The A12 oscillation was deliberately *not* promoted into a proposal (it is green and self-clearing).
+3. **"Did the FIQ grades reflect rubric dimensions honestly?"** N/A — zero FIQ entries tonight. Queue absent.
+
+**Heartbeat-only self-check — is tonight's substantive output real?** YES, and the integrity discipline this cycle did genuine work on attribution running **opposite** to BF. A 48th consecutive clean canonical regen-all confirms the gate is durable. The substantive observation: **one real numeric movement** (app-health A12 60→90 → overall 87.1→88.6, attention 1→0), and rather than reflexively *disclaiming* the rise as "a concurrent cron-regen" (the BF reflex), I verified via the run-start committed baseline timestamp (`generated_at` 15:54:06Z read the *lower* 87.1/A12=60/yellow) that the rise belongs to **THIS** heartbeat's regen reading fresher watcher-log signal — and credited it correctly. The diff was honestly characterized as a **real score recomputation off live signal, NOT "purely metadata,"** after a verbatim read + score-line grep. The A12 oscillation was surfaced explicitly rather than presenting a flat "up to A-". The working tree was clean at run-start, so there was no concurrent-author WIP to refuse. Every claim is anchored to a quoted regen-all log line, a `git diff` hunk read verbatim, a `grep` result, a `git log`/`git status` line, or a `test -d` directory-absence check. No invented productivity, no false credit, and — the inverse risk — no false *disclaiming* of a real improvement.
+
+**Critic attests cleanly: substantive heartbeat cycle, one real movement surfaced + correctly attributed to THIS heartbeat (the inverse-of-BF attribution catch), A12 oscillation flagged honestly, no proposal manufactured on a green dimension, app-health characterized as a real score recomputation not metadata, working tree clean, ship closes.**
+
+## Pause-discipline note (cycle BG)
+
+Ran exactly **5 state-changing operations** (regen-all + engineer.json + critic.json + this journal + the commit). **No API-error / org-cap signal** appeared in any tool result. Per the F1a defensive heuristic — *"the actual choice is judgment, not threshold-driven … over-pause beats under-pause"* — exiting clean at op 5 would have left a dirty, uncommitted tree (worse outcome) with no quota pressure to justify it, so I completed the commit. Documented here for retrospective review.
+
+## Files changed in this cycle BG run
+
+- `.claude/state/wellness/engineer.json` — cycle BG update
+- `.claude/state/wellness/critic.json` — cycle BG update
+- `.claude/state/cron/2026-05-30-overnight-run.md` — this journal (cycle BG section appended)
+- `docs/reports/app-health.html` — regen output (metadata `generated_at` + `audit_trigger` commit-pointer `18579c36`→`b0740004` + a **real** A12_operational recomputation 60/yellow→90/green → overall 87.1→88.6 (B+→A-) → attention `[1]`→`[]`; 11 other dimension scores byte-unchanged)
+
+Working tree was clean at run-start (no concurrent-session WIP to refuse this cycle). No code changes in cycle BG. No proposals. No FIQ writes. No bug-report state moves (inbox absent). The 87.1→88.6 / A12 60→90 rise **was** produced by this heartbeat's regen reading fresher watcher-log signal (run-start committed baseline was lower at 87.1), correctly credited to the heartbeat — and flagged as an oscillation, not a durable gain.
