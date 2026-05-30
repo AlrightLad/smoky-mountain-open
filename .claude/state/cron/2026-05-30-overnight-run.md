@@ -196,3 +196,97 @@ Per runbook: "If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 
 NOT staged (concurrent-session / Founder-cleared territory, via explicit pathspec): `src/pages/home-rail-newuser.js`, `src/core/firebase.js`, `src/core/router.js`, `src/core/utils.js`, `src/pages/caddynotes.js`, `index.html`, `package.json`, `public/sw.js`, `tests/e2e/helpers/auth.js`, `.gitignore`, `.claude/state/emu-unified-2026-05-29.log` — all part of the in-flight v8.23.35 feature session left for Founder review.
 
 No code changes in cycle AV. No proposals. No FIQ writes. No bug-report state moves (inbox absent). app-health overall FLAT at 87.1 (A-).
+
+---
+
+# Overnight triage — 2026-05-30 (cycle AW)
+
+**Started:** 2026-05-30T06:01:32Z (cron-fired; regen-all START)
+**Finished:** 2026-05-30T06:01:37Z (regen-all "ALL DASHBOARDS REGENERATED" timestamp)
+**Mode:** Heartbeat-only branch per runbook (FIQ + bug-reports inbox both absent)
+**Cycle:** AW (83rd consecutive empty-inbox cycle; ~59m57s wall-clock gap from cycle AV's 05:01:35Z regen START — 37th consecutive ~1h-cadence cycle since cycle M). **Third cycle of the 2026-05-30 date** (AU first at 04:04Z, AV second at 05:01Z). Both the UTC clock (06:01Z) and the Founder-local clock (02:01 EDT, York PA UTC-4) agree on 2026-05-30 this cycle, so there is **no journal-date convention tension** — cycle AW section appended to this existing 2026-05-30 journal per the one-file-per-date / multi-cycle-append convention.
+
+## Inbox state at run-start (cycle AW)
+
+- `.claude/state/founder-input-queue/` — **directory does not exist** (`test -d` → MISSING)
+- `.claude/state/bug-reports/` — **entire tree absent** (no `inbox/`, no `triaged/`)
+- `.claude/state/aggregates/fiq-status.json` — present, but this is the **Firestore Index Queue** (26 declared / 26 deployed, source `firestore.indexes.json`) — an **acronym collision**, NOT the Founder Input Queue. Explicitly distinguished, not mis-counted as triageable work.
+- `.claude/state/proposals/pending/` — only `.gitkeep` (no pending proposals)
+- Working tree at run-start: **near-clean**. The v8.23.35/v8.23.36 ship that cycles AU+AV carried as dirty is **now committed** — HEAD chain `7b0cb3bc` ("fix: durable profile_reminder dedup … v8.23.35") → `4dce966b` ("feat: trophy-room earned-achievement medallions … v8.23.36") → `ef352dce` ("cron(routine): post-commit dashboard regen …"). Only one non-self dirty path at run-start: `M .claude/state/emu-unified-2026-05-29.log` (a concurrent emulator session's log). HEAD = `ef352dce`.
+
+Per runbook: "If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 only and exit."
+
+## Step 1 — FIQ triage (cycle AW)
+
+- FIQ entries triaged: **0** (queue directory + json store both absent; the only `FIQ-` file on disk is the Firestore-Index `fiq-status.json` acronym collision)
+- Grade breakdown: N/A — A:0 B:0 C:0 D:0 F:0
+- IDs: none
+
+## Step 2 — Bug-report triage (cycle AW)
+
+- Bug reports processed: **0** (inbox tree absent)
+- Dispositions: none
+- No P3e discussion bubbles opened (nothing to deliberate)
+
+## Step 3 — Heartbeat (cycle AW)
+
+### 3a — `scripts/regen-all.ps1`
+
+- Ran end-to-end 06:01:32Z → 06:01:37Z: **=== ALL CHECKS PASSED ===**, **round-trip test PASS** (exit 0). 38th consecutive clean canonical regen-all (cycles L–AW).
+- Heartbeat `regen-all-last-pass.json` written.
+- Telemetry snapshot: events=16809 handoffs=1 bubbles=7 proposals_pending=0, meter_status=wired-real → HALT-25 NOT in effect. Token aggregate (all-time): real=12,579,455,709 estimated=14,581,400 manual=0.
+- All ~30 guards green (round-trip 4-view swap + transcript tallies 3 bubbles + nav 9-link ×9 + meter-wiring 7/7 + founder-queue 7/7 + quota-type-enum + cross-dash proposals_pending=0 + lifecycle proposals shipped=7 + amendments applied=28 + escalations applied=3 + theme convergence no raw hex + no-charts + protected-layouts 5/5 + 23/23 + 17 swatches + W1.S1 + proposal-readiness 0 deferred + install-scripts 7 parse + install-cmd-surface + scroll-reachability 5/0/0 + quota-status auto-derived + pause-discipline clean + wiring 5/5).
+- App health: **A- (87.1)**, 1 attention item. Founder-checklist: open=6 (red=0 yellow=4 green=2) closed_total=25.
+- One INFORMATIONAL `~` (not a failure): `user-context-gate` flags `main-flows.html` modified 21834.0 min after the last user-context capture (2026-05-14T23-07-48Z). Benign on a heartbeat-only night with no visual ship-close.
+
+**Working-tree diff after regen — `docs/reports/app-health.html` is PURELY metadata.** Proven by reading the diff verbatim AND grepping it for `overall_score` / `overall_grade` / `score` / `status` / `pre_deduction` / `post_deduction` / `dimension` changes (returns EMPTY). The only `+/-` lines are: (a) `generated_at` 2026-05-30T05:52:07Z → 06:01:36Z, and (b) `audit_trigger` commit-pointer re-pointing `sha` `4dce966b` ("feat: trophy-room earned-achievement medallions … v8.23.36", trigger=app-commit, app_files_touched 5) → `ef352dce` ("cron(routine): post-commit dashboard regen …", trigger=cron, app_files_touched [], `total_files_touched` 7→4). All 12 dimension values byte-unchanged; **overall stays 87.1 (A-)**. **The prior `generated_at` 05:52:07Z falls AFTER cycle AV's 05:01:48Z** — confirming the independent 5-min cron watcher regenerated app-health between AV and AW with the score holding flat the whole time. Not a triage-introduced change.
+
+### 3b — Wellness refresh
+
+- `.claude/state/wellness/engineer.json` — updated for cycle AW (counters ~1,250k tokens cumulative / 1.0h discrete-context; status `active`; thresholds_crossed=['tokens_consumed'] preserved 47th cross-cycle; full cycle-AW `_note` + `substantive_output_at_checkpoint`).
+- `.claude/state/wellness/critic.json` — updated for cycle AW. Critic participated via the closing METRIC_INTEGRITY_PROTOCOL 3.1 attestation + independent verbatim-diff verification. Counters ~255k tokens cumulative / 1.0h; status `active`; threshold preserved.
+
+## Step 4 — Session journal
+
+**This section** (cycle AW appended to the existing 2026-05-30 date journal).
+
+## Cycle AW counts
+
+| Metric | Count |
+|---|---|
+| FIQ entries triaged | 0 |
+| Bug reports processed | 0 |
+| New proposals authored | 0 |
+| Wellness state changes | 2 (engineer.json + critic.json cycle AW refresh) |
+
+## Blockers requiring Founder attention (cycle AW)
+
+**No ship-blocking issues introduced by triage.** Awareness / carry-over items:
+
+1. **v8.23.35/v8.23.36 ship now COMMITTED — carry-over §1 from AU+AV is RESOLVED.** The coherent member-visible ship the concurrent session was building is committed under its own messages (`7b0cb3bc` v8.23.35 fix, `4dce966b` v8.23.36 feat). No other-author WIP to refuse this cycle. Founder review of those two commits is the only remaining loop, and that is normal post-commit review, not a triage blocker.
+2. **`A12_operational`** — expected to recover toward green now the v8.23.x ship has committed (cf. cycle AP 60→90 precedent the instant the dirty tree cleared). The lingering `open=6` founder-checklist count is residual concurrent-ship drift; red=0, nothing ship-blocking. **No proposal manufactured** — authoring one for a self-resolving condition would be ship-count gaming per METRIC_INTEGRITY_PROTOCOL Rule 2.
+3. **Carry-over — concurrent emulator log `.claude/state/emu-unified-2026-05-29.log`** is dirty (a live emulator session's territory). Deliberately **not staged** this cycle.
+4. **Carry-over — writer-side BOM fix (`scripts/common.ps1`) remains unauthored as a proposal.** Consumer-side `utf-8-sig` tolerance has now held 38 consecutive clean regen-all runs (cycles L–AW). Deliberately not auto-promoted without a Founder priority signal.
+5. **Carry-over — journal-date convention (UTC vs Founder-local) for filename + commit date.** Not in tension this cycle (both = 2026-05-30) but unresolved as policy; Founder may want to lock which is canonical.
+6. **Cron cadence** — cycles M–AW steady at ~1h. Awareness only.
+
+## Cycle AW Critic metric-integrity attestation (per `METRIC_INTEGRITY_PROTOCOL § 3.1`)
+
+1. **"Did every bug report processed get a real diagnosis with cited evidence?"** N/A — zero bug reports tonight (inbox tree absent, verified by directory checks). Cannot wave off what doesn't exist.
+2. **"Did every new proposal cite a specific screen/state/edge-case?"** N/A — zero new proposals tonight. The A12 recovery and the BOM fix were both deliberately *not* promoted (self-resolving / no Founder priority) rather than inflated into proposals.
+3. **"Did the FIQ grades reflect rubric dimensions honestly?"** N/A — zero FIQ entries tonight. Queue absent; the only `FIQ-` id on disk is `fiq-status.json` (Firestore Index queue), explicitly distinguished as an acronym collision rather than mis-counted as triageable work.
+
+**Heartbeat-only self-check — is tonight's substantive output real?** YES, modestly. A 38th consecutive clean canonical regen-all confirms the gate is durable. The app-health drift was inspected hunk-by-hunk AND grepped for score/status/dimension changes to *prove* it is metadata-only (clock + commit-pointer; overall flat at 87.1). The genuinely useful observations this cycle: (a) the prior `generated_at` 05:52:07Z post-dates cycle AV's close — proving the 5-min cron watcher regenerated app-health between AV and AW with the score holding flat — and (b) the AU/AV carry-over §1 (uncommitted v8.23.35 ship) is now genuinely RESOLVED by two real commits, so the tree is near-clean and there is no longer another author's WIP to refuse. Every claim is anchored to a quoted regen-all log line, a `git diff` hunk read verbatim, a `git log`/`git status` line, or a `test -d` directory-absence check. No invented productivity on an empty-queue night.
+
+**Critic attests cleanly: substantive heartbeat cycle, ship closes.**
+
+## Files changed in this cycle AW run
+
+- `.claude/state/wellness/engineer.json` — cycle AW update
+- `.claude/state/wellness/critic.json` — cycle AW update
+- `.claude/state/cron/2026-05-30-overnight-run.md` — this journal (cycle AW section appended)
+- `docs/reports/app-health.html` — regen output (metadata-only: `generated_at` timestamp + `audit_trigger` commit-pointer `4dce966b`→`ef352dce`; score/grade/dimensions byte-unchanged)
+
+NOT staged (concurrent-session territory, via explicit pathspec): `.claude/state/emu-unified-2026-05-29.log` — a live emulator session's log, left for that session / Founder.
+
+No code changes in cycle AW. No proposals. No FIQ writes. No bug-report state moves (inbox absent). app-health overall FLAT at 87.1 (A-).
