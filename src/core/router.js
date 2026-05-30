@@ -583,8 +583,25 @@ function renderRipBanner() {
 // Extracted to src/core/router-empty-states.js per W1.A5. Originally lines 2629-2786 of this file.
 // ========== INIT FIREBASE LISTENERS ==========
 function initFirebaseListeners() {
-  startTeeTimeListener();
-  startRangeSessionListener();
+  // startTeeTimeListener (teetimes.js) + startRangeSessionListener (range.js) live
+  // in the DEFERRED page bundle, which executes via <script defer> AFTER the inline
+  // core block. A fast auth callback runs enterApp -> initFirebaseListeners before
+  // that bundle loads, so an unguarded call throws ReferenceError and aborts the
+  // rest of this function: none of the core listeners below start and the home
+  // shell renders empty. Surfaced deterministically in v8.23.49 once deferred.js
+  // became content-hashed (v8.23.48) — a fresh network fetch loads slower than the
+  // previously-immutable disk-cached copy, so auth now resolves first. Retry the
+  // deferred starters until the bundle is present (same pattern as enterApp's
+  // _restoreLiveStateWhenReady); the core listeners run immediately regardless.
+  (function _startDeferredListenersWhenReady(tries) {
+    if (typeof startTeeTimeListener === "function" && typeof startRangeSessionListener === "function") {
+      startTeeTimeListener();
+      startRangeSessionListener();
+      return;
+    }
+    if (tries >= 50) return; // ~6s ceiling
+    setTimeout(function() { _startDeferredListenersWhenReady(tries + 1); }, 120);
+  })(0);
   startNotificationListener();
   startDmUnreadListener();
   startPresenceSystem();
