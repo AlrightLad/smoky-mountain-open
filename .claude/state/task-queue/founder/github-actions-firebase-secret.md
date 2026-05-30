@@ -38,7 +38,12 @@ Actions secret does NOT change local behavior.
 - This stops the red checkmarks on every push.
 - Local deploys continue to work unchanged.
 
-## What Founder needs to do
+## What you need to do
+
+**Who can do this:** any maintainer with admin access to the GitHub repo
+(`AlrightLad/smoky-mountain-open`) settings and to the `parbaughs-staging`
+Firebase console. Optional convenience — the workflow already finishes
+GREEN without it.
 
 If you want the GitHub Action to ALSO push to Firebase (in addition
 to the local deploy), add the secret:
@@ -77,7 +82,7 @@ agent does not edit/read the secret; Founder pastes once + manages.
 
 ## Closure criteria
 
-- Either: Founder sets the secret + next workflow run succeeds with
-  the Deploy step.
-- Or: Founder explicitly closes this task as "local deploys only,
+- Either: an authorized maintainer sets the secret + next workflow run
+  succeeds with the Deploy step.
+- Or: the Founder explicitly closes this task as "local deploys only,
   no GitHub Action deploy needed."

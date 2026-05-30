@@ -71,6 +71,12 @@ Apple-acceptable interim (in-app initiation + support completion).
 
 ## What you need to do
 
+**Who can do this:** any maintainer with production Firebase deploy
+access (`firebase login` against an account with Editor/Owner on the
+`parbaughs` project). This is AMD-018 gate 1 (Cloud Functions deploy),
+so it also needs the Founder's explicit go-ahead before the agent runs
+it — the gate is the authorization, the maintainer is the executor.
+
 **Option A (recommended) — deploy all functions:**
 This also picks up the additive CORS change that lets the **staging**
 site call `validateInvite` / `searchCourses` (needed for full staging
@@ -87,9 +93,9 @@ firebase deploy --only functions --project parbaughs
 firebase deploy --only functions:deleteMyAccount --project parbaughs
 ```
 
-You can run either yourself (type `! firebase deploy ...` in this
-session so I can see the output), or reply "approved, you deploy" to
-authorize me to run it once for this specific ship.
+Run it directly (in a Claude Code session, prefix with `! ` so the
+agent sees the output), or reply "approved, you deploy" to authorize
+the agent to run it once for this specific ship.
 
 ## Verify after deploy
 
@@ -121,7 +127,7 @@ App Store requirement and the user-facing promise.
 
 ## Closure criteria
 
-- Founder deploys (Option A or B) and the post-deploy verification
-  passes, OR
-- Founder explicitly defers (members keep seeing the support-path
+- An authorized maintainer deploys (Option A or B) and the post-deploy
+  verification passes, OR
+- The Founder explicitly defers (members keep seeing the support-path
   message until then).

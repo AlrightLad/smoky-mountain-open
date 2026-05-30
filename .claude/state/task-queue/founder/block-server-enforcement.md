@@ -74,15 +74,22 @@ reviewed deploy rather than an autonomous one.
 
 ## What you need to do (when you choose to)
 
-1. Approve a rules change that adds the two block checks above. I will
-   draft the exact `firestore.rules` diff + verify it against the local
-   emulator (allowed-write and denied-write cases) before any deploy.
+**Who can do this:** any maintainer with production Firebase deploy
+access. This is AMD-018 gate 2 (Firestore rules deploy), so it needs
+the Founder's explicit go-ahead before the agent runs it — the gate is
+the authorization, the maintainer is the executor.
+
+1. Approve a rules change that adds the two block checks above. The
+   agent will draft the exact `firestore.rules` diff + verify it against
+   the local emulator (allowed-write and denied-write cases) before any
+   deploy.
 2. Deploy is gate 2:
    ```
    firebase deploy --only firestore:rules --project parbaughs
    ```
-   Run it yourself (`! firebase deploy ...` so I can see output) or reply
-   "approved, you deploy" to authorize me for this one ship.
+   Run it directly (in a Claude Code session, prefix with `! ` so the
+   agent sees the output) or reply "approved, you deploy" to authorize
+   the agent for this one ship.
 
 ## Risk
 

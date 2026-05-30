@@ -137,6 +137,10 @@ def extract_howto(text: str) -> str:
         text,
         r'##\s*How\s+to\s+(?:apply|complete|do).*?\n+(.+?)(?=\n##|\n#|\Z)',
         r'##\s*Steps?\s*\n+(.+?)(?=\n##|\Z)',
+        # Common Founder-item convention: "## What you need to do" (also
+        # "What Founder needs to do" / "(when you choose to)"). Leads with
+        # the dev-agnostic "Who can do this" line, so surface it on the card.
+        r'##\s*What[^\n]*?needs?\s+to\s+do[^\n]*\n+(.+?)(?=\n##|\n#|\Z)',
     )
     # Compress
     s = re.sub(r'\s{2,}', ' ', s)
@@ -160,6 +164,9 @@ def extract_walkthrough(text: str, fm: dict) -> str:
     s = extract_section(
         text,
         r'##\s*How\s+to\s+(?:apply|complete|do).*?\n+(.+?)(?=\n##|\n#|\Z)',
+        # Common Founder-item convention: "## What you need to do" carries the
+        # dev-facing step-by-step (incl. the "Who can do this" line).
+        r'##\s*What[^\n]*?needs?\s+to\s+do[^\n]*\n+(.+?)(?=\n##|\n#|\Z)',
     )
     return s[:1500]
 

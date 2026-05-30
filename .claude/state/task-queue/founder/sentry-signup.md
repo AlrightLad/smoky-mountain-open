@@ -1,5 +1,6 @@
 ---
-status: open
+status: verified-closed
+closed_at: 2026-05-30T14:00:00Z
 severity: green
 priority: MEDIUM
 walkthrough_doc: docs/walkthroughs/sentry-signup.md

@@ -1,9 +1,14 @@
 ---
-status: open
+status: closed
+closed_at: 2026-05-30T14:00:00Z
 severity: green
 priority: LOW
 authored_at: 2026-05-22T20:50:00Z
 ---
+
+> CLOSED 2026-05-30: this is a dated session summary (2026-05-22), not a
+> human-action item. It belongs in session history, not the live checklist.
+> Closing so the founder-checklist shows only real outstanding human tasks.
 
 # Morning handoff — overnight marathon summary
 

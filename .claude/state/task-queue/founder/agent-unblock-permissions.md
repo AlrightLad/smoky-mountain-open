@@ -1,5 +1,6 @@
 ---
-status: open
+status: verified-closed
+closed_at: 2026-05-30T14:00:00Z
 severity: red
 priority: HIGH
 authored_at: 2026-05-22T20:15:00Z
@@ -7,6 +8,12 @@ walkthrough_doc: docs/walkthroughs/agent-unblock-permissions.md
 verify_command: "node scripts/verify-agent-unblock.mjs"
 verify_expected: "PASS"
 ---
+
+> CLOSED 2026-05-30: `node scripts/verify-agent-unblock.mjs` returns `PASS` —
+> the four allow-rules below are already present in `.claude/settings.local.json`
+> and the agent has been deploying to staging via
+> `node scripts/seed-deploy-staging-hosting.mjs` for several sessions. No
+> Founder action remains. Kept for history.
 
 # Founder action — Unblock agent: deploy + seed permissions (~2 min, ONE edit)
 

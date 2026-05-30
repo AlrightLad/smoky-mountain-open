@@ -5,6 +5,8 @@ priority: MEDIUM
 authored_at: 2026-05-24T14:30:00Z
 authored_by: agent
 founder_action_required: true
+verify_command: "node scripts/sentry-fetch-events.mjs"
+verify_expected: "full payload written to"
 ---
 
 # Sentry auth token — missing `event:read` / `project:read` scopes
@@ -34,7 +36,11 @@ limited scopes during the original Sentry wiring (probe DSN
 verification only). For the new per-cycle repair loop, the token
 needs to LIST + READ issues, which requires `event:read` minimum.
 
-## What Founder needs to do
+## What you need to do
+
+**Who can do this:** any maintainer with admin access to the Parbaughs
+Sentry organization. No production code or deploy is involved — this is
+purely a Sentry-dashboard token-scope change.
 
 1. Open https://sentry.io/settings/account/api/auth-tokens/
 2. Either:
@@ -44,7 +50,9 @@ needs to LIST + READ issues, which requires `event:read` minimum.
      existing `SENTRY_AUTH_TOKEN` value in `.env` (do NOT commit
      — pre-commit hook blocks it; `.env` is gitignored).
 3. Run `node scripts/sentry-fetch-events.mjs` to verify the fetch
-   returns events (0 events = clean; >0 = triage list).
+   returns events (0 events = clean; >0 = triage list). A successful
+   run ends with `full payload written to ...`; a `403 Forbidden`
+   means the scopes still aren't applied.
 
 ## Risk
 
@@ -55,7 +63,7 @@ can't change them or post fake events.
 
 ## Closure criteria
 
-- Founder grants the scopes
-- Agent verifies `node scripts/sentry-fetch-events.mjs` returns
-  events (or "Clean.") with no 403
+- An authorized maintainer grants the scopes (or replaces the token)
+- `node scripts/sentry-fetch-events.mjs` returns events (or "Clean.")
+  with no 403 — the run ends with `full payload written to ...`
 - Per-cycle Sentry triage starts running per the repair-loop memory

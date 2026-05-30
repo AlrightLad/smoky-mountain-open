@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
+    "hq": "node scripts/serve-hq.mjs",
     "build": "vite build",
     "build:staging": "vite build --base=/",
     "preview": "vite preview",

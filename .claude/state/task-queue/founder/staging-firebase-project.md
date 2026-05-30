@@ -1,11 +1,21 @@
 ---
-status: open
+status: verified-closed
+closed_at: 2026-05-30T14:10:00Z
 severity: yellow
 priority: HIGH
 verify_command: "if (Test-Path .env.staging) { 'env-ok'; firebase projects:list 2>&1 | Select-String parbaughs-staging } else { 'env-staging-missing' }"
 verify_expected: "env-ok[\s\S]*parbaughs-staging"
 walkthrough_doc: docs/walkthroughs/staging-firebase-project.md
 ---
+
+> CLOSED 2026-05-30: verify returns `env-ok` + `parbaughs-staging (current)` in
+> `firebase projects:list`. The project's core ask is satisfied — project created,
+> Firestore ACTIVE, Email/Password auth Founder-attested ON, `.env.staging` present
+> (578 bytes). The only remainder (applying production Firestore rules to the staging
+> project) is OPTIONAL and not blocking: staging hosting deploys work today, and that
+> deploy is covered by the general AMD-018 gate-2 rules-deploy authority if/when a
+> maintainer chooses to mirror prod rules to staging. No standalone Founder action
+> remains. Kept for history.
 
 # Founder action — Activate parbaughs-staging Firebase project
 

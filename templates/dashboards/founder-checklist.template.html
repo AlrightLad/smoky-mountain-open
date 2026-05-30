@@ -14,6 +14,19 @@
         .fc-hero h1 { font-family: var(--font-display); font-size: 2.5rem; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 var(--space-2); color: var(--accent-claret); }
         .fc-hero p { color: var(--text-secondary); font-size: 0.9375rem; line-height: 1.55; max-width: 760px; margin: 0; }
 
+        .fc-guide { margin-bottom: var(--space-5); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-card); }
+        .fc-guide > summary { padding: var(--space-3) var(--space-4); cursor: pointer; font-family: var(--font-mono); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-brass); user-select: none; font-weight: 600; }
+        .fc-guide > summary:hover { color: var(--text-primary); }
+        .fc-guide[open] > summary { border-bottom: 1px solid var(--border-subtle); color: var(--text-primary); }
+        .fc-guide-body { padding: var(--space-4); font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; }
+        .fc-guide-body p { margin: 0 0 var(--space-3); }
+        .fc-guide-body ol { margin: 0 0 var(--space-3); padding-left: var(--space-4); }
+        .fc-guide-body li { margin-bottom: var(--space-2); }
+        .fc-guide-body strong { color: var(--text-primary); }
+        .fc-guide-body em { color: var(--text-primary); font-style: normal; font-weight: 600; }
+        .fc-guide-body code { background: var(--bg-page); padding: 1px 6px; border-radius: 2px; font-family: var(--font-mono); font-size: 0.8125rem; color: var(--accent-teal); }
+        .fc-guide-step-label { color: var(--accent-brass); font-weight: 600; }
+
         .fc-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: var(--space-3); margin-bottom: var(--space-5); }
         .fc-stat-card { background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: var(--space-3); }
         .fc-stat-card.is-red { border-color: rgba(196, 90, 90, 0.4); }
@@ -141,8 +154,24 @@
         <div class="fc-page-wrap">
             <section class="fc-hero">
                 <h1>Founder Checklist</h1>
-                <p>Items where the orchestration team genuinely needs you — money, external auth, or hardware. Each item is rated <strong style="color:#d97676">red (urgent)</strong>, <strong style="color:#dcbf73">yellow (would benefit)</strong>, or <strong style="color:#8fc99c">green (quality lift)</strong>. Click <em>Review walkthrough</em> to see the exact steps, then <em>Mark complete</em> when done — orchestration auto-verifies and updates this list.</p>
+                <p>The single list of tasks that need a <strong>human</strong>, not the orchestration agent — money, external dashboard logins, credential pastes, hardware, or a production deploy gated by AMD-018. Each item is rated <strong style="color:#d97676">red (urgent)</strong>, <strong style="color:#dcbf73">yellow (would benefit)</strong>, or <strong style="color:#8fc99c">green (quality lift)</strong>, and names exactly who can clear it. Open the walkthrough for exact steps, then <em>Mark complete</em> when done — orchestration auto-verifies and updates this list.</p>
             </section>
+
+            <details class="fc-guide">
+                <summary>New here? How a developer uses this checklist ↓</summary>
+                <div class="fc-guide-body">
+                    <p>This page exists because some work genuinely can't be done by the agent: it needs money, an external dashboard login, a credential paste, hardware/device access, or a production deploy gated by AMD-018. Everything else, the agent just does. When something needs a human, it shows up here.</p>
+                    <p><strong>You don't have to be the Founder.</strong> As the team grows, any authorized maintainer can clear most of these. Every open item names who can.</p>
+                    <ol>
+                        <li><span class="fc-guide-step-label">Read the item.</span> Each open card opens with a <strong>"Who can do this"</strong> line naming the access or role required (for example, "any maintainer with production Firebase deploy access"). Severity signals urgency: <strong style="color:#d97676">red</strong> blocks downstream work, <strong style="color:#dcbf73">yellow</strong> would help, <strong style="color:#8fc99c">green</strong> is polish.</li>
+                        <li><span class="fc-guide-step-label">Open the walkthrough.</span> Expand the full walkthrough for exact, copy-pasteable steps. You never need to open another file; everything is inline.</li>
+                        <li><span class="fc-guide-step-label">Do the steps.</span> Run the command, paste the secret, or toggle the console setting as described.</li>
+                        <li><span class="fc-guide-step-label">Mark it complete.</span> Click <em>Mark complete (copy command)</em>, paste the copied line into PowerShell, and run it. Orchestration runs the item's verify step automatically: on success the item moves to <em>Recently closed</em>; on failure it shows the verification output so you can see what's still off.</li>
+                    </ol>
+                    <p><strong>Gated production deploys</strong> (Cloud Functions, Firestore rules) carry an AMD-018 gate. For those, the <em>authorization</em> is the Founder's go-ahead and the <em>executor</em> is any maintainer with deploy access — the card spells out both.</p>
+                    <p><strong>This list is always current.</strong> It regenerates on every commit and is cross-checked by a freshness sentinel, so what you see matches the live state of the repo. Source of truth: <code>.claude/state/task-queue/founder/</code>.</p>
+                </div>
+            </details>
 
             <section class="fc-stats">
                 <div class="fc-stat-card is-red">

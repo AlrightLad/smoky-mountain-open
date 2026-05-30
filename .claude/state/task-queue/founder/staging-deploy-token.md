@@ -1,5 +1,6 @@
 ---
-status: open
+status: verified-closed
+closed_at: 2026-05-30T14:00:00Z
 severity: yellow
 priority: MEDIUM
 authored_at: 2026-05-22T19:30:00Z
