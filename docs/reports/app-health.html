@@ -821,7 +821,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-30T09:06:59.010744Z",
+  "generated_at": "2026-05-30T09:08:33.794340Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 87.1,
   "overall_grade": "A-",
@@ -1008,13 +1008,21 @@
     }
   ],
   "audit_trigger": {
-    "sha": "ea5d103f",
-    "subject": "Overnight triage 2026-05-30 - 0 reports, 0 proposals, 0 FIQ entries graded",
-    "committed_at": "2026-05-30T05:05:44-04:00",
-    "trigger": "substrate-commit",
-    "is_app_commit": false,
-    "app_files_touched": [],
-    "total_files_touched": 4
+    "sha": "deed8791",
+    "subject": "fix(scores): complete community-safe score coherence across all member surfaces (v8.23.47)",
+    "committed_at": "2026-05-30T05:08:10-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "public/sw.js",
+      "src/core/router-sharecard.js",
+      "src/core/utils.js",
+      "src/pages/caddynotes.js",
+      "src/pages/courses-detail.js",
+      "src/pages/members-detail.js",
+      "src/pages/scramble.js"
+    ],
+    "total_files_touched": 8
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
