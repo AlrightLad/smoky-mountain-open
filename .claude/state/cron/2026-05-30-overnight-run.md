@@ -446,3 +446,94 @@ FIQ grade distribution: A=0 B=0 C=0 D=0 F=0 (no entries graded — queue absent)
 NOT staged (concurrent-session / other-tooling territory, via explicit pathspec): `.claude/state/emu-unified-2026-05-29.log`, `verify-v8.23.43-livescoring-header.png`, `.claude/state/overnight-agent/reports/2026-05-30.md`, `.claude/state/stop-decisions/2026-05-30.ndjson`.
 
 No code changes in cycle AY. No proposals. No FIQ writes. No bug-report state moves (inbox absent). app-health overall FLAT at 87.1 (A-).
+
+---
+
+# Cycle AZ — overnight triage (2026-05-30, 6th cycle of date)
+
+**Branch decision: inbox empty; heartbeat only.** FIQ + bug-reports inbox both ABSENT for the **86th consecutive cycle** — verified directly this cycle (not echoed from AY): `.claude/state/founder-input-queue/` does not exist; `.claude/state/bug-reports/` tree (no `inbox/`, no `triaged/`) does not exist; `proposals/pending/` holds only `.gitkeep` (0 real proposals). The only `FIQ-` id on disk is `.claude/state/aggregates/fiq-status.json` (a **Firestore Index** status file — acronym collision, **not** the Founder Input Queue). Per runbook "BOTH empty → steps 3-5 only."
+
+**Cadence:** Cycle AY opened regen START 08:01:13Z; cycle AZ opens 09:01:07Z = ~59m54s wall-clock gap — **40th consecutive ~1h-cadence cycle** since cycle M. Both the UTC clock (09:01Z) and the Founder-local clock (05:01 EDT, York PA UTC-4) agree on 2026-05-30, so **no journal-date convention tension** — cycle AZ appended to the existing 2026-05-30 date journal per the multi-cycle-per-date convention (AU+AV+AW+AX+AY already in this file).
+
+## Step 1 — FIQ triage (cycle AZ)
+
+- FIQ entries triaged: **0** (queue directory absent)
+- Grade breakdown: N/A — A:0 B:0 C:0 D:0 F:0
+- IDs: none
+
+## Step 2 — Bug-report triage (cycle AZ)
+
+- Bug reports processed: **0** (inbox tree absent)
+- Dispositions: none
+- No P3e discussion bubbles opened (nothing to deliberate)
+
+## Step 3 — Heartbeat (cycle AZ)
+
+### 3a — `scripts/regen-all.ps1`
+
+- Ran end-to-end 09:01:07Z → 09:01:12Z: **=== ALL CHECKS PASSED ===**, **round-trip test PASS**. 41st consecutive clean canonical regen-all (cycles L–AZ).
+- Heartbeat `regen-all-last-pass.json` written.
+- Telemetry snapshot: events=17000 handoffs=1 bubbles=7 proposals_pending=0, meter_status=wired-real → HALT-25 NOT in effect. Token aggregate (all-time): real=12,767,214,199 estimated=14,773,280 manual=0.
+- All ~30 guards green (round-trip 4-view swap + transcript tallies 3 bubbles + nav 9-link ×9 + meter-wiring 7/7 + founder-queue 7/7 + quota-type-enum + cross-dash proposals_pending=0 + lifecycle proposals shipped=7 + amendments applied=28 + escalations applied=3 + theme convergence no raw hex + no-charts + protected-layouts 5/5 + 23/23 + 17 swatches + W1.S1 + proposal-readiness 0 deferred + install-scripts 7 parse + install-cmd-surface + scroll-reachability 5/0/0 + quota-status auto-derived + pause-discipline clean + wiring 5/5).
+- App health: **A- (87.1)**, 1 attention item. Founder-checklist: open=6 (red=0 yellow=4 green=2) closed_total=25.
+- One INFORMATIONAL `~` (not a failure): `user-context-gate` flags `main-flows.html` modified 22013.6 min after the last user-context capture (2026-05-14T23-07-48Z). Benign on a heartbeat-only night.
+
+**Working-tree diff after regen — `docs/reports/app-health.html` is NOT purely metadata this cycle (honesty delta from AU–AY).** Read verbatim, the diff has **three** distinct change classes:
+1. **(metadata)** `generated_at` 2026-05-30T08:46:20.453278Z → 09:01:11.961184Z.
+2. **(REAL content change)** `src/pages/members-detail.js` line-count **822 → 842** (budget 800) — appears in BOTH the architecture-dimension weak_point `what` string *and* the file-budget sub-block. This reflects the **live concurrent session actively editing `members-detail.js`** (`M src/pages/members-detail.js` was dirty at run-start; the file is genuinely 842 lines now).
+3. **(commit-pointer)** `audit_trigger` re-pointed `sha` `222ec35f` (*"fix: par-relative, community-safe score on round detail + share card (v8.23.46)"*, `committed_at` 2026-05-30T04:45:57-04:00, `trigger`=app-commit, `is_app_commit` true, 5 `app_files_touched` [`public/sw.js`, `src/core/router-sharecard.js`, `src/core/utils.js`, `src/pages/caddynotes.js`, `src/pages/rounds.js`], `total_files_touched` 6) → `6c70516c` (*"cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)"*, `committed_at` 2026-05-30T04:47:24-04:00, `trigger`=cron, `is_app_commit` false, `app_files_touched` [], `total_files_touched` 4).
+
+**Despite the `members-detail.js` growth, `overall_score` stays 87.1 (A-), `overall_grade` A-, and all 12 dimension SCORES are byte-unchanged.** Verified by grepping the diff: the only changed numeric lines are the two `members-detail.js` line-count details (`822`→`842`), which are weak_point *detail* text, not score lines. The architecture score holds because `members-detail.js` was **already** over the 800-line AMD-027 budget at 822, so growing to 842 stays within the same already-penalized over-budget state and does not move the dimension score. This cycle did **not** claim "purely metadata" — the 822→842 delta is a real, concurrent-session-driven content change surfaced honestly.
+
+### 3b — Wellness refresh
+
+- `.claude/state/wellness/engineer.json` — updated for cycle AZ (counters ~1,300k tokens cumulative / 1.0h discrete-context; status `active`; thresholds_crossed=['tokens_consumed'] preserved 50th cross-cycle; full cycle-AZ `_note` + `substantive_output_at_checkpoint` incl. the not-purely-metadata honesty delta).
+- `.claude/state/wellness/critic.json` — updated for cycle AZ. Critic participated via the closing METRIC_INTEGRITY_PROTOCOL 3.1 attestation + independent verbatim-diff verification, specifically catching that the diff was NOT purely metadata and refusing to echo prior-cycle boilerplate. Counters ~285k tokens cumulative / 1.0h; status `active`; threshold preserved.
+
+## Step 4 — Session journal
+
+**This section** (cycle AZ appended to the existing 2026-05-30 date journal).
+
+## Cycle AZ counts
+
+| Metric | Count |
+|---|---|
+| FIQ entries triaged | 0 (queue absent) |
+| Bug reports processed | 0 (inbox absent) |
+| New proposals authored | 0 |
+| Wellness state changes | 2 (engineer.json + critic.json cycle AZ refresh) |
+
+FIQ grade distribution: A=0 B=0 C=0 D=0 F=0 (no entries graded — queue absent).
+
+## Blockers requiring Founder attention (cycle AZ)
+
+**No ship-blocking issues introduced by triage.** Awareness / carry-over items:
+
+1. **Concurrent session is editing LIVE and advanced to v8.23.46.** The system-reminder run-start snapshot showed only `M src/pages/members-detail.js` + `M emu-unified-2026-05-29.log`, but by mid-cycle `M src/core/router-sharecard.js` + `M src/pages/courses-detail.js` + `M src/pages/scramble.js` had ALSO appeared — proving live concurrent edits *during* this cycle. `git log` shows the concurrent session shipped **v8.23.45** (`04349d04`) + **v8.23.46** (`222ec35f`) since cycle AY (which was at v8.23.43), with cron-regen commits interleaved; HEAD = `6c70516c`. These are **not our WIP** — left untouched and unstaged. Founder review of those commits is normal post-commit review, not a triage blocker.
+2. **`src/pages/members-detail.js` is over the AMD-027 800-line budget (now 842, up from 822).** This is an **existing** architecture weak_point, not triage-caused, and the concurrent session is *actively editing the file right now*. **No proposal manufactured** — authoring an AMD-027 split proposal for a file another author is mid-edit on would be both ship-count gaming (Rule 2) and a collision risk; the split should be the concurrent author's / Founder's call once that ship settles.
+3. **`A12_operational` / founder-checklist `open=6`** — residual concurrent-ship drift (red=0 yellow=4 green=2 closed=25); red=0 so nothing ship-blocking.
+4. **Carry-over — concurrent emulator log `.claude/state/emu-unified-2026-05-29.log`** is dirty (a live emulator session's territory). Deliberately **not staged**.
+5. **Carry-over — writer-side BOM fix (`scripts/common.ps1`) remains unauthored as a proposal.** Consumer-side `utf-8-sig` tolerance has now held 41 consecutive clean regen-all runs (cycles L–AZ). Deliberately not auto-promoted without a Founder priority signal.
+6. **Carry-over — journal-date convention (UTC vs Founder-local) for filename + commit date.** Not in tension this cycle (both = 2026-05-30) but unresolved as policy; Founder may want to lock which is canonical.
+7. **Cron cadence** — cycles M–AZ steady at ~1h (40 consecutive). Awareness only.
+
+## Cycle AZ Critic metric-integrity attestation (per `METRIC_INTEGRITY_PROTOCOL § 3.1`)
+
+1. **"Did every bug report processed get a real diagnosis with cited evidence?"** N/A — zero bug reports tonight (inbox tree absent, verified by directory checks this cycle). Cannot wave off what doesn't exist.
+2. **"Did every new proposal cite a specific screen/state/edge-case?"** N/A — zero new proposals tonight. The `members-detail.js` over-budget (an existing AMD-027 weak_point the concurrent session is actively editing) and the BOM fix were both deliberately *not* promoted rather than inflated into proposals.
+3. **"Did the FIQ grades reflect rubric dimensions honestly?"** N/A — zero FIQ entries tonight. Queue absent.
+
+**Heartbeat-only self-check — is tonight's substantive output real?** YES, and this cycle the integrity discipline was *sharper than boilerplate*. A 41st consecutive clean canonical regen-all confirms the gate is durable. Critically, this cycle the app-health diff was **NOT** purely metadata (unlike AU–AY), and rather than echo the prior cycles' "purely metadata" language, the diff was read verbatim and the **real** `members-detail.js` 822→842 weak_point growth was surfaced — *with* the honest explanation of why the overall score still holds at 87.1 (the file was already over the 800 budget, so further growth doesn't move the architecture dimension score). Every claim is anchored to a quoted regen-all log line, a `git diff` hunk read verbatim, a `git log`/`git status` line, or a `test -d` directory-absence check. No invented productivity, and no lazy boilerplate where the facts diverged.
+
+**Critic attests cleanly: substantive heartbeat cycle, honest diff characterization (not-purely-metadata caught), ship closes.**
+
+## Files changed in this cycle AZ run
+
+- `.claude/state/wellness/engineer.json` — cycle AZ update
+- `.claude/state/wellness/critic.json` — cycle AZ update
+- `.claude/state/cron/2026-05-30-overnight-run.md` — this journal (cycle AZ section appended)
+- `docs/reports/app-health.html` — regen output (metadata `generated_at` + `audit_trigger` commit-pointer `222ec35f`→`6c70516c` + **real** `members-detail.js` 822→842 weak_point detail; overall score/grade + all 12 dimension scores byte-unchanged at 87.1 A-)
+
+NOT staged (live concurrent-session / other-tooling territory, via explicit pathspec): `.claude/state/emu-unified-2026-05-29.log`, `src/pages/members-detail.js`, `src/core/router-sharecard.js`, `src/pages/courses-detail.js`, `src/pages/scramble.js`, `.claude/state/overnight-agent/reports/2026-05-30.md`, `.claude/state/stop-decisions/2026-05-30.ndjson`.
+
+No code changes in cycle AZ. No proposals. No FIQ writes. No bug-report state moves (inbox absent). app-health overall FLAT at 87.1 (A-), with a real (non-score-moving) `members-detail.js` weak_point line-count delta honestly surfaced.
