@@ -822,9 +822,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-30T16:08:02.709873Z",
+  "generated_at": "2026-05-30T16:21:04.770226Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 87.8,
+  "overall_score": 87.1,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -838,9 +838,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 92.8,
+    "pre_deduction_score": 92.1,
     "deduction": 5,
-    "post_deduction_score": 87.8
+    "post_deduction_score": 87.1
   },
   "dimensions": {
     "A1_roadmap": {
@@ -974,9 +974,9 @@
       "weak_points": []
     },
     "A12_operational": {
-      "score": 75,
+      "score": 60,
       "status": "yellow",
-      "label": "pipeline=yellow · 8 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=red · 8 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
@@ -1009,13 +1009,18 @@
     }
   ],
   "audit_trigger": {
-    "sha": "ca0e8701",
-    "subject": "Overnight triage 2026-05-30 - 0 reports, 0 proposals, 0 FIQ entries graded",
-    "committed_at": "2026-05-30T12:06:50-04:00",
-    "trigger": "substrate-commit",
-    "is_app_commit": false,
-    "app_files_touched": [],
-    "total_files_touched": 4
+    "sha": "4c411887",
+    "subject": "feat(home): felt-green Clubhouse hero â€” Wave 2 design coherence flagship (v8.23.67)",
+    "committed_at": "2026-05-30T12:20:40-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "public/sw.js",
+      "src/core/utils.js",
+      "src/pages/caddynotes.js",
+      "src/pages/home-hq.js"
+    ],
+    "total_files_touched": 8
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",

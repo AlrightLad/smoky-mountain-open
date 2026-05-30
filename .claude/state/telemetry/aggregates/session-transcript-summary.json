@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-05-30T16:09:08.934792+00:00",
+  "generated_at": "2026-05-30T16:20:50.178277+00:00",
   "schema_version": 1,
   "source": "~/.claude/projects/C--Users-Zach-smoky-mountain-open/*.jsonl",
   "session_count": 256,
   "bucket_count": 302,
-  "all_time_total_tokens": 13191558521,
+  "all_time_total_tokens": 13204086049,
   "by_day_total": {
     "2026-04-17": 294853821,
     "2026-04-20": 362592283,
@@ -34,12 +34,12 @@
     "2026-05-27": 0,
     "2026-05-28": 29959892,
     "2026-05-29": 1125370428,
-    "2026-05-30": 731636133
+    "2026-05-30": 744163661
   },
   "by_model_total": {
     "claude-opus-4-7": 11336701903,
     "<synthetic>": 0,
-    "claude-opus-4-8": 1854856618
+    "claude-opus-4-8": 1867384146
   },
   "buckets": {
     "0c5538f6-fa47-44fc-9519-28830b98ff03|2026-05-13|claude-opus-4-7": {
@@ -3777,14 +3777,14 @@
       "session_id": "a3e3471a-7db9-4c9d-a1f1-37284a43520d",
       "day": "2026-05-30",
       "model": "claude-opus-4-8",
-      "turn_count": 5227,
-      "input_tokens": 235360,
-      "output_tokens": 5908439,
-      "cache_read_input_tokens": 614809343,
-      "cache_creation_input_tokens": 20798339,
-      "total": 641751481,
+      "turn_count": 5314,
+      "input_tokens": 235534,
+      "output_tokens": 6038402,
+      "cache_read_input_tokens": 625959881,
+      "cache_creation_input_tokens": 21177272,
+      "total": 653411089,
       "first_ts": "2026-05-30T01:45:58.886Z",
-      "last_ts": "2026-05-30T16:08:37.133Z"
+      "last_ts": "2026-05-30T16:20:36.711Z"
     },
     "3c2ac5b0-70f4-4435-b13b-40243a5de0ce|2026-05-30|claude-opus-4-8": {
       "session_id": "3c2ac5b0-70f4-4435-b13b-40243a5de0ce",
@@ -3959,14 +3959,14 @@
       "session_id": "66ad7a2d-84a4-46b8-9454-5d8773f336b5",
       "day": "2026-05-30",
       "model": "claude-opus-4-8",
-      "turn_count": 53,
-      "input_tokens": 24154,
-      "output_tokens": 92150,
-      "cache_read_input_tokens": 3701240,
-      "cache_creation_input_tokens": 258365,
-      "total": 4075909,
+      "turn_count": 61,
+      "input_tokens": 25049,
+      "output_tokens": 99913,
+      "cache_read_input_tokens": 4554991,
+      "cache_creation_input_tokens": 263876,
+      "total": 4943829,
       "first_ts": "2026-05-30T16:00:12.237Z",
-      "last_ts": "2026-05-30T16:08:55.388Z"
+      "last_ts": "2026-05-30T16:09:55.357Z"
     }
   }
 }
