@@ -656,6 +656,16 @@ var PB = (function() {
     return p.name || p.username || "Unknown";
   }
 
+  // Single source of truth for a round/event format's member-facing name, so the
+  // live-round header, home rails, feed, and history all print the same human
+  // label instead of the raw key ("stableford") or a mangled "STABLEFORD PLAY".
+  // Unknown keys fall back to a title-cased key rather than the raw value.
+  function fmtLabel(fmt) {
+    if (!fmt) return "";
+    var map = { stroke: "Stroke Play", parbaugh: "Parbaugh Stroke Play", stableford: "Stableford", match: "Match Play", scramble: "Scramble", scramble4: "Scramble (4-man)", bestball: "Best Ball", skins: "Skins", chapman: "Chapman", shamble: "Shamble" };
+    return map[fmt] || (String(fmt).charAt(0).toUpperCase() + String(fmt).slice(1));
+  }
+
   function getPlayerBest(pid) {
     var r = getPlayerRounds(pid).filter(function(rd){return rd.visibility !== "private" && rd.format !== "scramble" && rd.format !== "scramble4" && (!rd.holesPlayed || rd.holesPlayed >= 18);});
     if (r.length) {
@@ -2161,7 +2171,7 @@ var PB = (function() {
     getScrambleTeams:getScrambleTeams, addScrambleTeam:addScrambleTeam, addScrambleTeamFromFirestore:addScrambleTeamFromFirestore, addScrambleMatch:addScrambleMatch,
     getRecords:getRecords, setRecord:setRecord,
     calcStableford:calcStableford, calcHandicap:calcHandicap, getHandicapDetails:getHandicapDetails,
-    getPlayerAvg:getPlayerAvg, getPlayerBest:getPlayerBest, getPlayerBest9:getPlayerBest9, getDisplayName:getDisplayName, getUniqueCourses:getUniqueCourses, normCourseName:normCourseName, getAllPlayerIds:getAllPlayerIds,
+    getPlayerAvg:getPlayerAvg, getPlayerBest:getPlayerBest, getPlayerBest9:getPlayerBest9, getDisplayName:getDisplayName, fmtLabel:fmtLabel, getUniqueCourses:getUniqueCourses, normCourseName:normCourseName, getAllPlayerIds:getAllPlayerIds,
     getTripStableford:getTripStableford, getTripTotal:getTripTotal,
     getMiniPoints:getMiniPoints, getBonusPoints:getBonusPoints, getTripPoints:getTripPoints,
     daysUntil:daysUntil, generateRoundCommentary:generateRoundCommentary, getActivity:getActivity, getAchievements:getAchievements, getPlayerXP:getPlayerXP, getPlayerLevel:getPlayerLevel, getPlayerXPForDisplay:getPlayerXPForDisplay, calcXPFromRounds:calcXPFromRounds, calcLevelFromXP:calcLevelFromXP,

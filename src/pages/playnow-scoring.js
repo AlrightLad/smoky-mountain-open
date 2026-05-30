@@ -45,7 +45,7 @@ function _renderLiveScoringInner() {
   // Top bar with course name and running score
   h += '<div style="padding:10px 16px;background:var(--bg2);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">';
   h += '<div><div style="font-size:13px;font-weight:600">' + liveState.course + '</div>';
-  h += '<div style="font-size:10px;color:var(--muted);margin-top:1px">' + (player ? player.name : '') + ' · ' + liveState.format + '</div></div>';
+  h += '<div style="font-size:10px;color:var(--muted);margin-top:1px">' + (player ? player.name : '') + ' · ' + PB.fmtLabel(liveState.format) + '</div></div>';
   h += '<div style="text-align:right"><div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--gold)">' + (totalSoFar || "—") + '</div>';
   if (holesPlayed > 0) {
     var diff = totalSoFar - parSoFar;

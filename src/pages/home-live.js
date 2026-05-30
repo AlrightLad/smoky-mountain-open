@@ -139,7 +139,7 @@ function _renderLiveRoundExpandedCard(ctx) {
   var diff = thru > 0 ? total - parSoFar : 0;
   var diffStr = thru === 0 ? "—" : (diff === 0 ? "E" : (diff > 0 ? "+" + diff : String(diff)));
   var fmt = (liveState.format || "stroke").toString();
-  var formatLabel = fmt === "scramble" ? "SCRAMBLE" : fmt.toUpperCase() + " PLAY";
+  var formatLabel = PB.fmtLabel(fmt).toUpperCase();
 
   var h = '<div id="live-round-card" onclick="Router.go(\'playnow\')" style="background:var(--cb-green);border-radius:var(--r-4);padding:var(--sp-6);color:var(--cb-chalk);cursor:pointer;position:relative;overflow:hidden">';
   // Top eyebrow with pulsing dot

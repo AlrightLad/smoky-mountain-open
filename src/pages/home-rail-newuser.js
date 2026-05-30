@@ -331,7 +331,7 @@ function _renderLiveRoundCard() {
   var diffStr = thru === 0 ? "—" : (diff === 0 ? "E" : (diff > 0 ? "+" + diff : String(diff)));
 
   var fmt = (liveState.format || "stroke").toString();
-  var formatLabel = fmt === "scramble" ? "SCRAMBLE" : fmt.toUpperCase() + " PLAY";
+  var formatLabel = PB.fmtLabel(fmt).toUpperCase();
 
   var h = '<div style="padding:18px 22px 0">';
   h += '<div id="live-round-card" class="tappable" onclick="Router.go(\'playnow\')" style="background:var(--cb-green);border-radius:var(--r-4);padding:22px;color:var(--cb-chalk);cursor:pointer;position:relative;overflow:hidden">';
