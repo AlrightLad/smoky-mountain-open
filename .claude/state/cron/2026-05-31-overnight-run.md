@@ -895,3 +895,92 @@ Three concrete questions:
 - `docs/reports/app-health.html` — engineer's own regen-all output (metadata-only diff: generated_at + audit_trigger; score flat 86.8 A-)
 
 No code changes. No proposals. No FIQ writes. No bug-report state moves (inbox empty). Concurrent WIP (emu log + playwright.config.js + tests/e2e/helpers/auth.js + 4 new probe logs) deliberately left unstaged.
+
+---
+
+# Overnight triage — 2026-05-31 (cycle CC) — eleventh fire of the Founder-local day
+
+**Started:** 2026-05-31T14:01:06Z (cron-fired; regen-all START)
+**Finished:** 2026-05-31T14:01:14Z (regen-all "ALL DASHBOARDS REGENERATED" stamp; heartbeat `last_pass` to follow)
+**Mode:** Heartbeat-only branch per runbook (FIQ + bug-reports inbox both empty)
+**Cycle:** CC (115th consecutive empty-inbox cycle; ~60m after cycle CB's 13:00Z regen — 67th consecutive ~1h-cadence cycle since cycle M). Eleventh fire of the 2026-05-31 Founder-local date; no date-tension (carry-over #5 dormant, well clear of midnight).
+
+## Inbox state at run-start (cycle CC)
+
+- `.claude/state/founder-input-queue/` — **directory does not exist** (`test -d` → MISSING; `find -type f` → empty).
+- `.claude/state/bug-reports/` — **entire tree absent** (no `inbox/`, no `triaged/`; `test -d` → MISSING for both).
+- `.claude/state/aggregates/fiq-status.json` — present (`green · 26 declared / 26 deployed · 0 pending builds`) but the live-queue store directory itself is absent → no entries to grade.
+- `.claude/state/proposals/pending/` — empty (round-trip confirms pending=0).
+- `.claude/state/proactive-backlog.md` — **absent** (no demotions this cycle).
+- `.claude/state/wellness/quota-status.json` — `data_source: auto-derived`, `weekly_pct=None org_monthly_pct=None`, all caps null → **no org-cap signal**; pause-discipline F1a quota-wall NOT in effect.
+- **Working tree at run-start: DIRTY — same concurrent E2E WIP as cycles CA/CB, now GROWN by two more flow specs.** Modified: `.claude/state/emu-unified-2026-05-29.log`, `playwright.config.js`, `tests/e2e/flows/04-ui-layout-regression.spec.js`, `tests/e2e/flows/09-playnow-hole-edit.spec.js`, `tests/e2e/helpers/auth.js`. Untracked: `.claude/state/e2e-3project-authoritative-2026-05-31.log`, `e2e-chromium-full-2026-05-31.log`, `e2e-chromium-rerun-2026-05-31.log`, `e2e-diag-spec01-chromium-2026-05-31.log`, `e2e-probe-fresh-2026-05-31.log`, `emu-probe-2026-05-31.log` — concurrent E2E run artifacts, **all not mine**. The two newly-modified flow specs (`04-ui-layout-regression`, `09-playnow-hole-edit`) are the same different-session E2E debugging effort CA/CB inherited, now editing flow specs in addition to `auth.js`/`playwright.config.js`. Per `cron-sweeps-staged-work` ownership discipline none of them were staged or touched; commit pathspec scoped to my own heartbeat outputs only.
+
+Per runbook: "If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 only and exit."
+
+## Step 1 — FIQ triage (cycle CC)
+
+- FIQ entries triaged: **0** (queue directory absent). Grade breakdown: N/A — A:0 B:0 C:0 D:0 F:0. IDs: none.
+
+## Step 2 — Bug-report triage (cycle CC)
+
+- Bug reports processed: **0** (inbox tree absent). Dispositions: none — no P3e discussion bubbles opened (nothing to deliberate).
+
+## Step 3 — Heartbeat (cycle CC)
+
+### 3a — `scripts/regen-all.ps1`
+
+- Ran end-to-end 14:01:06Z → **=== ALL CHECKS PASSED ===**, **round-trip test PASS**, "ALL DASHBOARDS REGENERATED at 2026-05-31T14:01:14Z". **67th consecutive clean canonical regen-all** (cycles L–CC; increments CB's 66th).
+- All guards green (round-trip 4-view swap + transcript tallies 3 bubbles + nav 9-link × 9 pages + meter-wiring 7/7 + founder-queue 7/7 + quota-type-enum + cross-dash proposals_pending=0 + lifecycle proposals shipped=7 + amendments applied=28 + escalations applied=3 + theme convergence no raw hex + no-charts + protected-layouts 5/5 + proposal-readiness 0 deferred + install-scripts 7 parse + install-cmd-surface + scroll-reachability 5/0/0 + quota-status auto-derived + pause-discipline clean + wiring 5/5). proposals_pending=0. meter-wiring 7/7 → **HALT-25 NOT in effect**.
+- Telemetry: events **18631** (up from CB's 18578), handoffs=1, bubbles=7, proposals_pending=0.
+- Two INFORMATIONAL non-failures (both long-standing, neither a regression): (1) `user-context-gate` flags `main-flows.html` modified 23753.6 min after last user-context capture (2026-05-14T23-07-48Z) — benign on a heartbeat-only night with no visual ship-close; (2) `regen-main-flows` WARN: same 6 long-standing orphan components (actor.guest, actor.invitee, dist.capacitor-ios, ext.open-meteo, fn.expire-suspensions, fn.join-league) — unchanged standing item, not new this cycle.
+
+### 3a-bis — APP-HEALTH: FLAT 86.8 (A-), with a benign TEST-LOC sub-signal twitch (1058 → 1041)
+
+**FLAT-score cycle, but NOT pure-metadata like CB.** `overall_score` holds at **86.8 (A-), unchanged** (absent from the `git diff` → confirmed flat). The `docs/reports/app-health.html` diff is **6 ins / 6 del**, characterized verbatim:
+
+- **(a)** `generated_at` `2026-05-31T13:06:29.707127Z` → `2026-05-31T14:01:13.370812Z` (timestamp bump).
+- **(b)** test-dimension `label` `"9 specs · 1058 LOC · unit-test=True · coverage-tool=True"` → `"9 specs · 1041 LOC · …"` — **test LOC dropped −17**. This is the regen **re-reading the concurrent E2E session's working-tree edits** to `tests/e2e/flows/04-ui-layout-regression.spec.js` + `09-playnow-hole-edit.spec.js` (both modified at run-start). Spec count holds at 9; only the line total moved.
+- **(c)** `audit_trigger` re-pointed: sha `1f4a76d2` / "Overnight triage 2026-05-31 - 0 reports, 0 proposals, 0 FIQ entries graded" / `substrate-commit` / committed 09:04:52-04:00 → sha `a682274a` / "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)" / `cron` / committed 09:07:35-04:00 (= current HEAD).
+- **NOT in the diff (verified unchanged):** `overall_score` (86.8), `pre_deduction_score`, `post_deduction_score`, all 12 dimension *scores* including the test dimension's own score and `A12_operational` (still at its skip-dirty floor) — none moved. The test-LOC change is a *label* string, not a score input at this magnitude.
+
+**ATTRIBUTION (metric integrity):** the −17 test-LOC twitch is **NOT this cycle's work** — I authored no code, edited no test, shipped nothing, broke nothing. It is the regen re-reading flow-spec files that the **concurrent E2E debugging session** is actively editing in the shared working tree (the same session whose `auth.js`/`playwright.config.js`/probe-log WIP CA/CB inherited, now extended to two flow specs). My heartbeat regen merely **re-read** that working-tree state. I claim neither credit nor blame for the LOC delta any more than prior cycles claimed the A12 oscillation. This is the **22nd distinct attribution case** in the run, and the first **TEST-LOC-TWITCH variant** (a sub-signal label moved on concurrent test edits while the score held flat). The discipline this cycle is to refuse to spin a concurrent session's spec refactor into a test-health narrative of my own.
+
+**NO proposal warranted — ninth consecutive empty-queue data point.** Nothing is broken: the test-LOC change is a concurrent session mid-edit, the A12 skip-dirty floor remains a confirmed self-resolving transient (recovers the moment the concurrent E2E WIP commits, as BZ proved recover-on-commit end-to-end), and the watcher's `skip-dirty` exit on a dirty tree is behaviorally correct. Manufacturing a remediation proposal on a self-clearing, behaviorally-correct condition is the Rule-2 gaming prior cycles correctly refused.
+
+**Standing observation for Founder (non-blocking, NOT a new proposal/FIQ tonight) — unchanged:** the A12_operational "recent skip-dirty" sub-signal is noise-dominated by whether a concurrent session has uncommitted WIP (normal multi-session operation, not a pipeline-health defect). Tonight a second concurrent-WIP-sensitive sub-signal surfaced — the test-dimension LOC label tracks working-tree spec edits — likewise benign and likewise score-neutral. If Founder wants these dashboards to read only committed state, the aggregators could be pointed at `HEAD` rather than the working tree. Recorded here only.
+
+### 3b — Wellness refresh
+
+- `engineer.json` + `critic.json` updated for cycle CC (heartbeat-only participants). Status remains `active` for both; no rest triggered (heartbeat-only load light). Token-threshold `tokens_consumed` remains crossed; Founder token-counter-semantics decision still LIVE (carry-over). No agent pushed past a *new* threshold this cycle.
+
+## Step 4 — Session journal
+
+This section.
+
+## Step 5 — Commit
+
+Staged via explicit pathspec (own files only, per `cron-sweeps-staged-work` discipline): `wellness/engineer.json` + `wellness/critic.json` + this journal + the engineer's own `docs/reports/app-health.html` regen output. The concurrent WIP (`emu-unified-2026-05-29.log`, `playwright.config.js`, `tests/e2e/flows/04-ui-layout-regression.spec.js`, `tests/e2e/flows/09-playnow-hole-edit.spec.js`, `tests/e2e/helpers/auth.js`, and the 6 untracked `*-2026-05-31.log` probe logs) is **deliberately left unstaged** — not mine to commit. **DO NOT push** (runbook discipline — Founder reviews local diff first). Commit message per runbook exact format.
+
+## Blockers requiring Founder attention (cycle CC)
+
+- **None new / none blocking.** No HALT criteria tripped. No scope-creep candidates.
+- The A12 skip-dirty floor + the new test-LOC twitch are both **recognized concurrent-WIP-sensitive sub-signals** holding/moving while concurrent E2E WIP stays uncommitted — both clear when that WIP commits. Neither is a defect; surfaced, not actioned.
+- Standing carry-overs unchanged: token-counter semantics (still LIVE); date-convention policy lock (#5, dormant, well clear of midnight).
+
+## Critic metric-integrity attestation (METRIC_INTEGRITY_PROTOCOL §3.1) — cycle CC
+
+Three concrete questions:
+1. **Bug-report diagnoses real / not waved off?** N/A — inbox tree absent (directory-absence verified via `test -d` + `find -type f` empty this cycle, not assumed). No diagnoses to scrutinize.
+2. **Proposals cite a specific screen/state/edge-case / not vague?** N/A — **zero proposals authored**, and NOT authoring one was correct: both moving sub-signals (A12 skip-dirty floor, test-LOC label) are self-clearing concurrent-WIP artifacts; a remediation proposal would target conditions that recover on commit.
+3. **FIQ grades honest / not inflated to clear count?** N/A — zero live FIQ entries.
+
+**Substantive-vs-fluff verdict: SUBSTANTIVE, attested CLEANLY.** This cycle the critic verified a FLAT-score finding with a genuine, correctly-disowned sub-signal twitch: app-health held at 86.8 (A-) while the test-dimension LOC label moved 1058→1041 (−17), and the engineer correctly **disowned the twitch** (the regen re-reading a concurrent E2E session's mid-edit flow specs, NOT this cycle's work — 22nd attribution case, the first TEST-LOC-TWITCH variant). The critic independently confirmed via the verbatim `app-health.html` git diff that `overall_score` is absent from the diff (flat at 86.8), no dimension *score* moved, and the only substantive change is a label string tracking working-tree spec LOC. The causal chain (concurrent E2E session editing `04-ui-layout-regression.spec.js` + `09-playnow-hole-edit.spec.js` → regen re-reads working tree → test-LOC label drops) is traceable to the run-start `git status` (both specs modified, not by me). No-proposal call reaffirmed: both the A12 floor and the test-LOC twitch are concurrent-WIP-sensitive and self-clearing. Commit pathspec scoped to own files; all concurrent WIP (5 modified + 6 untracked) left untouched. Pause-discipline F1a honored: 5 state-changing ops (regen-all + journal + 2 wellness writes + 1 commit), no API-error/org-cap signal in any tool result. Nothing fabricated on an empty-queue night; the honest report is "heartbeat-only, 67th consecutive clean regen, score flat, one concurrent-WIP test-LOC twitch disowned." Ship closes.
+
+## Files changed in this cycle CC run
+
+- `.claude/state/wellness/engineer.json` — cycle CC update
+- `.claude/state/wellness/critic.json` — cycle CC update
+- `.claude/state/cron/2026-05-31-overnight-run.md` — this journal (cycle CC section appended)
+- `docs/reports/app-health.html` — engineer's own regen-all output (FLAT 86.8 A-; test-LOC label 1058→1041 + generated_at + audit_trigger pointer)
+
+No code changes. No proposals. No FIQ writes. No bug-report state moves (inbox absent). Concurrent WIP (emu log + playwright.config.js + 2 flow specs + auth.js + 6 untracked probe logs) deliberately left unstaged.
