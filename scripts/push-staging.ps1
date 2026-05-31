@@ -22,7 +22,10 @@ param(
 )
 
 $ErrorActionPreference = "Continue"
-Set-Location (Split-Path -Parent (Split-Path -Parent $PSScriptRoot))
+# scripts/ sits directly under the repo root, so one Split-Path -Parent
+# reaches it. (A prior double-parent overshot to C:\Users\Zach and broke
+# the on-main guard with "not a git repository".)
+Set-Location (Split-Path -Parent $PSScriptRoot)
 
 $currentBranch = (& git rev-parse --abbrev-ref HEAD).Trim()
 if ($currentBranch -ne "main") {
