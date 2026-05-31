@@ -1,106 +1,57 @@
 /* ================================================
-   PAGE: SETTINGS
+   PAGE: SETTINGS — CLUBHOUSE_SPEC-HQ-3h (W1.S14)
+   Editorial preferences hub: small masthead ("Settings."), sticky section-nav
+   on desktop + stacked sectioned form. Single column on mobile (nav hidden;
+   sections scroll). The section list (and therefore the nav) is built from the
+   surfaces that actually render, so the nav only ever points to real sections
+   (P10 — no dead destinations). All mutation handlers + element IDs preserved
+   verbatim below the renderer.
+   Scaffold: roster-masthead + set-* (src/styles/components.css).
+   Tokens: real Clubhouse tokens only (spec's --cb-chalk-deep/--cb-line do not
+   exist → --cb-chalk-2 / --cb-chalk-3).
    ================================================ */
 Router.register("settings", function(params) {
-  var h = '<div class="sh"><h2>Settings</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
+  // ── Masthead eyebrow: truthful "MEMBER SINCE {year}" only when a real join
+  //    date is on the profile; otherwise the neutral "MEMBER" (P9). ──
+  var _joinYear = "";
+  try {
+    var _ca = currentProfile && (currentProfile.createdAt || currentProfile.joinedAt || currentProfile.memberSince);
+    if (_ca && typeof _ca.toDate === "function") _joinYear = String(_ca.toDate().getFullYear());
+    else if (_ca && _ca.seconds) _joinYear = String(new Date(_ca.seconds * 1000).getFullYear());
+    else if (typeof _ca === "string" && /^\d{4}/.test(_ca)) _joinYear = _ca.slice(0, 4);
+  } catch (e) {}
+  var _eyebrow = _joinYear ? ("PARBAUGHS · MEMBER SINCE " + _joinYear) : "PARBAUGHS · MEMBER";
 
-  // Account section
-  h += '<div class="form-section"><div class="form-title">Account</div>';
+  // Sections accumulate into secs[]; the nav is generated from whatever renders.
+  var secs = [];
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // ACCOUNT
+  // ──────────────────────────────────────────────────────────────────────────
+  var acc = "";
   if (currentUser) {
-    h += '<div class="card"><div class="card-body">';
-    h += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="font-size:11px;color:var(--muted)">Email</span><span style="font-size:12px;font-weight:600">' + escHtml(currentUser.email) + '</span></div>';
-    h += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="font-size:11px;color:var(--muted)">Username</span><span style="font-size:12px;font-weight:600;color:var(--gold)">' + escHtml(currentProfile ? (currentProfile.username||currentProfile.name) : "—") + '</span></div>';
-    h += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="font-size:11px;color:var(--muted)">Role</span><span style="font-size:12px;font-weight:600">' + escHtml(currentProfile ? currentProfile.role : "—") + '</span></div>';
-    h += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="font-size:11px;color:var(--muted)">Sync</span><span style="font-size:12px;font-weight:600;color:' + (syncStatus==="online"?"var(--birdie)":"var(--red)") + '">' + syncStatus + '</span></div>';
-    if (currentUser && !currentUser.emailVerified) {
-      h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-top:1px solid var(--border);margin-top:4px"><span style="font-size:11px;color:var(--gold)">Email not verified</span><button style="background:var(--gold);color:var(--bg);border:none;border-radius:4px;font:600 10px/1 Inter,sans-serif;padding:6px 12px;cursor:pointer" onclick="sendVerificationEmail()">Send Verification</button></div>';
-    } else if (currentUser && currentUser.emailVerified) {
-      h += '<div style="display:flex;justify-content:space-between;padding:4px 0"><span style="font-size:11px;color:var(--muted)">Email</span><span style="font-size:11px;color:var(--birdie)">Verified \u2713</span></div>';
+    acc += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Email</div></div><div class="set-row__value set-row__value--mono">' + escHtml(currentUser.email) + '</div></div>';
+    if (!currentUser.emailVerified) {
+      acc += '<div class="set-note set-note--mute" style="margin:10px 0 4px;display:flex;justify-content:space-between;align-items:center;gap:10px"><span>Your email is not verified yet.</span><button class="set-link" onclick="sendVerificationEmail()">Send verification</button></div>';
     }
-    h += '</div></div>';
+    acc += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Username</div></div><div class="set-row__value">' + escHtml(currentProfile ? (currentProfile.username || currentProfile.name) : "—") + '</div></div>';
+    acc += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Role</div></div><div class="set-row__value">' + escHtml(currentProfile ? (currentProfile.role || "Member") : "—") + '</div></div>';
+    acc += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Sync</div></div><div class="set-row__value set-row__value--mono" style="color:' + (syncStatus === "online" ? "var(--cb-moss)" : "var(--cb-claret)") + '">' + escHtml(String(syncStatus)) + '</div></div>';
+    acc += '<div style="margin-top:18px"><button class="set-btn set-btn--claret" onclick="doLogout()">Sign out</button></div>';
+    acc += '<div style="text-align:center;margin-top:16px"><button class="set-link set-link--mute" onclick="deleteMyAccount()">Delete account</button>';
+    acc += '<div class="set-row__desc" style="margin-top:5px">Removes your profile, photos, and sign-in. This cannot be undone.</div></div>';
   } else {
-    h += '<div style="font-size:12px;color:var(--muted)">Not signed in</div>';
+    acc += '<div class="set-row__desc">You are not signed in.</div>';
   }
-  h += '</div>';
+  secs.push({ key: "account", label: "Account", html: acc });
 
-  // Appearance — placeholder pending full theme picker (Ship 0d-ii)
-  var _activeThemeId = (typeof getCurrentTheme === "function") ? getCurrentTheme() : "clubhouse";
-  var _activeThemeName = (typeof THEMES !== "undefined" && THEMES[_activeThemeId]) ? THEMES[_activeThemeId].name : "Clubhouse";
-  h += '<div class="section" style="margin-top:16px">';
-  h += '<div class="sec-head"><span class="sec-title">Appearance</span></div>';
-  h += '<div class="card"><div class="card-body" style="padding:16px">';
-  h += '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px">';
-  h += '<span style="font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted)">Current theme</span>';
-  h += '<span style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--text-primary)">' + escHtml(_activeThemeName) + '</span>';
-  h += '</div>';
-  // v8.22+ (design-pass 2026-05-22): theme preview swatches alongside the
-  // copy. Six small color-pair chips give members a visual sense of what's
-  // coming before the picker lands. Each chip is a primary + accent swatch
-  // representing the theme's surface + brass pair.
-  var _themePreviews = [
-    { name: "Clubhouse",       primary: "#f3ede1", accent: "#c89a4b", ready: true,  earned: true },
-    { name: "Twilight Links",  primary: "#1f2a35", accent: "#d4a857", ready: true,  earned: false },
-    { name: "Linen Draft",     primary: "#ebe3d1", accent: "#8b7158", ready: true,  earned: false },
-    { name: "Champion Sunday", primary: "#5b1f1f", accent: "#e0c071", ready: false, earned: false },
-    { name: "Bourbon Room",    primary: "#3d2a1f", accent: "#c89a4b", ready: false, earned: false },
-    { name: "Course Record",   primary: "#f5f0e3", accent: "#1a4032", ready: false, earned: false }
-  ];
-  h += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-subtle);font-size:11px;color:var(--text-muted);line-height:1.5;margin-bottom:12px">The full theme picker arrives in an upcoming update. Six editorial themes: three ready, three to earn.</div>';
-  h += '<div style="display:flex;gap:8px;flex-wrap:wrap">';
-  _themePreviews.forEach(function(t) {
-    var isActive = (t.name === _activeThemeName);
-    var border = isActive ? 'border:2px solid var(--cb-brass)' : 'border:1px solid var(--border-subtle)';
-    var opacity = t.ready ? '1' : '0.5';
-    h += '<div title="' + escHtml(t.name) + (isActive ? ' (current)' : (t.ready ? ' (ready)' : ' (locked)')) + '" style="display:flex;flex-direction:column;align-items:center;gap:4px;opacity:' + opacity + '">';
-    h += '<div style="position:relative;width:48px;height:32px;border-radius:var(--r-1);' + border + ';overflow:hidden">';
-    h += '<div style="position:absolute;top:0;left:0;right:0;bottom:0;background:' + t.primary + '"></div>';
-    h += '<div style="position:absolute;bottom:4px;left:6px;width:14px;height:14px;border-radius:50%;background:' + t.accent + '"></div>';
-    if (!t.ready) {
-      h += '<div style="position:absolute;top:3px;right:3px;width:10px;height:10px"><svg viewBox="0 0 12 12" width="10" height="10" fill="' + t.accent + '"><path d="M3 5V3a3 3 0 116 0v2h.5a.5.5 0 01.5.5v5a.5.5 0 01-.5.5h-7a.5.5 0 01-.5-.5v-5a.5.5 0 01.5-.5H3zm1 0h4V3a2 2 0 10-4 0v2z"/></svg></div>';
-    }
-    h += '</div>';
-    h += '<div style="font-family:var(--font-mono);font-size:8px;font-weight:600;letter-spacing:0.5px;color:var(--text-muted);text-transform:uppercase;text-align:center;max-width:48px;line-height:1.2">' + escHtml(t.name.split(" ")[0]) + '</div>';
-    h += '</div>';
-  });
-  h += '</div>';
-  h += '</div></div></div>';
-
-  // Sunlight Mode toggle — W1.S1 (CLUBHOUSE_SPEC §6.2) — manual setting,
-  // NOT prefers-color-scheme auto. Bumps contrast to AAA, removes shadows,
-  // outlines cards. Activated via <html data-theme="sunlight">. Reads/writes
-  // localStorage 'pb_sunlight' (per CLAUDE.md allowed-keys list pattern).
-  var _sunlightActive = false;
-  try { _sunlightActive = localStorage.getItem('pb_sunlight') === '1'; } catch(e) {}
-  h += '<div class="section" style="margin-top:16px">';
-  h += '<div class="sec-head"><span class="sec-title">Sunlight Mode</span></div>';
-  h += '<div class="card"><div class="card-body" style="padding:16px">';
-  h += '<div style="display:flex;justify-content:space-between;align-items:center;gap:12px">';
-  h += '<div style="flex:1;min-width:0">';
-  h += '<div style="font-size:13px;font-weight:600;color:var(--text-primary)">High-contrast outdoor mode</div>';
-  h += '<div style="font-size:11px;color:var(--text-muted);margin-top:4px;line-height:1.4">Bumps contrast for glare-readable screens. Removes shadows, outlines cards. Toggle on when the sun is winning.</div>';
-  h += '</div>';
-  h += '<button type="button" id="sunlight-toggle" onclick="toggleSunlightMode()" aria-pressed="' + (_sunlightActive ? 'true' : 'false') + '" style="flex-shrink:0;background:' + (_sunlightActive ? 'var(--cb-brass)' : 'var(--cb-chalk-2)') + ';color:' + (_sunlightActive ? 'var(--cb-chalk)' : 'var(--cb-ink)') + ';border:1px solid ' + (_sunlightActive ? 'var(--cb-brass)' : 'var(--border-subtle)') + ';border-radius:var(--r-2);padding:8px 14px;font:600 11px/1 var(--font-mono);letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;min-width:64px">' + (_sunlightActive ? 'On' : 'Off') + '</button>';
-  h += '</div>';
-  h += '</div></div></div>';
-
-  // ════════════════════════════════════════════════════════════════════════
-  // LOCATION (v8.11.0 · Member Location ship)
-  // Three states driven by currentProfile.location:
-  //   A — Not set: privacy caption + geolocation button + manual City, State input
-  //   B — Set: "Currently: X" + relative time + change link
-  //   C — Detecting: handled via direct DOM during getCurrentPosition (no module state)
-  // Save pattern matches togglePublicProfile (line 127): write to Firestore,
-  // mirror to currentProfile, toast, full re-render via Router.go("settings", {}, true).
-  // Tokens: --sp-*, --r-* used for new section per Call 4 (rest of settings.js
-  // unmigrated; pre-HQ pages out of scope until full redesign).
-  // ════════════════════════════════════════════════════════════════════════
-  h += '<div class="section" id="location-section" style="margin-top:var(--sp-4)">';
-  h += '<div class="sec-head"><span class="sec-title">Location</span></div>';
-  h += '<div class="card"><div class="card-body" style="padding:var(--sp-4)">';
+  // ──────────────────────────────────────────────────────────────────────────
+  // LOCATION (v8.11.0 · Member Location ship) — 3 states via currentProfile.location
+  // ──────────────────────────────────────────────────────────────────────────
+  var locHtml = "";
   var loc = currentProfile && currentProfile.location;
   var hasLoc = loc && typeof loc.lat === "number" && typeof loc.lng === "number";
   if (hasLoc) {
-    // ── State B: location set ──
     var locName = escHtml(loc.name || "Your location");
     var sourceLabel = loc.source === "geolocation" ? "detected from device"
                     : loc.source === "manual" ? "set manually"
@@ -112,152 +63,201 @@ Router.register("settings", function(params) {
       var days = Math.floor(ageMs / 86400000);
       setAtLabel = days === 0 ? "today" : days === 1 ? "yesterday" : days + " days ago";
     }
-    h += '<div style="display:flex;flex-direction:column;gap:var(--sp-2)">';
-    h += '<div style="display:flex;align-items:baseline;gap:var(--sp-2);flex-wrap:wrap">';
-    h += '<span style="font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted)">Currently</span>';
-    h += '<span style="font-family:var(--font-display);font-size:14px;font-weight:600;color:var(--text-primary)">' + locName + '</span>';
-    h += '</div>';
+    locHtml += '<div style="display:flex;flex-direction:column;gap:var(--sp-2)">';
+    locHtml += '<div style="display:flex;align-items:baseline;gap:var(--sp-2);flex-wrap:wrap">';
+    locHtml += '<span style="font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute)">Currently</span>';
+    locHtml += '<span style="font-family:var(--font-display);font-style:italic;font-size:17px;font-weight:600;color:var(--cb-ink)">' + locName + '</span>';
+    locHtml += '</div>';
     if (sourceLabel || setAtLabel) {
       var meta = [sourceLabel, setAtLabel].filter(Boolean).join(" · ");
-      h += '<div style="font-family:var(--font-mono);font-size:10px;color:var(--text-muted);letter-spacing:0.5px">' + escHtml(meta) + '</div>';
+      locHtml += '<div style="font-family:var(--font-mono);font-size:10px;color:var(--cb-mute);letter-spacing:0.5px">' + escHtml(meta) + '</div>';
     }
-    h += '<button type="button" onclick="clearLocation()" style="align-self:flex-start;margin-top:var(--sp-2);background:transparent;border:none;cursor:pointer;font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:1.5px;color:var(--cb-brass);text-transform:uppercase;padding:0">Change location →</button>';
-    h += '</div>';
+    locHtml += '<button type="button" onclick="clearLocation()" class="set-link" style="align-self:flex-start;margin-top:var(--sp-2)">Change location →</button>';
+    locHtml += '</div>';
   } else {
-    // ── State A: not set ──
-    h += '<div style="font-family:var(--font-mono);font-size:11px;line-height:1.6;color:var(--text-muted);margin-bottom:var(--sp-4)">Your location is used only to show accurate weather. We don\'t share it, and we don\'t track your movements.</div>';
-    h += '<button type="button" id="loc-detect-btn" onclick="detectMyLocation()" style="display:flex;align-items:center;justify-content:center;gap:var(--sp-2);width:100%;min-height:44px;padding:var(--sp-3);background:var(--cb-brass);color:var(--cb-chalk);border:none;border-radius:var(--r-2);cursor:pointer;font-family:var(--font-ui);font-size:13px;font-weight:600">';
-    h += '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>';
-    h += 'Use my current location';
-    h += '</button>';
-    h += '<div id="loc-detect-error" style="display:none;font-family:var(--font-mono);font-size:11px;color:var(--cb-claret);margin-top:var(--sp-2);letter-spacing:0.3px"></div>';
-    // v8.11.1 — permission-denied caption (hidden by default; revealed by async permissions.query post-render).
-    h += '<div id="loc-permission-denied" style="display:none;font-family:var(--font-mono);font-size:11px;color:var(--text-muted);margin-top:var(--sp-2);letter-spacing:1.5px;text-transform:uppercase">BROWSER LOCATION ACCESS IS DENIED · TAP TO USE MANUAL ENTRY</div>';
-    h += '<div style="display:flex;align-items:center;gap:var(--sp-3);margin:var(--sp-4) 0;font-family:var(--font-mono);font-size:10px;color:var(--text-muted);letter-spacing:1.5px;text-transform:uppercase"><div style="flex:1;height:1px;background:var(--border-subtle)"></div>or<div style="flex:1;height:1px;background:var(--border-subtle)"></div></div>';
-    h += '<div style="display:flex;gap:var(--sp-2)">';
-    h += '<input type="text" id="loc-manual-input" placeholder="City, State (e.g., Charlotte, NC)" onkeydown="if(event.key===\'Enter\'){event.preventDefault();setLocationManual();}" style="flex:1;min-height:44px;padding:var(--sp-2) var(--sp-3);background:var(--cb-chalk);border:1px solid var(--border-subtle);border-radius:var(--r-2);font-family:var(--font-ui);font-size:13px;color:var(--text-primary);outline:none">';
-    h += '<button type="button" onclick="setLocationManual()" style="min-height:44px;padding:0 var(--sp-4);background:var(--cb-brass);color:var(--cb-chalk);border:none;border-radius:var(--r-2);cursor:pointer;font-family:var(--font-ui);font-size:13px;font-weight:600">Set</button>';
-    h += '</div>';
-    h += '<div id="loc-manual-error" style="display:none;font-family:var(--font-mono);font-size:11px;color:var(--cb-claret);margin-top:var(--sp-2);letter-spacing:0.3px"></div>';
+    locHtml += '<div class="set-row__desc" style="margin-bottom:var(--sp-4)">Your location is used only to show accurate weather. We don\'t share it, and we don\'t track your movements.</div>';
+    locHtml += '<button type="button" id="loc-detect-btn" onclick="detectMyLocation()" class="set-btn set-btn--brass">';
+    locHtml += '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>';
+    locHtml += 'Use my current location';
+    locHtml += '</button>';
+    locHtml += '<div id="loc-detect-error" style="display:none;font-family:var(--font-mono);font-size:11px;color:var(--cb-claret);margin-top:var(--sp-2);letter-spacing:0.3px"></div>';
+    locHtml += '<div id="loc-permission-denied" style="display:none;font-family:var(--font-mono);font-size:11px;color:var(--cb-mute);margin-top:var(--sp-2);letter-spacing:1.5px;text-transform:uppercase">BROWSER LOCATION ACCESS IS DENIED · TAP TO USE MANUAL ENTRY</div>';
+    locHtml += '<div style="display:flex;align-items:center;gap:var(--sp-3);margin:var(--sp-4) 0;font-family:var(--font-mono);font-size:10px;color:var(--cb-mute);letter-spacing:1.5px;text-transform:uppercase"><div style="flex:1;height:1px;background:var(--cb-chalk-3)"></div>or<div style="flex:1;height:1px;background:var(--cb-chalk-3)"></div></div>';
+    locHtml += '<div style="display:flex;gap:var(--sp-2)">';
+    locHtml += '<input type="text" id="loc-manual-input" class="ff-input" placeholder="City, State (e.g., Charlotte, NC)" onkeydown="if(event.key===\'Enter\'){event.preventDefault();setLocationManual();}" style="flex:1">';
+    locHtml += '<button type="button" onclick="setLocationManual()" class="set-btn set-btn--brass" style="width:auto;flex-shrink:0;padding:0 var(--sp-4)">Set</button>';
+    locHtml += '</div>';
+    locHtml += '<div id="loc-manual-error" style="display:none;font-family:var(--font-mono);font-size:11px;color:var(--cb-claret);margin-top:var(--sp-2);letter-spacing:0.3px"></div>';
   }
-  h += '</div></div></div>';
+  secs.push({ key: "location", label: "Location", html: locHtml });
 
-  // Push notifications
-  h += '<div class="form-section"><div class="form-title">Notifications</div>';
+  // ──────────────────────────────────────────────────────────────────────────
+  // NOTIFICATIONS
+  // ──────────────────────────────────────────────────────────────────────────
+  var notif = "";
   var permState = ('Notification' in window) ? Notification.permission : 'unsupported';
   if (permState === 'granted') {
-    h += '<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(var(--birdie-rgb),.06);border:1px solid rgba(var(--birdie-rgb),.15);border-radius:var(--radius)">';
-    h += '<svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="var(--birdie)" stroke-width="1.5"><path d="M4 8l3 3 5-6"/></svg>';
-    h += '<span style="font-size:12px;color:var(--birdie);font-weight:600">Push notifications enabled</span></div>';
+    notif += '<div class="set-note set-note--ok"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8l3 3 5-6"/></svg> Push notifications are enabled.</div>';
   } else if (permState === 'denied') {
-    h += '<div style="padding:10px 12px;background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);border-radius:var(--radius);font-size:11px;color:var(--muted)">Notifications blocked, update in your browser or device settings</div>';
+    notif += '<div class="set-note set-note--mute">Notifications are blocked. Update this in your browser or device settings to re-enable them.</div>';
   } else if (permState === 'unsupported') {
-    h += '<div style="padding:10px 12px;font-size:11px;color:var(--muted)">Push notifications are not supported on this browser</div>';
+    notif += '<div class="set-note set-note--mute">Push notifications are not supported on this browser.</div>';
   } else {
-    h += '<button class="btn full green" onclick="requestPushPermission()" style="display:flex;align-items:center;justify-content:center;gap:8px"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg> Enable push notifications</button>';
-    h += '<div style="font-size:10px;color:var(--muted);margin-top:6px;text-align:center">Get notified about DMs, tee times, event results, and achievements</div>';
+    notif += '<button class="set-btn set-btn--brass" onclick="requestPushPermission()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg> Enable push notifications</button>';
+    notif += '<div class="set-row__desc" style="text-align:center;margin-top:8px">Get notified about DMs, tee times, event results, and achievements.</div>';
   }
-  h += '</div>';
+  secs.push({ key: "notifications", label: "Notifications", html: notif });
 
-  // Public Profile
-  h += '<div class="form-section"><div class="form-title">Public Profile</div>';
+  // ──────────────────────────────────────────────────────────────────────────
+  // DISPLAY — Appearance (theme preview) + Sunlight Mode
+  // ──────────────────────────────────────────────────────────────────────────
+  var disp = "";
+  var _activeThemeId = (typeof getCurrentTheme === "function") ? getCurrentTheme() : "clubhouse";
+  var _activeThemeName = (typeof THEMES !== "undefined" && THEMES[_activeThemeId]) ? THEMES[_activeThemeId].name : "Clubhouse";
+  disp += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Current theme</div><div class="set-row__desc">The full theme picker arrives in an upcoming update. Six editorial themes: three ready, three to earn.</div></div><div class="set-row__value">' + escHtml(_activeThemeName) + '</div></div>';
+  // Theme preview swatches — palette hex values are data (a literal preview of
+  // each theme's surface + accent), permitted like Visual Reference hole-dots.
+  var _themePreviews = [
+    { name: "Clubhouse",       primary: "#f3ede1", accent: "#c89a4b", ready: true },
+    { name: "Twilight Links",  primary: "#1f2a35", accent: "#d4a857", ready: true },
+    { name: "Linen Draft",     primary: "#ebe3d1", accent: "#8b7158", ready: true },
+    { name: "Champion Sunday", primary: "#5b1f1f", accent: "#e0c071", ready: false },
+    { name: "Bourbon Room",    primary: "#3d2a1f", accent: "#c89a4b", ready: false },
+    { name: "Course Record",   primary: "#f5f0e3", accent: "#1a4032", ready: false }
+  ];
+  disp += '<div class="set-swatches">';
+  _themePreviews.forEach(function(t) {
+    var isActive = (t.name === _activeThemeName);
+    var opacity = t.ready ? '1' : '0.5';
+    disp += '<div class="set-swatch' + (isActive ? ' set-swatch--active' : '') + '" title="' + escHtml(t.name) + (isActive ? ' (current)' : (t.ready ? ' (ready)' : ' (locked)')) + '" style="opacity:' + opacity + '">';
+    disp += '<div class="set-swatch__chip">';
+    disp += '<div style="position:absolute;inset:0;background:' + t.primary + '"></div>';
+    disp += '<div style="position:absolute;bottom:4px;left:6px;width:14px;height:14px;border-radius:50%;background:' + t.accent + '"></div>';
+    if (!t.ready) {
+      disp += '<div style="position:absolute;top:3px;right:3px"><svg viewBox="0 0 12 12" width="10" height="10" fill="' + t.accent + '"><path d="M3 5V3a3 3 0 116 0v2h.5a.5.5 0 01.5.5v5a.5.5 0 01-.5.5h-7a.5.5 0 01-.5-.5v-5a.5.5 0 01.5-.5H3zm1 0h4V3a2 2 0 10-4 0v2z"/></svg></div>';
+    }
+    disp += '</div>';
+    disp += '<div class="set-swatch__name">' + escHtml(t.name.split(" ")[0]) + '</div>';
+    disp += '</div>';
+  });
+  disp += '</div>';
+  // Sunlight Mode toggle (W1.S1 / CLUBHOUSE_SPEC §6.2)
+  var _sunlightActive = false;
+  try { _sunlightActive = localStorage.getItem('pb_sunlight') === '1'; } catch (e) {}
+  disp += '<div class="set-row" style="margin-top:6px"><div class="set-row__main"><div class="set-row__label">Sunlight mode</div><div class="set-row__desc">High-contrast outdoor mode. Bumps contrast for glare-readable screens, removes shadows, outlines cards. Toggle on when the sun is winning.</div></div>';
+  disp += '<button type="button" id="sunlight-toggle" class="set-switch" role="switch" aria-checked="' + (_sunlightActive ? 'true' : 'false') + '" aria-label="Sunlight mode" onclick="toggleSunlightMode()"></button></div>';
+  secs.push({ key: "display", label: "Display", html: disp });
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // PRIVACY — Public profile + Blocked members
+  // ──────────────────────────────────────────────────────────────────────────
+  var priv = "";
   var isPublic = currentProfile && currentProfile.profilePublic;
-  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius)">';
-  h += '<div><div style="font-size:12px;font-weight:600;color:var(--cream)">Make profile public</div>';
-  h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">Anyone can see your stats, rounds, and achievements</div></div>';
-  h += '<div onclick="togglePublicProfile()" style="width:44px;height:26px;border-radius:13px;background:' + (isPublic ? 'var(--birdie)' : 'var(--bg3)') + ';cursor:pointer;position:relative;transition:background .2s;flex-shrink:0">';
-  h += '<div style="width:22px;height:22px;border-radius:50%;background:#fff;position:absolute;top:2px;' + (isPublic ? 'right:2px' : 'left:2px') + ';transition:all .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)"></div></div>';
-  h += '</div>';
+  priv += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Make profile public</div><div class="set-row__desc">Anyone can see your stats, rounds, and achievements.</div></div>';
+  priv += '<button type="button" class="set-switch" role="switch" aria-checked="' + (isPublic ? 'true' : 'false') + '" aria-label="Make profile public" onclick="togglePublicProfile()"></button></div>';
   if (isPublic && currentProfile && currentProfile.username) {
-    h += '<div style="margin-top:8px;padding:8px 12px;background:rgba(var(--gold-rgb),.06);border:1px solid rgba(var(--gold-rgb),.12);border-radius:var(--radius);font-size:10px;color:var(--muted)">';
-    h += 'Your public profile: <span style="color:var(--gold);font-weight:600">parbaughs.golf/player/' + currentProfile.username + '</span>';
-    h += '<div style="margin-top:4px"><button class="btn-sm outline" style="font-size:9px" onclick="sharePublicProfile()">Share Profile Link</button></div></div>';
+    priv += '<div class="set-note set-note--mute" style="margin-top:12px">Your public profile: <span style="color:var(--cb-brass);font-weight:600">parbaughs.golf/player/' + escHtml(currentProfile.username) + '</span>';
+    priv += '<div style="margin-top:8px"><button class="set-link" onclick="sharePublicProfile()">Share profile link</button></div></div>';
   }
-  h += '</div>';
-
-  // Cosmetics Shop
-  h += '<div class="form-section"><div class="form-title">ParCoins</div>';
-  var shopBalance = getParCoinBalance(currentUser ? currentUser.uid : null);
-  h += '<div style="display:flex;gap:8px">';
-  h += '<button class="btn full green" onclick="Router.go(\'shop\')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7"/></svg> Cosmetics Shop</button>';
-  h += '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:8px 14px;display:flex;align-items:center;gap:6px;flex-shrink:0"><span style="font-size:14px;font-weight:700;color:var(--gold)">' + shopBalance + '</span><span style="font-size:9px;color:var(--muted)">coins</span></div>';
-  h += '</div></div>';
-
-  // Invite management
-  if (currentProfile && (isFounderRole(currentProfile) || (currentProfile.invitesUsed||0) < (currentProfile.maxInvites||3))) {
-    h += '<div class="form-section"><div class="form-title">Invites</div>';
-    h += '<div style="margin-bottom:12px"><button class="btn full green" onclick="Router.go(\'invite\')">Manage Invite Codes</button></div>';
-    h += '</div>';
-  }
-
-  // Commissioner Admin Panel
-  if (isFounderRole(currentProfile)) {
-    h += '<div class="form-section"><div class="form-title" style="color:var(--gold)">Commissioner Tools</div>';
-    h += '<div style="margin-bottom:12px"><button class="btn full green" onclick="Router.go(\'admin\')">Admin Panel</button></div>';
-    h += '<div style="font-size:10px;color:var(--muted);margin-top:-6px;margin-bottom:12px">Manage member invite quotas, view all codes, bulk generate</div>';
-    h += '</div>';
-  }
-
-  // Data management
-  h += '<div class="form-section"><div class="form-title">Data management</div>';
-  h += '<div style="margin-bottom:12px"><button class="btn full outline" onclick="doCopy()">Copy backup code</button></div>';
-  h += '<div style="margin-bottom:12px"><button class="btn full outline" onclick="doRestore()">Restore from backup</button></div>';
-  if (isFounderRole(currentProfile)) {
-    h += '<div style="margin-bottom:12px"><button class="btn full outline" onclick="seedFirestore().then(function(){Router.toast(\'Firestore reseeded\')})">Reseed Firestore from Local</button></div>';
-  }
-  h += '<div style="margin-bottom:12px"><button class="btn full" style="background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);color:var(--red)" onclick="document.getElementById(\'reset-confirm\').style.display=\'block\'">Reset local data</button></div>';
-  h += '<div id="reset-confirm" style="display:none;margin-bottom:12px;padding:12px;background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);border-radius:var(--radius);text-align:center">';
-  h += '<div style="font-size:12px;color:var(--red);margin-bottom:8px">This will erase ALL local data. Are you sure?</div>';
-  h += '<div style="display:flex;gap:8px"><button class="btn outline" style="flex:1;font-size:11px" onclick="document.getElementById(\'reset-confirm\').style.display=\'none\'">Cancel</button>';
-  h += '<button class="btn" style="flex:1;font-size:11px;background:rgba(var(--red-rgb),.15);color:var(--red)" onclick="PB.reset();Router.go(\'home\')">Erase everything</button></div></div>';
-  h += '</div>';
-
-  // Sign out
-  if (currentUser) {
-    h += '<div class="form-section"><button class="btn full" style="background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);color:var(--red)" onclick="doLogout()">Sign Out</button>';
-    h += '<button class="btn full" style="margin-top:8px;background:rgba(var(--red-rgb),.12);border:1px solid rgba(var(--red-rgb),.25);color:var(--red)" onclick="deleteMyAccount()">Delete My Account</button>';
-    h += '<div style="font-size:9px;color:var(--muted2);margin-top:4px;text-align:center">Removes your profile, photos, and sign-in. This cannot be undone.</div></div>';
-  }
-
-  // Blocked members (App Store 1.2) — only shown when the member has blocked
-  // someone. Blocked members are hidden from feed, comments, and DMs, so this
-  // is the one discoverable place to review and unblock them.
+  // Blocked members (App Store 1.2) — id="blocked-section" preserved so the
+  // unblock deeplink Router.go("settings",{section:"blocked"}) still resolves.
   var _blockedUids = typeof pbBlockedUids === "function" ? pbBlockedUids() : [];
   if (currentUser && _blockedUids.length) {
-    h += '<div class="form-section" id="blocked-section"><div class="form-title">Blocked Members</div>';
-    h += '<div style="font-size:11px;color:var(--muted2);margin-bottom:10px;line-height:1.5">You will not see posts, comments, or messages from blocked members.</div>';
+    priv += '<div id="blocked-section" style="margin-top:20px;scroll-margin-top:88px">';
+    priv += '<div class="set-row__label" style="margin-bottom:4px">Blocked members</div>';
+    priv += '<div class="set-row__desc" style="margin-bottom:8px">You will not see posts, comments, or messages from blocked members.</div>';
     _blockedUids.forEach(function(uid) {
       var bp = PB.getPlayer(uid);
       var bname = bp ? (bp.name || bp.username || "Member") : "Former member";
-      h += '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--border)">';
-      h += '<span style="font-size:13px;color:var(--cream);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(bname) + '</span>';
-      h += '<button class="btn-sm outline" style="flex-shrink:0" onclick="settingsUnblockMember(\'' + uid + '\')">Unblock</button>';
-      h += '</div>';
+      priv += '<div class="set-row"><div class="set-row__main"><div class="set-row__value" style="font-size:15px">' + escHtml(bname) + '</div></div>';
+      priv += '<button class="set-link" onclick="settingsUnblockMember(\'' + uid + '\')">Unblock</button></div>';
     });
-    h += '</div>';
+    priv += '</div>';
   }
+  secs.push({ key: "privacy", label: "Privacy", html: priv });
 
-  // Legal
-  h += '<div class="form-section"><div class="form-title">Legal</div>';
-  h += '<div style="margin-bottom:12px"><button class="btn full outline" onclick="window.open(\'privacy.html\',\'_blank\',\'noopener\')">Privacy Policy</button></div>';
-  h += '<div style="margin-bottom:12px"><button class="btn full outline" onclick="window.open(\'terms.html\',\'_blank\',\'noopener\')">Terms of Service</button></div>';
-  h += '<div style="font-size:11px;color:var(--muted2);text-align:center">Questions? <a href="mailto:support@parbaughs.golf" style="color:var(--gold)">support@parbaughs.golf</a></div>';
+  // ──────────────────────────────────────────────────────────────────────────
+  // PARCOINS — balance + cosmetics shop
+  // ──────────────────────────────────────────────────────────────────────────
+  var coins = "";
+  var shopBalance = getParCoinBalance(currentUser ? currentUser.uid : null);
+  coins += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Balance</div><div class="set-row__desc">Spend on cosmetics, rings, and name effects in the shop.</div></div>';
+  coins += '<div class="set-coins"><span class="set-coins__num">' + shopBalance + '</span><span class="set-coins__lbl">coins</span></div></div>';
+  coins += '<div style="margin-top:14px"><button class="set-btn" onclick="Router.go(\'shop\')"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7"/></svg> Cosmetics shop</button></div>';
+  secs.push({ key: "parcoins", label: "ParCoins", html: coins });
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // MANAGEMENT — Invites + Commissioner tools (conditional)
+  // ──────────────────────────────────────────────────────────────────────────
+  var mgmt = "";
+  var _canInvite = currentProfile && (isFounderRole(currentProfile) || (currentProfile.invitesUsed || 0) < (currentProfile.maxInvites || 3));
+  var _isFounder = isFounderRole(currentProfile);
+  if (_canInvite) {
+    mgmt += '<div style="margin-bottom:' + (_isFounder ? '10px' : '0') + '"><button class="set-btn" onclick="Router.go(\'invite\')">Manage invite codes</button></div>';
+  }
+  if (_isFounder) {
+    mgmt += '<button class="set-btn" onclick="Router.go(\'admin\')">Admin panel</button>';
+    mgmt += '<div class="set-row__desc" style="margin-top:6px">Manage member invite quotas, view all codes, bulk generate.</div>';
+  }
+  if (mgmt) secs.push({ key: "management", label: "Management", html: mgmt });
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // DATA — backup / restore / reset
+  // ──────────────────────────────────────────────────────────────────────────
+  var data = "";
+  data += '<button class="set-btn" onclick="doCopy()">Copy backup code</button>';
+  data += '<button class="set-btn" onclick="doRestore()">Restore from backup</button>';
+  if (_isFounder) {
+    data += '<button class="set-btn" onclick="seedFirestore().then(function(){Router.toast(\'Firestore reseeded\')})">Reseed Firestore from local</button>';
+  }
+  data += '<button class="set-btn set-btn--claret" onclick="document.getElementById(\'reset-confirm\').style.display=\'block\'">Reset local data</button>';
+  data += '<div id="reset-confirm" style="display:none;margin-top:12px;padding:14px;background:rgba(var(--cb-claret-rgb),.05);border:1px solid rgba(var(--cb-claret-rgb),.25);border-radius:var(--radius-md);text-align:center">';
+  data += '<div style="font-family:var(--font-ui);font-size:12.5px;color:var(--cb-claret);margin-bottom:10px;font-weight:600">This will erase ALL local data. Are you sure?</div>';
+  data += '<div style="display:flex;gap:10px"><button class="set-btn" style="flex:1" onclick="document.getElementById(\'reset-confirm\').style.display=\'none\'">Cancel</button>';
+  data += '<button class="set-btn set-btn--claret" style="flex:1" onclick="PB.reset();Router.go(\'home\')">Erase everything</button></div></div>';
+  secs.push({ key: "data", label: "Data", html: data });
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // ABOUT — version + legal + support
+  // ──────────────────────────────────────────────────────────────────────────
+  var about = "";
+  about += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">App version</div></div><div class="set-row__value set-row__value--mono">v' + APP_VERSION + '</div></div>';
+  about += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Founded</div></div><div class="set-row__value">2026 · York, PA</div></div>';
+  about += '<div style="font-family:var(--font-display);font-style:italic;font-size:14px;color:var(--cb-mute);margin:14px 0 18px;line-height:1.5">The Parbaughs Golf Platform. Built by The Commissioner. Firebase-powered, real-time sync.</div>';
+  about += '<button class="set-btn" onclick="window.open(\'privacy.html\',\'_blank\',\'noopener\')">Privacy policy</button>';
+  about += '<button class="set-btn" onclick="window.open(\'terms.html\',\'_blank\',\'noopener\')">Terms of service</button>';
+  about += '<div class="set-row__desc" style="text-align:center;margin-top:14px">Questions? <a href="mailto:support@parbaughs.golf" style="color:var(--cb-brass);font-weight:600">support@parbaughs.golf</a></div>';
+  secs.push({ key: "about", label: "About", html: about });
+
+  // ── Assemble ──────────────────────────────────────────────────────────────
+  var h = '<div class="set-wrap">';
+  h += '<button class="set-back" onclick="Router.back(\'home\')">← Back</button>';
+  h += '<div class="roster-masthead"><div class="roster-eyebrow">' + escHtml(_eyebrow) + '</div><h1 class="roster-headline">Settings.</h1></div>';
+  h += '<div class="set-grid">';
+
+  // Section nav (left, sticky desktop)
+  h += '<nav class="set-nav" aria-label="Settings sections">';
+  secs.forEach(function(s) {
+    h += '<a class="set-nav__link" data-sec="' + s.key + '" onclick="settingsScrollToSection(\'' + s.key + '\')">' + escHtml(s.label) + '</a>';
+  });
+  h += '</nav>';
+
+  // Section detail (right / single column)
+  h += '<div class="set-detail">';
+  secs.forEach(function(s) {
+    h += '<section class="set-section" id="' + s.key + '-section">';
+    h += '<div class="set-section__head"><span class="set-section__title">' + escHtml(s.label) + '</span></div>';
+    h += s.html;
+    h += '</section>';
+  });
   h += '</div>';
 
-  h += '<div class="form-section"><div class="form-title">About</div>';
-  h += '<div style="font-size:12px;color:var(--muted);line-height:1.6">';
-  h += 'The Parbaughs Golf Platform v' + APP_VERSION + '<br>';
-  h += 'Founded 2026 · York, PA<br>';
-  h += 'Built by The Commissioner<br>';
-  h += '<span style="color:var(--muted2)">Firebase-powered · Real-time sync</span>';
   h += '</div></div>';
 
   document.querySelector('[data-page="settings"]').innerHTML = h;
 
   // Section deeplink (v8.11.0). Router.go("settings",{section:"location"}) →
-  // scroll to #location-section. Approach B (route param) per Part 4 audit —
-  // no existing deeplink pattern in pages; this is the net-new pattern. 50ms
-  // defer lets innerHTML settle before getElementById fires.
+  // scroll to #location-section. 50ms defer lets innerHTML settle.
   if (params && params.section) {
     setTimeout(function() {
       var target = document.getElementById(params.section + "-section");
@@ -267,11 +267,27 @@ Router.register("settings", function(params) {
     }, 50);
   }
 
-  // v8.11.1 — Async permission state probe. When State A is rendered and
-  // navigator.permissions.query reports geolocation is "denied", reveal the
-  // caption explaining the block. Silent failure on unsupported browsers
-  // (older Safari) — the caption simply stays hidden, and clicking the button
-  // surfaces the runtime error via loc-detect-error as before.
+  // Scroll-spy: light up the active section link in the sticky nav as the
+  // reader scrolls. No-op on mobile (nav hidden) or browsers without IO.
+  (function() {
+    if (typeof IntersectionObserver === "undefined") return;
+    var links = {};
+    Array.prototype.slice.call(document.querySelectorAll('.set-nav__link')).forEach(function(a) {
+      links[a.getAttribute('data-sec')] = a;
+    });
+    var spy = new IntersectionObserver(function(entries) {
+      entries.forEach(function(en) {
+        if (!en.isIntersecting) return;
+        var key = en.target.id.replace(/-section$/, '');
+        Object.keys(links).forEach(function(k) { links[k].classList.remove('set-nav__link--active'); });
+        if (links[key]) links[key].classList.add('set-nav__link--active');
+      });
+    }, { rootMargin: "-88px 0px -65% 0px", threshold: 0 });
+    document.querySelectorAll('.set-section').forEach(function(s) { spy.observe(s); });
+  })();
+
+  // v8.11.1 — Async geolocation permission probe. When State A is rendered and
+  // permission is "denied", reveal the manual-entry caption.
   if (navigator.permissions && typeof navigator.permissions.query === "function") {
     navigator.permissions.query({ name: "geolocation" }).then(function(status) {
       if (status && status.state === "denied") {
@@ -281,6 +297,15 @@ Router.register("settings", function(params) {
     }).catch(function() { /* silent — older browsers reject the query */ });
   }
 });
+
+// Smooth-scroll a section into view from the sticky nav (respects reduced motion).
+function settingsScrollToSection(key) {
+  var el = document.getElementById(key + "-section");
+  if (!el) return;
+  var reduce = false;
+  try { reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+  try { el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" }); } catch (e) { el.scrollIntoView(); }
+}
 
 // App Store 1.2 — unblock from the Settings list, then re-render Settings and
 // scroll back to the Blocked Members section (which vanishes once empty).
