@@ -360,10 +360,27 @@ function shareRoundCard(roundId) {
   }
 }
 
-function renderRoundDetail(roundId) {
-  var rounds = PB.getRounds();
-  var round = rounds.find(function(r) { return r.id === roundId; });
-  if (!round) { Router.go("rounds"); return; }
+function renderRoundDetail(roundId, prefetched) {
+  var round = prefetched || PB.getRounds().find(function(r) { return r.id === roundId; });
+  if (!round) {
+    // Not in the active-league cache. Reached via a share / deep link to a
+    // round outside the active league, or before sync populated the cache.
+    // Fetch the doc directly and re-render rather than bouncing to the list.
+    if (typeof db !== "undefined" && db && roundId) {
+      var loadEl = document.querySelector('[data-page="rounds"]');
+      if (loadEl) loadEl.innerHTML = '<div class="rd-wrap"><button class="rd-back" onclick="Router.back(\'home\')"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 3L5 8l5 5"/></svg>Back</button><p class="rd-deck">Loading round…</p></div>';
+      db.collection("rounds").doc(roundId).get().then(function(doc) {
+        if (!doc.exists) { Router.toast("Round not found"); Router.go("rounds"); return; }
+        renderRoundDetail(roundId, Object.assign({ id: doc.id }, doc.data()));
+      }).catch(function(err) {
+        if (typeof pbWarn === "function") pbWarn("[rounds] detail fetch failed:", err && err.message);
+        Router.toast("Couldn't load round, please try again");
+        Router.go("rounds");
+      });
+      return;
+    }
+    Router.go("rounds"); return;
+  }
 
   var commentary = PB.generateRoundCommentary(round);
   var player = PB.getPlayer(round.player);
@@ -377,64 +394,182 @@ function renderRoundDetail(roundId) {
   // green; over stays neutral. No alarm-red on a member's own round.
   var _par = roundParTotal(round);
   var diff = (round.score && _par) ? round.score - _par : null;
-  var diffColor = (diff !== null && diff <= 0) ? "var(--birdie)" : "var(--muted)";
   var diffStr = diff === null ? "" : (diff === 0 ? "E" : (diff > 0 ? "+" + diff : String(diff)));
   var holeLabel = round.holesPlayed && round.holesPlayed <= 9 ? (round.holesMode === "back9" ? "Back 9" : "Front 9") : "18 holes";
   var fmtLabel = round.format && round.format !== "stroke" ? round.format.charAt(0).toUpperCase() + round.format.slice(1) : "Stroke";
 
-  var h = '<div style="position:relative;background:linear-gradient(180deg,var(--grad-hero),var(--bg));padding:16px 16px 20px;border-bottom:1px solid var(--border)">';
-  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">';
-  h += '<button class="back" onclick="Router.back(\'home\')" style="padding:6px 10px;min-height:40px">← Back</button>';
+  // ── Editorial round detail (CLUBHOUSE_SPEC-HQ-3c) ──
+  var hs = round.holeScores || [];
+  var hp = round.holePars || [];
+  var nCols = hs.length;
+  var statLen = Math.max(nCols, (round.firData || []).length, (round.girData || []).length, (round.puttsData || []).length);
+
+  // Hole-result tallies (par-relative) + fairways/greens/putts. Canonical
+  // pattern (mirrors feed.js / router-sharecard.js): firData/girData truthy,
+  // par-3s excluded from fairways-in-regulation, puttsData numeric.
+  var nEagle = 0, nBird = 0, nPar = 0, nBog = 0, nDouble = 0;
+  var firC = 0, firH = 0, girC = 0, girH = 0, totalPutts = 0, puttH = 0;
+  for (var si = 0; si < statLen; si++) {
+    var pPar = parseInt(hp[si]) || 4;
+    var sVal = parseInt(hs[si]);
+    if (!isNaN(sVal) && hp[si] != null) {
+      var dd = sVal - parseInt(hp[si]);
+      if (dd <= -2) nEagle++; else if (dd === -1) nBird++; else if (dd === 0) nPar++; else if (dd === 1) nBog++; else nDouble++;
+    }
+    if (round.firData && si < round.firData.length && pPar !== 3) { firH++; if (round.firData[si]) firC++; }
+    if (round.girData && si < round.girData.length) { girH++; if (round.girData[si]) girC++; }
+    if (round.puttsData && round.puttsData[si]) { totalPutts += parseInt(round.puttsData[si]) || 0; puttH++; }
+  }
+  var puttAvg = puttH ? (totalPutts / puttH) : null;
+
+  var dateLine = round.date || "";
+  var _dt = round.date ? new Date(round.date + "T00:00:00") : null;
+  if (_dt && !isNaN(_dt.getTime())) dateLine = _dt.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+
+  var playerName = player ? (player.name || player.username || round.playerName || "A Parbaugh") : (round.playerName || "A Parbaugh");
+  var firstName = playerName.split(" ")[0] || "Score";
+
+  var h = '<div class="rd-wrap">';
+  h += '<button class="rd-back" onclick="Router.back(\'home\')"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 3L5 8l5 5"/></svg>Back</button>';
+
+  // Masthead
+  h += '<div class="roster-masthead" style="padding:8px 0 12px">';
+  h += '<div class="roster-eyebrow">Round · Final</div>';
+  h += '<h1 class="roster-headline">' + escHtml(round.course) + ', <em class="rd-headline__score">' + round.score + '.</em></h1>';
+  var deckToPar = diff === null ? "" : (diff === 0 ? "even par" : (diff < 0 ? Math.abs(diff) + " under par" : diff + " over par"));
+  h += '<p class="rd-deck">' + escHtml(firstName) + (deckToPar ? ' went ' + deckToPar : ' turned in a round') + ' across ' + holeLabel.toLowerCase() + ' at ' + escHtml(round.course) + '.</p>';
+  var dateBits = [dateLine, fmtLabel];
+  if (roundTee) dateBits.push(roundTee + " tees");
+  h += '<div class="rd-dateline">' + dateBits.filter(Boolean).join(' · ') + '</div>';
   h += '</div>';
-  // Score hero
-  h += '<div style="text-align:center">';
-  if (player) h += '<div style="display:flex;justify-content:center;margin-bottom:8px">' + renderAvatar(player, 52, true) + '</div>';
-  h += '<div style="font-size:14px;font-weight:600;color:var(--cream)">' + renderUsername(player || {name:round.playerName,id:''}, '', false) + '</div>';
-  h += '<div style="font-size:12px;color:var(--muted);margin-top:2px">' + escHtml(round.course) + '</div>';
-  h += '<div style="margin-top:12px"><span style="font-family:var(--font-display);font-size:56px;font-weight:800;color:var(--gold);line-height:1">' + round.score + '</span></div>';
-  if (diffStr) h += '<div style="margin-top:8px"><span style="font-family:var(--font-mono);font-size:13px;font-weight:600;letter-spacing:0.5px;color:' + diffColor + '">' + diffStr + ' to par</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);margin-top:10px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap">';
-  h += '<span>' + round.date + '</span><span>·</span><span>' + holeLabel + '</span><span>·</span><span>' + fmtLabel + '</span>';
-  if (roundTee) h += '<span>·</span><span>' + roundTee + '</span>';
-  h += '</div>';
+
+  // Notice strip — agate summary
+  if (nEagle + nBird + nPar + nBog + nDouble > 0) {
+    var noteBits = [];
+    noteBits.push('<b>' + round.score + '</b> strokes');
+    if (diffStr) noteBits.push('<b>' + diffStr + '</b> to par');
+    if (nEagle) noteBits.push(nEagle + ' eagle' + (nEagle === 1 ? '' : 's'));
+    noteBits.push(nBird + ' birdie' + (nBird === 1 ? '' : 's'));
+    noteBits.push(nPar + ' par' + (nPar === 1 ? '' : 's'));
+    noteBits.push(nBog + ' bogey' + (nBog === 1 ? '' : 's'));
+    if (nDouble) noteBits.push(nDouble + ' double+');
+    if (puttAvg !== null) noteBits.push(puttAvg.toFixed(1) + ' putts/hole');
+    h += '<div class="rd-notice">' + noteBits.join(' &nbsp;·&nbsp; ') + '</div>';
+  }
+
+  // ── Section A — The card (hole-by-hole) ──
+  if (nCols > 0) {
+    var is18 = nCols > 9;
+    var startHole = (!is18 && round.holesMode === "back9") ? 10 : 1;
+    var _scCell = function(i) {
+      var sv = hs[i];
+      if (sv === "" || sv == null || isNaN(parseInt(sv))) return '<td>—</td>';
+      var cls = scoreClass(sv, parseInt(hp[i]));
+      return '<td><span class="rd-sc' + (cls ? ' rd-sc--' + cls : '') + '">' + parseInt(sv) + '</span></td>';
+    };
+    var _sum = function(arr, a, b) { var t = 0; for (var k = a; k < b; k++) { var v = parseInt(arr[k]); if (!isNaN(v)) t += v; } return t; };
+
+    h += '<div class="rd-section">';
+    h += '<div class="rd-section__eyebrow">Hole by hole</div>';
+    h += '<h2 class="rd-section__title">The card</h2>';
+    h += '<div class="rd-card-scroll"><table class="rd-card"><thead><tr><th>Hole</th>';
+    if (is18) {
+      for (var c1 = 0; c1 < 9; c1++) h += '<th>' + (c1 + 1) + '</th>';
+      h += '<th>Out</th>';
+      for (var c2 = 9; c2 < 18; c2++) h += '<th>' + (c2 + 1) + '</th>';
+      h += '<th>In</th><th>Tot</th>';
+    } else {
+      for (var c3 = 0; c3 < nCols; c3++) h += '<th>' + (startHole + c3) + '</th>';
+      h += '<th>Tot</th>';
+    }
+    h += '</tr></thead><tbody>';
+    h += '<tr class="rd-card__row-par"><th>Par</th>';
+    if (is18) {
+      for (var p1 = 0; p1 < 9; p1++) h += '<td>' + (hp[p1] != null ? parseInt(hp[p1]) : '—') + '</td>';
+      h += '<td class="rd-card__seg">' + _sum(hp, 0, 9) + '</td>';
+      for (var p2 = 9; p2 < 18; p2++) h += '<td>' + (hp[p2] != null ? parseInt(hp[p2]) : '—') + '</td>';
+      h += '<td class="rd-card__seg">' + _sum(hp, 9, 18) + '</td><td class="rd-card__tot">' + _sum(hp, 0, 18) + '</td>';
+    } else {
+      for (var p3 = 0; p3 < nCols; p3++) h += '<td>' + (hp[p3] != null ? parseInt(hp[p3]) : '—') + '</td>';
+      h += '<td class="rd-card__tot">' + _sum(hp, 0, nCols) + '</td>';
+    }
+    h += '</tr>';
+    h += '<tr class="rd-card__row-score"><th>' + escHtml(firstName) + '</th>';
+    if (is18) {
+      for (var s1 = 0; s1 < 9; s1++) h += _scCell(s1);
+      h += '<td class="rd-card__seg">' + _sum(hs, 0, 9) + '</td>';
+      for (var s2 = 9; s2 < 18; s2++) h += _scCell(s2);
+      h += '<td class="rd-card__seg">' + _sum(hs, 9, 18) + '</td><td class="rd-card__tot">' + (round.score || _sum(hs, 0, 18)) + '</td>';
+    } else {
+      for (var s3 = 0; s3 < nCols; s3++) h += _scCell(s3);
+      h += '<td class="rd-card__tot">' + (round.score || _sum(hs, 0, nCols)) + '</td>';
+    }
+    h += '</tr></tbody></table></div>';
+    h += '<div class="rd-legend">';
+    h += '<span class="rd-legend__item"><span class="rd-legend__dot" style="background:rgba(var(--cb-brass-rgb),.55)"></span>Eagle+</span>';
+    h += '<span class="rd-legend__item"><span class="rd-legend__dot" style="background:rgba(var(--cb-moss-rgb),.55)"></span>Birdie</span>';
+    h += '<span class="rd-legend__item"><span class="rd-legend__dot" style="background:var(--cb-mute)"></span>Par</span>';
+    h += '<span class="rd-legend__item"><span class="rd-legend__dot" style="background:rgba(var(--cb-claret-rgb),.55)"></span>Bogey+</span>';
+    h += '</div></div>';
+  } else {
+    h += '<div class="rd-section"><div class="rd-section__eyebrow">Hole by hole</div><h2 class="rd-section__title">The card</h2>';
+    h += '<p class="rd-deck">Hole-by-hole detail wasn’t logged for this round. Log holes as you play to see the full card here.</p></div>';
+  }
+
+  // ── Section B — By the numbers ──
+  h += '<div class="rd-section"><div class="rd-section__eyebrow">Performance</div><h2 class="rd-section__title">By the numbers</h2>';
+  h += '<div class="rd-stats">';
+  h += '<div class="rd-stat"><div class="rd-stat__label">Score</div><div class="rd-stat__value">' + round.score + '</div><div class="rd-stat__delta ' + (diff !== null && diff < 0 ? 'rd-stat__delta--up' : diff !== null && diff > 0 ? 'rd-stat__delta--down' : 'rd-stat__delta--flat') + '">' + (diffStr || '—') + ' to par</div></div>';
+  var firPct = firH ? Math.round(firC / firH * 100) : null;
+  h += '<div class="rd-stat"><div class="rd-stat__label">Fairways</div><div class="rd-stat__value">' + (firPct !== null ? firPct + '%' : '—') + '</div><div class="rd-stat__delta rd-stat__delta--flat">' + (firH ? firC + '/' + firH : 'not logged') + '</div></div>';
+  var girPct = girH ? Math.round(girC / girH * 100) : null;
+  h += '<div class="rd-stat"><div class="rd-stat__label">Greens</div><div class="rd-stat__value">' + (girPct !== null ? girPct + '%' : '—') + '</div><div class="rd-stat__delta rd-stat__delta--flat">' + (girH ? girC + '/' + girH : 'not logged') + '</div></div>';
+  h += '<div class="rd-stat"><div class="rd-stat__label">Putts</div><div class="rd-stat__value">' + (puttH ? totalPutts : '—') + '</div><div class="rd-stat__delta rd-stat__delta--flat">' + (puttAvg !== null ? puttAvg.toFixed(1) + '/hole' : 'not logged') + '</div></div>';
   h += '</div></div>';
 
-  // Stat chips
-  h += '<div style="display:flex;justify-content:center;gap:6px;padding:12px 16px;flex-wrap:wrap">';
-  h += '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:8px 14px;text-align:center;min-width:70px"><div style="font-size:16px;font-weight:700;color:var(--cream)">' + (round.rating || 72) + '</div><div style="font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:2px">Rating</div></div>';
-  h += '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:8px 14px;text-align:center;min-width:70px"><div style="font-size:16px;font-weight:700;color:var(--cream)">' + (round.slope || 113) + '</div><div style="font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:2px">Slope</div></div>';
-  if (round.yards) h += '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:8px 14px;text-align:center;min-width:70px"><div style="font-size:16px;font-weight:700;color:var(--cream)">' + round.yards + '</div><div style="font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-top:2px">Yards</div></div>';
-  h += '</div>';
-
-  // AI Commentary — consolidated card
+  // Parbaugh commentary — editorial agate
   if (commentary.highlights.length || commentary.roasts.length) {
-    h += '<div class="card" style="margin-top:4px"><div class="card-body" style="padding:12px 14px">';
-    h += '<div style="font-size:9px;font-weight:700;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px">Parbaugh Commentary</div>';
+    h += '<div class="rd-section"><div class="rd-section__eyebrow">Word from the group</div><h2 class="rd-section__title">Parbaugh commentary</h2>';
     var allComments = [];
     commentary.highlights.forEach(function(hl) { allComments.push({text:hl,type:"up"}); });
     commentary.roasts.forEach(function(r) { allComments.push({text:r,type:"down"}); });
     allComments.forEach(function(c) {
-      var ic = c.type === "up" ? "var(--birdie)" : "var(--red)";
+      var ic = c.type === "up" ? "var(--cb-moss)" : "var(--cb-claret)";
       var arrow = c.type === "up" ? "M8 13V3M3 8l5-5 5 5" : "M8 3v10M3 8l5 5 5-5";
-      h += '<div style="display:flex;gap:8px;align-items:flex-start;padding:4px 0"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="' + ic + '" stroke-width="2" style="flex-shrink:0;margin-top:2px"><path d="' + arrow + '"/></svg><div style="font-size:12px;color:var(--cream);line-height:1.4">' + c.text + '</div></div>';
+      h += '<div class="rd-quip"><svg class="rd-quip__mark" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="' + ic + '" stroke-width="2" aria-hidden="true"><path d="' + arrow + '"/></svg><div class="rd-quip__text">' + c.text + '</div></div>';
     });
-    h += '</div></div>';
-  }
-
-  // Scorecard photo
-  if (round.scorecardPhoto) {
-    h += '<div class="section"><div class="sec-head"><span class="sec-title">Scorecard</span></div>';
-    h += '<div class="card"><div style="border-radius:var(--radius);overflow:hidden"><img alt="" src="' + round.scorecardPhoto + '" style="width:100%;display:block"></div></div>';
     h += '</div>';
   }
 
-  // Share card preview — embedded directly in round detail
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">Scorecard</span></div>';
-  h += '<div id="rdSharePreviewWrap" style="width:100%;border-radius:12px;overflow:hidden;background:var(--grad-deep);box-shadow:0 4px 20px rgba(0,0,0,.4)">';
+  // ── The Caddy's Take (post-round analysis) ──
+  if (typeof caddieAnalyzeRound === "function" && round.holeScores && round.holeScores.length >= 9) {
+    var playerRds = round.player ? PB.getPlayerRounds(round.player) : [];
+    var caddieInsights = caddieAnalyzeRound(round, playerRds);
+    if (caddieInsights.length) h += '<div class="rd-section"><div class="rd-section__eyebrow">⛳ The Caddy</div><h2 class="rd-section__title">The Caddy’s take</h2>' + renderCaddieInsights(caddieInsights, 6) + '</div>';
+  }
+
+  // Story display
+  if (round.story) {
+    h += '<div class="rd-section"><div class="rd-section__eyebrow">In their words</div><h2 class="rd-section__title">The story</h2>';
+    h += '<blockquote class="rd-story">' + escHtml(round.story) + '</blockquote>';
+    if (round.storyPhoto) h += '<div class="rd-story__photo"><img alt="Round story photo" src="' + round.storyPhoto + '" style="width:100%;display:block"></div>';
+    h += '</div>';
+  }
+
+  // Scorecard photo (if the member attached one)
+  if (round.scorecardPhoto) {
+    h += '<div class="rd-section"><div class="rd-section__eyebrow">From the bag</div><h2 class="rd-section__title">Scorecard photo</h2>';
+    h += '<div class="rd-photo"><img alt="Scorecard photo" src="' + round.scorecardPhoto + '" style="width:100%;display:block"></div>';
+    h += '</div>';
+  }
+
+  // Share card — embedded preview + capture
+  h += '<div class="rd-section"><div class="rd-section__eyebrow">Take it to the group</div><h2 class="rd-section__title">Share</h2>';
+  h += '<div id="rdSharePreviewWrap" class="rd-share-wrap">';
   h += '<div style="transform-origin:top left;pointer-events:none" id="rdSharePreviewInner"></div>';
   h += '</div>';
-  h += '<div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">';
-  h += '<button class="btn full green" onclick="captureShareCard()" style="font-size:13px;padding:14px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px;width:100%"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0"><rect x="1" y="4" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="9" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M5.5 4l1-2h3l1 2" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>Save image &amp; share to socials</button>';
+  h += '<div style="margin-top:12px">';
+  h += '<button class="rd-btn rd-btn--brass" onclick="captureShareCard()"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0" aria-hidden="true"><rect x="1" y="4" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="9" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M5.5 4l1-2h3l1 2" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>Save image &amp; share</button>';
   h += '</div></div>';
 
   // v8.22.0 (Ship 5+7 Phase 4) — "Manage round" grouped section. Three-
@@ -451,37 +586,21 @@ function renderRoundDetail(roundId) {
   var isFounder = (typeof isFounderRole === "function") && isFounderRole(currentProfile);
   var canManage = isAuthor || isFounder;
   if (canManage) {
-    h += '<div class="section">';
-    h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;color:var(--gold);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px">Manage round</div>';
+    h += '<div class="rd-section"><div class="rd-section__eyebrow">Yours to manage</div><h2 class="rd-section__title">This round</h2>';
     if (isAuthor) {
-      h += '<button class="btn full" style="background:transparent;border:1px solid var(--gold);color:var(--gold);margin-bottom:8px;display:flex;align-items:center;justify-content:center;gap:8px" onclick="Router.go(\'rounds\',{roundId:\'' + roundId + '\',action:\'edit\'})">';
-      h += '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0"><path d="M11 2l3 3-9 9H2v-3l9-9z"/></svg>';
-      h += '<span>Edit round</span></button>';
+      h += '<button class="rd-btn rd-btn--ghost" style="margin-bottom:10px" onclick="Router.go(\'rounds\',{roundId:\'' + roundId + '\',action:\'edit\'})">';
+      h += '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0" aria-hidden="true"><path d="M11 2l3 3-9 9H2v-3l9-9z"/></svg>Edit round</button>';
     }
-    h += '<div id="del-confirm" style="display:none;margin-bottom:8px;padding:12px;background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);border-radius:var(--radius);text-align:center">';
-    h += '<div style="font-size:12px;color:var(--red);margin-bottom:8px">Delete this round?</div>';
-    h += '<div style="display:flex;gap:8px"><button class="btn outline" style="flex:1;font-size:11px" onclick="document.getElementById(\'del-confirm\').style.display=\'none\'">Cancel</button>';
-    h += '<button class="btn" style="flex:1;font-size:11px;background:rgba(var(--red-rgb),.15);color:var(--red)" onclick="(function(){PB.deleteRound(\'' + roundId + '\');if(db)db.collection(\'rounds\').doc(\'' + roundId + '\').delete().catch(function(){});setTimeout(function(){persistPlayerStats(currentUser?currentUser.uid:null);},1500);Router.toast(\'Round deleted\');Router.go(\'rounds\');})()">Delete</button></div></div>';
-    h += '<button class="btn full" style="background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);color:var(--red);display:flex;align-items:center;justify-content:center;gap:8px" onclick="document.getElementById(\'del-confirm\').style.display=\'block\'">';
-    h += '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0"><path d="M3 5h10M6 5V3h4v2M5 5l1 9h4l1-9"/></svg>';
-    h += '<span>Delete round</span></button>';
+    h += '<div id="del-confirm" class="rd-confirm" style="display:none">';
+    h += '<div class="rd-confirm__q">Delete this round? This can’t be undone.</div>';
+    h += '<div style="display:flex;gap:8px"><button class="rd-btn rd-btn--ghost" style="flex:1" onclick="document.getElementById(\'del-confirm\').style.display=\'none\'">Cancel</button>';
+    h += '<button class="rd-btn rd-btn--danger" style="flex:1" onclick="(function(){PB.deleteRound(\'' + roundId + '\');if(db)db.collection(\'rounds\').doc(\'' + roundId + '\').delete().catch(function(){});setTimeout(function(){persistPlayerStats(currentUser?currentUser.uid:null);},1500);Router.toast(\'Round deleted\');Router.go(\'rounds\');})()">Delete</button></div></div>';
+    h += '<button class="rd-btn rd-btn--danger" onclick="document.getElementById(\'del-confirm\').style.display=\'block\'">';
+    h += '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0" aria-hidden="true"><path d="M3 5h10M6 5V3h4v2M5 5l1 9h4l1-9"/></svg>Delete round</button>';
     h += '</div>';
   }
 
-  // ── The Caddie's Take (post-round analysis) ──
-  if (typeof caddieAnalyzeRound === "function" && round.holeScores && round.holeScores.length >= 9) {
-    var playerRds = round.player ? PB.getPlayerRounds(round.player) : [];
-    var caddieInsights = caddieAnalyzeRound(round, playerRds);
-    if (caddieInsights.length) h += '<div class="section">' + renderCaddieInsights(caddieInsights, 6) + '</div>';
-  }
-
-  // Story display
-  if (round.story) {
-    h += '<div class="section"><div class="sec-head"><span class="sec-title">Round Story</span></div>';
-    h += '<div class="card"><div style="padding:14px 16px"><div style="font-size:12px;color:var(--cream);line-height:1.6;font-style:italic">\u201c' + escHtml(round.story) + '\u201d</div>';
-    if (round.storyPhoto) h += '<div style="margin-top:8px;border-radius:var(--radius);overflow:hidden"><img alt="" src="' + round.storyPhoto + '" style="width:100%;display:block"></div>';
-    h += '</div></div></div>';
-  }
+  h += '</div>'; // close .rd-wrap
 
   document.querySelector('[data-page="rounds"]').innerHTML = h;
 

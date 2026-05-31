@@ -3892,3 +3892,82 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 @media (prefers-reduced-motion: reduce) {
   .shop-econ-card { transition: none; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ROUND DETAIL — CLUBHOUSE_SPEC-HQ-3c (W1 · 3c Scorecard / completed round)
+   Editorial completed-round page: masthead + notice strip + hole-by-hole card
+   (Section A centerpiece) + by-the-numbers stat strip (Section B) + agate
+   (commentary, share, manage, caddie, story). Reuses roster-masthead scaffold.
+   Single-column self-caps at 680px via .rd-wrap (canonical column width).
+   ═══════════════════════════════════════════════════════════════════════════ */
+.rd-wrap { max-width: 680px; margin: 0 auto; padding: 0 16px 40px; }
+.rd-back { display: inline-flex; align-items: center; gap: 7px; font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--cb-mute); background: none; border: none; padding: 16px 0 6px; cursor: pointer; min-height: 40px; }
+.rd-back:hover { color: var(--cb-brass); }
+.rd-headline__score { color: var(--cb-brass); }
+.rd-deck { font-family: var(--font-ui); font-size: 15px; line-height: 1.5; color: var(--cb-charcoal); margin: 12px 0 6px; max-width: 60ch; }
+.rd-dateline { font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--cb-mute); }
+
+/* Notice strip — single brass-quiet rule on chalk-2, mono agate line */
+.rd-notice { font-family: var(--font-mono); font-size: 11px; letter-spacing: .4px; color: var(--cb-charcoal); background: var(--cb-chalk-2); border-top: 1px solid var(--cb-chalk-3); border-bottom: 1px solid var(--cb-chalk-3); padding: 12px 14px; margin: 20px 0 26px; line-height: 1.7; }
+.rd-notice b { color: var(--cb-ink); font-weight: 700; }
+
+/* Section header — shared by all detail sections */
+.rd-section { margin: 0 0 30px; }
+.rd-section__eyebrow { font-family: var(--font-mono); font-size: var(--hq-eyebrow-size); font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--cb-brass); margin-bottom: 6px; }
+.rd-section__title { font-family: var(--font-display); font-size: 22px; font-weight: 700; font-style: italic; color: var(--cb-ink); line-height: 1.2; margin: 0 0 14px; }
+
+/* Section A — hole-by-hole card table (the centerpiece) */
+.rd-card-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -16px; padding: 0 16px; }
+.rd-card { width: 100%; border-collapse: collapse; font-variant-numeric: lining-nums tabular-nums; }
+.rd-card th, .rd-card td { padding: 9px 5px; text-align: center; font-size: 13px; }
+.rd-card col.rd-card__hcol { width: auto; }
+.rd-card thead th { font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: .5px; text-transform: uppercase; color: var(--cb-mute); border-bottom: 1px solid var(--cb-chalk-3); }
+.rd-card tbody th { font-family: var(--font-mono); font-size: 9.5px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--cb-mute); text-align: left; white-space: nowrap; padding-left: 0; }
+.rd-card__row-par td { color: var(--cb-mute); font-size: 12px; }
+.rd-card__row-par + .rd-card__row-score td, .rd-card__row-par + .rd-card__row-score th { border-top: 1px solid var(--cb-chalk-3); }
+.rd-card__row-score td { font-family: var(--font-display); font-weight: 700; color: var(--cb-ink); font-size: 14px; }
+.rd-card__seg { background: var(--cb-chalk-2); color: var(--cb-charcoal); font-weight: 700; }
+.rd-card__tot { background: var(--cb-ink); color: var(--cb-chalk); font-weight: 700; }
+.rd-card__row-par .rd-card__tot { color: var(--cb-chalk); opacity: .72; }
+
+/* score-to-par cell tints — par stays clean ink; notable holes get a chip */
+.rd-sc { display: inline-block; min-width: 24px; padding: 3px 5px; border-radius: 6px; line-height: 1; }
+.rd-sc--ea { color: var(--cb-brass); background: rgba(var(--cb-brass-rgb), .16); font-weight: 800; }
+.rd-sc--bi { color: var(--cb-moss); background: rgba(var(--cb-moss-rgb), .14); font-weight: 700; }
+.rd-sc--bo { color: var(--cb-claret); }
+.rd-sc--db { color: var(--cb-claret); background: rgba(var(--cb-claret-rgb), .13); font-weight: 700; }
+
+/* Card legend */
+.rd-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 14px; font-family: var(--font-mono); font-size: 10px; font-weight: 600; letter-spacing: .8px; text-transform: uppercase; color: var(--cb-mute); }
+.rd-legend__item { display: inline-flex; align-items: center; gap: 6px; }
+.rd-legend__dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+/* Section B — by-the-numbers stat strip (brass double rule on chalk-2) */
+.rd-stats { display: flex; background: var(--cb-chalk-2); border-top: 2px solid var(--cb-brass); border-bottom: 2px solid var(--cb-brass); }
+.rd-stat { flex: 1; min-width: 0; padding: 16px 12px; display: flex; flex-direction: column; gap: 6px; }
+.rd-stat + .rd-stat { border-left: 1px solid var(--cb-chalk-3); }
+.rd-stat__label { font-family: var(--font-mono); font-size: var(--hq-eyebrow-size); font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--cb-mute); }
+.rd-stat__value { font-family: var(--font-display); font-size: 28px; font-weight: 700; color: var(--cb-ink); line-height: 1; font-variant-numeric: lining-nums tabular-nums; font-variation-settings: "opsz" 60; }
+.rd-stat__delta { font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: .5px; }
+.rd-stat__delta--up { color: var(--cb-moss); }
+.rd-stat__delta--down { color: var(--cb-claret); }
+.rd-stat__delta--flat { color: var(--cb-mute); }
+
+/* Agate — commentary lines, story pull, manage */
+.rd-quip { display: flex; gap: 9px; align-items: flex-start; padding: 6px 0; }
+.rd-quip__mark { flex-shrink: 0; margin-top: 3px; }
+.rd-quip__text { font-family: var(--font-ui); font-size: 13.5px; color: var(--cb-charcoal); line-height: 1.45; }
+.rd-story { font-family: var(--font-display); font-size: 19px; font-style: italic; color: var(--cb-ink); line-height: 1.5; }
+.rd-story::before { content: "\201C"; display: block; font-family: var(--font-display); font-style: italic; font-size: 40px; line-height: .4; color: var(--cb-brass); margin-bottom: 8px; }
+.rd-story__photo { margin-top: 12px; border-radius: var(--radius-md); overflow: hidden; }
+.rd-photo { border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--cb-chalk-3); }
+.rd-share-wrap { width: 100%; border-radius: var(--radius-md); overflow: hidden; background: var(--cb-ink); box-shadow: 0 4px 20px rgba(0,0,0,.18); }
+.rd-btn { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; font-family: var(--font-mono); font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 14px; border-radius: var(--radius); cursor: pointer; min-height: 48px; transition: background .18s ease, color .18s ease; }
+.rd-btn--brass { background: var(--cb-brass); color: var(--cb-chalk); border: 1px solid var(--cb-brass); }
+.rd-btn--brass:hover { background: var(--cb-ink); border-color: var(--cb-ink); }
+.rd-btn--ghost { background: transparent; color: var(--cb-brass); border: 1px solid var(--cb-brass); }
+.rd-btn--ghost:hover { background: var(--cb-brass); color: var(--cb-chalk); }
+.rd-btn--danger { background: transparent; color: var(--cb-claret); border: 1px solid rgba(var(--cb-claret-rgb), .4); }
+.rd-btn--danger:hover { background: rgba(var(--cb-claret-rgb), .08); }
+.rd-confirm { margin-bottom: 10px; padding: 14px; background: rgba(var(--cb-claret-rgb), .06); border: 1px solid rgba(var(--cb-claret-rgb), .2); border-radius: var(--radius-md); text-align: center; }
+.rd-confirm__q { font-family: var(--font-ui); font-size: 13px; color: var(--cb-claret); margin-bottom: 10px; }

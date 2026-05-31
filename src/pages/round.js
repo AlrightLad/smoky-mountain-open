@@ -41,9 +41,11 @@ Router.register("round", function(params) {
   // Step 1 — Try /rounds/{id} for completed rounds (direct doc lookup)
   db.collection("rounds").doc(id).get().then(function(roundDoc) {
     if (roundDoc.exists) {
-      var round = roundDoc.data();
-      var role = (typeof currentUser !== "undefined" && currentUser && round.player === currentUser.uid) ? "self" : "other";
-      _renderRoundDetailPlaceholder(pageEl, round, role);
+      // Completed round — route to the canonical editorial detail (rounds.js
+      // renderRoundDetail). replaceState so the /round dispatcher isn't a
+      // back-stop. renderRoundDetail self-heals via a direct fetch when the
+      // round isn't in the active-league cache (cross-league share / pre-sync).
+      Router.go("rounds", { roundId: id }, true);
       return;
     }
     // Step 2 — Fallback to /liverounds/ via roundId field query.
@@ -55,11 +57,11 @@ Router.register("round", function(params) {
       var isSelf = (typeof currentUser !== "undefined" && currentUser && live.playerId === currentUser.uid);
       if (isSelf) {
         if (live.status === "active") { Router.go("playnow", {}, true); return; }
-        if (live.status === "completed") { _renderRoundDetailPlaceholder(pageEl, live, "self"); return; }
+        if (live.status === "completed") { Router.go("rounds", { roundId: id }, true); return; }
         if (live.status === "abandoned") { _renderAbandonedChrome(pageEl, live); return; }
       } else {
         if (live.status === "active") { _renderSpectatorHUDPlaceholder(pageEl, live); return; }
-        if (live.status === "completed") { _renderRoundDetailPlaceholder(pageEl, live, "other"); return; }
+        if (live.status === "completed") { Router.go("rounds", { roundId: id }, true); return; }
         if (live.status === "abandoned") { _renderAbandonedChrome(pageEl, live); return; }
       }
       // Unknown status — treat as missing
@@ -161,32 +163,6 @@ function _renderAbandonedChrome(pageEl, round) {
   h += '<div style="font-family:var(--font-ui);font-size:14px;color:var(--cb-mute-2);line-height:1.5">It doesn\'t count toward ' + escHtml(playerName) + '\'s history.</div>';
   h += '</div>';
   _renderRoundPage(pageEl, h, "Abandoned round");
-}
-
-// ─── RoundDetail placeholder (Ship 7 territory) ─────────────────────────
-// Minimal read-only display for self-completed and other-completed cases
-// until Ship 7 ships full <RoundDetail/> experience. viewerRole reserved
-// for Ship 7's edit-affordance dispatch (self can edit; other cannot).
-function _renderRoundDetailPlaceholder(pageEl, round, viewerRole) {
-  var playerName = round.playerName || "Member";
-  var course = round.course || "Course";
-  var totalScore = (typeof round.totalScore === "number") ? round.totalScore : (round.score || 0);
-  var par = (typeof round.par === "number") ? round.par : null;
-  var diff = (par !== null) ? totalScore - par : null;
-  var diffStr = diff === null ? '' : (diff === 0 ? ' (E)' : (diff > 0 ? ' (+' + diff + ')' : ' (' + diff + ')'));
-
-  var h = '';
-  h += '<div style="padding:32px 24px;max-width:680px;margin:0 auto">';
-  h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:18px">FINAL</div>';
-  h += '<div style="font-family:var(--font-display);font-size:22px;font-weight:600;color:var(--cb-ink);line-height:1.3;margin-bottom:14px">';
-  h += escHtml(playerName) + ' · ' + escHtml(course);
-  h += '</div>';
-  h += '<div style="font-family:var(--font-display);font-size:48px;font-weight:700;color:var(--cb-ink);line-height:1;margin-bottom:32px;font-variant-numeric:lining-nums tabular-nums">';
-  h += totalScore + diffStr;
-  h += '</div>';
-  h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-brass)">ROUND DETAIL · COMING IN A FUTURE SHIP</div>';
-  h += '</div>';
-  _renderRoundPage(pageEl, h, "Final round");
 }
 
 // ─── SpectatorHUD render (Gate 2 of 9 wires real shell from spectator.js) ───
