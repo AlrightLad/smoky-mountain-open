@@ -42,6 +42,11 @@ logs/
 /pubsub-debug.log
 /.claude/state/dev-server.log
 /.claude/state/dev-server.err.log
+/.claude/state/preview-server.log
+/.claude/state/preview-server.err.log
+# Transient E2E/emulator gate-run diagnostic logs (scratch output, regenerated each sweep)
+/.claude/state/e2e-*.log
+/.claude/state/emu-*.log
 /tests/smoke/output/
 
 # Pre-watcher-test artifacts (remove after test rollback)
