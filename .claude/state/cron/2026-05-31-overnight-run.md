@@ -1355,3 +1355,65 @@ The post-commit hook (auto-fired after commit `3536b16e`, then created its own r
 - **Root cause:** the post-commit visual-gate takes a *headless screenshot* and queries the DOM **without awaiting JS hydration**, so it sees 0 client-rendered `.fc-item`s. Toggled from a static data-mode check (PASSED) to the headless DOM-selector check during an earlier cron drift-sweep (per 03:00Z log). **False-negative, non-blocking WARN** — the commit succeeded; no data/render defect.
 - **Already diagnosed earlier today** (2026-05-31T03:00Z overnight-triage log); NOT new tonight. NOT tracked in any pending proposal/escalation/backlog/FIQ (lives in cron-log diagnoses only).
 - **Disposition: NO new proposal authored — deliberately.** Its root cause (a headless Playwright gate not awaiting client-side render → false-negative) is the **SAME CLASS** PROP-015 already addresses with its "render-readiness wait" fix for the scroll-reachability check. Spawning a PROP-016 would duplicate PROP-015's root cause and would be exactly the proposal-manufacturing the day's metric-integrity discipline forbids (cf. the 05-30/03:00Z "no proposal manufactured" A12 + rounds.js precedents). **Recommendation for Founder:** when applying PROP-015, extend its hydration/render-readiness-wait fix to also cover the post-commit `visual-gate` headless check for `#fc-items .fc-item` (one shared fix, two gates). Surfaced here for the durable record; not a HALT.
+
+---
+
+# Cycle CI — overnight-triage (SEVENTEENTH fire of 2026-05-31)
+
+**Started:** 2026-05-31T20:01:29Z (regen-all "ALL DASHBOARDS REGENERATED" timestamp). **HEAD at run-start:** `f4faf57e` (`cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)`). **Working tree at run-start: CLEAN.** Cadence: ~56 min after cycle CH's 19:05 checkpoint → ~1h fire.
+
+## Step 1 — FIQ triage (cycle CI)
+- **FIQ entries triaged:** 0 (A:0 B:0 C:0 D:0 F:0). `.claude/state/founder-input-queue/` directory ABSENT (`find` returned only the skill folder, no entries). `.claude/state/proactive-backlog.md` absent (no demotions). `.claude/state/aggregates/fiq-status.json` is the *Firestore-index* status aggregate (26 declared / 26 deployed, green) — unrelated to the Founder-input queue; not a source of live FIQ entries.
+- IDs: none.
+
+## Step 2 — Bug-report triage (cycle CI)
+- **Bug reports processed:** 0. `.claude/state/bug-reports/` tree ABSENT (no `inbox/`, no `triaged/`). The lone `bug-investigation-2026-05-16` folder is a closed past investigation, not the inbox.
+- Dispositions: none. No P3e discussion bubbles opened (nothing to deliberate).
+- **New proposals authored:** 0. PROP-015 (authored cycle CG, lane 1 Substrate Discipline, ~45 LOC / cost=6000) remains PENDING and untouched — still the lone pending proposal (round-trip `[proposal-cards]` confirms `id=PROP-015 lane=1`). No proposal manufactured this cycle (no defect to remediate; the CG round-trip flake did not recur).
+
+## Step 3 — Heartbeat (cycle CI)
+### 3a — `scripts/regen-all.ps1`
+- Ran end-to-end → **=== ALL CHECKS PASSED ===**, **round-trip test PASS** on the **FIRST run** @ 20:01:29Z — the cycle-CG scroll-reachability timing flake did **NOT** recur (`scroll-reachability 5 pass / 0 fail / 0 skip`).
+- Heartbeat `regen-all-last-pass.json` written.
+- All guards green (round-trip 4-view swap + scroll-reachability 5/0/0 + escalations applied=3 + meter-wiring 7/7 + founder-queue 7/7 + proposal-readiness 0 deferred + wiring 5/5 + pause-discipline clean + design-tokens clean + protected-layouts sentinels intact + …).
+- **One standing YELLOW (not new, not a blocker):** `user-context-gate` ~ `main-flows.html` modified 24113.9 min (~16.7 days) after the most recent user-context capture (2026-05-14T23-07-48Z). **Founder-action:** run `node scripts/visual-audit/founder-context-capture.mjs` to seed a fresh capture before ship-close. Carried, not resolvable by agent.
+- **Standing WARN (informational):** `regen-main-flows` 6 orphan components in grid (actor.guest, actor.invitee, dist.capacitor-ios, ext.open-meteo, fn.expire-suspensions, fn.join-league) — referenced by no flow's path. Pre-existing, not new.
+
+### App-health
+- `88.8 → 88.8` — **HELD A-** (overall_score + overall_grade are unchanged *context* lines in the verbatim diff — read, not guessed; `founder_attention: []` `agent_attention: []` both empty → 0 attention items). The only movement was **routine provenance**: `generated_at` 19:12:28Z → 20:01:28Z, and the `audit_trigger` block (`sha 95ac4bc6 → f4faf57e`, `trigger substrate-commit → cron`, `total_files_touched 1 → 4`). NOT a score change; NOT spun as a gain.
+
+### Meter-wiring note (restraint)
+- Round-trip `[meter-wiring] PROP-003.b sidecar` → **7 checks pass**, both aggregators report `meter_status=wired-real`. **However** `quota-status.json` `data_source=auto-derived` with `weekly_cap`/`org_monthly_cap`/`weekly_pct`/`org_monthly_pct`/`stale_seconds` all **NULL** — the sidecar *schema* is present and consumed, but the **org-monthly cap is not anchored** to a real claude.ai %. Therefore the **F1a defensive-pause heuristic stays active**; the meter gap is **NOT** declared closed this cycle (no over-claim).
+
+### 3b — Wellness
+- `engineer.json` + `critic.json` → cycle CI. Both `tokens_consumed` threshold standing-crossed (heartbeat-light, cumulative estimate, Founder-decision-gated on token-counter-semantics); both `status: active`, **no rest** taken per established convention. No agent pushed past a NEW threshold this cycle.
+
+## Wellness state changes
+- engineer: cycle CH→CI, status active (no rest), tokens cumulative ~3.90M since last rest (light cycle, +~50k).
+- critic: cycle CH→CI, status active (no rest), tokens cumulative ~0.935M since last rest (light cycle, +~15k).
+- No threshold newly crossed; no rest triggered. Only engineer + critic participated (heartbeat-only cycle — no design-bot / data-integrity invocation, nothing to deliberate).
+
+## Blockers / Founder attention
+1. **PROP-015 awaiting Founder application** (standing from cycle CG) — round-trip ship-gate flake retry + no-op rollback fix. Not a HALT; not blocking other work. The gate did not flake this cycle, but the hardening rationale stands.
+2. **`user-context-gate` YELLOW** on `main-flows.html` — Founder runs `founder-context-capture.mjs` to clear. Standing.
+3. **Stale `last-verify.json`** (cycle-K, 2026-05-25, Founder-decision-gated on token-counter-semantics) remains on disk, unacted-on per convention. Standing.
+4. **F1a token-meter gap** — org-monthly cap unanchored (quota caps NULL); defensive-pause heuristic LIVE despite PROP-003.b sidecar schema passing round-trip. HALT-25 did NOT fire (agent-feel "fine"; zero API-error/org-cap signals across all tool calls this cycle).
+- No NEW blockers this cycle.
+
+## Op-count note
+Clean **5-op** heartbeat (regen-all + 2 wellness writes + journal append + commit) — within the nominal heartbeat budget, no investigation overrun.
+
+## Critic metric-integrity attestation (METRIC_INTEGRITY_PROTOCOL §3.1) — cycle CI
+1. **Bug-report diagnoses real / not waved off?** N/A — inbox tree absent; and no flake surfaced (regen-all passed first run, scroll-reachability 5/0/0), so nothing was waved off as "looks fine".
+2. **Proposals cite a specific screen/state/edge-case / not vague?** N/A — ZERO new proposals, the correct outcome absent a defect. The critic explicitly did NOT manufacture a "refactor for code health" proposal to look productive.
+3. **FIQ grades honest / not inflated?** N/A — zero live FIQ entries.
+
+**Verdict: SUBSTANTIVE (honest-minimal), attested CLEANLY.** The integrity test for a clean cycle is resistance to inventing work, and it held: no fake proposal, app-health reported as HELD (not spun — overall_score/grade unchanged context lines, 0 attention items, only-movement = routine provenance), and meter-wiring restraint upheld (sidecar passes round-trip but caps NULL → F1a gap NOT declared closed). Nothing fabricated to look productive. Ship closes.
+
+## Files changed in this cycle CI run
+- `.claude/state/wellness/engineer.json` — cycle CI update
+- `.claude/state/wellness/critic.json` — cycle CI update
+- `.claude/state/cron/2026-05-31-overnight-run.md` — this journal (cycle CI section appended)
+- `docs/reports/app-health.html` — engineer's own regen-all output (88.8 HELD A-; only generated_at + audit_trigger provenance moved; 0 attention items)
+
+No code changes. No proposals authored (PROP-015 untouched). No FIQ writes. No bug-report state moves (both trees absent). Working tree was clean at run-start — no concurrent WIP to leave unstaged. **Did NOT push** — Founder reviews local diff first.
