@@ -1890,3 +1890,69 @@ FIQ grade distribution: A=0 B=0 C=0 D=0 F=0 (no entries graded — queue absent)
 NOT staged (concurrent-session territory, via explicit pathspec): `.claude/state/emu-unified-2026-05-29.log`, `src/pages/feed.js`, `src/styles/base.css`, `src/styles/components.css` — the live W1.S9/S10 feature session's WIP, left for that session / Founder.
 
 No code changes in cycle BN. No proposals. No FIQ writes. No bug-report state moves (inbox absent). app-health overall FLAT at 86.8 (A-).
+
+---
+
+# Cycle BO — overnight triage (heartbeat-only)
+
+> Appended 2026-05-30 (Founder-local York PA). regen START `2026-05-31T00:01:46Z` = **2026-05-30 20:01 EDT** — the UTC clock crossed midnight to 2026-05-31 **during** this cycle while the harness `currentDate` + Founder-local time remain 2026-05-30. **Carry-over item #5 (journal-date convention: UTC vs Founder-local) is now genuinely in tension for the first time.** Chose Founder-local `2026-05-30` for this journal filename + the commit date to preserve one-file-per-Founder-local-evening multi-cycle-append continuity (the evening's 20 prior cycles all used 2026-05-30; a fresh 2026-05-31 file would fragment a single autonomous evening run). The crossing is surfaced here explicitly, not papered over. **21st cycle of the 2026-05-30 date; cycle BO; 56th consecutive ~1h-cadence regen since cycle M.**
+
+## Triage summary (cycle BO)
+
+| Metric | Count |
+|---|---|
+| FIQ entries triaged | 0 (queue absent) |
+| Bug reports processed | 0 (inbox absent) |
+| New proposals authored | 0 |
+| Wellness state changes | 2 (engineer.json + critic.json cycle BO refresh) |
+
+FIQ grade distribution: A=0 B=0 C=0 D=0 F=0 (no entries graded — queue absent).
+
+**Both queues empty -> runbook "BOTH empty -> steps 3-5 only" branch.** Verified directly this cycle (not echoed from BN): `.claude/state/founder-input-queue/` dir **MISSING** (`test -d`), entire `.claude/state/bug-reports/` tree **MISSING** (no `inbox/`, no `triaged/`), `proposals/pending/` holds only `.gitkeep`, `proactive-backlog.md` **ABSENT**. **101st consecutive empty-inbox cycle.**
+
+## Heartbeat (step 3)
+
+- **`scripts/regen-all.ps1`** ran end-to-end `00:01:46Z` -> **`ALL DASHBOARDS REGENERATED at 2026-05-31T00:01:52Z`** with `=== ALL CHECKS PASSED ===` + **round-trip test PASS**. **56th consecutive clean canonical regen-all** (cycles L–BO). All ~30 guards green; `regen-all-last-pass.json` heartbeat written.
+- **Telemetry:** events=17874 (up from BN 17813), handoffs=1, bubbles=7, proposals_pending=0, `meter_status=wired-real` -> **HALT-25 NOT in effect**. Token aggregate (all-time): real=13,565,451,491 · estimated=15,926,120 · manual=0.
+- **app-health: FLAT at 87.6 (A-)** in this heartbeat diff. Every score field (`overall_score`/`overall_grade`/`pre_deduction`/`post_deduction`/all 12 dimension scores) byte-unchanged — `git diff` grep for score fields returns EMPTY.
+- **Wellness:** engineer.json + critic.json refreshed for cycle BO. No rest triggered (heartbeat-only nights genuinely light; token threshold stays crossed but `status: active` per still-LIVE Founder token-counter-semantics decision).
+
+## Honest score attribution (cycle BO)
+
+The **86.8 (BN) -> 87.6 (BO)** delta is **NOT a heartbeat change**. `git show HEAD:docs/reports/app-health.html` confirms the committed run-start baseline (HEAD=`1c534122`) was **already 87.6** — the 0.8 **rise** landed in a **PRIOR committed cycle** (the W1.S11 feed editorial redesign + Chip composer modal, commits `58e609ad`/`8b9fb44e` + their cron regens, which recovered the A12 transient from red toward yellow). The engineer claimed **neither credit nor blame** — the correct disowning, and the symmetric mirror of BN's disowned *fall*.
+
+The **only** `+/-` lines in the app-health diff (8 ins / 14 del) are label-free + metadata — **cleaner than BN** (no A1/A12 label recounts this cycle):
+- `generated_at` `2026-05-30T23:56:16.725242Z` -> `2026-05-31T00:01:51.376834Z`
+- `audit_trigger` commit-pointer re-pointed: sha `8b9fb44e` (`feat(feed): editorial Chip composer modal (W1.S11 · 3l.1)`, app-commit, 5 app files, `total_files_touched` 19) -> `1c534122` (`cron(routine): post-commit dashboard regen`, cron, `is_app_commit:false`, `app_files_touched:[]`, `total_files_touched` 4).
+
+## Blockers requiring Founder attention (cycle BO)
+
+**No ship-blocking issues introduced by triage.** Awareness / carry-over items:
+
+1. **Journal-date convention NOW IN TENSION (carry-over #5, escalated).** This cycle's regen START crossed midnight UTC (`00:01:46Z 2026-05-31`) while Founder-local + harness `currentDate` remain `2026-05-30`. Chose Founder-local for journal+commit to preserve evening-run continuity. **Founder may want to lock which date axis is canonical** for the cron journal filename + commit date — this is the first cycle where the two disagree. Cheaply reversible (rename + re-date) if Founder prefers UTC.
+2. **Concurrent session committed its prior W1.S11 batch since BN, then went LIVE again mid-cycle.** At run-start the working tree held **only** `M .claude/state/emu-unified-2026-05-29.log` — no dirty `src/` paths (the W1.S11 feed.js/CSS batch is committed in `8b9fb44e`/`58e609ad`). **Correction (mid-cycle, honesty over a tidy BN contrast):** by journal-append + pre-commit, `M src/styles/components.css` (**+103 insertions**) had appeared — absent from the run-start snapshot. So the concurrent session is **live again on a follow-on batch, exactly mirroring BN's mid-regen liveness**, not contrasting with it. Both concurrent paths (`emu-unified-2026-05-29.log` + `src/styles/components.css`) are concurrent-session territory — left **untouched and unstaged**.
+3. **`A12_operational` transitioned red->green->red->YELLOW across BL/BM/BN/BO.** Current attention label: `pipeline=yellow · 7 recent skip-dirty · error-tracking=True · incident-doc=True`. The standing escalation trigger (author the routine-patterns diagnosis proposal ONLY if A12 stays pipeline=red **>=3 CONSECUTIVE** cycles) is **UNMET** — the red streak is broken to yellow. **No proposal manufactured** (Rule-2 proposal-count gaming on a non-red oscillating transient).
+4. **Carry-over — `members.js` 863 lines (>800 AMD-027 budget).** Off the app-health attention list; belongs to the owning Members-feature session's ship-close.
+5. **Carry-over — writer-side BOM fix (`scripts/common.ps1`) remains unauthored as a proposal.** Consumer-side `utf-8-sig` tolerance has now held **56 consecutive** clean regen-all runs (cycles L–BO). Deliberately not auto-promoted without a Founder priority signal.
+6. **Cron cadence** — cycles M–BO steady at ~1h. Awareness only.
+
+## Cycle BO Critic metric-integrity attestation (per `METRIC_INTEGRITY_PROTOCOL § 3.1`)
+
+1. **"Did every bug report processed get a real diagnosis with cited evidence?"** N/A — zero bug reports tonight (inbox tree absent, verified by directory checks this cycle). Cannot wave off what doesn't exist.
+2. **"Did every new proposal cite a specific screen/state/edge-case?"** N/A — zero new proposals tonight. The A12 yellow-transient and the BOM fix were both deliberately *not* promoted (non-red transient / no Founder priority) rather than inflated into proposals.
+3. **"Did the FIQ grades reflect rubric dimensions honestly?"** N/A — zero FIQ entries tonight. Queue absent; no `FIQ-` work on disk to mis-count.
+
+**Heartbeat-only self-check — is tonight's substantive output real?** YES, modestly. A 56th consecutive clean canonical regen-all confirms the gate is durable. The genuinely useful discipline this cycle is the FLAT-score finding *with honest disowning of a prior-cycle RISE* (the symmetric mirror of BN's disowned fall): the app-health diff was grepped for every score field (returns EMPTY -> zero score movement in the heartbeat), and the cross-cycle 86.8->87.6 delta was correctly attributed via `git show HEAD` to a PRIOR committed W1.S11/A12 recovery (run-start baseline already 87.6) rather than claimed/blamed on this heartbeat. The second genuinely useful act is surfacing the **UTC-midnight date-crossing** honestly rather than silently breaking convention. Every claim is anchored to a quoted regen-all log line, a `git diff`/`git show` hunk read verbatim, a `git status`/`git log` line, or a `test -d` directory-absence check. No invented productivity on an empty-queue night.
+
+**Critic attests cleanly: substantive heartbeat cycle, ship closes.**
+
+## Files changed in this cycle BO run
+
+- `.claude/state/wellness/engineer.json` — cycle BO update
+- `.claude/state/wellness/critic.json` — cycle BO update
+- `.claude/state/cron/2026-05-30-overnight-run.md` — this journal (cycle BO section appended)
+- `docs/reports/app-health.html` — regen output (label-free + metadata: `generated_at` timestamp + `audit_trigger` commit-pointer `8b9fb44e`->`1c534122`, `total_files_touched` 19->4; all 12 dimension scores + overall byte-unchanged)
+
+NOT staged (concurrent-session territory, via explicit pathspec): `.claude/state/emu-unified-2026-05-29.log` (concurrent session telemetry) + `src/styles/components.css` (+103 insertions, concurrent session's live follow-on batch that went dirty mid-cycle) — both left for that session / Founder.
+
+No code changes in cycle BO. No proposals. No FIQ writes. No bug-report state moves (inbox absent). app-health overall FLAT at 87.6 (A-).
