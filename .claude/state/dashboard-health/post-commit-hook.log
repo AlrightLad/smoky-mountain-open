@@ -145,3 +145,9 @@ visual-gate: 1 FAILURE(S)
     expected >=1 of [.fc-item], found 0
     screenshot: .claude\state\visual-gate\founder-checklist.png
 [write-regen-heartbeat] OK ts=2026-05-31T19:06:01Z source=post-commit-hook status=PASS
+
+--- P9.5 self-test ---
+[ingest-session-transcripts] scanned 82b1a46d-c497-4372-a0b5-d6fad12c33d0.jsonl: +3 new entries (offset 727922→734097)
+[ingest-session-transcripts] scanned 279 JSONL file(s), found 3 new assistant turns
+[ingest-session-transcripts] wrote session-transcript-summary.json (332 buckets, 14033460012 total tokens, 283 sessions) [write-content-changed]
+[ingest-session-transcripts] SELF-TEST OK: 279 JSONLs → 14033460012 tokens across 332 buckets
