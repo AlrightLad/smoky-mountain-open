@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-05-31T13:07:34.199753+00:00",
+  "generated_at": "2026-05-31T14:08:48.563523+00:00",
   "schema_version": 1,
   "source": "~/.claude/projects/C--Users-Zach-smoky-mountain-open/*.jsonl",
-  "session_count": 277,
-  "bucket_count": 326,
-  "all_time_total_tokens": 13916924467,
+  "session_count": 278,
+  "bucket_count": 327,
+  "all_time_total_tokens": 13938659722,
   "by_day_total": {
     "2026-04-17": 294853821,
     "2026-04-20": 362592283,
@@ -35,12 +35,12 @@
     "2026-05-28": 29959892,
     "2026-05-29": 1125370428,
     "2026-05-30": 1110856326,
-    "2026-05-31": 346145753
+    "2026-05-31": 367881008
   },
   "by_model_total": {
     "claude-opus-4-7": 11336701903,
     "<synthetic>": 0,
-    "claude-opus-4-8": 2580222564
+    "claude-opus-4-8": 2601957819
   },
   "buckets": {
     "0c5538f6-fa47-44fc-9519-28830b98ff03|2026-05-13|claude-opus-4-7": {
@@ -4077,14 +4077,14 @@
       "session_id": "a3e3471a-7db9-4c9d-a1f1-37284a43520d",
       "day": "2026-05-31",
       "model": "claude-opus-4-8",
-      "turn_count": 2193,
-      "input_tokens": 136215,
-      "output_tokens": 3339745,
-      "cache_read_input_tokens": 251690168,
-      "cache_creation_input_tokens": 12892485,
-      "total": 268058613,
+      "turn_count": 2324,
+      "input_tokens": 138301,
+      "output_tokens": 3613553,
+      "cache_read_input_tokens": 266196430,
+      "cache_creation_input_tokens": 14114091,
+      "total": 284062375,
       "first_ts": "2026-05-31T00:00:20.411Z",
-      "last_ts": "2026-05-31T13:02:13.547Z"
+      "last_ts": "2026-05-31T13:40:44.475Z"
     },
     "cd88b5b3-dd43-4f70-92a3-f18cea60cd80|2026-05-31|claude-opus-4-8": {
       "session_id": "cd88b5b3-dd43-4f70-92a3-f18cea60cd80",
@@ -4272,14 +4272,27 @@
       "session_id": "1d9cbca2-521f-4609-9b8e-7c6f150c7a80",
       "day": "2026-05-31",
       "model": "claude-opus-4-8",
-      "turn_count": 55,
-      "input_tokens": 25235,
-      "output_tokens": 56334,
-      "cache_read_input_tokens": 3774157,
-      "cache_creation_input_tokens": 212276,
-      "total": 4068002,
+      "turn_count": 58,
+      "input_tokens": 25241,
+      "output_tokens": 62220,
+      "cache_read_input_tokens": 4060443,
+      "cache_creation_input_tokens": 216377,
+      "total": 4364281,
       "first_ts": "2026-05-31T13:00:13.822Z",
-      "last_ts": "2026-05-31T13:07:09.371Z"
+      "last_ts": "2026-05-31T13:07:52.350Z"
+    },
+    "a425dd15-ace9-4385-8335-63a2464084f5|2026-05-31|claude-opus-4-8": {
+      "session_id": "a425dd15-ace9-4385-8335-63a2464084f5",
+      "day": "2026-05-31",
+      "model": "claude-opus-4-8",
+      "turn_count": 57,
+      "input_tokens": 40671,
+      "output_tokens": 76602,
+      "cache_read_input_tokens": 4979180,
+      "cache_creation_input_tokens": 338761,
+      "total": 5435214,
+      "first_ts": "2026-05-31T14:00:10.110Z",
+      "last_ts": "2026-05-31T14:08:28.923Z"
     }
   }
 }
