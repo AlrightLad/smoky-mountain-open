@@ -851,9 +851,9 @@
       "weak_points": []
     },
     "A2_fiq": {
-      "score": 100,
-      "status": "green",
-      "label": "26/26 deployed · 0 pending",
+      "score": 75,
+      "status": "yellow",
+      "label": "26 declared / 0 deployed (drift)",
       "source": ".claude/state/aggregates/fiq-status.json",
       "weak_points": []
     },
@@ -861,11 +861,11 @@
       "score": 98,
       "status": "green",
       "label": "AgentShield grade A; honest score 98/100 · 0 CRITICAL · 1 HIGH · 0 MED",
-      "source": ".claude\\state\\security\\baseline-20260521-184045\\agentshield-post-cleanup.txt",
+      "source": ".claude/state/security/baseline-20260521-184045/agentshield-post-cleanup.txt",
       "weak_points": [
         {
           "what": "1 HIGH findings — at industry-grade this is technical debt, NOT 'acceptable'",
-          "where": ".claude\\state\\security\\baseline-20260521-184045\\agentshield-post-cleanup.txt",
+          "where": ".claude/state/security/baseline-20260521-184045/agentshield-post-cleanup.txt",
           "what_action": "Top 3: tighten Bash(curl *) allow rule to specific domains; add deny rules for sudo/ssh/chmod 777; replace `>/dev/null 2>&1` in hooks with audit log writes"
         }
       ]
@@ -875,7 +875,13 @@
       "status": "green",
       "label": "Lighthouse BP 93/100 across 6 pages",
       "source": ".claude/state/aggregates/lighthouse-scores.json",
-      "weak_points": []
+      "weak_points": [
+        {
+          "what": "Lighthouse Best-Practices = 0/100 across 0 pages (target: 90+)",
+          "where": ".claude/state/aggregates/lighthouse-scores.json",
+          "what_action": "Open .lighthouseci/*.html — top BP failures include image aspect ratios, console errors, deprecated APIs. Fix top 3 per page."
+        }
+      ]
     },
     "A5_code_quality": {
       "score": 85,
@@ -962,7 +968,13 @@
       "status": "green",
       "label": "Lighthouse Accessibility 95/100 across 6 pages",
       "source": ".claude/state/aggregates/lighthouse-scores.json",
-      "weak_points": []
+      "weak_points": [
+        {
+          "what": "Lighthouse Accessibility = 0/100 across 0 pages (target: 90+)",
+          "where": ".claude/state/aggregates/lighthouse-scores.json",
+          "what_action": "Open .lighthouseci/*.html — fix top accessibility failures per page"
+        }
+      ]
     },
     "A10_mobile_first": {
       "score": 100,

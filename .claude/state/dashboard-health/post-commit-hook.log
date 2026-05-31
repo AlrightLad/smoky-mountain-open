@@ -36,6 +36,8 @@
 [aggregate-fiq-status] OK status=green declared=26 deployed=26 write=False (skip-idempotent-grace-content-unchanged-52342s)
 
 --- scripts/aggregate-self-tests.py ---
+[aggregate-self-tests] FAIL (1 aggregators):
+  aggregate-fiq-status: parity-fail: source-detected but status=unknown
 [aggregate-self-tests] starting D40 parity checks across 5 aggregators
   [aggregate-test-health] PASS status=green age=199941s [content-stable 199941s, idempotent skip]
   [aggregate-security-health] PASS status=green age=761803s [content-stable 761803s, idempotent skip]
