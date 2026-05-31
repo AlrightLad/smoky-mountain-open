@@ -75,13 +75,18 @@ test.describe('BL-001 — in-round par/yardage edit (live scoring)', () => {
     await openEditorOnHole0(page);
 
     // 5,5,5 over par 4,4,4 => +3 through 3 holes before any edit.
-    expect(await page.locator('[data-page="playnow"]').textContent()).toContain('+3 thru 3');
+    // The masthead renders the to-par and "thru N" as two separate block
+    // elements (.ls-mast__score-num + .ls-mast__score-lbl), so assert on each
+    // rather than the combined textContent (which has no joining space).
+    expect((await page.locator('.ls-mast__score-num').textContent()).trim()).toBe('+3');
+    expect((await page.locator('.ls-mast__score-lbl').textContent()).trim()).toBe('thru 3');
 
     await page.evaluate(() => adjustHolePar(0, 1)); // 4 -> 5
     await page.waitForTimeout(300);
 
     // 15 strokes over par 5,4,4 = 13 => +2 through 3.
-    expect(await page.locator('[data-page="playnow"]').textContent()).toContain('+2 thru 3');
+    expect((await page.locator('.ls-mast__score-num').textContent()).trim()).toBe('+2');
+    expect((await page.locator('.ls-mast__score-lbl').textContent()).trim()).toBe('thru 3');
     expect((await page.textContent('#pn-holepar-val-0')).trim()).toBe('5');
   });
 

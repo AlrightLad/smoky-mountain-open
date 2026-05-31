@@ -154,7 +154,21 @@ async function run() {
   console.log('[seed] Seeded ' + users.length + ' users, ' + rounds.length + ' rounds, ' + leagues.length + ' leagues, ' + notifications.length + ' notifications');
 }
 
-module.exports = { run };
+// Reset ONLY the notifications collection to its canonical fixture state.
+// Flow 06 mutates testZach's notifications (mark-all-read, click-to-read), so a
+// per-test beforeEach calls this to restore the 5-unread + 3-read seed. Without
+// it, whichever project runs first consumes the unread items and later projects
+// (the suite seeds once via global-setup) find 0 unread → liveNotifications
+// gates time out. Scoped to notifications so it stays fast and never disturbs
+// members/rounds/leagues/auth that other flows depend on.
+async function reseedNotifications() {
+  await assertEmulator();
+  const db = app().firestore();
+  await clearCollection(db, 'notifications');
+  await seedNotifications(db);
+}
+
+module.exports = { run, reseedNotifications };
 
 if (require.main === module) {
   run()

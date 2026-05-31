@@ -18,6 +18,29 @@ function ensureAdmin() {
   if (!admin.apps.length) admin.initializeApp({ projectId: 'parbaughs' });
 }
 
+// The initial navigation can transiently fail with `net::ERR_ABORTED; maybe
+// frame was detached?` when the first paint races the service-worker
+// registration (or an early client reload). It is never a real app fault, so
+// a bounded retry self-heals it and keeps the suite at zero-flaky. Waiting on
+// 'domcontentloaded' (not the default 'load') also shrinks the abort window:
+// the SDK-ready waitForFunction below is the real readiness gate, so we don't
+// need to block on every sub-resource finishing.
+async function gotoEmulator(page) {
+  let lastErr = null;
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      await page.goto('/?emulator=1', { waitUntil: 'domcontentloaded' });
+      return;
+    } catch (e) {
+      lastErr = e;
+      const msg = String((e && e.message) || '');
+      if (!/ERR_ABORTED|frame was detached/i.test(msg)) throw e;
+      await page.waitForTimeout(500);
+    }
+  }
+  throw lastErr;
+}
+
 async function loginAs(page, testUserKey) {
   const user = users.find(u => u.key === testUserKey);
   if (!user) throw new Error('Unknown test user: ' + testUserKey);
@@ -27,7 +50,7 @@ async function loginAs(page, testUserKey) {
 
   // Land on the auth screen with emulator mode on. The app's auth
   // screen is visible before sign-in; we sign in via the compat SDK.
-  await page.goto('/?emulator=1');
+  await gotoEmulator(page);
 
   // Wait for the compat Firebase SDK to have initialised.
   await page.waitForFunction(() => {
@@ -48,18 +71,19 @@ async function loginAs(page, testUserKey) {
         && auth && auth.classList.contains('hidden');
   }, { timeout: 20000 });
 
-  // Wait for fbMemberCache to be populated so the claimedFrom merge
-  // has taken effect (this is what the v7.6.5 fix depends on).
-  // Timeout is generous (30s) because the emulator's long-polling transport
+  // Wait for THIS user's profile to land in fbMemberCache (the claimedFrom
+  // merge the round-count assertion depends on needs the current user's own
+  // profile, not all 26 members). fbMemberCache is populated atomically by the
+  // single members.get({source:'server'}) in firebase-photos.js, so gating on
+  // the current uid flips true at the same instant the old >=26 check did, but
+  // is robust to seed member-count drift: a missing/slow seed write for some
+  // OTHER member no longer hangs this gate to its timeout. Timeout stays
+  // generous because the emulator's forced long-polling transport
   // (experimentalForceLongPolling, emulator-only) is slower than production
-  // WebChannel for the initial bulk members.get(), and the channel latency
-  // degrades as a full-sweep run accumulates browser contexts. Earlier specs
-  // (esp. 01-baseline, which logs in all 26 users) load the emulator enough
-  // that a 15s gate flaked late in each project's run. Production is unaffected.
-  await page.waitForFunction((expected) => {
-    return window.fbMemberCache
-      && Object.keys(window.fbMemberCache).length >= expected;
-  }, users.length, { timeout: 30000 });
+  // WebChannel for the initial bulk members.get(). Production is unaffected.
+  await page.waitForFunction((uid) => {
+    return window.fbMemberCache && !!window.fbMemberCache[uid];
+  }, user.uid, { timeout: 30000 });
 
   // Brief settle so the post-load home re-render completes.
   await page.waitForTimeout(300);

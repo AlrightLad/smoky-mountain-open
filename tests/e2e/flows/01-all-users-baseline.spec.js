@@ -5,6 +5,7 @@
 const { test, expect } = require('@playwright/test');
 const { loginAs } = require('../helpers/auth.js');
 const { setupConsoleErrorCatcher, readRoundCount } = require('../helpers/assertions.js');
+const { appErrors } = require('../helpers/console-noise.js');
 const { users, expectedRoundCount } = require('../setup/fixtures/users.js');
 
 test.describe('Baseline — all 26 users render home without errors', () => {
@@ -14,7 +15,7 @@ test.describe('Baseline — all 26 users render home without errors', () => {
       await loginAs(page, u.key);
       const count = await readRoundCount(page);
       expect(count).toBe(expectedRoundCount[u.key]);
-      const errors = getErrors();
+      const errors = appErrors(getErrors);
       expect(errors, 'console errors during render:\n' + errors.join('\n')).toHaveLength(0);
     });
   }

@@ -2,7 +2,15 @@ const { defineConfig, devices } = require('@playwright/test');
 
 module.exports = defineConfig({
   testDir: './tests/e2e/flows',
-  timeout: 30000,
+  // loginAs (tests/e2e/helpers/auth.js) chains three sequential gates whose
+  // budgets sum to 60s (SDK-init 10s + enterApp 20s + fbMemberCache 30s).
+  // The emulator's forced long-polling transport (WebChannel can't stream in
+  // headless contexts) is slower than prod WebChannel and degrades across the
+  // 26-user baseline sweep, so a login can legitimately need 30-60s. A 30s
+  // per-test cap killed the test before its own gates could resolve, producing
+  // intermittent timeouts (fast logins passed, slow ones died at exactly 30s).
+  // 90s lets the gate budgets complete. Production is unaffected.
+  timeout: 90000,
   retries: 1,
   workers: 1,
   reporter: [['list'], ['html', { open: 'never' }]],

@@ -6,8 +6,19 @@
 
 const { test, expect } = require('@playwright/test');
 const { loginAs, logout } = require('../helpers/auth.js');
+const { reseedNotifications } = require('../setup/seed-baseline.js');
 
 const ZACH = 'testZach';
+
+// These tests are destructive + order-dependent: mark-all-read and click-to-read
+// permanently flip testZach's seeded notifications from unread → read. The suite
+// seeds once (global-setup), so without a reset the first project to run consumes
+// the unread items and every later project finds 0 unread (liveNotifications
+// gates then hang to timeout). Restore the canonical 5-unread + 3-read seed
+// before each test so the file is project- and order-independent.
+test.beforeEach(async () => {
+  await reseedNotifications();
+});
 
 test.describe('v8.17.0 notifications — listener lifecycle + bell badge', () => {
   test('listener attaches after login, detaches on logout', async ({ page }) => {

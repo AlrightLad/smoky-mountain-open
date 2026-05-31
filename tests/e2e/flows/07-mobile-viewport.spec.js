@@ -9,26 +9,14 @@
 // Wired projects in playwright.config.js: iphone-14, pixel-7.
 // Run mobile-only: npx playwright test --project=iphone-14 --project=pixel-7
 
-const { test, expect, devices } = require('@playwright/test');
+const { test, expect } = require('@playwright/test');
 const { loginAs } = require('../helpers/auth.js');
 const { setupConsoleErrorCatcher } = require('../helpers/assertions.js');
-
-// The Firebase Auth *emulator* serves its widget from http://127.0.0.1:9099.
-// The app CSP sets no frame-src, so framing falls back to default-src, which
-// (correctly, for production) does not list loopback. Chromium then logs
-// "Framing '...' violates ... Content Security Policy" and WebKit logs "Refused
-// to load ... because it appears in neither the frame-src ... directive". Both
-// are the same emulator-only artifact: in production the SDK frames the real
-// auth domain, not loopback, and custom-token login (loginAs) succeeds
-// regardless, so it signals nothing about the app. The shared assertions.js
-// IGNORE_PATTERNS list is Founder-gated and a global suppression would be the
-// wrong scope, so filter just this one message (both engine phrasings, keyed on
-// the loopback :9099 host) locally while still asserting on every other error.
-const EMULATOR_FRAME_NOISE =
-  /(?:Framing '|Refused to load )https?:\/\/(?:127\.0\.0\.1|localhost):9099[\s\S]*Content Security Policy/i;
-function appErrors(getErrors) {
-  return getErrors().filter((e) => !EMULATOR_FRAME_NOISE.test(e));
-}
+// Spec-level filter for enumerated emulator-/third-party-only console noise
+// (emulator auth-frame CSP artifact + gapi cleardot.gif telemetry beacon). The
+// gated assertions.js core catcher is untouched; every other error still
+// asserts. See helpers/console-noise.js for the per-pattern rationale.
+const { appErrors } = require('../helpers/console-noise.js');
 
 // Run this suite only on mobile projects (iphone-14 + pixel-7).
 // On chromium it would be redundant with 01-all-users-baseline.

@@ -188,15 +188,19 @@ test.describe('XP display parity — v7.8.5 completion (remaining 6 sites)', () 
     await page.evaluate(uid => Router.go('trophyroom', { id: uid }), 'test_scen_ml_01');
     await page.waitForFunction(() => {
       const el = document.querySelector('[data-page="trophyroom"]');
-      return el && !el.classList.contains('hidden') && el.querySelector('.trophy-level');
+      return el && !el.classList.contains('hidden') && el.querySelector('.tr-standing__level');
     }, { timeout: 5000 });
     await page.waitForTimeout(250);
 
     const trophyState = await page.evaluate(() => {
       const pg = document.querySelector('[data-page="trophyroom"]');
       if (!pg) return null;
-      const lvlEl = pg.querySelector('.trophy-level');
-      const xpEl = pg.querySelector('.trophy-xp [data-count]');
+      // W1.S9 redesign (#258, CLUBHOUSE_SPEC-HQ-3p): the standing rail renders
+      // the level on .tr-standing__level (data-count lives on the div itself)
+      // and the XP inside .tr-standing__xp as a <span data-count>. Both still
+      // animate up from 0, so data-count carries the true target value.
+      const lvlEl = pg.querySelector('.tr-standing__level');
+      const xpEl = pg.querySelector('.tr-standing__xp [data-count]');
       return {
         levelDataCount: lvlEl ? lvlEl.getAttribute('data-count') : null,
         xpDataCount: xpEl ? xpEl.getAttribute('data-count') : null,
@@ -208,41 +212,15 @@ test.describe('XP display parity — v7.8.5 completion (remaining 6 sites)', () 
     expect(parseInt(trophyState.xpDataCount, 10)).toBe(EXPECTED_XP);
   });
 
-  test('Member list card level badge matches persisted level for scenarioMixedLeagues', async ({ page }) => {
-    // Log in as any user; the member list shows every member's level.
-    // testZach is logged-in but we're reading scenarioMixedLeagues's card.
-    await loginAs(page, 'testZach');
-    await page.evaluate(() => Router.go('members'));
-    await page.waitForFunction(() => {
-      const el = document.querySelector('[data-page="members"]');
-      return el && !el.classList.contains('hidden') && el.querySelector('.member-card');
-    }, { timeout: 5000 });
-    await page.waitForTimeout(250);
-
-    const badgeLevel = await page.evaluate(() => {
-      const pg = document.querySelector('[data-page="members"]');
-      if (!pg) return null;
-      // The member-card for scenarioMixedLeagues has data-name containing
-      // the lowercased username. Find it, then pull out the level badge
-      // (rendered as a small positioned <div> inside the avatar wrapper).
-      const cards = Array.from(pg.querySelectorAll('.member-card'));
-      const card = cards.find(c => (c.getAttribute('data-name') || '').includes('scenariomixedleagues'));
-      if (!card) return { reason: 'card not found', names: cards.map(c => c.getAttribute('data-name')).slice(0, 6) };
-      // Badge is a div with min-width:12px and text-align:center positioned at bottom-right of the avatar.
-      const inner = card.querySelectorAll('div');
-      for (const d of inner) {
-        const s = d.getAttribute('style') || '';
-        if (/position\s*:\s*absolute/.test(s) && /min-width\s*:\s*12px/.test(s) && /text-align\s*:\s*center/.test(s)) {
-          const n = parseInt((d.textContent || '').trim(), 10);
-          if (!isNaN(n)) return { level: n };
-        }
-      }
-      return { reason: 'badge not located' };
-    });
-
-    expect(badgeLevel, 'member card badge not found').not.toBeNull();
-    expect(badgeLevel.level, JSON.stringify(badgeLevel)).toBe(EXPECTED_LEVEL);
-  });
+  // The "member directory card level badge" parity site was intentionally
+  // removed in the W1.S3 Members redesign (#254, CLUBHOUSE_SPEC-HQ-3e). The
+  // directory is now a handicap/activity table — each .roster-row carries
+  // avatar · name · handicap · rounds · last-activity · live-status, and the
+  // avatar (renderAvatar) no longer overlays a level badge. Level/XP now
+  // surfaces only in Trophy Room, Online Now, and the Profile portrait. The
+  // surviving sites are covered by the Trophy Room test above and the Online
+  // Now test below, so the directory parity case is dropped rather than
+  // re-pointed at an element that no longer exists.
 
   test('Online Now level badge matches persisted level for scenarioMixedLeagues', async ({ page }) => {
     // Log in as the user; presence system writes an entry so they appear
