@@ -61,14 +61,27 @@ try {
     auth = firebase.auth();
     // Offline persistence disabled — causes stale IndexedDB cache issues for a real-time community app.
     // Firestore real-time listeners handle live sync; server is always authoritative.
-    if (window.location.search.indexOf("emulator=1") !== -1) {
-      // Force long-polling in emulator mode. Playwright's webkit/headless
-      // contexts fail to establish a Firestore WebChannel stream, so the
-      // SDK waits ~15s before auto-falling-back to long-polling — which
-      // stalled every `{ source: 'server' }` fetch (and the loginAs
-      // fbMemberCache gate) past the E2E timeout. Forcing it skips the
-      // detection wait. Emulator-only; production keeps default detection.
+    var _pbSearch = window.location.search;
+    var _pbEmulatorMode = _pbSearch.indexOf("emulator=1") !== -1;
+    // ?smoke=1 — automated smoke runs (tests/smoke/) hit PRODUCTION Firestore,
+    // not the emulator. Headless Playwright cannot establish a Firestore
+    // WebChannel stream, so onSnapshot delivers only its initial snapshot and
+    // silently drops every subsequent server push — admin-SDK docs seeded
+    // mid-run never reach the browser listener (S3-S8 froze on the pre-seed
+    // snapshot). Force long-polling for this automated context so realtime
+    // updates land. Real members in real browsers are unaffected: no smoke
+    // param, default WebChannel transport, no useEmulator redirect.
+    var _pbSmokeMode = _pbSearch.indexOf("smoke=1") !== -1;
+    if (_pbEmulatorMode || _pbSmokeMode) {
+      // Force long-polling. Playwright's webkit/headless contexts fail to
+      // establish a Firestore WebChannel stream, so the SDK waits ~15s before
+      // auto-falling-back to long-polling — which stalled every `{ source:
+      // 'server' }` fetch (and the loginAs fbMemberCache gate) past the test
+      // timeout. Forcing it skips the detection wait. Automated contexts only;
+      // production members keep default WebChannel detection.
       db.settings({ experimentalForceLongPolling: true });
+    }
+    if (_pbEmulatorMode) {
       // 2026-05-21 (Goal 2 A11 smoke fix hypothesis): use 127.0.0.1 not
       // localhost. Windows + Node 20+ resolves `localhost` to ::1 (IPv6)
       // by default; Firebase auth emulator binds to 127.0.0.1 (IPv4) only.

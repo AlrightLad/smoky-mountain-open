@@ -58,6 +58,17 @@ const SLOWMO = parseInt(process.env.SLOWMO || '0', 10);
 const DEVTOOLS = process.env.DEVTOOLS === '1' || process.env.DEVTOOLS === 'true';
 const DEV_URL = process.env.DEV_URL || 'http://localhost:5173/smoky-mountain-open/';
 
+// Scenarios navigate with ?smoke=1 so firebase.js forces Firestore long-polling
+// for this headless context (see src/core/firebase.js). Without it, Playwright
+// cannot hold a WebChannel stream against prod, so onSnapshot delivers only its
+// initial snapshot and every admin-SDK seed written mid-run is dropped — which
+// stalled S3-S8. The param hits the real prod backend (no useEmulator); real
+// members never carry it, so their default transport is untouched.
+function withSmokeParam(u) {
+  return u + (u.indexOf('?') === -1 ? '?' : '&') + 'smoke=1';
+}
+const SMOKE_NAV_URL = withSmokeParam(DEV_URL);
+
 function timestamp() {
   var d = new Date();
   function p(n) { return String(n).padStart(2, '0'); }
@@ -130,7 +141,7 @@ async function runOnBrowser(browserName, runDir) {
         // replication is variable; 2s is well within budget.
         await page.waitForTimeout(2000);
       }
-      var out = await scenario.run({ page: page, capture: capture, devUrl: DEV_URL });
+      var out = await scenario.run({ page: page, capture: capture, devUrl: SMOKE_NAV_URL });
       record.passed = !!(out && out.passed);
       if (out && out.details) record.details = out.details;
     } catch (e) {
@@ -158,6 +169,7 @@ async function main() {
   console.log('  browsers: ' + BROWSERS.join(', '));
   console.log('  headed:   ' + HEADED + ' (slowMo=' + SLOWMO + 'ms, devtools=' + DEVTOOLS + ')');
   console.log('  devUrl:   ' + DEV_URL);
+  console.log('  navUrl:   ' + SMOKE_NAV_URL + ' (forces Firestore long-polling for headless)');
   console.log('  scenarios:' + scenarios.length);
   console.log('');
 
