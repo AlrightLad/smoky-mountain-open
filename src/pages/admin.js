@@ -1,83 +1,120 @@
-// ========== COMMISSIONER ADMIN PANEL ==========
+// ========== COMMISSIONER / FOUNDER ADMIN PANEL (3i editorial) ==========
+// Editorial reskin per CLUBHOUSE_SPEC-HQ-3i: utility masthead ("Admin." 40px),
+// sticky section-nav rail with scroll-spy, flat sectioned panels. All existing
+// element IDs + handlers preserved; only presentation changed. Unauthorized
+// access renders the deliberate 404 obscurity state (3i.3) — does NOT
+// acknowledge that an admin surface exists.
+
 Router.register("admin", function() {
+  var page = document.querySelector('[data-page="admin"]');
+  if (!page) return;
+
+  // 3i.3 — Route guard is defense-in-depth alongside server-side Firestore
+  // rules. Members without admin role get a generic 404, not "access denied":
+  // no signal to a probing user that a permission tier exists here.
   if (!isFounderRole(currentProfile)) {
-    var h = '<div class="sh"><h2>Access Denied</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
-    h += '<div class="section"><div class="card"><div class="empty"><div class="empty-icon"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="7" width="10" height="7" rx="1"/><path d="M5 7V5a3 3 0 016 0v2"/></svg></div><div class="empty-text">Commissioner access only</div></div></div></div>';
-    document.querySelector('[data-page="admin"]').innerHTML = h;
+    page.innerHTML =
+      '<div class="adm-404">' +
+        '<div class="adm-404__eyebrow">404 &middot; Not found</div>' +
+        '<h1 class="adm-404__headline">Nothing here.</h1>' +
+        '<div class="adm-404__body">Return to your clubhouse.</div>' +
+        '<button class="adm-404__cta" onclick="Router.go(\'home\')">&larr; Back to Parbaughs</button>' +
+      '</div>';
     return;
   }
 
-  var h = '<div class="sh"><h2>Admin Panel</h2><button class="back" onclick="Router.go(\'settings\')">← Back</button></div>';
+  var isFounder = (currentProfile && currentProfile.platformRole === "founder") || platformRoleOf(currentProfile) === "founder";
+  var eyebrow = isFounder ? "Founder &middot; Platform &middot; All leagues" : "Commissioner";
 
-  // Reports section
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">Member Reports</span></div>';
-  h += '<div id="adminReports"><div class="loading"><div class="spinner"></div>Loading...</div></div>';
-  h += '</div>';
+  var NAV = [
+    { k: "reports", label: "Reports", title: "Member reports", note: "" },
+    { k: "members", label: "Members", title: "Member management", note: "Manage invite quotas, suspensions, and removals." },
+    { k: "invites", label: "Invites", title: "Invite codes", note: "" },
+    { k: "generate", label: "Generate", title: "Bulk generate", note: "Create multiple invite codes at once." },
+    { k: "requests", label: "Requests", title: "Feature requests", note: "" },
+    { k: "errors", label: "Errors", title: "Error log", note: "" },
+    { k: "courses", label: "Courses", title: "Course management", note: "Remove duplicate or incorrectly added courses. API-imported courses are preferred." },
+    { k: "api", label: "API", title: "API integration", note: "" },
+    { k: "diagnostic", label: "Diagnostic", title: "Data diagnostic", note: "Full read-only audit of every Firestore collection. Compares live data to expected state. Changes nothing." },
+    { k: "recovery", label: "Recovery", title: "Data recovery", note: "Scan for documents missing their league tag and repair them. Run the diagnostic first." }
+  ];
 
-  // Member management with moderation
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">Member Management</span></div>';
-  h += '<div style="font-size:11px;color:var(--muted);margin-bottom:10px">Manage invite quotas, suspensions, and removals.</div>';
-  h += '<div id="adminMemberList"><div class="loading"><div class="spinner"></div>Loading...</div></div>';
-  h += '</div>';
-
-  // All invites overview
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">All Invite Codes</span></div>';
-  h += '<div id="adminInviteList"><div class="loading"><div class="spinner"></div>Loading...</div></div>';
-  h += '</div>';
-
-  // Bulk generate
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">Bulk Generate</span></div>';
-  h += '<div class="card"><div class="card-body">';
-  h += '<div style="font-size:11px;color:var(--muted);margin-bottom:10px">Generate multiple invite codes at once</div>';
-  h += '<div class="ff"><label class="ff-label">How many?</label><select id="bulkCount" class="ff-input"><option value="3">3</option><option value="5" selected>5</option><option value="10">10</option></select></div>';
-  h += '<button class="btn full green" onclick="bulkGenerateInvites()">Generate</button>';
-  h += '<div id="bulkResult"></div>';
-  h += '</div></div></div>';
-
-  // Feature Requests
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">Feature Requests</span></div>';
-  h += '<div id="adminFeatureRequests"><div class="loading"><div class="spinner"></div>Loading...</div></div>';
-  h += '</div>';
-
-  // Error Log
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">Error Log</span></div>';
-  h += '<div id="adminErrorLog"><div class="loading"><div class="spinner"></div>Loading...</div></div>';
-  h += '</div>';
-
-  // API Integration — commissioner only
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">API Integration</span></div>';
+  // Per-section body markup keyed by NAV.k. Loader containers keep their exact
+  // legacy IDs so the data-loading handlers below bind unchanged.
   var savedApiKey = localStorage.getItem("golfcourse_api_key") || "";
-  h += '<div class="card"><div class="card-body">';
-  h += '<div style="font-size:12px;font-weight:600;margin-bottom:4px">GolfCourseAPI.com</div>';
-  h += '<div style="font-size:10px;color:var(--muted);margin-bottom:8px">Powers the 30,000+ course search for all members. Key is stored in Firestore and loads for everyone automatically.</div>';
-  h += '<div style="display:flex;gap:6px"><input type="text" class="ff-input" id="gcapi-key" value="' + escHtml(savedApiKey) + '" placeholder="Paste API key..." style="flex:1;font-size:12px;-webkit-user-select:text;user-select:text" onkeydown="if(event.key===\'Enter\')saveGolfApiKey()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">';
-  h += '<button class="btn-sm outline" onclick="pasteApiKey()" style="font-size:9px;white-space:nowrap">Paste</button>';
-  h += '<button class="btn-sm green" onclick="saveGolfApiKey()" style="font-size:10px">Save</button></div>';
-  if (savedApiKey) h += '<div style="font-size:9px;color:var(--birdie);margin-top:4px"><svg viewBox="0 0 16 16" width="8" height="8" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7"/></svg> Active</div>';
-  h += '</div></div></div>';
+  var bodies = {
+    reports: '<div id="adminReports"><div class="adm-empty">Loading...</div></div>',
+    members: '<div id="adminMemberList"><div class="adm-empty">Loading...</div></div>',
+    invites: '<div id="adminInviteList"><div class="adm-empty">Loading...</div></div>',
+    generate:
+      '<div class="ff"><label class="ff-label" for="bulkCount">How many codes?</label>' +
+      '<select id="bulkCount" class="ff-input"><option value="3">3</option><option value="5" selected>5</option><option value="10">10</option></select></div>' +
+      '<button class="adm-btn adm-btn--brass adm-btn--full" onclick="bulkGenerateInvites()">Generate invites</button>' +
+      '<div id="bulkResult"></div>',
+    requests: '<div id="adminFeatureRequests"><div class="adm-empty">Loading...</div></div>',
+    errors: '<div id="adminErrorLog"><div class="adm-empty">Loading...</div></div>',
+    courses:
+      '<button class="adm-btn" onclick="loadAdminCourses()">Load course list</button>' +
+      '<div id="adminCourseList" style="margin-top:14px"></div>',
+    api:
+      '<div class="adm-panel" style="padding:16px">' +
+        '<div class="adm-row__title">GolfCourseAPI.com</div>' +
+        '<div class="adm-note" style="margin:6px 0 12px">Powers the 30,000+ course search for all members. Key is stored in Firestore and loads for everyone automatically.</div>' +
+        '<div style="display:flex;gap:6px;align-items:center">' +
+          '<input type="text" class="ff-input" id="gcapi-key" value="' + escHtml(savedApiKey) + '" placeholder="Paste API key" style="flex:1;-webkit-user-select:text;user-select:text" onkeydown="if(event.key===\'Enter\')saveGolfApiKey()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">' +
+          '<button class="adm-btn adm-btn--xs" onclick="pasteApiKey()">Paste</button>' +
+          '<button class="adm-btn adm-btn--brass adm-btn--xs" onclick="saveGolfApiKey()">Save</button>' +
+        '</div>' +
+        (savedApiKey ? '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cb-moss);margin-top:8px">Active key saved</div>' : '') +
+      '</div>',
+    diagnostic:
+      '<button class="adm-btn adm-btn--full" onclick="runFullDiagnostic()">Run full diagnostic</button>' +
+      '<div id="diagnosticResult" style="margin-top:12px"></div>',
+    recovery:
+      '<button class="adm-btn adm-btn--full" onclick="runDataRecoveryScan()">Scan for missing data</button>' +
+      '<div id="recoveryResult" style="margin-top:12px"></div>'
+  };
 
-  // Data Diagnostic — full Firestore audit (READ ONLY)
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--gold)">Data Diagnostic</span></div>';
-  h += '<div style="font-size:11px;color:var(--muted);margin-bottom:10px">Full read-only audit of every Firestore collection. Compares live data to expected state. Changes nothing.</div>';
-  h += '<button class="btn full" style="background:rgba(var(--gold-rgb),.1);border:1px solid rgba(var(--gold-rgb),.3);color:var(--gold);font-size:11px;margin-bottom:8px" onclick="runFullDiagnostic()">Run Full Diagnostic</button>';
-  h += '<div id="diagnosticResult"></div>';
-  h += '</div>';
+  var navHtml = NAV.map(function(s) {
+    return '<a class="adm-nav__link" data-sec="' + s.k + '" role="link" tabindex="0" onclick="adminScrollToSection(\'' + s.k + '\')" onkeydown="if(event.key===\'Enter\')adminScrollToSection(\'' + s.k + '\')">' + s.label + '</a>';
+  }).join('');
 
-  // Data Recovery — CRITICAL for league migration
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--gold)">Data Recovery</span></div>';
-  h += '<div style="font-size:11px;color:var(--muted);margin-bottom:10px">Scan for docs missing leagueId tags and fix them. Run diagnostic FIRST.</div>';
-  h += '<button class="btn full" style="background:rgba(var(--gold-rgb),.1);border:1px solid rgba(var(--gold-rgb),.3);color:var(--gold);font-size:11px;margin-bottom:8px" onclick="runDataRecoveryScan()">Scan for Missing Data</button>';
-  h += '<div id="recoveryResult"></div>';
-  h += '</div>';
+  var sectionsHtml = NAV.map(function(s) {
+    return '<section class="adm-section" id="adm-sec-' + s.k + '" data-sec="' + s.k + '">' +
+      '<div class="adm-section__head"><h2 class="adm-section__title">' + s.title + '</h2>' +
+      '<span class="adm-section__meta" id="adm-meta-' + s.k + '"></span></div>' +
+      (s.note ? '<div class="adm-note">' + s.note + '</div>' : '') +
+      bodies[s.k] +
+    '</section>';
+  }).join('');
 
-  // Course Management
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">Course Management</span></div>';
-  h += '<div style="font-size:11px;color:var(--muted);margin-bottom:10px">Remove duplicate or incorrectly added courses. API-imported courses are preferred.</div>';
-  h += '<button class="btn full outline" style="margin-bottom:10px" onclick="loadAdminCourses()">Load course list</button>';
-  h += '<div id="adminCourseList"></div>';
-  h += '</div>';
+  page.innerHTML =
+    '<div class="adm-wrap">' +
+      '<button class="adm-back" onclick="Router.go(\'settings\')">&larr; Settings</button>' +
+      '<header class="adm-mast"><div class="adm-eyebrow">' + eyebrow + '</div><h1 class="adm-headline">Admin.</h1></header>' +
+      '<div class="adm-grid">' +
+        '<nav class="adm-nav" aria-label="Admin sections">' + navHtml + '</nav>' +
+        '<div class="adm-main">' + sectionsHtml + '</div>' +
+      '</div>' +
+    '</div>';
 
-  document.querySelector('[data-page="admin"]').innerHTML = h;
+  // Scroll-spy — light the nav-rail entry whose section is crossing the
+  // masthead. Mirrors the Settings rail (rootMargin biases toward the top).
+  try {
+    var links = page.querySelectorAll(".adm-nav__link");
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(en) {
+        if (!en.isIntersecting) return;
+        var k = en.target.getAttribute("data-sec");
+        links.forEach(function(l) {
+          var on = l.getAttribute("data-sec") === k;
+          l.classList.toggle("adm-nav__link--active", on);
+          if (on) l.setAttribute("aria-current", "true"); else l.removeAttribute("aria-current");
+        });
+      });
+    }, { rootMargin: "-88px 0px -65% 0px" });
+    page.querySelectorAll(".adm-section").forEach(function(s) { obs.observe(s); });
+  } catch (e) {}
 
   loadAdminReports();
   loadAdminMemberList();
@@ -86,59 +123,49 @@ Router.register("admin", function() {
   loadAdminErrorLog();
 });
 
+function adminScrollToSection(key) {
+  var el = document.getElementById("adm-sec-" + key);
+  if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function admSetMeta(key, text) {
+  var el = document.getElementById("adm-meta-" + key);
+  if (el) el.textContent = text || "";
+}
+
 function loadAdminFeatureRequests() {
   var el = document.getElementById("adminFeatureRequests");
-  if (!el || !db) { if (el) el.innerHTML = '<div style="font-size:11px;color:var(--muted)">Requires Firebase</div>'; return; }
-  db.collection("feature_requests").orderBy("createdAt", "desc").limit(30).get().then(function(snap) {
-    if (snap.empty) {
-      el.innerHTML = '<div class="card"><div class="card-body" style="text-align:center"><div style="font-size:11px;color:var(--muted)">No requests yet</div></div></div>';
-      return;
-    }
-    var h = '';
-    snap.forEach(function(doc) {
+  if (!el) return;
+  if (!db) { el.innerHTML = '<div class="adm-empty">Requires Firebase</div>'; return; }
+  function pillFor(s) { return s === "done" ? "adm-pill--mute" : s === "declined" ? "adm-pill--bad" : s === "reviewing" ? "adm-pill--warn" : "adm-pill--ok"; }
+  function paint(docs) {
+    admSetMeta("requests", docs.length ? docs.length + (docs.length === 1 ? " request" : " requests") : "none yet");
+    if (!docs.length) { el.innerHTML = '<div class="adm-empty">No requests yet.</div>'; return; }
+    var h = '<div class="adm-panel">';
+    docs.forEach(function(doc) {
       var r = Object.assign({_id: doc.id}, doc.data());
       var ts = r.createdAt && r.createdAt.toDate ? r.createdAt.toDate() : null;
       var dateStr = ts ? (["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][ts.getMonth()] + " " + ts.getDate()) : "";
-      var statusColors = {new:"var(--birdie)", reviewing:"var(--gold)", done:"var(--muted)", declined:"var(--red)"};
-      var statusColor = statusColors[r.status] || "var(--muted)";
-      h += '<div class="card"><div class="card-body">';
-      h += '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">';
-      h += '<div style="flex:1">';
-      h += '<div style="font-size:12px;font-weight:600;color:var(--cream);line-height:1.4">' + escHtml(r.request || "") + '</div>';
-      h += '<div style="font-size:10px;color:var(--muted);margin-top:4px">' + escHtml(r.fromName || "Member") + (dateStr ? ' · ' + dateStr : '') + '</div>';
-      h += '</div>';
-      h += '<span style="font-size:8px;font-weight:700;color:' + statusColor + ';background:' + statusColor + '18;padding:2px 7px;border-radius:4px;letter-spacing:.5px;white-space:nowrap;flex-shrink:0">' + (r.status || "new").toUpperCase() + '</span>';
-      h += '</div>';
-      h += '<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">';
-      h += '<button class="btn-sm outline" style="font-size:9px" onclick="setFeatureRequestStatus(\'' + r._id + '\',\'reviewing\')">Mark reviewing</button>';
-      h += '<button class="btn-sm outline" style="font-size:9px;color:var(--birdie);border-color:var(--birdie)" onclick="setFeatureRequestStatus(\'' + r._id + '\',\'done\')">Mark done</button>';
-      h += '<button class="btn-sm outline" style="font-size:9px;color:var(--muted2)" onclick="setFeatureRequestStatus(\'' + r._id + '\',\'declined\')">Decline</button>';
-      h += '</div>';
-      h += '</div></div>';
+      h += '<div class="adm-row"><div class="adm-row__main">';
+      h += '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px"><span class="adm-row__title">' + escHtml(r.request || "") + '</span><span class="adm-pill ' + pillFor(r.status) + '">' + (r.status || "new") + '</span></div>';
+      h += '<div class="adm-row__sub">' + escHtml(r.fromName || "Member") + (dateStr ? ' &middot; ' + dateStr : '') + '</div>';
+      h += '<div class="adm-row__actions" style="margin-top:8px">';
+      h += '<button class="adm-btn adm-btn--xs" onclick="setFeatureRequestStatus(\'' + r._id + '\',\'reviewing\')">Reviewing</button>';
+      h += '<button class="adm-btn adm-btn--xs" onclick="setFeatureRequestStatus(\'' + r._id + '\',\'done\')">Done</button>';
+      h += '<button class="adm-btn adm-btn--xs" onclick="setFeatureRequestStatus(\'' + r._id + '\',\'declined\')">Decline</button>';
+      h += '</div></div></div>';
     });
+    h += '</div>';
     el.innerHTML = h;
-  }).catch(function(e) {
-    // orderBy might fail without an index — fall back to unordered
+  }
+  db.collection("feature_requests").orderBy("createdAt", "desc").limit(30).get().then(function(snap) {
+    var docs = []; snap.forEach(function(d) { docs.push(d); });
+    paint(docs);
+  }).catch(function() {
+    // orderBy may fail without an index — fall back to unordered.
     db.collection("feature_requests").limit(30).get().then(function(snap2) {
-      if (snap2.empty) { el.innerHTML = '<div class="card"><div class="card-body" style="text-align:center"><div style="font-size:11px;color:var(--muted)">No requests yet</div></div></div>'; return; }
-      var h = '';
-      snap2.forEach(function(doc) {
-        var r = Object.assign({_id: doc.id}, doc.data());
-        var statusColors = {new:"var(--birdie)", reviewing:"var(--gold)", done:"var(--muted)", declined:"var(--red)"};
-        var statusColor = statusColors[r.status] || "var(--muted)";
-        h += '<div class="card"><div class="card-body">';
-        h += '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">';
-        h += '<div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(r.request || "") + '</div>';
-        h += '<div style="font-size:10px;color:var(--muted);margin-top:4px">' + escHtml(r.fromName || "Member") + '</div></div>';
-        h += '<span style="font-size:8px;font-weight:700;color:' + statusColor + ';background:' + statusColor + '18;padding:2px 7px;border-radius:4px;letter-spacing:.5px;white-space:nowrap;flex-shrink:0">' + (r.status || "new").toUpperCase() + '</span>';
-        h += '</div>';
-        h += '<div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">';
-        h += '<button class="btn-sm outline" style="font-size:9px" onclick="setFeatureRequestStatus(\'' + r._id + '\',\'reviewing\')">Mark reviewing</button>';
-        h += '<button class="btn-sm outline" style="font-size:9px;color:var(--birdie);border-color:var(--birdie)" onclick="setFeatureRequestStatus(\'' + r._id + '\',\'done\')">Mark done</button>';
-        h += '<button class="btn-sm outline" style="font-size:9px;color:var(--muted2)" onclick="setFeatureRequestStatus(\'' + r._id + '\',\'declined\')">Decline</button>';
-        h += '</div></div></div>';
-      });
-      el.innerHTML = h;
+      var docs = []; snap2.forEach(function(d) { docs.push(d); });
+      paint(docs);
     }).catch(function() { el.innerHTML = renderLoadError("feature requests", "loadAdminFeatureRequests()"); });
   });
 }
@@ -153,31 +180,34 @@ function setFeatureRequestStatus(id, status) {
 
 function loadAdminErrorLog() {
   var el = document.getElementById("adminErrorLog");
-  if (!el || !db) { if (el) el.innerHTML = '<div style="font-size:11px;color:var(--muted)">Requires Firebase</div>'; return; }
+  if (!el) return;
+  if (!db) { el.innerHTML = '<div class="adm-empty">Requires Firebase</div>'; return; }
   db.collection("errors").orderBy("timestamp", "desc").limit(20).get().then(function(snap) {
+    var unresolved = 0;
+    var rows = [];
+    snap.forEach(function(doc) { rows.push(doc); if (!doc.data().resolved) unresolved++; });
+    admSetMeta("errors", snap.empty ? "none logged" : unresolved + " unresolved");
     if (snap.empty) {
-      el.innerHTML = '<div class="card"><div class="card-body" style="text-align:center"><div style="font-size:11px;color:var(--birdie)">No errors logged</div></div></div>';
+      el.innerHTML = '<div class="adm-empty" style="color:var(--cb-moss)">No errors logged.</div>';
       return;
     }
-    var h = '';
-    snap.forEach(function(doc) {
+    var h = '<div class="adm-panel">';
+    rows.forEach(function(doc) {
       var e = doc.data();
       var isResolved = e.resolved;
       var timeStr = e.timestamp ? new Date(e.timestamp).toLocaleString() : "Unknown";
       var shortMsg = (e.message || "").substring(0, 80);
       var shortStack = (e.stack || "").substring(0, 120);
-      h += '<div class="card" style="margin-bottom:4px;opacity:' + (isResolved ? '.5' : '1') + '"><div class="card-body" style="padding:8px 12px">';
-      h += '<div style="display:flex;justify-content:space-between;align-items:flex-start">';
-      h += '<div style="flex:1;min-width:0"><div style="font-size:11px;font-weight:600;color:var(--red);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(shortMsg) + '</div>';
-      h += '<div style="font-size:9px;color:var(--muted);margin-top:2px">' + escHtml(timeStr) + ' · ' + escHtml(e.page || "?") + ' · ' + escHtml(e.userName || e.userId || "anon") + '</div>';
-      if (shortStack) h += '<div style="font-size:8px;color:var(--muted2);margin-top:2px;font-family:monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(shortStack) + '</div>';
-      h += '</div>';
-      if (!isResolved) {
-        h += '<button class="btn-sm outline" style="font-size:8px;padding:2px 6px;flex-shrink:0;margin-left:6px" onclick="resolveError(\'' + doc.id + '\')">Resolve</button>';
-      }
-      h += '</div></div></div>';
+      h += '<div class="adm-row" style="opacity:' + (isResolved ? '.5' : '1') + '"><div class="adm-row__main">';
+      h += '<div class="adm-row__title" style="color:var(--cb-claret);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(shortMsg) + '</div>';
+      h += '<div class="adm-row__sub">' + escHtml(timeStr) + ' &middot; ' + escHtml(e.page || "?") + ' &middot; ' + escHtml(e.userName || e.userId || "anon") + '</div>';
+      if (shortStack) h += '<div class="adm-row__sub" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(shortStack) + '</div>';
+      h += '</div><div class="adm-row__actions">';
+      if (!isResolved) h += '<button class="adm-btn adm-btn--xs" onclick="resolveError(\'' + doc.id + '\')">Resolve</button>';
+      h += '</div></div>';
     });
-    h += '<div style="padding:8px;text-align:center"><button class="btn-sm outline" style="font-size:9px" onclick="clearResolvedErrors()">Clear resolved</button></div>';
+    h += '</div>';
+    h += '<button class="adm-btn adm-btn--xs" style="margin-top:10px" onclick="clearResolvedErrors()">Clear resolved</button>';
     el.innerHTML = h;
   }).catch(function() { el.innerHTML = renderLoadError("the error log", "loadAdminErrorLog()"); });
 }
@@ -200,44 +230,50 @@ function clearResolvedErrors() {
 }
 
 function loadAdminReports() {
-  if (!db) { document.getElementById("adminReports").innerHTML = '<div style="font-size:11px;color:var(--muted)">Requires Firebase</div>'; return; }
+  var el = document.getElementById("adminReports");
+  if (!el) return;
+  if (!db) { el.innerHTML = '<div class="adm-empty">Requires Firebase</div>'; return; }
   db.collection("reports").where("resolved","==",false).get().then(function(snap) {
     var reports = []; snap.forEach(function(doc) { reports.push(Object.assign({_id:doc.id}, doc.data())); });
     reports.sort(function(a,b) { return (b.createdAt||0) - (a.createdAt||0); });
     reports = reports.slice(0, 20);
-    var h = '';
+    admSetMeta("reports", reports.length ? reports.length + " pending" : "none pending");
     if (!reports.length) {
-      h = '<div class="card"><div class="card-body" style="text-align:center"><div style="font-size:11px;color:var(--muted)">No pending reports</div></div></div>';
+      el.innerHTML = '<div class="adm-empty">No pending reports.</div>';
+      return;
     }
+    var h = '<div class="adm-panel">';
     reports.forEach(function(r) {
       var reporter = PB.getPlayer(r.reportedBy);
       var reported = PB.getPlayer(r.reportedUser);
-      h += '<div class="card"><div class="card-body">';
-      h += '<div style="display:flex;justify-content:space-between;align-items:flex-start">';
-      h += '<div><div style="font-size:12px;font-weight:600;color:var(--red)">' + escHtml(r.reason || "Report") + '</div>';
-      h += '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + escHtml(reported ? reported.name : r.reportedUser) + ' reported by ' + escHtml(reporter ? reporter.name : r.reportedBy) + '</div>';
-      if (r.details) h += '<div style="font-size:11px;color:var(--cream);margin-top:4px;font-style:italic">"' + escHtml(r.details) + '"</div>';
+      h += '<div class="adm-row"><div class="adm-row__main">';
+      h += '<div class="adm-row__title" style="color:var(--cb-claret)">' + escHtml(r.reason || "Report") + '</div>';
+      h += '<div class="adm-row__sub">' + escHtml(reported ? reported.name : r.reportedUser) + ' &middot; reported by ' + escHtml(reporter ? reporter.name : r.reportedBy) + '</div>';
+      if (r.details) h += '<div style="font-family:var(--font-display);font-size:13px;font-style:italic;color:var(--cb-ink-soft);margin-top:6px">"' + escHtml(r.details) + '"</div>';
+      h += '</div><div class="adm-row__actions">';
+      h += '<button class="adm-btn adm-btn--claret adm-btn--xs" onclick="suspendMember(\'' + r.reportedUser + '\',7)">Suspend 7d</button>';
+      h += '<button class="adm-btn adm-btn--claret adm-btn--xs" onclick="removeMemberAdmin(\'' + r.reportedUser + '\')">Remove</button>';
+      h += '<button class="adm-btn adm-btn--xs" onclick="resolveReport(\'' + r._id + '\')">Dismiss</button>';
       h += '</div></div>';
-      h += '<div style="display:flex;gap:6px;margin-top:8px">';
-      h += '<button class="btn-sm" style="background:rgba(var(--red-rgb),.1);color:var(--red);border:1px solid rgba(var(--red-rgb),.2)" onclick="suspendMember(\'' + r.reportedUser + '\',7)">Suspend 7d</button>';
-      h += '<button class="btn-sm" style="background:rgba(var(--red-rgb),.15);color:var(--red);border:1px solid rgba(var(--red-rgb),.3)" onclick="removeMemberAdmin(\'' + r.reportedUser + '\')">Remove</button>';
-      h += '<button class="btn-sm outline" onclick="resolveReport(\'' + r._id + '\')">Dismiss</button>';
-      h += '</div></div></div>';
     });
-    document.getElementById("adminReports").innerHTML = h;
+    h += '</div>';
+    el.innerHTML = h;
   }).catch(function() {
-    document.getElementById("adminReports").innerHTML = renderLoadError("reports", "loadAdminReports()");
+    el.innerHTML = renderLoadError("reports", "loadAdminReports()");
   });
 }
 
 function loadAdminMemberList() {
-  if (!db) return;
+  var el = document.getElementById("adminMemberList");
+  if (!el) return;
+  if (!db) { el.innerHTML = '<div class="adm-empty">Requires Firebase</div>'; return; }
   db.collection("members").get().then(function(snap) {
     var members = []; snap.forEach(function(doc) { members.push(doc.data()); });
     var localPlayers = PB.getPlayers();
     var allMembers = members.length ? members : localPlayers;
+    admSetMeta("members", allMembers.length + (allMembers.length === 1 ? " member" : " members"));
 
-    var h = '';
+    var h = '<div class="adm-panel">';
     allMembers.forEach(function(m) {
       var used = m.invitesUsed || 0;
       var max = m.maxInvites || 3;
@@ -247,57 +283,47 @@ function loadAdminMemberList() {
       var isSuspended = pRole === "suspended";
       var isRemoved = pRole === "banned";
 
-      var statusColor = isSuspended ? "var(--red)" : isRemoved ? "var(--muted2)" : isComm ? "var(--gold)" : "var(--birdie)";
-      var statusText = isSuspended ? "SUSPENDED" : isRemoved ? "BANNED" : isComm ? "FOUNDER" : "ACTIVE";
+      var pillClass = isSuspended ? "adm-pill--bad" : isRemoved ? "adm-pill--mute" : isComm ? "adm-pill--warn" : "adm-pill--ok";
+      var statusText = isSuspended ? "Suspended" : isRemoved ? "Banned" : isComm ? "Founder" : "Active";
 
-      h += '<div class="card"><div class="card-body">';
-      // Top row — name and status
-      h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
-      h += '<div style="font-size:13px;font-weight:600">' + escHtml(m.name || m.username || m.id) + '</div>';
-      h += '<span style="font-size:8px;font-weight:700;color:' + statusColor + ';background:' + statusColor + '15;padding:3px 8px;border-radius:4px;letter-spacing:.5px">' + statusText + '</span>';
-      h += '</div>';
+      h += '<div class="adm-row"><div class="adm-row__main">';
+      h += '<div style="display:flex;align-items:center;gap:8px"><span class="adm-row__title">' + escHtml(m.name || m.username || m.id) + '</span><span class="adm-pill ' + pillClass + '">' + statusText + '</span></div>';
 
-      // Invite controls (not for commissioner or removed)
       if (!isComm && !isRemoved) {
-        h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
-        h += '<div style="font-size:10px;color:var(--muted)">Invites: ' + used + ' used</div>';
-        h += '<div style="display:flex;align-items:center;gap:6px">';
-        h += '<button class="btn-sm outline" onclick="adjustInvites(\'' + m.id + '\',' + max + ',-1)" style="width:26px;padding:5px;font-size:12px">−</button>';
-        h += '<span style="font-size:13px;font-weight:700;color:var(--gold);min-width:20px;text-align:center">' + max + '</span>';
-        h += '<button class="btn-sm outline" onclick="adjustInvites(\'' + m.id + '\',' + max + ',1)" style="width:26px;padding:5px;font-size:12px">+</button>';
-        h += '</div></div>';
+        h += '<div class="adm-row__sub" style="margin-top:6px">' + used + ' invites used</div>';
       }
-
-      // Suspension info
       if (isSuspended && m.suspendedUntil) {
         var until = m.suspendedUntil.toDate ? m.suspendedUntil.toDate() : new Date(m.suspendedUntil);
-        h += '<div style="font-size:10px;color:var(--red);margin-bottom:8px">Suspended until ' + (until.getMonth()+1) + '/' + until.getDate() + '/' + until.getFullYear();
-        if (m.suspendedReason) h += ': ' + escHtml(m.suspendedReason);
-        h += '</div>';
+        h += '<div class="adm-row__sub" style="color:var(--cb-claret)">Suspended until ' + (until.getMonth()+1) + '/' + until.getDate() + '/' + until.getFullYear() + (m.suspendedReason ? ' &middot; ' + escHtml(m.suspendedReason) : '') + '</div>';
+      }
+      h += '</div><div class="adm-row__actions">';
+
+      // Invite quota stepper (not for founder or removed)
+      if (!isComm && !isRemoved) {
+        h += '<div class="adm-step"><button class="adm-step__btn" onclick="adjustInvites(\'' + m.id + '\',' + max + ',-1)">&minus;</button><span class="adm-step__val">' + max + '</span><button class="adm-step__btn" onclick="adjustInvites(\'' + m.id + '\',' + max + ',1)">+</button></div>';
       }
 
-      // Moderation buttons (not for self or other commissioners)
+      // Moderation (not for self or other founders)
       if (!isComm && m.id !== (currentUser ? currentUser.uid : "")) {
-        h += '<div style="display:flex;gap:6px;flex-wrap:wrap">';
         if (isSuspended) {
-          h += '<button class="btn-sm green" style="font-size:9px" onclick="unsuspendMember(\'' + m.id + '\')">Unsuspend</button>';
+          h += '<button class="adm-btn adm-btn--xs" onclick="unsuspendMember(\'' + m.id + '\')">Unsuspend</button>';
         } else if (!isRemoved) {
-          h += '<button class="btn-sm outline" style="font-size:9px" onclick="promptSuspend(\'' + m.id + '\',\'' + escHtml(m.name||m.id) + '\')">Suspend</button>';
+          h += '<button class="adm-btn adm-btn--xs" onclick="promptSuspend(\'' + m.id + '\',\'' + escHtml(m.name||m.id) + '\')">Suspend</button>';
         }
         if (!isRemoved) {
-          h += '<button class="btn-sm" style="font-size:9px;background:rgba(var(--red-rgb),.08);color:var(--red);border:1px solid rgba(var(--red-rgb),.15)" onclick="removeMemberAdmin(\'' + m.id + '\')">Remove</button>';
+          h += '<button class="adm-btn adm-btn--claret adm-btn--xs" onclick="removeMemberAdmin(\'' + m.id + '\')">Remove</button>';
         } else {
-          h += '<button class="btn-sm green" style="font-size:9px" onclick="reinstateMember(\'' + m.id + '\')">Reinstate</button>';
+          h += '<button class="adm-btn adm-btn--xs" onclick="reinstateMember(\'' + m.id + '\')">Reinstate</button>';
         }
-        h += '</div>';
       }
 
       h += '</div></div>';
     });
+    h += '</div>';
 
-    document.getElementById("adminMemberList").innerHTML = h || '<div style="font-size:11px;color:var(--muted)">No members</div>';
+    el.innerHTML = allMembers.length ? h : '<div class="adm-empty">No members.</div>';
   }).catch(function() {
-    document.getElementById("adminMemberList").innerHTML = renderLoadError("the member list", "loadAdminMemberList()");
+    el.innerHTML = renderLoadError("the member list", "loadAdminMemberList()");
   });
 }
 
@@ -488,38 +514,40 @@ function reportMember(memberId) {
 }
 
 function loadAdminInviteList() {
-  if (!db) return;
+  var el = document.getElementById("adminInviteList");
+  if (!el) return;
+  if (!db) { el.innerHTML = '<div class="adm-empty">Requires Firebase</div>'; return; }
   leagueQuery("invites").orderBy("createdAt", "desc").limit(50).get().then(function(snap) {
     var invites = []; snap.forEach(function(doc) { invites.push(doc.data()); });
+    admSetMeta("invites", invites.length ? invites.length + (invites.length === 1 ? " code" : " codes") : "none yet");
+    if (!invites.length) { el.innerHTML = '<div class="adm-empty">No invites generated yet.</div>'; return; }
 
-    var h = '';
-    if (!invites.length) { h = '<div style="font-size:11px;color:var(--muted)">No invites generated yet</div>'; }
+    var h = '<div class="adm-panel">';
     invites.forEach(function(inv) {
       var expired = isInviteExpired(inv);
-      var statusColor = inv.status === "active" && !expired ? "var(--birdie)" : inv.status === "used" ? "var(--gold)" : "var(--red)";
-      var statusText = expired && inv.status === "active" ? "EXPIRED" : (inv.status || "active").toUpperCase();
+      var pillClass = inv.status === "active" && !expired ? "adm-pill--ok" : inv.status === "used" ? "adm-pill--warn" : "adm-pill--bad";
+      var raw = inv.status || "active";
+      var statusText = expired && inv.status === "active" ? "Expired" : raw.charAt(0).toUpperCase() + raw.slice(1);
 
-      h += '<div class="card"><div class="card-body">';
-      h += '<div style="display:flex;justify-content:space-between;align-items:center">';
-      h += '<span style="font-family:monospace;font-size:12px;font-weight:700;color:var(--gold);letter-spacing:1px">' + inv.code + '</span>';
-      h += '<span style="font-size:9px;font-weight:600;color:' + statusColor + '">' + statusText + '</span>';
-      h += '</div>';
-      h += '<div style="font-size:10px;color:var(--muted);margin-top:4px">By ' + escHtml(inv.createdByName || "Unknown");
-      if (inv.usedBy) h += ' · Used';
+      h += '<div class="adm-row"><div class="adm-row__main">';
+      h += '<div style="display:flex;align-items:center;gap:10px"><span class="adm-code">' + escHtml(inv.code) + '</span><span class="adm-pill ' + pillClass + '">' + statusText + '</span></div>';
+      var sub = 'By ' + escHtml(inv.createdByName || "Unknown");
+      if (inv.usedBy) sub += ' &middot; used';
       if (inv.expiresAt) {
         var exp = inv.expiresAt.toDate ? inv.expiresAt.toDate() : new Date(inv.expiresAt);
-        h += ' · Exp ' + (exp.getMonth()+1) + '/' + exp.getDate();
+        sub += ' &middot; exp ' + (exp.getMonth()+1) + '/' + exp.getDate();
       }
-      h += '</div>';
-      // Revoke button for active invites
+      h += '<div class="adm-row__sub">' + sub + '</div>';
+      h += '</div><div class="adm-row__actions">';
       if (inv.status === "active" && !expired) {
-        h += '<button class="btn-sm outline" style="margin-top:6px;font-size:9px;padding:4px 10px" onclick="revokeInviteAdmin(\'' + inv.code + '\')">Revoke</button>';
+        h += '<button class="adm-btn adm-btn--xs" onclick="revokeInviteAdmin(\'' + inv.code + '\')">Revoke</button>';
       }
       h += '</div></div>';
     });
+    h += '</div>';
 
-    document.getElementById("adminInviteList").innerHTML = h;
-  });
+    el.innerHTML = h;
+  }).catch(function() { el.innerHTML = renderLoadError("invites", "loadAdminInviteList()"); });
 }
 
 function revokeInviteAdmin(code) {
@@ -534,9 +562,9 @@ function revokeInviteAdmin(code) {
 function loadAdminCourses() {
   var el = document.getElementById("adminCourseList");
   if (!el) return;
-  el.innerHTML = '<div class="loading"><div class="spinner"></div>Loading courses...</div>';
+  el.innerHTML = '<div class="adm-empty">Loading courses...</div>';
 
-  if (!db) { el.innerHTML = '<div style="font-size:11px;color:var(--muted)">Requires Firebase</div>'; return; }
+  if (!db) { el.innerHTML = '<div class="adm-empty">Requires Firebase</div>'; return; }
 
   db.collection("courses").get().then(function(snap) {
     var courses = [];
@@ -548,41 +576,41 @@ function loadAdminCourses() {
     // Flag duplicates — same name (case-insensitive)
     var nameCounts = {};
     courses.forEach(function(c) { var n=(c.name||"").toLowerCase(); nameCounts[n]=(nameCounts[n]||0)+1; });
-
-    var h = '<div style="font-size:11px;color:var(--muted);margin-bottom:8px">' + courses.length + ' courses in Firestore</div>';
+    admSetMeta("courses", courses.length + (courses.length === 1 ? " course" : " courses"));
 
     var dupCount = courses.filter(function(c){ return nameCounts[(c.name||"").toLowerCase()]>1; }).length;
+    var h = '';
     if (dupCount > 0) {
-      h += '<div style="padding:8px 12px;background:rgba(var(--red-rgb),.1);border:1px solid rgba(var(--red-rgb),.2);border-radius:6px;font-size:11px;color:var(--red);margin-bottom:10px">';
-      h += dupCount + ' duplicate name' + (dupCount>1?'s':'') + ' detected: keep the API-imported version, remove the rest.';
+      h += '<div class="adm-note" style="color:var(--cb-claret);background:rgba(var(--cb-claret-rgb),.07);border:1px solid rgba(var(--cb-claret-rgb),.25);border-radius:var(--radius-md);padding:10px 12px">';
+      h += dupCount + ' duplicate name' + (dupCount>1?'s':'') + ' detected. Keep the API-imported version, remove the rest.';
       h += '</div>';
     }
 
+    h += '<div class="adm-panel">';
     courses.forEach(function(c) {
       var isDup = nameCounts[(c.name||"").toLowerCase()] > 1;
       var isApi = c.source === "golfcourseapi";
       var isQuick = c.quickAdd;
       var hasHoles = c.holes && c.holes.length === 18;
-      var tagColor = isApi ? 'var(--birdie)' : isQuick ? 'var(--red)' : 'var(--muted)';
+      var tagColor = isApi ? 'var(--cb-moss)' : isQuick ? 'var(--cb-claret)' : 'var(--cb-mute)';
       var tagLabel = isApi ? 'API' : isQuick ? 'Manual' : 'Unknown';
 
-      h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-bottom:1px solid var(--border2);' + (isDup ? 'background:rgba(var(--red-rgb),.05)' : '') + '">';
-      h += '<div style="min-width:0;flex:1">';
-      h += '<div style="font-size:12px;font-weight:600;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(c.name||"Unknown") + (isDup ? ' <span style="font-size:9px;color:var(--red);font-weight:700">DUP</span>' : '') + '</div>';
-      h += '<div style="font-size:9px;color:var(--muted);margin-top:2px">';
-      h += '<span style="color:' + tagColor + ';font-weight:600">' + tagLabel + '</span>';
-      h += (c.loc ? ' · ' + escHtml(c.loc) : '');
-      h += (c.rating ? ' · ' + c.rating + '/' + (c.slope||'—') : '');
-      h += (hasHoles ? ' · Scorecard' : ' · No scorecard');
+      h += '<div class="adm-row"><div class="adm-row__main">';
+      h += '<div class="adm-row__title" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(c.name||"Unknown") + (isDup ? ' <span style="font-family:var(--font-mono);font-size:9px;color:var(--cb-claret);font-weight:700">DUP</span>' : '') + '</div>';
+      h += '<div class="adm-row__sub"><span style="color:' + tagColor + ';font-weight:700">' + tagLabel + '</span>';
+      h += (c.loc ? ' &middot; ' + escHtml(c.loc) : '');
+      h += (c.rating ? ' &middot; ' + c.rating + '/' + (c.slope||'—') : '');
+      h += (hasHoles ? ' &middot; scorecard' : ' &middot; no scorecard');
       h += '</div></div>';
-      h += '<button onclick="adminDeleteCourse(\'' + c._fsId + '\',\'' + (c.name||'').replace(/'/g,"\\'") + '\')" style="flex-shrink:0;margin-left:8px;padding:4px 10px;font-size:10px;border-radius:4px;border:1px solid rgba(var(--red-rgb),.4);background:rgba(var(--red-rgb),.1);color:var(--red);cursor:pointer">Remove</button>';
+      h += '<div class="adm-row__actions"><button class="adm-btn adm-btn--claret adm-btn--xs" onclick="adminDeleteCourse(\'' + c._fsId + '\',\'' + (c.name||'').replace(/'/g,"\\'") + '\')">Remove</button></div>';
       h += '</div>';
     });
+    h += '</div>';
 
-    el.innerHTML = h || '<div style="font-size:11px;color:var(--muted)">No courses found</div>';
+    el.innerHTML = courses.length ? h : '<div class="adm-empty">No courses found.</div>';
   }).catch(function(err) {
     var el2 = document.getElementById("adminCourseList");
-    if (el2) el2.innerHTML = '<div style="font-size:11px;color:var(--red)">Error: ' + escHtml(err.message) + '</div>';
+    if (el2) el2.innerHTML = '<div class="adm-empty" style="color:var(--cb-claret)">Error: ' + escHtml(err.message) + '</div>';
   });
 }
 
@@ -616,14 +644,13 @@ function bulkGenerateInvites() {
   }
 
   batch.commit().then(function() {
-    var h = '<div style="margin-top:12px">';
+    var h = '<div class="adm-panel" style="margin-top:12px">';
     codes.forEach(function(c) {
-      h += '<div class="invite-code" style="margin-bottom:6px;padding:10px"><div class="code" style="font-size:14px">' + c + '</div></div>';
+      h += '<div class="adm-row"><span class="adm-code">' + c + '</span></div>';
     });
-    h += '<div style="font-size:10px;color:var(--muted);text-align:center;margin-top:6px">All expire in ' + INVITE_EXPIRY_DAYS + ' days</div>';
-    h += '</div>';
+    h += '</div><div class="adm-row__sub" style="text-align:center;margin-top:8px">All expire in ' + INVITE_EXPIRY_DAYS + ' days</div>';
     document.getElementById("bulkResult").innerHTML = h;
-    Router.toast(count + " invites generated!");
+    Router.toast(count + " invites generated");
     loadAdminInviteList();
   }).catch(function() { Router.toast("Failed to generate"); });
 }

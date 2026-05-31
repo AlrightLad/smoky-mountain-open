@@ -158,15 +158,15 @@ function runFullDiagnostic() {
     report.sort(function(a,b){ return a.order - b.order; });
     var fullText = report.map(function(r){ return r.text; }).join("\n\n");
 
-    var h = '<div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:10px">Full Diagnostic (READ ONLY)</div>';
-    h += '<pre style="font-size:9px;line-height:1.5;color:var(--cream);background:var(--bg2);padding:12px;border-radius:8px;overflow-x:auto;white-space:pre-wrap;max-height:600px;overflow-y:auto;border:1px solid var(--border)">' + escHtml(fullText) + '</pre>';
-    h += '<button class="btn full outline" style="margin-top:8px;font-size:10px" onclick="copyDiagnosticText()">Copy to clipboard</button>';
+    var h = '<div class="adm-note" style="margin-bottom:10px">Read-only snapshot. Nothing is written.</div>';
+    h += '<pre class="adm-pre">' + escHtml(fullText) + '</pre>';
+    h += '<button class="adm-btn adm-btn--full" style="margin-top:10px" onclick="copyDiagnosticText()">Copy to clipboard</button>';
     el.innerHTML = h;
 
     // Store for clipboard
     window._diagnosticText = fullText;
   }).catch(function(e) {
-    el.innerHTML = '<div style="color:var(--red);font-size:11px">Diagnostic error: ' + escHtml(e.message) + '</div>';
+    el.innerHTML = '<div class="adm-empty" style="color:var(--cb-claret)">Diagnostic error: ' + escHtml(e.message) + '</div>';
   });
 }
 
@@ -247,40 +247,38 @@ function runDataRecoveryScan() {
   promises.push(leagueDocPromise);
 
   Promise.all(promises).then(function() {
-    var h = '<div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:10px">Scan Complete</div>';
-    h += '<div style="font-size:11px;color:var(--cream);margin-bottom:6px">Total docs scanned: <b>' + totalDocs + '</b> · Missing leagueId: <b style="color:var(--red)">' + totalMissing + '</b></div>';
+    var h = '<div class="adm-note" style="margin-bottom:12px">Total docs scanned: <b style="color:var(--cb-ink)">' + totalDocs + '</b> &middot; missing leagueId: <b style="color:' + (totalMissing > 0 ? 'var(--cb-claret)' : 'var(--cb-moss)') + '">' + totalMissing + '</b></div>';
 
     // League doc status
     if (report["_leagueDoc"]) {
       var ld = report["_leagueDoc"];
-      h += '<div style="font-size:11px;margin-bottom:6px;color:' + (ld.exists ? 'var(--birdie)' : 'var(--red)') + '">Founding league doc: ' + (ld.exists ? 'EXISTS' : 'MISSING') + '</div>';
+      h += '<div style="font-family:var(--font-mono);font-size:10.5px;letter-spacing:.3px;margin-bottom:6px;color:' + (ld.exists ? 'var(--cb-moss)' : 'var(--cb-claret)') + '">Founding league doc: ' + (ld.exists ? 'EXISTS' : 'MISSING') + '</div>';
     }
 
     // Members status
     if (report["_members"]) {
       var mm = report["_members"];
-      h += '<div style="font-size:11px;margin-bottom:10px;color:' + (mm.missing > 0 ? 'var(--red)' : 'var(--birdie)') + '">Members without leagues[]: ' + mm.missing + ' / ' + mm.total + '</div>';
+      h += '<div style="font-family:var(--font-mono);font-size:10.5px;letter-spacing:.3px;margin-bottom:12px;color:' + (mm.missing > 0 ? 'var(--cb-claret)' : 'var(--cb-moss)') + '">Members without leagues[]: ' + mm.missing + ' / ' + mm.total + '</div>';
     }
 
-    h += '<table style="width:100%;font-size:10px;border-collapse:collapse">';
-    h += '<tr style="border-bottom:1px solid var(--border);color:var(--muted)"><th style="text-align:left;padding:4px">Collection</th><th>Total</th><th>Missing</th><th>Wrong</th><th>OK</th></tr>';
+    h += '<table class="adm-table">';
+    h += '<thead><tr><th>Collection</th><th>Total</th><th>Missing</th><th>Wrong</th><th>OK</th></tr></thead><tbody>';
     _recoveryCollections.forEach(function(col) {
       var r = report[col] || {};
-      var rowColor = r.missing > 0 ? "var(--red)" : r.error ? "var(--muted2)" : "var(--birdie)";
-      h += '<tr style="border-bottom:1px solid var(--border2)">';
-      h += '<td style="padding:4px;color:var(--cream)">' + col + '</td>';
-      h += '<td style="text-align:center;padding:4px">' + (r.total || 0) + '</td>';
-      h += '<td style="text-align:center;padding:4px;color:' + (r.missing > 0 ? 'var(--red);font-weight:700' : 'var(--birdie)') + '">' + (r.missing || 0) + '</td>';
-      h += '<td style="text-align:center;padding:4px;color:' + (r.wrongId > 0 ? 'var(--gold)' : 'var(--muted)') + '">' + (r.wrongId || 0) + '</td>';
-      h += '<td style="text-align:center;padding:4px;color:var(--birdie)">' + (r.correct || 0) + '</td>';
+      h += '<tr>';
+      h += '<td>' + col + '</td>';
+      h += '<td>' + (r.total || 0) + '</td>';
+      h += '<td style="color:' + (r.missing > 0 ? 'var(--cb-claret);font-weight:700' : 'var(--cb-moss)') + '">' + (r.missing || 0) + '</td>';
+      h += '<td style="color:' + (r.wrongId > 0 ? 'var(--cb-brass-deep)' : 'var(--cb-mute)') + '">' + (r.wrongId || 0) + '</td>';
+      h += '<td style="color:var(--cb-moss)">' + (r.correct || 0) + '</td>';
       h += '</tr>';
     });
-    h += '</table>';
+    h += '</tbody></table>';
 
     if (totalMissing > 0 || (report["_members"] && report["_members"].missing > 0) || (report["_leagueDoc"] && !report["_leagueDoc"].exists)) {
-      h += '<button class="btn full green" style="margin-top:12px" onclick="runDataRecoveryFix()">Fix All (' + totalMissing + ' docs + members + league doc)</button>';
+      h += '<button class="adm-btn adm-btn--brass adm-btn--full" style="margin-top:14px" onclick="runDataRecoveryFix()">Fix all (' + totalMissing + ' docs + members + league doc)</button>';
     } else {
-      h += '<div style="margin-top:10px;font-size:11px;color:var(--birdie);text-align:center;font-weight:600">All data properly tagged. No recovery needed.</div>';
+      h += '<div class="adm-note" style="margin-top:12px;text-align:center;color:var(--cb-moss)">All data properly tagged. No recovery needed.</div>';
     }
 
     el.innerHTML = h;
@@ -391,14 +389,14 @@ function runDataRecoveryFix() {
   fixPromises.push(leagueDocFix);
 
   Promise.all(fixPromises).then(function() {
-    el.innerHTML = '<div style="text-align:center;padding:16px">'
-      + '<div style="font-size:14px;font-weight:700;color:var(--birdie);margin-bottom:8px">Recovery Complete</div>'
-      + '<div style="font-size:11px;color:var(--cream)">Fixed ' + fixCount + ' documents</div>'
-      + '<div style="font-size:10px;color:var(--muted);margin-top:4px">Founding league doc ensured. Member profiles updated.</div>'
-      + '<button class="btn full outline" style="margin-top:12px" onclick="runDataRecoveryScan()">Run scan again to verify</button>'
+    el.innerHTML = '<div style="text-align:center;padding:16px 2px">'
+      + '<div style="font-family:var(--font-display);font-style:italic;font-size:20px;color:var(--cb-ink);margin-bottom:6px">Recovery complete.</div>'
+      + '<div style="font-family:var(--font-mono);font-size:11px;color:var(--cb-ink-soft)">Fixed ' + fixCount + ' documents</div>'
+      + '<div style="font-family:var(--font-mono);font-size:10px;color:var(--cb-mute);margin-top:4px">Founding league doc ensured. Member profiles updated.</div>'
+      + '<button class="adm-btn adm-btn--full" style="margin-top:14px" onclick="runDataRecoveryScan()">Run scan again to verify</button>'
       + '</div>';
     Router.toast("Recovery complete! " + fixCount + " docs fixed");
   }).catch(function(e) {
-    el.innerHTML = '<div style="color:var(--red);font-size:11px;padding:12px">Recovery error: ' + escHtml(e.message) + '</div>';
+    el.innerHTML = '<div class="adm-empty" style="color:var(--cb-claret)">Recovery error: ' + escHtml(e.message) + '</div>';
   });
 }
