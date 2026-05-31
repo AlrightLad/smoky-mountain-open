@@ -37,7 +37,14 @@ var CORE_FILES = ['utils.js', 'notification-types.js', 'theme.js', 'animate.js',
 ];
 
 // Pages needed for initial render (home + settings reachable from nav)
-var IMMEDIATE_PAGES = ['home.js', 'home-hq.js', 'home-hq-league-week.js', 'home-live.js', 'home-charts.js', 'home-band.js', 'home-rail-newuser.js', 'settings.js', 'onboarding.js'];
+// home.js is the sole Router.register("home") entry + render orchestrator; the
+// other home-*.js files are pure helper-fn libraries it calls at render time. In
+// dev mode each file is a separate <script> tag, so home.js must load AFTER its
+// helpers — otherwise a home render firing before home-rail-newuser.js executes
+// throws "Can't find variable: _renderEmailVerifyBanner" (WebKit ReferenceError,
+// flow 07:39). Production concatenates IMMEDIATE into one hoisted scope so order
+// is moot there; this ordering just gives dev the same all-code-present guarantee.
+var IMMEDIATE_PAGES = ['home-hq.js', 'home-hq-league-week.js', 'home-live.js', 'home-charts.js', 'home-band.js', 'home-rail-newuser.js', 'home.js', 'settings.js', 'onboarding.js'];
 
 // Pages loaded after initial render (deferred for faster first paint)
 var DEFERRED_PAGES = [
