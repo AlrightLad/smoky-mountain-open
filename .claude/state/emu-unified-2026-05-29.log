@@ -9238,3 +9238,52 @@ Issues? Report them at [4m[1mhttps://github.com/firebase/firebase-tools/issues
 [36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 2.043ms
 [36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
 [36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.3604ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.4743ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.2261ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.6972ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.3315ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.2918ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.1994ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 5.8166ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 2.1505ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 2.904ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m [RoleChange] test_zach_uid_01: ∅ → founder
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 655.3516ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 2.2343ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-sendPushNotification"
+[90m> [39m [Push] No FCM token for test_zach_uid_01 (Zach Boogher) — notifications not enabled
+[36m[1mi  functions:[22m[39m Finished "us-central1-sendPushNotification" in 248.8406ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.7131ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.7307ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m [RoleChange] mbr_active_01: ∅ → member
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 156.4871ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m [RoleChange] mbr_susp_01: ∅ → suspended
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 11872.1321ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 3.0937ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[90m> [39m [RoleChange] test_zach_uid_01: founder → member
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 4.9538ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 2.0452ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.5035ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 1.1771ms
+[36m[1mi  functions:[22m[39m Beginning execution of "us-central1-onMemberRoleChange"
+[36m[1mi  functions:[22m[39m Finished "us-central1-onMemberRoleChange" in 2.0534ms
