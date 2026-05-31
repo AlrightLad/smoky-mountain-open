@@ -2023,3 +2023,77 @@ The **only** `+/-` lines in the app-health diff (8 ins / 14 del) are metadata:
 NOT staged (concurrent-session territory, via explicit pathspec): `.claude/state/emu-unified-2026-05-29.log` (concurrent session telemetry) + `src/pages/admin.js` + `src/pages/admin-diagnostic.js` + `src/styles/components.css` (the concurrent session's live admin-page batch) — all left for that session / Founder.
 
 No code changes in cycle BP. No proposals. No FIQ writes. No bug-report state moves (inbox absent). app-health overall FLAT at 86.8 (A-).
+
+---
+
+> Appended 2026-05-30 (Founder-local York PA). regen START `2026-05-31T02:01:33Z` = **2026-05-30 22:01 EDT** — UTC is wholly in 2026-05-31 while the harness `currentDate` + Founder-local time remain 2026-05-30. **THIRD consecutive cycle the two date axes disagree** (BO crossed midnight mid-cycle; BP + BQ wholly past it). Held the BO/BP convention: Founder-local `2026-05-30` for this journal filename + the commit date to preserve one-file-per-Founder-local-evening multi-cycle-append continuity (the evening's 22 prior cycles all used 2026-05-30); UTC retained for internal `_at` timestamps. Surfaced explicitly, not papered over. **23rd cycle of the 2026-05-30 date; cycle BQ; 58th consecutive ~1h-cadence regen since cycle M.**
+
+## Triage summary (cycle BQ)
+
+| Item | Result |
+|---|---|
+| FIQ entries triaged | 0 — `founder-input-queue/` directory ABSENT (103rd consecutive empty-inbox cycle) |
+| Bug reports processed | 0 — `bug-reports/` tree ABSENT (no `inbox/`, no `triaged/`) |
+| New proposals authored | 0 — heartbeat-only branch; A12 red-streak held at 2 (< 3-consecutive trigger) |
+| FIQ writes | 0 — `founder_input_queue.json` ABSENT; only `FIQ-` ids on disk are the schema examples in `docs/FOUNDER_INPUT_QUEUE.md` |
+| Demotions to backlog | 0 — `proactive-backlog.md` ABSENT |
+| Heartbeat | `regen-all.ps1` PASS — `ALL CHECKS PASSED` + round-trip PASS (58th consecutive clean canonical regen, cycles L–BQ) |
+| Wellness state changes | 2 (engineer.json + critic.json cycle BQ refresh) |
+
+### Inbox state at run-start (cycle BQ)
+
+- `.claude/state/founder-input-queue/` — **directory does not exist** (`find` returned no dir)
+- `.claude/state/bug-reports/` — **entire tree absent** (no `inbox/`, no `triaged/`)
+- `.claude/state/founder_input_queue.json` — **file does not exist**
+- `.claude/state/proposals/pending/` — only `.gitkeep`
+- `.claude/state/proactive-backlog.md` — **absent** (no demotions)
+- Working tree at run-start (harness snapshot): `M .claude/state/emu-unified-2026-05-29.log` + untracked `.claude/state/design-pass-2026-05-22/w1s16-profile-2026-05-30/` + untracked `scripts/visual-audit/capture-w1s16-profile.mjs`. HEAD = `54518f12`.
+
+### Heartbeat (cycle BQ)
+
+- **regen-all:** START `02:01:33Z` → `ALL DASHBOARDS REGENERATED at 2026-05-31T02:01:39Z`, `=== ALL CHECKS PASSED ===`, round-trip test PASS. 58th consecutive clean canonical regen-all (cycles L–BQ); all ~30 guards green.
+- **Telemetry:** events=17985 (up from BP 17931), handoffs=1, bubbles=7, proposals_pending=0, `meter_status=wired-real` → **HALT-25 NOT in effect.**
+- **Token aggregate (all-time):** real=13,655,854,782 · estimated=16,107,470 · manual=0.
+- **Wellness:** engineer.json + critic.json refreshed for cycle BQ. No rest triggered (heartbeat-only nights genuinely light; token threshold stays crossed but `status: active` per still-LIVE Founder token-counter-semantics decision).
+
+## Honest score attribution (cycle BQ)
+
+**CLEAN FLAT — no prior-cycle delta to disown this cycle** (distinct from BN/BO/BP, each of which disowned a prior movement). app-health overall is **86.8 (A-)**; the committed run-start baseline (the prior `01:36:40Z` regen) was **already 86.8**, and this `02:01:38Z` regen also reads 86.8 — overall_score / overall_grade / all 12 dimension scores **byte-unchanged**.
+
+The **only** `+/-` lines in the app-health diff (8 ins / 14 del) are metadata:
+- `generated_at` `2026-05-31T01:36:40.457807Z` → `2026-05-31T02:01:38.650534Z`
+- `audit_trigger` commit-pointer re-pointed: sha `0454de41` (`feat: editorial Onboarding redesign (W1.S15 / CLUBHOUSE_SPEC-HQ-3n) v8.23.79`, `is_app_commit:true`, 13 files) → `54518f12` (`cron(routine): post-commit dashboard regen`, `is_app_commit:false`, 4 files) = current HEAD.
+
+**W1.S15 ship note:** the editorial Onboarding redesign (`0454de41`, v8.23.79) **SHIPPED between BP close and this cycle**, and app-health held **FLAT 86.8** across it — a member-facing editorial ship that did not move the overall score either way (net-flat). That is the concurrent feature session's own committed work; the heartbeat claims **neither credit nor blame** — the honest reading of a flat-across-ship score, not a manufactured improvement narrative.
+
+## Blockers requiring Founder attention (cycle BQ)
+
+**No ship-blocking issues introduced by triage.** Awareness / carry-over items:
+
+1. **Journal-date convention IN TENSION 3rd consecutive cycle (carry-over #5).** BQ's regen START (`02:01:33Z`) is wholly in UTC 2026-05-31 while Founder-local + harness `currentDate` remain `2026-05-30`. Held the BO/BP convention (Founder-local for journal+commit). **Founder may want to lock which date axis is canonical** for the cron journal filename + commit date. Cheaply reversible (rename + re-date) if Founder prefers UTC.
+2. **Concurrent session LIVE on a W1.S16 Profile batch.** Run-start working tree held `M .claude/state/emu-unified-2026-05-29.log` + untracked `w1s16-profile-2026-05-30/` design-pass dir + untracked `scripts/visual-audit/capture-w1s16-profile.mjs` — the concurrent session has **shifted from BP's admin-page batch to a W1.S16 Profile design-pass / visual-audit batch** (consistent with the W1 sequence: S15 Onboarding just shipped, S16 Profile next). All three concurrent paths are concurrent-session territory — left **untouched and unstaged**.
+3. **`A12_operational` RED for the 2nd CONSECUTIVE cycle** (attention label `pipeline=red · 10 recent skip-dirty · error-tracking=True · incident-doc=True`; skip-dirty holding 10/10 from the concurrent session's continuous W1.S15-ship + W1.S16-design-pass churn keeping the tree dirty across cron watcher fires). Transition `red(BL)->green(BM)->red(BN)->yellow(BO)->red(BP)->red(BQ)`: the current consecutive-red streak is **now 2** (BP, BQ), still < the **>=3 CONSECUTIVE** the standing escalation trigger requires → **UNMET**. **No proposal manufactured** (Rule-2 gaming on a session-driven transient; `error-tracking` + `incident-doc` both True = pipeline healthy, the red is purely the skip-dirty count). **⚠ ESCALATION-AWARENESS: if cycle BR is ALSO red, the streak reaches 3 and the trigger FIRES** — the next cycle's engineer should author the post-commit/routinePatterns diagnosis proposal then.
+4. **Carry-over — writer-side BOM fix (`scripts/common.ps1`) remains unauthored as a proposal.** Consumer-side `utf-8-sig` tolerance has now held **58 consecutive** clean regen-all runs (cycles L–BQ). Deliberately not auto-promoted without a Founder priority signal.
+5. **Carry-over — `members.js` 863 lines (>800 AMD-027 budget).** Off the app-health attention list; belongs to the owning Members-feature session's ship-close.
+6. **Cron cadence** — cycles M–BQ steady at ~1h. Awareness only.
+
+## Cycle BQ Critic metric-integrity attestation (per `METRIC_INTEGRITY_PROTOCOL § 3.1`)
+
+1. **"Did every bug report processed get a real diagnosis with cited evidence?"** N/A — zero bug reports tonight (inbox tree absent, verified by directory checks this cycle). Cannot wave off what doesn't exist.
+2. **"Did every new proposal cite a specific screen/state/edge-case?"** N/A — zero new proposals tonight. The A12 red was deliberately *not* promoted (2-cycle streak still under the 3-consecutive trigger), with the fire-at-3 condition flagged for next cycle rather than inflated into a proposal now.
+3. **"Did the FIQ grades reflect rubric dimensions honestly?"** N/A — zero FIQ entries tonight. Queue absent; no `FIQ-` work on disk to mis-count.
+
+**Heartbeat-only self-check — is tonight's substantive output real?** YES, modestly. A 58th consecutive clean canonical regen-all confirms the gate is durable. The genuinely useful discipline this cycle is the **CLEAN-FLAT finding** (no prior-cycle delta to disown, the mirror-image of BN/BO/BP's disowned movements): every app-health score field is byte-unchanged, the committed baseline was already 86.8, and the W1.S15 Onboarding ship that landed between cycles was honestly noted as **net-flat across the ship** rather than spun into an improvement narrative or scapegoated. The second genuinely useful act is the **A12 red-streak tracking**: counted honestly to 2, the 3-consecutive trigger correctly held UNMET, and the next-cycle fire-condition flagged so the discipline survives the cron handoff. Every claim is anchored to a quoted regen-all log line, a `git diff` hunk read verbatim, a `git status`/`git show` line, or a `find` directory-absence check. No invented productivity on an empty-queue night.
+
+**Critic attests cleanly: substantive heartbeat cycle, ship closes.**
+
+## Files changed in this cycle BQ run
+
+- `.claude/state/wellness/engineer.json` — cycle BQ update
+- `.claude/state/wellness/critic.json` — cycle BQ update
+- `.claude/state/cron/2026-05-30-overnight-run.md` — this journal (cycle BQ section appended)
+- `docs/reports/app-health.html` — regen output (metadata-only: `generated_at` timestamp + `audit_trigger` commit-pointer `0454de41`→`54518f12`; all 12 dimension scores + overall byte-unchanged at 86.8)
+
+NOT staged (concurrent-session territory, via explicit pathspec): `.claude/state/emu-unified-2026-05-29.log` + `.claude/state/design-pass-2026-05-22/w1s16-profile-2026-05-30/` + `scripts/visual-audit/capture-w1s16-profile.mjs` (the concurrent session's live W1.S16 Profile design-pass batch) — all left for that session / Founder.
+
+No code changes in cycle BQ. No proposals. No FIQ writes. No bug-report state moves (inbox absent). app-health overall FLAT at 86.8 (A-).

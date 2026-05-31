@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-31T01:36:40.457807Z",
+  "generated_at": "2026-05-31T02:01:38.650534Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 86.8,
   "overall_grade": "A-",
@@ -1014,19 +1014,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "0454de41",
-    "subject": "feat: editorial Onboarding redesign (W1.S15 / CLUBHOUSE_SPEC-HQ-3n) v8.23.79",
-    "committed_at": "2026-05-30T21:35:55-04:00",
-    "trigger": "app-commit",
-    "is_app_commit": true,
-    "app_files_touched": [
-      "public/sw.js",
-      "src/core/utils.js",
-      "src/pages/caddynotes.js",
-      "src/pages/onboarding.js",
-      "src/styles/components.css"
-    ],
-    "total_files_touched": 13
+    "sha": "54518f12",
+    "subject": "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)",
+    "committed_at": "2026-05-30T21:37:44-04:00",
+    "trigger": "cron",
+    "is_app_commit": false,
+    "app_files_touched": [],
+    "total_files_touched": 4
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
