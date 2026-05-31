@@ -1,6 +1,19 @@
 /* ================================================
    PAGE: LEAGUES — Create, join, switch, manage leagues
    v6.0.0: Multi-league architecture
+   v8.23.76: Editorial redesign → CLUBHOUSE_SPEC-HQ-3j (W1.S13).
+     - renderLeagueList → 3j.2 My Leagues editorial card grid (N≥1) /
+       3j.1.D Lone Wolf takeover (N===0).
+     - renderLeagueDetail → 3j.1.A/B League page: masthead + hero stat-strip
+       + invite + roster + requests + settings + danger, two-column hq-grid.
+     - renderCreateLeague / renderJoinLeague → editorial forms.
+     All mutation handlers below the renderers are unchanged.
+     Deferred (need reusable components not yet extracted): 3j.3 scope-switcher
+     dropdown (global masthead chrome — scope-switch still works via cards +
+     Switch button); Standings table (W2.S2 Leaderboard component), embedded
+     Activity feed (3k), and Trophies grid (3p) sections — these reuse
+     components that are not yet standalone. Hero season/handicap aggregates
+     omitted to stay P9-truthful (no league-scoped round loading here yet).
    ================================================ */
 
 Router.register("leagues", function(params) {
@@ -10,100 +23,174 @@ Router.register("leagues", function(params) {
   renderLeagueList();
 });
 
+// Pull a 4-digit year out of a founded date string ("2026-05-30" → "2026").
+function _foundedYear(founded) {
+  if (!founded) return null;
+  var m = String(founded).match(/(\d{4})/);
+  return m ? m[1] : null;
+}
+
+// Reduced-motion-aware smooth scroll for section anchors (spec §3j.4).
+function _leagueScrollTo(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  var rm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  el.scrollIntoView({ behavior: rm ? 'auto' : 'smooth', block: 'start' });
+}
+
+// ── 3j.2 — My Leagues (N≥1) OR 3j.1.D Lone Wolf (N===0) ──
 function renderLeagueList() {
-  var h = '<div class="sh"><h2>My Leagues</h2><button class="back" onclick="Router.back(\'more\')">← Back</button></div>';
   var myLeagues = currentProfile && currentProfile.leagues ? currentProfile.leagues : ["the-parbaughs"];
   var activeLeague = getActiveLeague();
 
-  h += '<div style="padding:12px 16px">';
+  if (!myLeagues.length) { renderLoneWolf(); return; }
 
-  if (!myLeagues.length) {
-    h += '<div style="text-align:center;padding:32px 0"><div style="font-size:16px;font-weight:700;color:var(--cream)">No Leagues Yet</div>';
-    h += '<div style="font-size:12px;color:var(--muted);margin-top:6px">Create your own league or join one via invite code.</div></div>';
-  }
-
-  h += '<div id="leagueCards"><div class="loading"><div class="spinner"></div>Loading leagues...</div></div>';
-
-  h += '<div style="display:flex;gap:8px;margin-top:16px">';
-  h += '<button class="btn full green" style="flex:1" onclick="Router.go(\'leagues\',{create:true})">+ Create a League</button>';
-  h += '<button class="btn full outline" style="flex:1" onclick="Router.go(\'leagues\',{join:true})">Join a League</button>';
+  var n = myLeagues.length;
+  var h = '<div class="league-wrap league-wrap--wide">';
+  h += '<button type="button" class="roster-skip" onclick="var el=document.getElementById(\'leagueCards\');if(el){el.scrollIntoView();}">Skip to leagues</button>';
+  h += '<div class="roster-masthead">';
+  h += '<div class="roster-eyebrow">YOUR LEAGUES · ' + n + ' ACTIVE</div>';
+  h += '<h1 class="roster-headline">My leagues.</h1>';
   h += '</div>';
 
-  // Browse public leagues
-  h += '<div style="margin-top:20px"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1.5px;font-weight:600;margin-bottom:8px">Discover Leagues</div>';
-  h += '<div id="publicLeagues"><div style="font-size:11px;color:var(--muted);padding:12px 0">Loading public leagues...</div></div>';
+  h += '<div id="leagueCards" class="league-grid" role="list"><div class="league-empty">Loading your leagues…</div></div>';
+
+  h += '<div class="league-actions">';
+  h += '<button class="league-btn league-btn--brass" onclick="Router.go(\'leagues\',{create:true})">+ Create a league</button>';
+  h += '<button class="league-btn league-btn--ghost" onclick="Router.go(\'leagues\',{join:true})">Join a league</button>';
   h += '</div>';
+
+  h += '<div class="league-discover"><div class="league-section__eyebrow">DISCOVER</div>';
+  h += '<div class="league-section__title" style="margin-bottom:14px">Public leagues</div>';
+  h += '<div id="publicLeagues"><div class="league-empty">Loading public leagues…</div></div></div>';
 
   h += '</div>';
   h += renderPageFooter();
   document.querySelector('[data-page="leagues"]').innerHTML = h;
 
-  // Load my league details
-  if (db && myLeagues.length) {
-    var cardsH = '';
-    var loaded = 0;
-    myLeagues.forEach(function(lid) {
-      db.collection("leagues").doc(lid).get().then(function(doc) {
-        loaded++;
-        if (doc.exists) {
-          var l = doc.data();
-          var isActive = lid === activeLeague;
-          var isFounding = l.badge === "founding";
-          cardsH += '<div class="card" style="margin-bottom:8px;border-color:' + (isActive ? 'var(--gold)' : 'var(--border)') + ';cursor:pointer" onclick="Router.go(\'leagues\',{id:\'' + lid + '\'})">';
-          cardsH += '<div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center">';
-          cardsH += '<div><div style="display:flex;align-items:center;gap:8px">';
-          cardsH += '<div style="font-size:15px;font-weight:700;color:var(--cream)">' + escHtml(l.name) + '</div>';
-          if (isFounding) cardsH += '<span style="font-size:7px;font-weight:800;color:var(--gold);background:rgba(var(--gold-rgb),.1);padding:2px 6px;border-radius:4px;letter-spacing:.5px">FOUNDING LEAGUE</span>';
-          cardsH += '</div>';
-          cardsH += '<div style="font-size:10px;color:var(--muted);margin-top:3px">' + escHtml(l.location || '') + ' \u00b7 ' + (l.memberCount || 0) + ' members</div>';
-          cardsH += '</div>';
-          if (isActive) cardsH += '<div style="font-size:8px;font-weight:700;color:var(--birdie);letter-spacing:.5px;padding:4px 8px;background:rgba(var(--birdie-rgb),.08);border-radius:4px">ACTIVE</div>';
-          else cardsH += '<button class="btn-sm outline" style="font-size:9px" onclick="event.stopPropagation();switchLeague(\'' + lid + '\')">Switch</button>';
-          cardsH += '</div></div>';
-        }
-        if (loaded === myLeagues.length) {
-          var el = document.getElementById("leagueCards");
-          if (el) el.innerHTML = cardsH || '<div style="font-size:11px;color:var(--muted)">No league data found</div>';
-        }
-      }).catch(function() { loaded++; });
-    });
-  }
+  _loadMyLeagueCards(myLeagues, activeLeague);
+  _loadPublicLeagues(myLeagues);
+}
 
-  // Load public leagues
-  if (db) {
-    db.collection("leagues").where("visibility", "==", "public").limit(10).get().then(function(snap) {
-      var el = document.getElementById("publicLeagues");
-      if (!el) return;
-      if (snap.empty) { el.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:8px 0">No public leagues yet. Be the first to create one!</div>'; return; }
-      var ph = '';
-      snap.forEach(function(doc) {
-        var l = doc.data();
-        var lid = doc.id;
-        var alreadyMember = myLeagues.indexOf(lid) !== -1;
-        ph += '<div class="card" style="margin-bottom:6px"><div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:center">';
-        ph += '<div><div style="font-size:13px;font-weight:600;color:var(--cream)">' + escHtml(l.name) + '</div>';
-        ph += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(l.location || '') + ' \u00b7 ' + (l.memberCount || 0) + ' members</div></div>';
-        if (alreadyMember) ph += '<span style="font-size:9px;color:var(--muted)">Joined</span>';
-        else ph += '<button class="btn-sm green" style="font-size:9px" onclick="requestJoinLeague(\'' + lid + '\')">Request</button>';
-        ph += '</div></div>';
-      });
-      el.innerHTML = ph;
-    }).catch(function() {});
-  }
+// One My-Leagues card. Active scope gets the 4px brass top border + aria-current.
+function _leagueCardHtml(lid, l, activeLeague) {
+  var isActive = lid === activeLeague;
+  var uid = currentUser ? currentUser.uid : null;
+  var role = (uid && l.commissioner === uid) ? "Commissioner" : "Member";
+  var roleCls = role === "Commissioner" ? "league-card__role--comm" : "league-card__role--member";
+  var founded = _foundedYear(l.founded);
+  var access = l.visibility === "public" ? "Public" : "Private";
+  var go = "Router.go('leagues',{id:'" + lid + "'})";
+  var h = '<a class="league-card' + (isActive ? ' league-card--active' : '') + '" tabindex="0" role="listitem"' + (isActive ? ' aria-current="page"' : '') + ' onclick="' + go + '" onkeydown="if(event.key===\'Enter\'){' + go + '}">';
+  h += '<div class="league-card__head"><div class="league-card__name">' + escHtml(l.name) + '</div>';
+  h += '<span class="league-card__role ' + roleCls + '">' + role + '</span></div>';
+  h += '<div class="league-card__stats">';
+  h += '<div><div class="league-card__stat-val">' + (l.memberCount || 0) + '</div><div class="league-card__stat-lbl">Members</div></div>';
+  h += '<div><div class="league-card__stat-val">' + (founded || '—') + '</div><div class="league-card__stat-lbl">Founded</div></div>';
+  h += '<div><div class="league-card__stat-val" style="font-size:15px;font-style:italic;font-family:var(--font-display)">' + access + '</div><div class="league-card__stat-lbl">Access</div></div>';
+  h += '</div>';
+  h += '<div class="league-card__foot">';
+  if (isActive) h += '<span style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cb-brass)">● Active scope</span>';
+  else h += '<span class="league-row__meta">' + escHtml(l.location || '') + '</span>';
+  h += '<span class="league-card__open">Open →</span>';
+  h += '</div></a>';
+  return h;
+}
+
+function _loadMyLeagueCards(myLeagues, activeLeague) {
+  if (!db || !myLeagues.length) return;
+  var cards = {};
+  var loaded = 0;
+  myLeagues.forEach(function(lid) {
+    db.collection("leagues").doc(lid).get().then(function(doc) {
+      loaded++;
+      if (doc.exists) cards[lid] = _leagueCardHtml(lid, doc.data(), activeLeague);
+      if (loaded === myLeagues.length) _flushLeagueCards(myLeagues, cards);
+    }).catch(function() { loaded++; if (loaded === myLeagues.length) _flushLeagueCards(myLeagues, cards); });
+  });
+}
+
+function _flushLeagueCards(order, cards) {
+  var el = document.getElementById("leagueCards");
+  if (!el) return;
+  var h = '';
+  order.forEach(function(lid) { if (cards[lid]) h += cards[lid]; });
+  el.innerHTML = h || '<div class="league-empty">No league data found.</div>';
+}
+
+// Public-league discovery grid. Shared by My Leagues + Lone Wolf surfaces.
+function _loadPublicLeagues(myLeagues) {
+  if (!db) return;
+  db.collection("leagues").where("visibility", "==", "public").limit(10).get().then(function(snap) {
+    var el = document.getElementById("publicLeagues");
+    if (!el) return;
+    if (snap.empty) { el.innerHTML = '<div class="league-empty">No public leagues yet. Start the first one.</div>'; return; }
+    var ph = '<div class="league-grid">';
+    snap.forEach(function(doc) {
+      var l = doc.data();
+      var lid = doc.id;
+      var already = myLeagues.indexOf(lid) !== -1;
+      ph += '<div class="league-card" style="cursor:default">';
+      ph += '<div class="league-card__head"><div class="league-card__name">' + escHtml(l.name) + '</div></div>';
+      ph += '<div class="league-row__meta" style="margin-bottom:14px">' + escHtml(l.location || 'Location not set') + ' · ' + (l.memberCount || 0) + ' members</div>';
+      ph += '<div class="league-card__foot" style="border-top:0;padding-top:0">';
+      if (already) ph += '<span class="league-row__meta">Joined</span><span></span>';
+      else ph += '<span></span><button class="league-btn league-btn--ghost league-btn--sm" onclick="requestJoinLeague(\'' + lid + '\')">Request to join</button>';
+      ph += '</div></div>';
+    });
+    ph += '</div>';
+    el.innerHTML = ph;
+  }).catch(function() {
+    var el = document.getElementById("publicLeagues");
+    if (el) el.innerHTML = renderLoadError("public leagues", "_loadPublicLeagues([])");
+  });
+}
+
+// ── 3j.1.D — Lone Wolf takeover (member belongs to 0 leagues) ──
+function renderLoneWolf() {
+  var card = function(svg, title, body, cta, onclick) {
+    return '<div class="lonewolf-card" tabindex="0" role="listitem" onclick="' + onclick + '" onkeydown="if(event.key===\'Enter\'){' + onclick + '}">' +
+      '<div class="lonewolf-card__icon">' + svg + '</div>' +
+      '<div class="lonewolf-card__title">' + title + '</div>' +
+      '<div class="lonewolf-card__body">' + body + '</div>' +
+      '<div class="lonewolf-card__cta">' + cta + '</div></div>';
+  };
+  var icoCreate = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>';
+  var icoJoin = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="M10 17l5-5-5-5M15 12H3"/></svg>';
+  var icoBrowse = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>';
+
+  var h = '<div class="league-wrap league-wrap--wide">';
+  h += '<div class="roster-masthead"><div class="roster-eyebrow">LONE WOLF</div><h1 class="roster-headline">Find your league.</h1></div>';
+  h += '<p style="font-family:var(--font-display);font-style:italic;font-size:18px;line-height:1.5;color:var(--cb-mute-soft);margin:0 0 24px;max-width:60ch">Three ways in. Start your own crew, accept an invite, or scout the public clubhouses already underway.</p>';
+  h += '<div class="lonewolf-grid" role="list">';
+  h += card(icoCreate, 'Create your league', 'Commission a new league, set the season, and invite your foursome. You run the show.', 'Continue →', "Router.go('leagues',{create:true})");
+  h += card(icoJoin, 'Join a league', 'Have an invite code from a commissioner? Drop it in and you are on the tee sheet.', 'Continue →', "Router.go('leagues',{join:true})");
+  h += card(icoBrowse, 'Browse public leagues', 'Scout open clubhouses, follow the action, and request a spot in one that fits.', 'Continue →', "_leagueScrollTo('publicLeagues')");
+  h += '</div>';
+
+  h += '<div class="league-discover"><div class="league-section__eyebrow">OPEN CLUBHOUSES</div>';
+  h += '<div class="league-section__title" style="margin-bottom:14px">Public leagues</div>';
+  h += '<div id="publicLeagues"><div class="league-empty">Loading public leagues…</div></div></div>';
+  h += '</div>';
+  h += renderPageFooter();
+  document.querySelector('[data-page="leagues"]').innerHTML = h;
+  _loadPublicLeagues([]);
 }
 
 function renderCreateLeague() {
-  var h = '<div class="sh"><h2>Create a League</h2><button class="back" onclick="Router.back(\'leagues\')">← Back</button></div>';
-  h += '<div class="form-section" style="padding:16px">';
+  var h = '<div class="league-wrap">';
+  h += '<button class="back" onclick="Router.back(\'leagues\')" style="margin:8px 0">← Back</button>';
+  h += '<div class="roster-masthead"><div class="roster-eyebrow">NEW LEAGUE</div><h1 class="roster-headline">Start a league.</h1></div>';
+  h += '<p style="font-family:var(--font-display);font-style:italic;font-size:16px;line-height:1.5;color:var(--cb-mute-soft);margin:0 0 22px">You will be the commissioner: you set the season, the rules, and the roster.</p>';
   h += '<div class="ff"><label class="ff-label">League name</label><input class="ff-input" id="cl-name" placeholder="e.g. Weekend Warriors"></div>';
-  h += '<div class="ff"><label class="ff-label">Location</label><input class="ff-input" id="cl-location" placeholder="e.g. Austin, TX"></div>';
-  h += '<div class="ff"><label class="ff-label">Description</label><textarea class="ff-input" id="cl-desc" rows="2" placeholder="What makes your crew special?"></textarea></div>';
+  h += '<div class="ff"><label class="ff-label">Location</label><input class="ff-input" id="cl-location" placeholder="e.g. York, PA"></div>';
+  h += '<div class="ff"><label class="ff-label">Description</label><textarea class="ff-input" id="cl-desc" rows="3" placeholder="What makes your crew special?"></textarea></div>';
   h += '<div class="ff"><label class="ff-label">Visibility</label><select class="ff-input" id="cl-visibility">';
   h += '<option value="private">Private (invite-only)</option>';
   h += '<option value="public">Public (discoverable)</option>';
   h += '</select></div>';
-  h += '<button class="btn full green" style="margin-top:12px" onclick="submitCreateLeague()">Create League</button>';
-  h += '<div style="font-size:9px;color:var(--muted2);text-align:center;margin-top:8px">You\'ll be the commissioner of this league.</div>';
+  h += '<button class="league-btn league-btn--brass" style="width:100%;margin-top:14px" onclick="submitCreateLeague()">Create league</button>';
+  h += '<div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.5px;color:var(--cb-mute);text-align:center;margin-top:10px">You will be the commissioner of this league.</div>';
   h += '</div>';
   document.querySelector('[data-page="leagues"]').innerHTML = h;
 }
@@ -157,11 +244,13 @@ function submitCreateLeague() {
 }
 
 function renderJoinLeague() {
-  var h = '<div class="sh"><h2>Join a League</h2><button class="back" onclick="Router.back(\'leagues\')">← Back</button></div>';
-  h += '<div style="padding:16px">';
-  h += '<div class="ff"><label class="ff-label">Invite code</label><input class="ff-input" id="jl-code" placeholder="e.g. LG-XXXXXXXX" style="text-transform:uppercase;letter-spacing:2px;text-align:center;font-family:\'SF Mono\',monospace"></div>';
-  h += '<button class="btn full green" style="margin-top:12px" onclick="submitJoinLeague()">Join League</button>';
-  h += '<div style="font-size:10px;color:var(--muted);text-align:center;margin-top:12px">Ask the league commissioner for an invite code, or browse public leagues.</div>';
+  var h = '<div class="league-wrap">';
+  h += '<button class="back" onclick="Router.back(\'leagues\')" style="margin:8px 0">← Back</button>';
+  h += '<div class="roster-masthead"><div class="roster-eyebrow">JOIN</div><h1 class="roster-headline">Join a league.</h1></div>';
+  h += '<p style="font-family:var(--font-display);font-style:italic;font-size:16px;line-height:1.5;color:var(--cb-mute-soft);margin:0 0 22px">Enter the invite code your commissioner shared, or browse public leagues from the directory.</p>';
+  h += '<div class="ff"><label class="ff-label">Invite code</label><input class="ff-input" id="jl-code" placeholder="LG-XXXXXXXX" style="text-transform:uppercase;letter-spacing:2px;text-align:center;font-family:var(--font-mono)"></div>';
+  h += '<button class="league-btn league-btn--brass" style="width:100%;margin-top:14px" onclick="submitJoinLeague()">Join league</button>';
+  h += '<div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.5px;color:var(--cb-mute);text-align:center;margin-top:10px">Ask the league commissioner for an invite code.</div>';
   h += '</div>';
   document.querySelector('[data-page="leagues"]').innerHTML = h;
 }
@@ -205,9 +294,11 @@ function submitJoinLeague() {
   }).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't join the league.")); });
 }
 
+// ── 3j.1.A/B — League page (single league context) ──
 function renderLeagueDetail(lid) {
-  var h = '<div class="sh"><h2>League</h2><button class="back" onclick="Router.back(\'leagues\')">← Back</button></div>';
-  h += '<div id="leagueDetail"><div class="loading"><div class="spinner"></div>Loading...</div></div>';
+  var h = '<div class="league-wrap league-wrap--wide">';
+  h += '<button class="back" onclick="Router.back(\'leagues\')" style="margin:8px 0">← Back</button>';
+  h += '<div id="leagueDetail"><div class="league-empty">Loading…</div></div></div>';
   document.querySelector('[data-page="leagues"]').innerHTML = h;
 
   if (!db) return;
@@ -216,61 +307,90 @@ function renderLeagueDetail(lid) {
     var l = doc.data();
     var el = document.getElementById("leagueDetail");
     if (!el) return;
-    var isComm = currentUser && l.commissioner === currentUser.uid;
-    var isFounding = l.badge === "founding";
+    var uid = currentUser ? currentUser.uid : null;
+    var isComm = uid && l.commissioner === uid;
+    var isAdmin = uid && l.admins && l.admins.indexOf(uid) !== -1;
+    var isActive = currentProfile && currentProfile.activeLeague === lid;
+    var founded = _foundedYear(l.founded);
+    var access = l.visibility === "public" ? "Public" : "Private";
+    var loc = (l.location || '').trim();
 
-    var dh = '<div style="text-align:center;padding:24px 16px;background:linear-gradient(180deg,var(--grad-hero),var(--bg));border-bottom:1px solid var(--border)">';
-    dh += '<div style="font-family:var(--font-display);font-size:24px;color:var(--gold);font-weight:700">' + escHtml(l.name) + '</div>';
-    if (isFounding) dh += '<div style="display:inline-block;margin-top:8px;padding:4px 12px;background:linear-gradient(135deg,rgba(var(--gold-rgb),.12),rgba(var(--gold-rgb),.04));border:1px solid rgba(var(--gold-rgb),.2);border-radius:8px;font-size:9px;font-weight:800;color:var(--gold);letter-spacing:1px">FOUNDING LEAGUE \u00b7 EST. 2026</div>';
-    dh += '<div style="font-size:11px;color:var(--muted);margin-top:6px">' + escHtml(l.location || '') + ' \u00b7 ' + (l.memberCount || 0) + ' members \u00b7 ' + (l.visibility === "public" ? "Public" : "Private") + '</div>';
-    if (l.description) dh += '<div style="font-size:11px;color:var(--muted);margin-top:4px;line-height:1.5">' + escHtml(l.description) + '</div>';
+    var dh = '<div class="hq-grid"><div class="hq-grid__main">';
+
+    // ── Masthead (3j.1.A.2) ──
+    var eyebrow = 'LEAGUE' + (loc ? ' · ' + escHtml(loc.toUpperCase()) : '') + (founded ? ' · FOUNDED ' + founded : '');
+    dh += '<div class="roster-masthead"><div class="league-masthead__row"><div>';
+    dh += '<div class="roster-eyebrow">' + eyebrow + '</div>';
+    dh += '<h1 class="roster-headline">' + escHtml(l.name) + '.</h1>';
+    dh += '</div>';
+    if (isComm) dh += '<a class="league-settings-pill" role="button" aria-label="League settings (Commissioner only)" onclick="_leagueScrollTo(\'leagueSettings\')">Settings →</a>';
+    dh += '</div>';
+    var deck = (l.memberCount || 0) + (l.memberCount === 1 ? ' member' : ' members') + ' · ' + access + ' league' + (founded ? ' · Founded ' + founded : '');
+    dh += '<p style="font-family:var(--font-display);font-style:italic;font-size:18px;line-height:1.45;color:var(--cb-mute-soft);margin:10px 0 0">' + escHtml(l.description ? l.description : deck) + '</p>';
     dh += '</div>';
 
-    // Invite code (for commissioner or members)
-    dh += '<div class="section"><div class="sec-head"><span class="sec-title">Invite Code</span></div>';
-    dh += '<div class="card"><div style="padding:16px;text-align:center"><div style="font-family:\'SF Mono\',monospace;font-size:20px;font-weight:700;color:var(--gold);letter-spacing:4px">' + escHtml(l.inviteCode || "N/A") + '</div>';
-    dh += '<div style="font-size:10px;color:var(--muted);margin-top:6px">Share this code with friends to invite them</div></div></div></div>';
+    // ── Section A — Hero stat-strip (3j.1.A.4) ──
+    dh += '<div class="league-hero" role="region" aria-label="' + escHtml(l.name) + ' overview">';
+    var comm = PB.getPlayer(l.commissioner);
+    dh += '<div class="league-hero__comm">';
+    dh += renderAvatar(comm || { name: l.commissionerName || '?', id: l.commissioner }, 36, false);
+    dh += '<div><div class="league-hero__comm-name">' + escHtml(comm ? (comm.name || comm.username) : (l.commissionerName || 'Commissioner')) + '</div>';
+    dh += '<div class="league-hero__comm-role">Commissioner</div></div>';
+    if (l.badge === "founding") dh += '<span class="league-hero__badge">Founding League</span>';
+    dh += '</div>';
+    dh += '<div class="league-hero__strip">';
+    dh += '<div class="league-stat"><div class="league-stat__label">Members</div><div class="league-stat__value">' + (l.memberCount || 0) + '</div></div>';
+    dh += '<div class="league-stat"><div class="league-stat__label">Founded</div><div class="league-stat__value">' + (founded || '—') + '</div></div>';
+    dh += '<div class="league-stat"><div class="league-stat__label">Access</div><div class="league-stat__value league-stat__value--sm">' + access + '</div></div>';
+    dh += '</div></div>';
 
-    var isAdmin = currentUser && l.admins && l.admins.indexOf(currentUser.uid) !== -1;
+    // ── Invite code ──
+    dh += '<div class="league-section"><div class="league-section__head"><div><div class="league-section__eyebrow">INVITE</div><div class="league-section__title">Invite code</div></div></div>';
+    dh += '<div class="league-invite"><div class="league-invite__code">' + escHtml(l.inviteCode || "—") + '</div>';
+    dh += '<div class="league-invite__hint">Share this code with friends to invite them.</div></div></div>';
 
-    // Commissioner/Admin settings
+    // ── Commissioner / Admin sections ──
     if (isComm || isAdmin) {
-      // Member management
-      dh += '<div class="section"><div class="sec-head"><span class="sec-title">Members (' + (l.memberCount || 0) + ')</span></div>';
-      dh += '<div id="leagueMemberList"><div class="loading"><div class="spinner"></div></div></div></div>';
+      dh += '<div class="league-section"><div class="league-section__head"><div><div class="league-section__eyebrow">ROSTER</div><div class="league-section__title">Members</div></div>';
+      dh += '<div class="league-section__meta">' + (l.memberCount || 0) + (l.memberCount === 1 ? ' member' : ' members') + '</div></div>';
+      dh += '<div id="leagueMemberList"><div class="league-empty">Loading roster…</div></div></div>';
 
-      // Pending join requests
-      dh += '<div class="section"><div class="sec-head"><span class="sec-title">Join Requests</span></div>';
-      dh += '<div id="leagueJoinRequests"><div style="font-size:11px;color:var(--muted);padding:12px">Loading...</div></div></div>';
+      dh += '<div class="league-section"><div class="league-section__head"><div><div class="league-section__eyebrow">REQUESTS</div><div class="league-section__title">Join requests</div></div></div>';
+      dh += '<div id="leagueJoinRequests"><div class="league-empty">Loading…</div></div></div>';
 
-      // League settings (commissioner only)
       if (isComm) {
-        dh += '<div class="section"><div class="sec-head"><span class="sec-title">League Settings</span></div>';
-        dh += '<div class="card"><div style="padding:14px 16px">';
-        dh += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-size:12px;color:var(--cream)">Visibility</span>';
-        dh += '<button class="btn-sm outline" style="font-size:10px" onclick="toggleLeagueVisibility(\'' + lid + '\')">' + (l.visibility === "public" ? "Public" : "Private") + '</button></div>';
-        dh += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><span style="font-size:12px;color:var(--cream)">Require approval</span>';
-        dh += '<button class="btn-sm outline" style="font-size:10px" onclick="toggleLeagueApproval(\'' + lid + '\')">' + (l.requireApproval ? "On" : "Off") + '</button></div>';
-        dh += '<button class="btn-sm outline" style="font-size:10px;margin-bottom:8px" onclick="regenerateInviteCode(\'' + lid + '\')">Regenerate Invite Code</button>';
-        dh += '</div></div></div>';
+        dh += '<div class="league-section" id="leagueSettings"><div class="league-section__head"><div><div class="league-section__eyebrow">ADMIN</div><div class="league-section__title">League settings</div></div></div>';
+        dh += '<div class="league-toggle"><span class="league-toggle__label">Visibility</span><button class="league-btn league-btn--ghost league-btn--sm" onclick="toggleLeagueVisibility(\'' + lid + '\')">' + access + '</button></div>';
+        dh += '<div class="league-toggle"><span class="league-toggle__label">Require approval to join</span><button class="league-btn league-btn--ghost league-btn--sm" onclick="toggleLeagueApproval(\'' + lid + '\')">' + (l.requireApproval ? "On" : "Off") + '</button></div>';
+        dh += '<div class="league-toggle"><span class="league-toggle__label">Invite code</span><button class="league-btn league-btn--ghost league-btn--sm" onclick="regenerateInviteCode(\'' + lid + '\')">Regenerate</button></div>';
+        dh += '</div>';
 
-        // Danger zone
-        if (!isFounding) {
-          dh += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--red)">Danger Zone</span></div>';
-          dh += '<div class="card" style="border-color:rgba(var(--red-rgb),.2)"><div style="padding:14px 16px">';
-          dh += '<div style="font-size:11px;color:var(--muted);margin-bottom:8px">Deleting a league removes it from all members. Rounds are preserved.</div>';
-          dh += '<button class="btn full" style="background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-rgb),.2);color:var(--red);font-size:11px" onclick="confirmDeleteLeague(\'' + lid + '\',\'' + escHtml(l.name).replace(/'/g,"\\\\'") + '\')">Delete League</button>';
-          dh += '</div></div></div>';
+        if (l.badge !== "founding") {
+          dh += '<div class="league-section"><div class="league-section__head"><div><div class="league-section__eyebrow" style="color:var(--cb-claret)">DANGER ZONE</div><div class="league-section__title">Delete league</div></div></div>';
+          dh += '<div class="league-danger"><div class="league-danger__hint">Deleting removes this league from all members. Rounds are preserved.</div>';
+          dh += '<button class="league-danger__btn" onclick="confirmDeleteLeague(\'' + lid + '\',\'' + escHtml(l.name).replace(/'/g, "\\\\'") + '\')">Delete ' + escHtml(l.name) + '</button></div></div>';
         }
       }
     }
 
-    // Switch to this league
-    var isActive = currentProfile && currentProfile.activeLeague === lid;
+    // ── Switch to this league ──
     if (!isActive) {
-      dh += '<div style="padding:16px"><button class="btn full green" onclick="switchLeague(\'' + lid + '\')">Switch to ' + escHtml(l.name) + '</button></div>';
+      dh += '<div style="margin:8px 0 24px"><button class="league-btn league-btn--brass" style="width:100%" onclick="switchLeague(\'' + lid + '\')">Switch to ' + escHtml(l.name) + '</button></div>';
     }
 
+    dh += '</div>'; // hq-grid__main
+
+    // ── Agate rail — About + pull quote ──
+    dh += '<aside class="hq-grid__rail-right" aria-label="League notes">';
+    if (l.description) {
+      dh += '<div class="hq-rail-module"><div class="hq-rail-module__eyebrow">About</div>';
+      dh += '<p style="font-family:var(--font-display);font-style:italic;font-size:15.5px;line-height:1.5;color:var(--cb-ink);margin:0">' + escHtml(l.description) + '</p></div>';
+    }
+    dh += '<div class="hq-rail-module"><div class="hq-rail-module__eyebrow">Clubhouse</div>';
+    dh += '<p style="font-family:var(--font-display);font-style:italic;font-size:17px;line-height:1.4;color:var(--cb-ink-soft);margin:8px 0 0">"Community over competition. Always."</p></div>';
+    dh += '</aside>';
+
+    dh += '</div>'; // hq-grid
     el.innerHTML = dh;
 
     // Async load members
@@ -346,40 +466,40 @@ function _loadLeagueMembers(lid, league) {
     var p = PB.getPlayer(uid);
     if (!p) return;
     var role = uid === league.commissioner ? "Commissioner" : (league.admins && league.admins.indexOf(uid) !== -1) ? "Admin" : "Member";
-    var roleColor = role === "Commissioner" ? "var(--gold)" : role === "Admin" ? "var(--blue)" : "var(--muted)";
-    mh += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">';
-    mh += renderAvatar(p, 32, true);
-    mh += '<div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(p.name || p.username) + '</div>';
-    mh += '<div style="font-size:9px;color:' + roleColor + ';font-weight:600">' + role + '</div></div>';
+    var roleColor = role === "Commissioner" ? "var(--cb-brass)" : role === "Admin" ? "var(--cb-slate)" : "var(--cb-mute)";
+    mh += '<div class="league-row">';
+    mh += renderAvatar(p, 34, true);
+    mh += '<div style="flex:1;min-width:0"><div class="league-row__name">' + escHtml(p.name || p.username) + '</div>';
+    mh += '<div class="league-row__role" style="color:' + roleColor + '">' + role + '</div></div>';
     if (currentUser && league.commissioner === currentUser.uid && uid !== currentUser.uid) {
       var isAdmin = league.admins && league.admins.indexOf(uid) !== -1;
-      mh += '<button class="btn-sm outline" style="font-size:8px" onclick="toggleLeagueAdmin(\'' + lid + '\',\'' + uid + '\',' + isAdmin + ')">' + (isAdmin ? "Remove Admin" : "Make Admin") + '</button>';
+      mh += '<button class="league-btn league-btn--ghost league-btn--sm" onclick="toggleLeagueAdmin(\'' + lid + '\',\'' + uid + '\',' + isAdmin + ')">' + (isAdmin ? "Remove admin" : "Make admin") + '</button>';
     }
     mh += '</div>';
   });
-  el.innerHTML = mh || '<div style="font-size:11px;color:var(--muted)">No members</div>';
+  el.innerHTML = mh || '<div class="league-empty">Just you so far.</div>';
 }
 
 function _loadJoinRequests(lid) {
   var el = document.getElementById("leagueJoinRequests");
   if (!el || !db) return;
   db.collection("leagues").doc(lid).collection("joinRequests").where("status","==","pending").get().then(function(snap) {
-    if (snap.empty) { el.innerHTML = '<div style="font-size:11px;color:var(--muted);padding:8px 0">No pending requests</div>'; return; }
+    if (snap.empty) { el.innerHTML = '<div class="league-empty">No pending requests.</div>'; return; }
     var rh = '';
     snap.forEach(function(doc) {
       var req = doc.data();
-      rh += '<div class="card" style="margin-bottom:6px"><div style="padding:12px 16px;display:flex;align-items:center;gap:10px">';
       var reqPlayer = PB.getPlayer(req.uid);
-      rh += renderAvatar(reqPlayer || {name:req.name,id:req.uid}, 36, false);
-      rh += '<div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(req.name) + '</div>';
+      rh += '<div class="league-row">';
+      rh += renderAvatar(reqPlayer || { name: req.name, id: req.uid }, 36, false);
+      rh += '<div style="flex:1;min-width:0"><div class="league-row__name">' + escHtml(req.name) + '</div>';
       var meta = [];
-      if (req.handicap) meta.push("Hcap " + req.handicap);
+      if (req.handicap) meta.push("Hcp " + req.handicap);
       if (req.homeCourse) meta.push(req.homeCourse);
-      rh += '<div style="font-size:9px;color:var(--muted)">' + (meta.join(" \u00b7 ") || "Level " + (req.level||1)) + '</div></div>';
-      rh += '<div style="display:flex;gap:4px">';
-      rh += '<button class="btn-sm green" style="font-size:9px;padding:6px 10px" onclick="approveJoinRequest(\'' + lid + '\',\'' + req.uid + '\')">Approve</button>';
-      rh += '<button class="btn-sm" style="font-size:9px;padding:6px 10px;background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-rgb),.2);color:var(--red)" onclick="denyJoinRequest(\'' + lid + '\',\'' + req.uid + '\')">Deny</button>';
-      rh += '</div></div></div>';
+      rh += '<div class="league-row__meta">' + escHtml(meta.join(" · ") || "Level " + (req.level||1)) + '</div></div>';
+      rh += '<div style="display:flex;gap:6px;flex-shrink:0">';
+      rh += '<button class="league-btn league-btn--brass league-btn--sm" onclick="approveJoinRequest(\'' + lid + '\',\'' + req.uid + '\')">Approve</button>';
+      rh += '<button class="league-btn league-btn--sm" style="border-color:rgba(var(--cb-claret-rgb),.3);background:rgba(var(--cb-claret-rgb),.08);color:var(--cb-claret)" onclick="denyJoinRequest(\'' + lid + '\',\'' + req.uid + '\')">Deny</button>';
+      rh += '</div></div>';
     });
     el.innerHTML = rh;
   }).catch(function() { el.innerHTML = renderLoadError("join requests", "_loadJoinRequests('" + lid + "')"); });

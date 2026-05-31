@@ -2007,6 +2007,109 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   LEAGUE HUB — CLUBHOUSE_SPEC-HQ-3j (W1.S13)
+   Editorial League page (3j.1), My Leagues grid (3j.2), Lone Wolf (3j.1.D).
+   Reuses roster-masthead / hq-grid / hq-rail-module scaffolds; the league-*
+   classes below cover the net-new hero stat-strip, card grid, and path cards.
+   Spec token alias: --cb-chalk-deep → --cb-chalk-2; --cb-line → --cb-chalk-3.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.league-wrap { max-width: 680px; margin: 0 auto; padding: 0 16px 32px; }
+.league-wrap--wide { max-width: 960px; }
+
+/* Masthead row — headline left, Commissioner Settings pill right (3j.1.A.2) */
+.league-masthead__row { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; }
+.league-settings-pill {
+  flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+  text-transform: uppercase; color: var(--cb-brass);
+  background: transparent; border: 1px solid var(--cb-brass); border-radius: 999px;
+  padding: 8px 16px; cursor: pointer; text-decoration: none; line-height: 1;
+  transition: background .18s ease, color .18s ease;
+}
+.league-settings-pill:hover { background: var(--cb-brass); color: var(--cb-chalk); }
+
+/* Section A — League hero stat-strip; brass double rule on chalk-2 (3j.1.A.4) */
+.league-hero { background: var(--cb-chalk-2); border-top: 2px solid var(--cb-brass); border-bottom: 2px solid var(--cb-brass); margin: 4px 0 24px; }
+.league-hero__comm { display: flex; align-items: center; gap: 12px; padding: 16px 18px 14px; border-bottom: 1px solid var(--cb-chalk-3); }
+.league-hero__comm-name { font-family: var(--font-display); font-style: italic; font-size: 17px; color: var(--cb-ink); }
+.league-hero__comm-role { font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--cb-brass); }
+.league-hero__badge { margin-left: auto; flex-shrink: 0; font-family: var(--font-mono); font-size: 9px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--cb-brass); border: 1px solid var(--cb-brass); border-radius: 4px; padding: 4px 8px; }
+.league-hero__strip { display: flex; }
+.league-stat { flex: 1; min-width: 0; padding: 16px 14px; display: flex; flex-direction: column; gap: 6px; }
+.league-stat + .league-stat { border-left: 1px solid var(--cb-chalk-3); }
+.league-stat__label { font-family: var(--font-mono); font-size: var(--hq-eyebrow-size); font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--cb-mute); }
+.league-stat__value { font-family: var(--font-display); font-size: 30px; font-weight: 700; color: var(--cb-ink); line-height: 1; font-variant-numeric: lining-nums tabular-nums; font-variation-settings: "opsz" 60; }
+.league-stat__value--sm { font-size: 18px; font-style: italic; }
+
+/* Editorial section header (shared by detail sections) */
+.league-section { margin: 0 0 24px; }
+.league-section__head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 14px; gap: 12px; }
+.league-section__eyebrow { font-family: var(--font-mono); font-size: var(--hq-eyebrow-size); font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: var(--cb-brass); margin-bottom: 4px; }
+.league-section__title { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--cb-ink); line-height: 1.2; }
+.league-section__meta { flex-shrink: 0; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .5px; color: var(--cb-mute-soft); }
+
+/* Invite code */
+.league-invite { background: var(--cb-chalk-2); border: 1px solid var(--cb-chalk-3); border-radius: var(--radius-md); padding: 18px; text-align: center; }
+.league-invite__code { font-family: var(--font-mono); font-size: 22px; font-weight: 700; letter-spacing: 4px; color: var(--cb-brass); }
+.league-invite__hint { font-family: var(--font-ui); font-size: 11px; color: var(--cb-mute); margin-top: 8px; }
+
+/* Member / request rows */
+.league-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--cb-chalk-3); }
+.league-row__name { font-family: var(--font-display); font-style: italic; font-size: 16px; color: var(--cb-ink); }
+.league-row__role { font-family: var(--font-mono); font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.league-row__meta { font-family: var(--font-mono); font-size: 10px; color: var(--cb-mute); }
+
+/* My Leagues card grid (3j.2) */
+.league-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+@media (min-width: 560px) { .league-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1100px) { .league-grid { grid-template-columns: 1fr 1fr 1fr; } }
+.league-card { display: block; background: var(--cb-chalk-2); border: 1px solid var(--cb-chalk-3); border-radius: var(--radius-md); padding: var(--space-5); text-decoration: none; cursor: pointer; transition: border-color .18s ease, transform .18s ease; }
+.league-card:hover { border-color: var(--cb-brass); transform: translateY(-2px); }
+.league-card--active { border-top: 4px solid var(--cb-brass); }
+.league-card__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 14px; }
+.league-card__name { font-family: var(--font-display); font-style: italic; font-size: 22px; font-weight: 700; color: var(--cb-ink); line-height: 1.15; }
+.league-card__role { flex-shrink: 0; font-family: var(--font-mono); font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 4px 8px; border-radius: 4px; border: 1px solid; }
+.league-card__role--comm { color: var(--cb-brass); border-color: var(--cb-brass); }
+.league-card__role--member { color: var(--cb-mute); border-color: var(--cb-chalk-3); }
+.league-card__stats { display: flex; gap: 18px; margin-bottom: 14px; }
+.league-card__stat-val { font-family: var(--font-display); font-size: 20px; font-weight: 700; color: var(--cb-ink); font-variant-numeric: tabular-nums; line-height: 1; }
+.league-card__stat-lbl { font-family: var(--font-mono); font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--cb-mute); margin-top: 4px; }
+.league-card__foot { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--cb-chalk-3); }
+.league-card__open { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--cb-brass); }
+
+/* Lone Wolf path cards (3j.1.D) — three equal-weight */
+.lonewolf-grid { display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 8px; }
+@media (min-width: 720px) { .lonewolf-grid { grid-template-columns: 1fr 1fr 1fr; } }
+.lonewolf-card { display: flex; flex-direction: column; background: var(--cb-chalk-2); border: 1px solid var(--cb-chalk-3); border-radius: var(--radius-md); padding: 22px 20px; cursor: pointer; transition: border-color .18s ease, transform .18s ease; }
+.lonewolf-card:hover { border-color: var(--cb-brass); transform: translateY(-2px); }
+.lonewolf-card__icon { color: var(--cb-brass); margin-bottom: 14px; }
+.lonewolf-card__title { font-family: var(--font-display); font-style: italic; font-size: 22px; font-weight: 700; color: var(--cb-ink); margin-bottom: 8px; }
+.lonewolf-card__body { font-family: var(--font-ui); font-size: 13px; line-height: 1.5; color: var(--cb-mute); flex: 1; }
+.lonewolf-card__cta { margin-top: 16px; font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--cb-brass); }
+
+/* Actions + buttons */
+.league-actions { display: flex; gap: 10px; margin: 8px 0 24px; }
+.league-btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-family: var(--font-mono); font-size: 12px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 13px 16px; border-radius: var(--radius-md); cursor: pointer; border: 1px solid var(--cb-brass); transition: background .18s ease, color .18s ease; }
+.league-btn--brass { background: var(--cb-brass); color: var(--cb-chalk); }
+.league-btn--brass:hover { background: var(--cb-brass-deep); border-color: var(--cb-brass-deep); }
+.league-btn--ghost { background: transparent; color: var(--cb-brass); }
+.league-btn--ghost:hover { background: var(--cb-chalk-2); }
+.league-btn--sm { flex: 0 0 auto; font-size: 10px; padding: 8px 12px; }
+
+/* Discover + danger + empty */
+.league-discover { margin-top: 28px; }
+.league-danger { background: rgba(var(--cb-claret-rgb), .05); border: 1px solid rgba(var(--cb-claret-rgb), .25); border-radius: var(--radius-md); padding: 16px 18px; }
+.league-danger__hint { font-family: var(--font-ui); font-size: 11px; color: var(--cb-mute); margin-bottom: 10px; line-height: 1.5; }
+.league-danger__btn { width: 100%; font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 11px; border-radius: var(--radius-sm); background: rgba(var(--cb-claret-rgb), .08); border: 1px solid rgba(var(--cb-claret-rgb), .3); color: var(--cb-claret); cursor: pointer; }
+.league-empty { padding: 26px 12px; text-align: center; font-family: var(--font-display); font-style: italic; font-size: 15.5px; line-height: 1.5; color: var(--cb-mute-faint); }
+.league-empty a, .league-empty__cta { color: var(--cb-brass); cursor: pointer; font-style: normal; font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+
+/* Settings toggles */
+.league-toggle { display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--cb-chalk-3); }
+.league-toggle:last-child { border-bottom: 0; }
+.league-toggle__label { font-family: var(--font-ui); font-size: 13px; color: var(--cb-ink); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
    ANIMATED RINGS — Premium cosmetic avatar borders
    ═══════════════════════════════════════════════════════════════════════════ */
 /* ── RING ANIMATIONS — Premium cosmetics must be UNMISTAKABLE ── */
