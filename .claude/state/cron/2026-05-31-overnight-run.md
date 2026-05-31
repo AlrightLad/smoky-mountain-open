@@ -1151,3 +1151,85 @@ Three concrete questions:
 - `docs/reports/app-health.html` — engineer's own regen-all output (FLAT 86.8 A-; A11 test-LOC label 1052→1041 + generated_at + audit_trigger pointer)
 
 No code changes. No proposals. No FIQ writes. No bug-report state moves (inbox absent). Concurrent E2E WIP (emu log + .gitignore + playwright.config.js + 5 flow specs + auth.js + seed-baseline.js + vite.config.js + 1 untracked console-noise.js) deliberately left unstaged.
+
+---
+
+# Overnight triage — 2026-05-31 (cycle CF — fourteenth fire)
+
+**Started:** 2026-05-31T17:01:53Z (cron-fired; regen-all START timestamp)
+**Finished:** 2026-05-31T17:01:58Z ("ALL DASHBOARDS REGENERATED"; ~5s pipeline)
+**Mode:** Heartbeat-only branch per runbook (FIQ + bug-reports inbox both absent)
+**Cycle:** CF (118th consecutive empty-inbox cycle; ~61m gap from cycle CE's 16:00:54Z regen START — 70th consecutive ~1h-cadence cycle since cycle M).
+
+## Inbox state at run-start (cycle CF)
+
+- `.claude/state/founder-input-queue/` — **directory does not exist** (`test -d` → MISSING, `find -type f` → empty)
+- `.claude/state/bug-reports/` — **entire tree absent** (no `inbox/`, no `triaged/`)
+- `.claude/state/proposals/pending/` — only `.gitkeep` (no pending proposals)
+- `.claude/state/proactive-backlog.md` — **absent** (no demotions this cycle)
+- `quota-status.json` — `data_source=auto-derived`, all caps null (no org-cap signal)
+- **Working tree at run-start: CLEAN** (`git status --short` → empty). HEAD = `7b5a736f` (`cron(routine): post-commit dashboard regen`). **First fully-clean run-start since the CA–CE concurrent-E2E-WIP era** — the inherited dirty set (playwright.config.js + 5 flow specs + auth.js + seed-baseline.js + vite.config.js + emu log + .gitignore + console-noise.js) was cleared upstream by the commit that produced HEAD `7b5a736f`. This is the direct cause of the A12 recovery in Step 3.
+
+Per runbook: "If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 only and exit."
+
+## Step 1 — FIQ triage (cycle CF)
+
+- FIQ entries triaged: **0** (queue directory + json store both absent)
+- Grade breakdown: N/A — A:0 B:0 C:0 D:0 F:0
+- IDs: none
+
+## Step 2 — Bug-report triage (cycle CF)
+
+- Bug reports processed: **0** (inbox tree absent)
+- Dispositions: none
+- No P3e discussion bubbles opened (nothing to deliberate)
+
+## Step 3 — Heartbeat (cycle CF)
+
+### 3a — `scripts/regen-all.ps1`
+
+- Ran end-to-end START 17:01:53Z → **=== ALL CHECKS PASSED ===**, **round-trip test PASS**, "ALL DASHBOARDS REGENERATED at 2026-05-31T17:01:58Z". **67th consecutive clean canonical regen-all** (cycles L–CF).
+- Heartbeat `regen-all-last-pass.json` written.
+- All ~30 guards green (round-trip 4-view swap + transcript tallies 3 bubbles + nav 9-link × 9 pages + meter-wiring 7/7 + founder-queue 7/7 + quota-type-enum + cross-dash proposals_pending=0 + lifecycle shipped=7 + amendments applied=28 + escalations applied=3 + theme no-raw-hex + no-charts + protected-layouts 23/23 main-flows sentinels + proposal-readiness 0 deferred + install-scripts 7 parse + scroll-reachability 5/0/0 + quota-status auto-derived + pause-discipline clean + wiring 5/5).
+- One INFORMATIONAL non-failure: `user-context-gate` YELLOW `~` on main-flows.html (~23934 min since last capture 2026-05-14; standing, Founder runs `founder-context-capture.mjs` to seed — not a blocker). `regen-main-flows` WARN: same 6 long-standing orphan components (actor.guest, actor.invitee, dist.capacitor-ios, ext.open-meteo, fn.expire-suspensions, fn.join-league) — not a regression.
+- Telemetry: events **18795** (up from CE's 18733, **+62**), handoffs=1, bubbles=7, proposals_pending=0. meter-wiring 7/7 → HALT-25 NOT in effect.
+- **APP-HEALTH RISE 88.3 → 88.8 (A-)**, grade held A-, **0 attention items** (`founder_attention=[]`, `agent_attention=[]`). Single file changed in working tree: `docs/reports/app-health.html` (12 ins/18 del). **Diff baseline was 88.3 at `generated_at` 16:37:19Z** — the post-commit regen captured when HEAD `7b5a736f` cleaned the tree, NOT cycle CE's 86.8; the 86.8→88.3 jump (the A12 recovery on the clean) was already committed. My 17:01 cron regen reads 88.8 as MORE of the rolling-10 window's dirty-tree skip-dirty entries age out: `A12_operational` label `pipeline=green · 7 recent skip-dirty` → `pipeline=green · 2 recent skip-dirty`, and the `what: "7 of last 10 cron watcher runs hit skip-dirty"` line is removed. **ATTRIBUTION: DISOWNED** — the +0.5 rise is rolling-window recovery mechanics (CA–CE dirty-tree skip-dirty entries aging out now the tree is clean+committed), NOT my work; it is precisely the recovery cycle CE foretold ("both clear when that WIP commits") — **CONFIRMED**. 25th attribution case, first **RISE-DISOWNED-ON-CLEAN-RECOVERY** variant.
+
+### 3b — Wellness state refresh
+
+- `engineer.json` + `critic.json` updated for cycle CF (heartbeat-only participants). Status remains `active` for both; no rest triggered (heartbeat-only load light). No agent pushed past a *new* threshold this cycle — `tokens_consumed` threshold remains crossed (standing); Founder token-counter-semantics decision still LIVE (carry-over, F1a token-meter gap). Checkpoints advanced 16:00:00Z → 17:01:00Z.
+
+## Step 4 — Session journal
+
+This section.
+
+## Step 5 — Commit
+
+Staged via explicit pathspec (own files only, per `cron-sweeps-staged-work` discipline): `wellness/engineer.json` + `wellness/critic.json` + this journal + the engineer's own `docs/reports/app-health.html` regen output. The tree was clean at run-start, so there was **no concurrent WIP to leave unstaged** this cycle. **DO NOT push** (runbook discipline — Founder reviews local diff first). Commit message per runbook exact format.
+
+## Blockers requiring Founder attention (cycle CF)
+
+- **None new / none blocking.** No HALT criteria tripped. No scope-creep candidates.
+- The A12 skip-dirty sub-signal has now **fully recovered** (`7 recent` → `2 recent`, trending to 0 as the window clears) — the concurrent-WIP-sensitivity flagged across CA–CE resolved on the upstream commit, as predicted. No A11 test-LOC twitch this cycle (tree clean).
+- **Standing carry-overs (unchanged):**
+  1. **Token-counter semantics** — still LIVE (F1a token-meter gap). Founder decision options recorded across prior cycles: (a) reset tokens per cron fire, (b) raise threshold, (c) auto-trigger rest when crossed-while-active, (d) leave current convention.
+  2. **Stale `last-verify.json`** — a cycle-K artifact (`written_at` 2026-05-25T01:01:52Z, `reason` `wellness-threshold-rest-suggested`, `resume_after` = `"founder-decision-on-token-counter-semantics"` — a **non-timestamp Founder-decision boundary**) remains on disk. It is the physical artifact of carry-over #1. NOT acted on this cycle: resolving it crosses a Founder-decision boundary, and it has not blocked any of the 13+ heartbeat cycles since 2026-05-25 (cycles navigate it as a standing item). Surfaced, not actioned. HALT-24's auto-resume timer is N/A here because `resume_after` is not a timestamp.
+  3. `user-context-gate` main-flows.html capture ~23934 min stale — Founder runs `node scripts/visual-audit/founder-context-capture.mjs` before next ship-close.
+
+## Critic metric-integrity attestation (METRIC_INTEGRITY_PROTOCOL §3.1) — cycle CF
+
+Three concrete questions:
+1. **Bug-report diagnoses real / not waved off?** N/A — inbox tree absent (verified via `test -d` MISSING + `find -type f` empty this cycle, not assumed). No diagnoses to scrutinize.
+2. **Proposals cite a specific screen/state/edge-case / not vague?** N/A — **zero proposals authored**, and NOT authoring one was correct: the app-health rise is a self-clearing rolling-window recovery of the previously-flagged A12 skip-dirty sub-signal, now resolved by the upstream commit; a remediation proposal would target a condition that already recovered (Rule-2 gaming).
+3. **FIQ grades honest / not inflated?** N/A — zero live FIQ entries.
+
+**Substantive-vs-fluff verdict: SUBSTANTIVE, attested CLEANLY.** Critic independently confirmed via verbatim `app-health.html` git diff (12 ins/18 del) that `overall_score` moved 88.3→88.8 (a genuine RISE, not flat), grade held A-, attention lists are empty, and the only structural change is the A12 skip-dirty count dropping 7→2 with its "7 of last 10" what-line removed. The causal chain (Founder/post-commit cleaned the tree at HEAD `7b5a736f` → A12 skip-dirty entries age out of the rolling-10 window → app-health recovers) is traceable to the run-start `git status` (clean) and the diff baseline `generated_at` 16:37:19Z. The rise is **disowned** as mechanical recovery — no credit claimed. No-proposal call reaffirmed. Commit pathspec scoped to own files; tree was clean so nothing concurrent to leave untouched. Pause-discipline F1a honored: 5 state-changing ops (regen-all + 2 wellness writes + journal + 1 commit), no API-error/org-cap signal in any tool result. Nothing fabricated on an empty-queue night; the honest report is "heartbeat-only, 67th consecutive clean regen, score ROSE +0.5 on a disowned rolling-window recovery, queues empty." Ship closes.
+
+## Files changed in this cycle CF run
+
+- `.claude/state/wellness/engineer.json` — cycle CF update
+- `.claude/state/wellness/critic.json` — cycle CF update
+- `.claude/state/cron/2026-05-31-overnight-run.md` — this journal (cycle CF section appended)
+- `docs/reports/app-health.html` — engineer's own regen-all output (RISE 88.3→88.8 A-; A12 skip-dirty 7→2; generated_at 16:37:19Z→17:01:57Z)
+
+No code changes. No proposals. No FIQ writes. No bug-report state moves (inbox absent). Working tree was clean at run-start — no concurrent WIP to leave unstaged.
