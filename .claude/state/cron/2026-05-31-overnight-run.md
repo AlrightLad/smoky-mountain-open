@@ -1288,3 +1288,63 @@ This cycle ran ~10 state-changing ops (3× regen-all + diag write/rm + PROP-015 
 - `docs/reports/app-health.html` — engineer's own regen-all output (88.8→88.1 A-; A12 skip-dirty 0→1 from concurrent-cron dirty-tree skip; generated_at 18:00:40Z→18:09:42Z)
 
 No code changes (PROP-015 is a proposal, not self-applied). No FIQ writes. No bug-report state moves (inbox absent).
+
+---
+
+# Cycle CH — overnight triage (2026-05-31, SIXTEENTH fire)
+
+**Branch taken:** heartbeat-only (both queues empty) — and this cycle WAS a clean no-op (contrast cycle CG, which surfaced the round-trip flake). The heartbeat did exactly its minimal job.
+
+**Started:** 2026-05-31T19:01:18Z (regen-all "ALL DASHBOARDS REGENERATED" timestamp). **HEAD at run-start:** `854ff25d` (`cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)`). **Working tree at run-start: CLEAN.**
+
+## Step 1 — FIQ triage (cycle CH)
+- **FIQ entries triaged:** 0 (A:0 B:0 C:0 D:0 F:0). `.claude/state/founder-input-queue/` directory ABSENT (`test -d` → MISSING; `find -type f` → empty). `.claude/state/founder_input_queue.json` also absent. `.claude/state/proactive-backlog.md` absent (no demotions).
+- IDs: none.
+
+## Step 2 — Bug-report triage (cycle CH)
+- **Bug reports processed:** 0. `.claude/state/bug-reports/` tree ABSENT (no `inbox/`, no `triaged/`).
+- Dispositions: none. No P3e discussion bubbles opened (nothing to deliberate).
+- **New proposals authored:** 0. PROP-015 (authored cycle CG, lane 1 Substrate Discipline, ~45 LOC) remains PENDING and untouched — still awaiting Founder application. No proposal manufactured this cycle (no defect to remediate; the CG round-trip flake did not recur).
+
+## Step 3 — Heartbeat (cycle CH)
+### 3a — `scripts/regen-all.ps1`
+- Ran end-to-end 19:01:18Z → **=== ALL CHECKS PASSED ===**, **round-trip test PASS** on the **FIRST run** — the cycle-CG scroll-reachability timing flake did **NOT** recur.
+- Heartbeat `regen-all-last-pass.json` written (`last_pass_at_utc` 19:01:18Z range).
+- All ~30 guards green (round-trip 4-view swap + scroll-reachability 5/0/0 + escalations applied=3 + meter-wiring + proposal-readiness 0 deferred + wiring 5/5 + pause-discipline clean + …).
+- **One standing YELLOW (not new, not a blocker):** `user-context-gate` ~ `main-flows.html` modified long after the most recent user-context capture (2026-05-14T23-07-48Z). **Founder-action:** run `node scripts/visual-audit/founder-context-capture.mjs` to seed a fresh capture before ship-close. Carried, not resolvable by agent.
+
+### App-health
+- `88.8 → 88.8` — **HELD A-** (overall_score + overall_grade are unchanged *context* lines in the verbatim diff — read, not guessed). The only sub-metric movement was the **predicted RECOVERY**: operational label `pipeline=green · 2 recent skip-dirty` → `pipeline=green · 0 recent skip-dirty`, as the clean-tree run cleared cycle-CG's concurrent-cron skip-dirty churn. Honest recovery, NOT claimed as new engineering. `generated_at` 18:16:03Z → 19:01:18Z.
+
+### 3b — Wellness
+- `engineer.json` + `critic.json` → cycle CH. Both `tokens_consumed` threshold standing-crossed (heartbeat-light); both `status: active`, **no rest** taken. No agent pushed past a NEW threshold this cycle.
+
+## Wellness state changes
+- engineer: cycle CG→CH, status active (no rest), tokens cumulative ~3.85M since last rest (light cycle).
+- critic: cycle CG→CH, status active (no rest), tokens cumulative ~0.92M since last rest (light cycle).
+- No threshold newly crossed; no rest triggered.
+
+## Blockers / Founder attention
+1. **PROP-015 awaiting Founder application** (standing from cycle CG) — round-trip ship-gate flake retry + no-op rollback fix. Not a HALT; not blocking other work. The gate did not flake this cycle, but the hardening rationale stands.
+2. **`user-context-gate` YELLOW** on `main-flows.html` — Founder runs `founder-context-capture.mjs` to clear. Standing.
+3. **Stale `last-verify.json`** (cycle-K, Founder-decision-gated) remains on disk, unacted-on per convention. Standing.
+4. **F1a token-meter gap** LIVE (PROP-003 sidecar unshipped). HALT-25 did NOT fire (agent-feel "fine"; zero API-error/org-cap signals across all tool calls).
+- No NEW blockers this cycle.
+
+## Op-count note
+Clean **5-op** heartbeat (regen-all + 2 wellness writes + journal + commit) — within the nominal heartbeat budget, no investigation overrun (contrast cycle CG's ~10).
+
+## Critic metric-integrity attestation (METRIC_INTEGRITY_PROTOCOL §3.1) — cycle CH
+1. **Bug-report diagnoses real / not waved off?** N/A — inbox tree absent; and no flake surfaced (regen-all passed first run), so nothing was waved off.
+2. **Proposals cite a specific screen/state/edge-case / not vague?** N/A — ZERO new proposals, the correct outcome absent a defect. The critic explicitly did NOT manufacture a proposal to look productive.
+3. **FIQ grades honest?** N/A — zero live FIQ entries.
+
+**Verdict: SUBSTANTIVE (honest-minimal), attested CLEANLY.** The integrity test for a clean cycle is resistance to inventing work, and it held: no fake proposal, app-health reported as HELD (not spun as a gain), and the sole sub-metric move attributed honestly to the predicted clean-tree recovery. Nothing fabricated to look productive. Ship closes.
+
+## Files changed in this cycle CH run
+- `.claude/state/wellness/engineer.json` — cycle CH update
+- `.claude/state/wellness/critic.json` — cycle CH update
+- `.claude/state/cron/2026-05-31-overnight-run.md` — this journal (cycle CH section appended)
+- `docs/reports/app-health.html` — engineer's own regen-all output (88.8 HELD A-; skip-dirty 2→0 clean-tree recovery; generated_at 18:16:03Z→19:01:18Z)
+
+No code changes. No proposals authored (PROP-015 untouched). No FIQ writes. No bug-report state moves (both trees absent). Working tree was clean at run-start — no concurrent WIP to leave unstaged.
