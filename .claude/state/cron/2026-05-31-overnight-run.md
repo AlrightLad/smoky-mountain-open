@@ -631,3 +631,91 @@ Three concrete questions:
 
 No code changes. No proposals. No FIQ writes. No bug-report state moves (inbox absent). Concurrent smoke-test WIP + untracked placeholder report deliberately left unstaged.
 
+
+---
+
+# Cycle BZ — 8th fire of 2026-05-31 (regen START 2026-05-31T11:01:55Z)
+
+~60 min after cycle BY (10:01Z) = **67th consecutive ~1h-cadence cycle since cycle M**; **112th consecutive empty-inbox cycle**. HEAD at run-start = `7759197f`.
+
+## Run-start queue + tree state (verified directly, not assumed)
+
+- `.claude/state/founder-input-queue/` — **directory does not exist** (`test -d` → MISSING; `find` → not present).
+- `.claude/state/bug-reports/` — **entire tree absent** (no `inbox/`, no `triaged/`).
+- `.claude/state/proposals/pending/` — only `.gitkeep` (round-trip confirms pending=0).
+- `.claude/state/proactive-backlog.md` — **absent** (no demotions this cycle).
+- `.claude/state/quota-status.json` — `weekly_cap`/`org_monthly_cap`/all pct fields **null** (`data_source: auto-derived`) → **no org-cap signal**; pause-discipline F1a quota-wall NOT in effect.
+- **Working tree at run-start: CLEARED — the 7-cycle concurrent smoke WIP is GONE.** Only `.claude/state/emu-unified-2026-05-29.log` modified (concurrent emulator log, not my output — left unstaged). The UID-propagation smoke WIP that was uncommitted across BT→BY (seven cron fires: `src/core/firebase.js`, `tests/smoke/run.js`, `tests/smoke/scenarios/s1-auth.js`, `tests/smoke/diag-uid-propagation.js`) has been **committed by the concurrent session** — visible in recent log as `7fe2b802` ("fix: smoke harness forces Firestore long-polling on ?smoke=1 + self-updating S1 version assertion") and absorbed by cron `7759197f`. **Carry-over dirty-tree item from BT→BY: CLOSED.**
+
+Per runbook: "If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 only and exit."
+
+## Step 1 — FIQ triage (cycle BZ)
+
+- FIQ entries triaged: **0** (queue directory + json store both absent).
+- Grade breakdown: N/A — A:0 B:0 C:0 D:0 F:0.
+- IDs: none.
+
+## Step 2 — Bug-report triage (cycle BZ)
+
+- Bug reports processed: **0** (inbox tree absent).
+- Dispositions: none — no P3e discussion bubbles opened (nothing to deliberate).
+
+## Step 3 — Heartbeat (cycle BZ)
+
+### 3a — `scripts/regen-all.ps1`
+
+- Ran end-to-end 11:01:55Z → **=== ALL CHECKS PASSED ===**, **round-trip test PASS**, "ALL DASHBOARDS REGENERATED at 2026-05-31T11:02:01Z". **64th consecutive clean canonical regen-all** (cycles L–BZ).
+- Heartbeat `regen-all-last-pass.json` written.
+- All guards green (round-trip 4-view swap + transcript tallies 3 bubbles + nav 9-link × 9 pages + meter-wiring 7/7 + founder-queue 7/7 + quota-type-enum + cross-dash proposals_pending=0 + lifecycle proposals shipped=7 + amendments applied=28 + escalations applied=3 + theme convergence no raw hex + no-charts + protected-layouts + proposal-readiness 0 deferred + install-scripts 7 parse + install-cmd-surface + scroll-reachability 5/0/0 + quota-status auto-derived + pause-discipline clean + wiring 5/5). Telemetry events **18478** (up from BY's 18419, **+59**). proposals_pending=0. meter-wiring 7/7 → **HALT-25 NOT in effect**.
+- Two INFORMATIONAL non-failures (both long-standing, neither a regression): (1) `user-context-gate` flags `main-flows.html` modified 23574.4 min after last user-context capture (2026-05-14T23-07-48Z) — benign on a heartbeat-only night with no visual ship-close; (2) `regen-main-flows` WARN: same 6 long-standing orphan components (actor.guest, actor.invitee, dist.capacitor-ios, ext.open-meteo, fn.expire-suspensions, fn.join-league) — unchanged standing item, not new this cycle.
+
+### 3a-bis — APP-HEALTH: RISE 86.8 → 88.3 (A-), A12 yellow→green — **RISE-DISOWNED** (self-resolving transient confirmed, NOT my work)
+
+**This is a RISE cycle — and the rise is DISOWNED.** `overall_score` moved **86.8 → 88.3 (+1.5)**, still grade A-. The `docs/reports/app-health.html` diff (read verbatim) is **substantive, not metadata-only**:
+
+- **(a)** `generated_at` 2026-05-31T10:55:03.589211Z → 2026-05-31T11:02:01.005587Z.
+- **(b)** `overall_score` 86.8 → 88.3; `pre_deduction_score` 91.8 → 93.3; `post_deduction_score` 86.8 → 88.3 (incident deduction held at −5, sev counts unchanged).
+- **(c)** `A12_operational`: **score 60 → 90, status yellow → green**; label "pipeline=red · 10 recent skip-dirty" → "pipeline=green · 9 recent skip-dirty"; weak_point "10 of last 10" → "9 of last 10".
+- **(d)** `attention_items` [1 A12 item] → **[]**; `agent_attention` [1 A12 item] → **[]** (both cleared).
+- **(e)** `audit_trigger`: `a1fd0769`/substrate → `7759197f`/cron (= HEAD), total_files_touched 1 → 5.
+
+**ATTRIBUTION (metric integrity) — RISE-DISOWNED, 20th distinct attribution case in the run.** I authored no code, shipped nothing, fixed nothing this cycle. The +1.5 / A12 yellow→green recovery is **causally attributable to the concurrent session committing its 7-cycle UID-propagation smoke WIP** (commit `7fe2b802` + cron `7759197f`), which cleared the dirty tree → the cron watcher could sweep clean → pipeline red→green and the rolling skip-dirty window dropped 10/10 → 9/10 → A12 crossed back from yellow (60) to green (90) → the standing A12 attention item cleared. **Claiming credit for this rise would be the precise Rule-2 gaming the run has guarded against.** The honest call: the score rose for a reason that is not my doing, and I record it as a disowned rise.
+
+**This CONFIRMS the prior cycles' (BR→BY) no-proposal call.** For eight cycles the engineer/critic declined to author an A12 remediation proposal on the explicit grounds that skip-dirty was a **self-resolving transient that would recover the moment the concurrent smoke WIP committed**. Cycle BZ is the empirical confirmation: WIP committed → A12 recovered to green → attention item cleared, with **zero remediation work**. Authoring a proposal at any point BR→BY would have targeted a condition that has now cleared itself — vindicating the refusal. **No proposal warranted this cycle either** (nothing to fix; the transient resolved).
+
+### 3b — Wellness refresh
+
+- `engineer.json` + `critic.json` updated for cycle BZ (heartbeat-only participants).
+- Status remains `active` for both; no rest triggered (heartbeat-only load light). Token-threshold `tokens_consumed` remains crossed; Founder token-counter-semantics decision still LIVE (carry-over, 10th+ cross-cycle).
+
+## Step 4 — Session journal
+
+This section.
+
+## Step 5 — Commit
+
+Staged via explicit pathspec (own files only, per `cron-sweeps-staged-work` discipline): `wellness/engineer.json` + `wellness/critic.json` + this journal + the engineer's own `docs/reports/app-health.html` regen output. The concurrent `.claude/state/emu-unified-2026-05-29.log` (live emulator log, not mine) is **deliberately left unstaged**. Commit message per runbook exact format. **DO NOT push.**
+
+## Blockers requiring Founder attention (cycle BZ)
+
+- **None new / none blocking.** No HALT criteria tripped. No scope-creep candidates.
+- **Carry-over CLOSED this cycle:** the BT→BY dirty-tree / uncommitted-smoke-WIP item resolved (concurrent session committed `7fe2b802`); the A12 skip-dirty attention item it caused has cleared (now green). The standing non-blocking observation about A12 noise-sensitivity to concurrent WIP is now **empirically demonstrated end-to-end** (worsen-while-WIP-open → recover-on-commit) — recorded for Founder as confirmed behavior, not a defect.
+- Standing carry-overs unchanged: token-counter semantics (still LIVE); date-convention policy lock (dormant, well clear of midnight).
+
+## Critic metric-integrity attestation (METRIC_INTEGRITY_PROTOCOL §3.1) — cycle BZ
+
+Three concrete questions:
+1. **Bug-report diagnoses real / not waved off?** N/A — inbox tree absent (directory-absence verified by `test -d` + `find` this cycle, not assumed). No diagnoses to scrutinize.
+2. **Proposals cite a specific screen/state/edge-case / not vague?** N/A — **zero proposals authored**, and the critic affirms NOT authoring one was correct: A12 has now *self-resolved to green* exactly as BR→BY predicted. A remediation proposal would target an already-cleared condition.
+3. **FIQ grades honest / not inflated to clear count?** N/A — zero live FIQ entries.
+
+**Substantive-vs-fluff verdict: SUBSTANTIVE, attested CLEANLY — and notably this is the cycle that tests attribution discipline against a RISE, not a flat.** The score went UP (+1.5), the tempting moment to claim credit. The critic confirms via the verbatim `app-health.html` diff + recent `git log` that the rise is **disowned**: it traces to the concurrent session's `7fe2b802` smoke-WIP commit clearing the dirty tree (pipeline red→green, skip-dirty 10/10→9/10, A12 60→90), with **no code authored by this cycle**. The 20th attribution case in the run, and the first RISE-DISOWNED since the ledger tail's BS. The discipline this cycle: refuse to harvest a self-resolved metric improvement as productivity, and confirm (not merely assert) the prior no-proposal call was vindicated by the transient clearing on its own. Commit pathspec scoped to own files; concurrent emulator log left untouched. Pause-discipline F1a honored: exactly 5 state-changing ops (regen-all + journal + 2 wellness writes + 1 commit), no API-error/org-cap signal in any tool result. Nothing fabricated; no false credit for the rise. Ship closes.
+
+## Files changed in this cycle BZ run
+
+- `.claude/state/wellness/engineer.json` — cycle BZ update
+- `.claude/state/wellness/critic.json` — cycle BZ update
+- `.claude/state/cron/2026-05-31-overnight-run.md` — this journal (cycle BZ section appended)
+- `docs/reports/app-health.html` — engineer's own regen-all output (88.3, RISE-DISOWNED; A12 yellow→green substantive diff)
+
+No code changes. No proposals. No FIQ writes. No bug-report state moves (inbox absent). Concurrent emulator log deliberately left unstaged.
