@@ -285,3 +285,87 @@ Three concrete questions:
 
 No code changes. No proposals. No FIQ writes. No bug-report state moves (inbox absent). Concurrent smoke-test WIP deliberately left unstaged.
 
+---
+
+# Overnight triage — 2026-05-31 (cycle BV) — fourth fire of the Founder-local day
+
+**Started:** 2026-05-31T07:01:00Z (cron-fired; regen-all START)
+**Finished:** 2026-05-31T07:01:34Z (regen-all "ALL DASHBOARDS REGENERATED" stamp)
+**Mode:** Heartbeat-only branch per runbook (FIQ + bug-reports inbox both empty)
+**Cycle:** BV (108th consecutive empty-inbox cycle; ~60m after cycle BU's 06:01Z regen — 63rd consecutive ~1h-cadence cycle since cycle M). Fourth fire of the 2026-05-31 Founder-local date; no date-tension (carry-over #5 dormant).
+
+## Inbox state at run-start (cycle BV)
+
+- `.claude/state/founder-input-queue/` — **no files** (`find -type f` returned empty)
+- `.claude/state/bug-reports/inbox/` — **no files** (`find -type f` returned empty)
+- `.claude/state/proposals/pending/` — empty
+- `.claude/state/proactive-backlog.md` — **absent** (no demotions this cycle)
+- `.claude/state/wellness/quota-status.json` — all caps null (`data_source: auto-derived`) → **no org-cap signal**; pause-discipline F1a quota-wall NOT in effect.
+- **Working tree at run-start: STILL DIRTY — UNCHANGED from cycles BT/BU.** Modified: `src/core/firebase.js`, `tests/smoke/run.js`, `tests/smoke/scenarios/s1-auth.js`; untracked: `tests/smoke/diag-uid-propagation.js` + `.claude/state/overnight-agent/reports/2026-05-31.md` (a placeholder "no overnight run recorded" report). Same concurrent session's UID-propagation smoke-test WIP, still uncommitted. **Reviewed the diff this cycle:** coherent, complete-looking — `firebase.js` adds `?smoke=1` Firestore long-polling for headless Playwright against prod (mirroring the existing `emulator=1` path), `run.js` adds a `withSmokeParam` nav helper, `s1-auth.js` swaps the hardcoded `8.23.0` assertion for a self-updating `require('package.json').version` read. But it is **not this triage run's work**, and the untracked `diag-uid-propagation.js` indicates active debugging. Per `cron-sweeps-staged-work` ownership discipline I did **not** stage, touch, or commit it; my commit pathspec is scoped to my own heartbeat outputs only.
+
+Per runbook: "If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 only and exit."
+
+## Step 1 — FIQ triage (cycle BV)
+
+- FIQ entries triaged: **0** (queue empty). Grade breakdown: A:0 B:0 C:0 D:0 F:0. IDs: none.
+
+## Step 2 — Bug-report triage (cycle BV)
+
+- Bug reports processed: **0** (inbox empty). Dispositions: none — no P3e discussion bubbles opened (nothing to deliberate).
+
+## Step 3 — Heartbeat (cycle BV)
+
+### 3a — `scripts/regen-all.ps1`
+
+- Ran end-to-end → **=== ALL CHECKS PASSED ===**, **round-trip test PASS**, "ALL DASHBOARDS REGENERATED at 2026-05-31T07:01:34Z". **63rd consecutive clean canonical regen-all** (cycles L–BV).
+- Heartbeat `regen-all-last-pass.json` written.
+- All guards green. One INFORMATIONAL `~` (not a failure): `user-context-gate` flags `main-flows.html` modified 23334.0 min after the last user-context capture (2026-05-14T23-07-48Z) — benign standing item on a heartbeat-only night.
+
+### 3a-bis — APP-HEALTH: PURE-FLAT 86.8 (A-), metadata-only diff
+
+**PURE-FLAT cycle — the cleanest no-credit/no-blame case yet.** `overall_score` holds at **86.8 (A-), unchanged**, and unlike BU (which saw the A12 skip-dirty sub-signal saturate 9→10) there is **no sub-signal movement at all** — A12 was already maxed at 10/10 in BU and stayed there. The `docs/reports/app-health.html` diff vs the committed HEAD baseline (the 06:55:52Z cron regen) is **purely metadata**, characterized verbatim:
+
+- **(a)** `generated_at` `2026-05-31T06:55:52.781561Z` → `2026-05-31T07:01:33.397617Z`.
+- **(b)** `audit_trigger` re-pointed: sha `de5fa240` / "Maintenance run 2026-05-31" / `substrate-commit` / 1 file → sha `1597a418` / "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)" / `cron` / 4 files (= current HEAD).
+- **(c)** `overall_score` (86.8), `pre_deduction_score`, `post_deduction_score`, and **all** dimension scores including A12 (60, yellow, still "10 of last 10 skip-dirty") — **UNCHANGED.**
+
+**ATTRIBUTION (metric integrity):** nothing moved that I could claim credit OR blame for — I authored no code, shipped nothing, broke nothing, and the previously-moving A12 sub-signal held flat at its BU-saturated 10/10. My heartbeat regen merely re-stamped `generated_at` and re-pointed `audit_trigger` at the latest cron commit. This is the **16th distinct attribution case** in the run, and the first **PURE-FLAT variant** (score flat AND no sub-signal movement). The discipline this cycle is to refuse to spin a re-stamped timestamp + an audit-trigger pointer refresh into a progress narrative.
+
+**NO proposal warranted — seventh consecutive data point.** A12 skip-dirty remains a self-resolving transient (BP-red → BQ-red → BR-yellow → BS-green → BT-yellow → BU-yellow/10-10 → BV-flat/10-10); it recovers the moment the concurrent smoke WIP commits. A remediation proposal on a self-resolving, behaviorally-correct condition is the Rule-2 gaming prior cycles refused.
+
+**Standing observation for Founder (non-blocking, NOT a new proposal/FIQ tonight):** across seven cycles the A12_operational "recent skip-dirty" sub-signal is demonstrably noise-dominated by whether a concurrent session has uncommitted WIP — normal multi-session operation, not a pipeline-health defect, now fully saturated at 10/10 with zero further score impact. Founder may optionally exclude legitimately-dirty-tree skip-dirty exits from the A12 dimension. Recorded here only.
+
+### 3b — Wellness refresh
+
+- `engineer.json` + `critic.json` updated for cycle BV (heartbeat-only participants). Status remains `active` for both; no rest triggered (heartbeat-only load light). Token-threshold `tokens_consumed` remains crossed; Founder token-counter-semantics decision still LIVE (carry-over). No agent pushed past a *new* threshold this cycle.
+
+## Step 4 — Session journal
+
+This section.
+
+## Step 5 — Commit
+
+Staged via explicit pathspec (own files only, per `cron-sweeps-staged-work` discipline): `wellness/engineer.json` + `wellness/critic.json` + this journal + the engineer's own `docs/reports/app-health.html` regen output. The concurrent smoke-test WIP (`firebase.js`, `run.js`, `s1-auth.js`, `diag-uid-propagation.js`) + the untracked placeholder overnight-agent report are **deliberately left unstaged** — not mine to commit. **DO NOT push** (Founder reviews local diff first). Commit message per runbook exact format.
+
+## Blockers requiring Founder attention (cycle BV)
+
+- **None new / none blocking.** No HALT criteria tripped. No scope-creep candidates. Standing carry-overs unchanged: (1) date-convention policy lock (#5, dormant); (2) token-counter semantics. Plus the standing non-blocking observation above (A12 skip-dirty noise-sensitivity to concurrent WIP, 7 cycles' evidence) — surfaced, not actioned. Separately, the concurrent UID-propagation smoke WIP in the tree is the other session's / Founder's to land; left untouched here.
+
+## Critic metric-integrity attestation (METRIC_INTEGRITY_PROTOCOL §3.1) — cycle BV
+
+Three concrete questions:
+1. **Bug-report diagnoses real / not waved off?** N/A — inbox empty (`find -type f` empty). No diagnoses to scrutinize.
+2. **Proposals cite a specific screen/state/edge-case / not vague?** N/A — **zero proposals authored**, and NOT authoring one was correct: A12 is flat-and-saturated on a self-resolving concurrent-WIP transient. A remediation proposal would target a condition that clears itself — Rule-2 gaming.
+3. **FIQ grades honest / not inflated to clear count?** N/A — zero live FIQ entries.
+
+**Substantive-vs-fluff verdict: SUBSTANTIVE, attested CLEANLY.** BV is a PURE-FLAT case (16th attribution case). The critic read the `app-health.html` git diff verbatim and confirmed `overall_score` is unchanged at 86.8 (A-) and that the only changed lines are metadata (`generated_at` + `audit_trigger` pointer). Nothing to credit or blame — no code authored, nothing broken, and the previously-moving A12 sub-signal was flat. The causal chain (concurrent smoke WIP still uncommitted → tree still dirty → watcher continues skip-dirty → marker already maxed, no further movement) is traceable to the unchanged run-start `git status`. The discipline this cycle was to refuse to manufacture a progress narrative from a metadata-only diff, and to refuse to manufacture a proposal on a self-resolving transient. Commit pathspec scoped to own files; concurrent WIP left untouched. Nothing fabricated; no false credit for the flat score, no false blame, no manufactured proposal. Ship closes.
+
+## Files changed in this cycle BV run
+
+- `.claude/state/wellness/engineer.json` — cycle BV update
+- `.claude/state/wellness/critic.json` — cycle BV update
+- `.claude/state/cron/2026-05-31-overnight-run.md` — this journal (cycle BV section appended)
+- `docs/reports/app-health.html` — engineer's own regen-all output (86.8 flat; metadata-only diff)
+
+No code changes. No proposals. No FIQ writes. No bug-report state moves (inbox empty). Concurrent smoke-test WIP + untracked placeholder report deliberately left unstaged.
+
