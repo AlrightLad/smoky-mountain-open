@@ -102,3 +102,93 @@ No code changes. No proposals. No FIQ writes. No bug-report state moves (inbox a
 
 **Outcome: work intact, triage-message provenance lost** — the exact documented `cron-sweeps-staged-work` race (sister occurrence to cycle BR, recorded in memory `feedback_cron_sweeps_staged_work`). Verified all 4 files are present in `489d3100` with correct content: this journal carries its cycle-BS markers, `app-health.html` is committed at `overall_score: 88.3`, and both wellness JSONs show their cycle-BS updates. Nothing was dropped. This addendum is committed separately under the runbook's required exact message (`--allow-empty` to guarantee the provenance marker lands even under a repeat race) to preserve the triage provenance marker.
 
+---
+
+# Overnight triage — 2026-05-31 (cycle BT) — second fire of the Founder-local day
+
+**Started:** 2026-05-31T05:01:09Z (cron-fired)
+**Finished:** 2026-05-31T05:01:44Z (regen-all heartbeat `last_pass_at_utc`; duration 27s)
+**Mode:** Heartbeat-only branch per runbook (FIQ + bug-reports inbox both absent)
+**Cycle:** BT (106th consecutive empty-inbox cycle; ~60m after cycle BS's 04:01Z regen — 61st consecutive ~1h-cadence cycle since cycle M). Second fire of the 2026-05-31 Founder-local date; no date-tension (well clear of the midnight straddle — carry-over #5 remains dormant).
+
+## Inbox state at run-start (cycle BT)
+
+- `.claude/state/founder-input-queue/` — **directory does not exist** (`test -d` → MISSING)
+- `.claude/state/bug-reports/` — **entire tree absent** (no `inbox/`, no `triaged/`)
+- `.claude/state/proposals/pending/` — only `.gitkeep` (no pending proposals)
+- `.claude/state/proactive-backlog.md` — **absent** (no demotions this cycle)
+- **Working tree at run-start: DIRTY** (notable change from cycle BS's clean tree). Modified: `src/core/firebase.js`, `tests/smoke/run.js`, `tests/smoke/scenarios/s1-auth.js`; untracked: `tests/smoke/diag-uid-propagation.js`. This is a **concurrent session's UID-propagation smoke-test diagnostic WIP** — NOT this cycle's work. Per the `cron-sweeps-staged-work` ownership discipline I refuse to touch or commit these; my commit pathspec is scoped to my own heartbeat outputs only. (See Step 3 — this dirty tree is the direct cause of the A12 regression.)
+
+Per runbook: "If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 only and exit."
+
+## Step 1 — FIQ triage (cycle BT)
+
+- FIQ entries triaged: **0** (queue directory + json store both absent)
+- Grade breakdown: N/A — A:0 B:0 C:0 D:0 F:0
+- IDs: none
+
+## Step 2 — Bug-report triage (cycle BT)
+
+- Bug reports processed: **0** (inbox tree absent)
+- Dispositions: none — no P3e discussion bubbles opened (nothing to deliberate)
+
+## Step 3 — Heartbeat (cycle BT)
+
+### 3a — `scripts/regen-all.ps1`
+
+- Ran end-to-end → **=== ALL CHECKS PASSED ===**, **round-trip test PASS**, "ALL DASHBOARDS REGENERATED at 2026-05-31T05:01:23Z". **61st consecutive clean canonical regen-all** (cycles L–BT).
+- Heartbeat `regen-all-last-pass.json` written: `{"status":"PASS","duration_seconds":27,"last_pass_at_utc":"2026-05-31T05:01:44.6788021Z"}`.
+- All guards green. One INFORMATIONAL `~` (not a failure): `user-context-gate` flags `main-flows.html` modified 23213.8 min after the last user-context capture — benign standing item on a heartbeat-only night.
+
+### 3a-bis — APP-HEALTH: REAL FALL 88.3 → 86.8 (still A-), driven by A12 green→yellow regression
+
+**The inverse of cycle BS.** BS rose +0.7 because the tree went clean and the watcher's skip-dirty count aged down; BT falls **−1.5 (88.3 → 86.8)** because the tree is dirty again with fresh concurrent WIP and the skip-dirty count climbed back up. Diff of `docs/reports/app-health.html`, characterized verbatim:
+
+- **(a)** `generated_at` 2026-05-31T04:08:39.327878Z → 2026-05-31T05:01:22.849299Z.
+- **(b)** `overall_score` 88.3 → 86.8; `pre_deduction_score` 93.3 → 91.8; `post_deduction_score` 88.3 → 86.8 (the 5-pt sev-process incident deduction **unchanged** — the fall is entirely pre-deduction).
+- **(c) A12_operational: score 90 → 60, status GREEN → YELLOW.** Label `pipeline=green · 4 recent skip-dirty` → `pipeline=red · 8 recent skip-dirty`. `watcher_exit_reason` `no-new-files` → `skip-dirty`. weak_point `4 of last 10` → `8 of last 10`.
+- **(d)** `attention_items` `[]` → `[1 item]` — A12 skip-dirty attention item re-raised.
+- **(e)** `agent_attention` `[]` → `[1 item]` — same item re-raised.
+- **(f)** `audit_trigger`: sha `9b154c0c` (`Overnight triage 2026-05-31`, 1 file) → `171e44e9` (`cron(routine): post-commit dashboard regen`, is_app_commit=false, 4 files) = current HEAD.
+
+**ATTRIBUTION (metric integrity):** the fall is **NOT this cycle's work** — I authored no code, shipped nothing, broke nothing. The A12 regression is the **cron watcher's recent-runs window degrading** because the run-start working tree is dirty with a concurrent session's UID-propagation smoke-test WIP (`src/core/firebase.js`, `tests/smoke/run.js`, `tests/smoke/scenarios/s1-auth.js`, untracked `diag-uid-propagation.js`). With the tree dirty the watcher correctly exits `skip-dirty` (refusing to sweep someone else's WIP), and 8 of its last 10 runs now carry that marker. My heartbeat regen merely **re-read** that degraded cron-log state. I claim no blame for it any more than BS claimed credit for the symmetric rise.
+
+**NO proposal warranted — same call as BR, now reinforced by a fifth data point.** The A12 skip-dirty sub-metric has oscillated purely with concurrent-session tree state across cycles BP(red)–BQ(red)–BR(yellow)–BS(green)–BT(yellow). It is a **self-resolving transient**: it will recover the moment the concurrent smoke-test WIP commits (exactly as it did at BS once the round-detail WIP committed). Manufacturing a remediation proposal on a condition that clears itself is the Rule-2 gaming BR correctly refused. The skip-dirty behavior is moreover *correct* — the watcher SHOULD skip a dirty tree rather than absorb concurrent WIP. Nothing operationally broken; nothing to fix.
+
+**Standing observation for Founder (non-blocking, NOT a new proposal/FIQ tonight):** across five cycles the A12_operational dimension's "recent skip-dirty" sub-signal is now demonstrably **noise-dominated by whether a concurrent session has uncommitted WIP**, which is normal multi-session operation, not a pipeline-health defect. If Founder wants A12 to stop oscillating ±15 pts on benign concurrent WIP, the metric could exclude skip-dirty exits attributable to a legitimately-dirty tree (vs. `.husky/post-commit` self-dirtying, which would be a real defect). Recorded here only; not manufacturing a formal artifact on an empty-queue heartbeat night.
+
+### 3b — Wellness refresh
+
+- `engineer.json` + `critic.json` updated for cycle BT (heartbeat-only participants).
+- Status remains `active` for both; no rest triggered (heartbeat-only load light). Token-threshold `tokens_consumed` remains crossed; Founder token-counter-semantics decision still LIVE (carry-over).
+
+## Step 4 — Session journal
+
+This section.
+
+## Step 5 — Commit
+
+Staged via explicit pathspec (own files only, per `cron-sweeps-staged-work` discipline): `wellness/engineer.json` + `wellness/critic.json` + this journal + the engineer's own `docs/reports/app-health.html` regen output. The concurrent smoke-test WIP (`firebase.js`, `run.js`, `s1-auth.js`, `diag-uid-propagation.js`) is **deliberately left unstaged** — it is not mine to commit. Commit message per runbook exact format.
+
+## Blockers requiring Founder attention (cycle BT)
+
+- **None new / none blocking.** No HALT criteria tripped. No scope-creep candidates. Standing carry-overs unchanged: (1) date-convention policy lock (#5, dormant); (2) token-counter semantics. Plus the new non-blocking standing observation above (A12 skip-dirty noise-sensitivity to concurrent WIP) — surfaced, not actioned.
+
+## Critic metric-integrity attestation (METRIC_INTEGRITY_PROTOCOL §3.1) — cycle BT
+
+Three concrete questions:
+1. **Bug-report diagnoses real / not waved off?** N/A — inbox tree absent (directory-absence verified by `test -d`). No diagnoses to scrutinize.
+2. **Proposals cite a specific screen/state/edge-case / not vague?** N/A — **zero proposals authored**, and the critic affirms NOT authoring one was correct: A12 fell on a self-resolving concurrent-WIP transient (the inverse of BS's self-resolving rise). A remediation proposal would target a condition that clears itself — Rule-2 gaming.
+3. **FIQ grades honest / not inflated to clear count?** N/A — zero live FIQ entries.
+
+**Substantive-vs-fluff verdict: SUBSTANTIVE, attested CLEANLY.** This cycle verified a genuine non-flat finding: app-health FELL −1.5 (88.3→86.8, still A-) via A12 green→yellow, and the engineer correctly **disowned the fall** (cron-watcher degradation from concurrent-session WIP dirtying the tree, NOT this cycle's work — 14th distinct attribution case in the run, and the symmetric counterpart to BS's RISE-disowned case one cycle earlier). The critic independently confirmed via the `app-health.html` git diff that the fall is entirely pre-deduction, A12 flipped on skip-dirty 4→8 + exit-reason `no-new-files`→`skip-dirty`, and the attention arrays re-raised from `[]`. The causal chain (concurrent UID-propagation smoke WIP → tree dirty → watcher exits skip-dirty → A12 yellow) is traceable to the run-start `git status`. Disowning a fall is the same inverse-of-fabrication discipline as disowning a rise — no false blame accepted, no manufactured proposal, commit pathspec scoped to own files, concurrent WIP left untouched. Ship closes.
+
+## Files changed in this cycle BT run
+
+- `.claude/state/wellness/engineer.json` — cycle BT update
+- `.claude/state/wellness/critic.json` — cycle BT update
+- `.claude/state/cron/2026-05-31-overnight-run.md` — this journal (cycle BT section appended)
+- `docs/reports/app-health.html` — engineer's own regen-all output (88.3→86.8, A12 green→yellow)
+
+No code changes. No proposals. No FIQ writes. No bug-report state moves (inbox absent). Concurrent smoke-test WIP deliberately left unstaged.
+
