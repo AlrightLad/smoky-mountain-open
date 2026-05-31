@@ -719,3 +719,94 @@ Three concrete questions:
 - `docs/reports/app-health.html` — engineer's own regen-all output (88.3, RISE-DISOWNED; A12 yellow→green substantive diff)
 
 No code changes. No proposals. No FIQ writes. No bug-report state moves (inbox absent). Concurrent emulator log deliberately left unstaged.
+
+
+---
+
+# Cycle CA — 9th fire of 2026-05-31 (regen START 2026-05-31T12:01:05Z)
+
+~60 min after cycle BZ (11:01Z) = **68th consecutive ~1h-cadence cycle since cycle M**; **113th consecutive empty-inbox cycle**. HEAD at run-start = `6cc80880` (`cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)`).
+
+## Run-start queue + tree state (verified directly, not assumed)
+
+- `.claude/state/founder-input-queue/` — **directory does not exist** (`test -d` → MISSING; `find` → not present).
+- `.claude/state/bug-reports/` — **entire tree absent** (no `inbox/`, no `triaged/`).
+- `.claude/state/proposals/pending/` — empty (round-trip confirms pending=0).
+- `.claude/state/proactive-backlog.md` — **absent** (no demotions this cycle).
+- `.claude/state/quota-status.json` — `weekly_cap`/`org_monthly_cap`/all pct fields **null** (`data_source: auto-derived`) → **no org-cap signal**; pause-discipline F1a quota-wall NOT in effect.
+- **Working tree at run-start: DIRTY AGAIN — but with NEW concurrent WIP, NOT the BT→BY smoke WIP.** Modified: `.claude/state/emu-unified-2026-05-29.log` (concurrent emulator log), `playwright.config.js`, `tests/e2e/helpers/auth.js`. The latter two are a **different** concurrent session's E2E auth/config WIP — distinct from the UID-propagation smoke WIP that committed in cycle BZ (`7fe2b802`). Per `cron-sweeps-staged-work` ownership discipline I did **not** stage, touch, or commit any of them; my commit pathspec is scoped to my own heartbeat outputs only.
+
+Per runbook: "If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 only and exit."
+
+## Step 1 — FIQ triage (cycle CA)
+
+- FIQ entries triaged: **0** (queue directory + json store both absent).
+- Grade breakdown: N/A — A:0 B:0 C:0 D:0 F:0.
+- IDs: none.
+
+## Step 2 — Bug-report triage (cycle CA)
+
+- Bug reports processed: **0** (inbox tree absent).
+- Dispositions: none — no P3e discussion bubbles opened (nothing to deliberate).
+
+## Step 3 — Heartbeat (cycle CA)
+
+### 3a — `scripts/regen-all.ps1`
+
+- Ran end-to-end 12:01:05Z → **=== ALL CHECKS PASSED ===**, **round-trip test PASS**, "ALL DASHBOARDS REGENERATED at 2026-05-31T12:01:06Z". **65th consecutive clean canonical regen-all** (cycles L–CA; increments BZ's 64th).
+- Heartbeat `regen-all-last-pass.json` written: `{"status":"PASS","duration_seconds":30,"last_pass_at_utc":"2026-05-31T12:01:29.1105336Z"}`.
+- All guards green (round-trip 4-view swap + transcript tallies 3 bubbles + nav 9-link × 9 pages + meter-wiring 7/7 + founder-queue 7/7 + quota-type-enum + cross-dash proposals_pending=0 + lifecycle proposals shipped=7 + amendments applied=28 + escalations applied=3 + theme convergence no raw hex + no-charts + protected-layouts 5/5 + proposal-readiness 0 deferred + install-scripts 7 parse + install-cmd-surface + scroll-reachability 5/0/0 + quota-status auto-derived + pause-discipline clean + wiring 5/5). proposals_pending=0. meter-wiring 7/7 → **HALT-25 NOT in effect**.
+- Two INFORMATIONAL non-failures (both long-standing, neither a regression): (1) `user-context-gate` flags `main-flows.html` modified 23633.5 min after last user-context capture (2026-05-14T23-07-48Z) — benign on a heartbeat-only night with no visual ship-close; (2) `regen-main-flows` WARN: same 6 long-standing orphan components (actor.guest, actor.invitee, dist.capacitor-ios, ext.open-meteo, fn.expire-suspensions, fn.join-league) — unchanged standing item, not new this cycle.
+
+### 3a-bis — APP-HEALTH: FALL 87.6 → 86.8 (A-), A12 re-degraded yellow→yellow (skip-dirty 9→10) — **FALL-DISOWNED** (NEW concurrent WIP re-dirtied the tree; NOT my work)
+
+**This is a FALL cycle — and the fall is DISOWNED.** `overall_score` moved **87.6 → 86.8 (−0.8)**, still grade A-. The `docs/reports/app-health.html` diff (read verbatim, 13 ins / 13 del) is **substantive, not metadata-only**:
+
+- **(a)** `generated_at` 2026-05-31T11:10:42.298257Z → 2026-05-31T12:01:05.728830Z.
+- **(b)** `overall_score` 87.6 → 86.8; `pre_deduction_score` 92.6 → 91.8; `post_deduction_score` 87.6 → 86.8 (incident deduction held at −5, sev counts unchanged).
+- **(c)** `A12_operational`: **score 75 → 60, status yellow → yellow** (label `pipeline=yellow · 9 recent skip-dirty` → `pipeline=red · 10 recent skip-dirty`); weak_point `9 of last 10` → `10 of last 10` (re-saturated).
+- **(d)** `attention_items` + `agent_attention`: single A12 item, text `9 of last 10` → `10 of last 10` — **NOT cleared** (this is a re-degradation, the inverse of BZ's recovery-to-`[]`).
+- **(e)** `audit_trigger`: `09e35a4d`/substrate → `6cc80880`/cron (= HEAD), is_app_commit=false.
+
+**ATTRIBUTION (metric integrity) — FALL-DISOWNED, 21st distinct attribution case in the run.** I authored no code, shipped nothing, broke nothing this cycle. The −0.8 / A12 re-degradation is **causally attributable to NEW concurrent WIP** (`playwright.config.js` + `tests/e2e/helpers/auth.js`) re-dirtying the tree **after** BZ's 7-cycle smoke WIP committed → the cron watcher again exits `skip-dirty` (correctly refusing to sweep someone else's WIP) → the rolling skip-dirty window climbed back 9/10 → 10/10 → A12 fell 75 → 60. **Accepting blame for this fall would be the precise inverse of harvesting BZ's rise as credit — both are the Rule-2 gaming the run guards against.** The honest call: the score fell for a reason that is not my doing, and I record it as a disowned fall.
+
+**This STRENGTHENS the standing A12-noise observation end-to-end.** BZ demonstrated *recover-on-commit* (smoke WIP committed → A12 yellow→green, attention cleared). CA now demonstrates *re-worsen-on-new-WIP* with a **second, different** concurrent WIP (E2E auth/config, distinct from the smoke harness). Across the full BP→CA span the A12 skip-dirty sub-signal has tracked exactly one thing: **whether any concurrent session holds uncommitted WIP** — normal multi-session operation, not a pipeline-health defect.
+
+**NO proposal warranted — A12 is a confirmed self-resolving transient.** It will recover the moment this new E2E WIP commits, exactly as BZ proved when the smoke WIP committed. The watcher's `skip-dirty` behavior is itself **correct** — it SHOULD refuse to sweep a dirty tree carrying another session's WIP. Manufacturing a remediation proposal on a self-clearing, behaviorally-correct condition is Rule-2 gaming. **Standing observation re-affirmed for Founder (non-blocking, NOT a new proposal/FIQ tonight):** if Founder wants A12 to stop oscillating on benign concurrent WIP, the metric could exclude `skip-dirty` exits attributable to a legitimately-dirty tree (vs. `.husky/post-commit` self-dirtying, which *would* be a real defect). Recorded here only.
+
+### 3b — Wellness refresh
+
+- `engineer.json` + `critic.json` updated for cycle CA (heartbeat-only participants).
+- Status remains `active` for both; no rest triggered (heartbeat-only load light). Token-threshold `tokens_consumed` remains crossed; Founder token-counter-semantics decision still LIVE (carry-over). No agent pushed past a *new* threshold this cycle.
+
+## Step 4 — Session journal
+
+This section.
+
+## Step 5 — Commit
+
+Staged via explicit pathspec (own files only, per `cron-sweeps-staged-work` discipline): `wellness/engineer.json` + `wellness/critic.json` + this journal + the engineer's own `docs/reports/app-health.html` regen output. The concurrent WIP (`.claude/state/emu-unified-2026-05-29.log`, `playwright.config.js`, `tests/e2e/helpers/auth.js`) is **deliberately left unstaged** — not mine to commit. **DO NOT push** (runbook discipline — Founder reviews local diff first). Commit message per runbook exact format.
+
+## Blockers requiring Founder attention (cycle CA)
+
+- **None new / none blocking.** No HALT criteria tripped. No scope-creep candidates.
+- The A12 skip-dirty re-degradation is a **recognized self-resolving transient** (BZ proved recover-on-commit; CA reproduces re-worsen-on-new-WIP) — it clears when the concurrent E2E WIP commits. Not a defect; surfaced, not actioned.
+- Standing carry-overs unchanged: token-counter semantics (still LIVE); date-convention policy lock (#5, dormant, well clear of midnight).
+
+## Critic metric-integrity attestation (METRIC_INTEGRITY_PROTOCOL §3.1) — cycle CA
+
+Three concrete questions:
+1. **Bug-report diagnoses real / not waved off?** N/A — inbox tree absent (directory-absence verified by `test -d` + `find` this cycle, not assumed). No diagnoses to scrutinize.
+2. **Proposals cite a specific screen/state/edge-case / not vague?** N/A — **zero proposals authored**, and the critic affirms NOT authoring one was correct: A12 re-degraded on a self-clearing concurrent-WIP transient that BZ proved recovers on commit. A remediation proposal would target a condition that clears itself.
+3. **FIQ grades honest / not inflated to clear count?** N/A — zero live FIQ entries.
+
+**Substantive-vs-fluff verdict: SUBSTANTIVE, attested CLEANLY — and notably this is the cycle that tests attribution discipline against a FALL, the symmetric counterpart to BZ's RISE.** The score went DOWN (−0.8), the tempting moment to accept blame (or to spin "I held the line elsewhere"). The critic confirms via the verbatim `app-health.html` diff + run-start `git status` that the fall is **disowned**: it traces to NEW concurrent E2E WIP (`playwright.config.js` + `tests/e2e/helpers/auth.js`) re-dirtying the tree after BZ's smoke WIP committed → watcher re-exits skip-dirty → rolling window 9/10→10/10 → A12 75→60, with **no code authored by this cycle**. The 21st attribution case in the run, the FALL-DISOWNED counterpart to BZ's RISE-DISOWNED. The standing A12-noise observation is strengthened end-to-end: a second, different concurrent WIP reproduces the identical worsen-while-WIP behavior. The discipline this cycle: refuse to accept blame for a metric re-degraded by someone else's WIP, and confirm (not merely assert) the no-proposal call by reference to BZ's recover-on-commit demonstration. Commit pathspec scoped to own files; all concurrent WIP left untouched. Pause-discipline F1a honored: exactly 5 state-changing ops (regen-all + journal + 2 wellness writes + 1 commit), no API-error/org-cap signal in any tool result. Nothing fabricated; no false blame accepted for the fall. Ship closes.
+
+## Files changed in this cycle CA run
+
+- `.claude/state/wellness/engineer.json` — cycle CA update
+- `.claude/state/wellness/critic.json` — cycle CA update
+- `.claude/state/cron/2026-05-31-overnight-run.md` — this journal (cycle CA section appended)
+- `docs/reports/app-health.html` — engineer's own regen-all output (87.6→86.8, FALL-DISOWNED; A12 yellow→yellow skip-dirty 9→10 substantive diff)
+
+No code changes. No proposals. No FIQ writes. No bug-report state moves (inbox absent). Concurrent WIP (emu log + playwright.config.js + tests/e2e/helpers/auth.js) deliberately left unstaged.
