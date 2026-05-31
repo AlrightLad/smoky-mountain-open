@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-05-31T05:06:35.651234Z",
+  "generated_at": "2026-05-31T06:01:05.029319Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 86.8,
   "overall_grade": "A-",
@@ -981,11 +981,11 @@
     "A12_operational": {
       "score": 60,
       "status": "yellow",
-      "label": "pipeline=red · 9 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=red · 10 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "9 of last 10 cron watcher runs hit skip-dirty",
+          "what": "10 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -998,7 +998,7 @@
   },
   "attention_items": [
     {
-      "what": "9 of last 10 cron watcher runs hit skip-dirty",
+      "what": "10 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
@@ -1007,17 +1007,17 @@
   "founder_attention": [],
   "agent_attention": [
     {
-      "what": "9 of last 10 cron watcher runs hit skip-dirty",
+      "what": "10 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "5febdde9",
-    "subject": "Overnight triage 2026-05-31 - 0 reports, 0 proposals, 0 FIQ entries graded",
-    "committed_at": "2026-05-31T01:05:26-04:00",
-    "trigger": "substrate-commit",
+    "sha": "1a70dda5",
+    "subject": "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)",
+    "committed_at": "2026-05-31T01:07:40-04:00",
+    "trigger": "cron",
     "is_app_commit": false,
     "app_files_touched": [],
     "total_files_touched": 4
