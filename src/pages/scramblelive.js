@@ -167,6 +167,9 @@ function finishScrambleLive() {
     if (!team.matches) team.matches = [];
     team.matches.push(match);
     PB.save();
+    // Persist to the team's Firestore doc so the round shows on every device,
+    // not just this one (mirrors submitLogTeamRound).
+    syncScrambleTeam(team);
   }
   
   // Sync to Firebase
