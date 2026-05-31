@@ -2187,3 +2187,13 @@ FIQ grade distribution: A=0 B=0 C=0 D=0 F=0 (no entries graded — queue absent)
 NOT staged (concurrent-session / live-emulator territory, via explicit pathspec): `.claude/state/emu-unified-2026-05-29.log`, `package.json`, `public/sw.js`, `src/core/utils.js`, `src/pages/caddynotes.js`, `src/pages/round.js`, `src/pages/rounds.js`, `src/styles/components.css`, `.claude/state/design-pass-2026-05-22/w1s16-profile-2026-05-30/`, `design-pass-round-detail-desktop-full.png`, `rd-desktop-reordered.png` — the concurrent round-detail design-pass batch, left for that session / Founder.
 
 No code changes in cycle BR. No proposals. No FIQ writes. No bug-report state moves (inbox absent). app-health overall FLAT at 86.8 (A-).
+
+## Cycle BR commit-provenance addendum (cron-sweep race)
+
+**The cycle BR state files were swept into a concurrent cron commit, not the triage commit.** Sequence (verified via `git log --oneline` + `git show --stat HEAD`):
+
+1. After this cycle staged its 4 own files (`wellness/engineer.json`, `wellness/critic.json`, this journal, `docs/reports/app-health.html`) via explicit pathspec, the concurrent feature session committed `f2b533a0` (*"feat: editorial redesign of completed round-detail page (W1 3c, v8.23.81)"*) — the round-detail design-pass batch this cycle had observed as live WIP.
+2. That commit triggered the post-commit dashboard-regen cron, which committed `67e2a3b5` (*"cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)"*) **and absorbed this cycle's 4 staged files into it** (`git show --stat 67e2a3b5` confirms all 4 present: journal +90, critic.json, engineer.json, app-health.html, alongside the cron's own dashboard-health/transcript-cursor/summary outputs).
+3. This cycle's own `git commit -m "Overnight triage 2026-05-30 …"` then found nothing staged ("lint-staged could not find any staged files / no changes added to commit").
+
+**Outcome: work intact, triage-message provenance lost** — the exact documented `cron-sweeps-staged-work` race. All cycle-BR state is committed in `67e2a3b5`; nothing was dropped. The earlier "Files changed in this cycle BR run" list above is accurate as to *what* changed, but those changes landed under the cron commit `67e2a3b5` rather than a standalone `Overnight triage` commit. This addendum is committed separately under the runbook's required exact message to preserve the triage provenance marker. (Sister occurrence of the same race is recorded in memory `feedback_cron_sweeps_staged_work`.)
