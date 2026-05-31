@@ -1072,3 +1072,82 @@ Three concrete questions:
 - `docs/reports/app-health.html` — engineer's own regen-all output (FLAT 86.8 A-; A11 test-LOC label 1041→1052 + generated_at + audit_trigger pointer)
 
 No code changes. No proposals. No FIQ writes. No bug-report state moves (inbox absent). Concurrent E2E WIP (emu log + playwright.config.js + 3 flow specs + auth.js + seed-baseline.js + vite.config.js + 7 untracked probe logs) deliberately left unstaged.
+
+---
+
+# Overnight triage — 2026-05-31 (cycle CE)
+
+**Started:** 2026-05-31T16:00:54Z (cron-fired; regen-all START timestamp)
+**Finished:** 2026-05-31T16:01:00Z (regen-all "ALL DASHBOARDS REGENERATED"; duration ~6s)
+**Mode:** Heartbeat-only branch per runbook (FIQ + bug-reports inbox both absent)
+**Cycle:** CE (117th consecutive empty-inbox cycle; ~59m after cycle CD's 15:01Z regen — 69th consecutive ~1h-cadence cycle since cycle M). THIRTEENTH fire of the 2026-05-31 Founder-local date. No date-tension (UTC 16:00Z = 12:00 EDT, mid-day, well clear of midnight).
+
+## Inbox state at run-start (cycle CE)
+
+- `.claude/state/founder-input-queue/` — **directory does not exist** (`test -d` → MISSING)
+- `.claude/state/bug-reports/` — **entire tree absent** (no `inbox/`, no `triaged/`)
+- `.claude/state/founder_input_queue.json` — **file does not exist**
+- `.claude/state/proposals/pending/` — only `.gitkeep` (no pending proposals)
+- `.claude/state/proactive-backlog.md` — **absent** (no demotions this cycle)
+- **Working tree at run-start: DIRTY** — same concurrent E2E WIP inherited from cycles CA–CD. HEAD = `0fbf58ac` (`cron(routine): post-commit dashboard regen`). 11 modified (emu log + `.gitignore` + `playwright.config.js` + 5 flow specs `01/04/06/07/09` + `auth.js` + `seed-baseline.js` + `vite.config.js`) + 1 untracked (`tests/e2e/helpers/console-noise.js`); none mine — left unstaged.
+
+Per runbook: "If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 only and exit."
+
+## Step 1 — FIQ triage (cycle CE)
+
+- FIQ entries triaged: **0** (queue directory + json store both absent)
+- Grade breakdown: N/A — A:0 B:0 C:0 D:0 F:0
+- IDs: none
+
+## Step 2 — Bug-report triage (cycle CE)
+
+- Bug reports processed: **0** (inbox tree absent)
+- Dispositions: none
+- No P3e discussion bubbles opened (nothing to deliberate)
+
+## Step 3 — Heartbeat (cycle CE)
+
+### 3a — `scripts/regen-all.ps1`
+
+- Ran end-to-end 16:00:54Z → **=== ALL CHECKS PASSED ===**, **round-trip test PASS**, "ALL DASHBOARDS REGENERATED at 2026-05-31T16:01:00Z". **66th consecutive clean canonical regen-all** (cycles L–CE).
+- Heartbeat `regen-all-last-pass.json` written.
+- All ~30 guards green (round-trip 4-view swap + transcript tallies 3 bubbles + nav 9-link × 9 pages + meter-wiring 7/7 + founder-queue 7/7 + quota-type-enum + cross-dash proposals_pending=0 + lifecycle shipped=7 + amendments applied=28 + escalations applied=3 + theme no-raw-hex + no-charts + protected-layouts + proposal-readiness 0 deferred + install-scripts 7 parse + scroll-reachability 5/0/0 + quota-status auto-derived + pause-discipline clean + wiring 5/5).
+- One INFORMATIONAL non-failure: `user-context-gate` YELLOW `~` on main-flows.html (~23873 min since last capture; standing, Founder runs `founder-context-capture.mjs` to seed — not a blocker). `regen-main-flows` WARN: same 6 long-standing orphan components (actor.guest, actor.invitee, dist.capacitor-ios, ext.open-meteo, fn.expire-suspensions, fn.join-league) — not a regression.
+- Telemetry: events **18733** (up from CD's 18682, **+51**), handoffs=1, bubbles=7, proposals_pending=0. meter-wiring 7/7 → HALT-25 NOT in effect.
+- **APP-HEALTH FLAT 86.8 (A-)** with a benign **TEST-LOC sub-signal twitch**: app-health.html diff is 6 ins/6 del — `generated_at` 15:05:46Z→16:00:59Z + A11_testing label `9 specs · 1052 LOC`→`9 specs · 1041 LOC` (**−11 LOC**, score held 92/green). `overall_score` (86.8) ABSENT from the diff = confirmed FLAT; no dimension SCORE moved incl A12 (held at skip-dirty floor, not in diff). **ATTRIBUTION: DISOWNED** — the −11 test-LOC twitch is the regen re-reading the concurrent E2E session's mid-edit flow specs (04/06/09.spec.js modified at run-start), NOT my work. 24th attribution case, third TEST-LOC-TWITCH variant (CC −17, CD +11, CE −11 — label oscillates with concurrent test edits while the score holds flat; the 15:05:46Z baseline was a post-CD-commit cron regen capturing 1052, now reading back to 1041).
+
+### 3b — Wellness state refresh
+
+- `engineer.json` + `critic.json` updated for cycle CE (heartbeat-only participants). Status remains `active` for both; no rest triggered (heartbeat-only load light). No agent pushed past a *new* threshold this cycle — `tokens_consumed` threshold remains crossed (standing); Founder token-counter-semantics decision still LIVE (carry-over, F1a token-meter gap).
+
+## Step 4 — Session journal
+
+This section.
+
+## Step 5 — Commit
+
+Staged via explicit pathspec (own files only, per `cron-sweeps-staged-work` discipline): `wellness/engineer.json` + `wellness/critic.json` + this journal + the engineer's own `docs/reports/app-health.html` regen output. The concurrent E2E WIP (11 modified + 1 untracked) is **deliberately left unstaged** — not mine to commit. **DO NOT push** (runbook discipline — Founder reviews local diff first). Commit message per runbook exact format.
+
+## Blockers requiring Founder attention (cycle CE)
+
+- **None new / none blocking.** No HALT criteria tripped. No scope-creep candidates.
+- The A12 skip-dirty floor + the A11 test-LOC twitch are both recognized concurrent-WIP-sensitive sub-signals moving while concurrent E2E WIP stays uncommitted — both clear when that WIP commits. Neither is a defect; surfaced, not actioned.
+- Standing carry-overs unchanged: token-counter semantics (still LIVE); date-convention policy lock (#5, dormant, mid-day clear of midnight).
+
+## Critic metric-integrity attestation (METRIC_INTEGRITY_PROTOCOL §3.1) — cycle CE
+
+Three concrete questions:
+1. **Bug-report diagnoses real / not waved off?** N/A — inbox tree absent (verified via `test -d` MISSING + `find -type f` empty this cycle, not assumed). No diagnoses to scrutinize.
+2. **Proposals cite a specific screen/state/edge-case / not vague?** N/A — **zero proposals authored**, and NOT authoring one was correct: both moving sub-signals (A12 skip-dirty floor, A11 test-LOC label) are self-clearing concurrent-WIP artifacts; a remediation proposal would target conditions that recover on commit (Rule-2 gaming).
+3. **FIQ grades honest / not inflated?** N/A — zero live FIQ entries.
+
+**Substantive-vs-fluff verdict: SUBSTANTIVE, attested CLEANLY.** Critic independently confirmed via verbatim `app-health.html` git diff that `overall_score` is absent from the hunks (flat at 86.8), no dimension *score* moved (A11 held 92/green, A12 held at floor), and the only substantive change is a label string tracking working-tree spec LOC. The causal chain (concurrent E2E session editing `04/06/09.spec.js` → regen re-reads working tree → test-LOC label oscillates) is traceable to the run-start `git status`. No-proposal call reaffirmed. Commit pathspec scoped to own files; all concurrent WIP (11 modified + 1 untracked) left untouched. Pause-discipline F1a honored: 5 state-changing ops (regen-all + 2 wellness writes + journal + 1 commit), no API-error/org-cap signal in any tool result. Nothing fabricated on an empty-queue night; the honest report is "heartbeat-only, 66th consecutive clean regen, score flat, one concurrent-WIP test-LOC twitch disowned." Ship closes.
+
+## Files changed in this cycle CE run
+
+- `.claude/state/wellness/engineer.json` — cycle CE update
+- `.claude/state/wellness/critic.json` — cycle CE update
+- `.claude/state/cron/2026-05-31-overnight-run.md` — this journal (cycle CE section appended)
+- `docs/reports/app-health.html` — engineer's own regen-all output (FLAT 86.8 A-; A11 test-LOC label 1052→1041 + generated_at + audit_trigger pointer)
+
+No code changes. No proposals. No FIQ writes. No bug-report state moves (inbox absent). Concurrent E2E WIP (emu log + .gitignore + playwright.config.js + 5 flow specs + auth.js + seed-baseline.js + vite.config.js + 1 untracked console-noise.js) deliberately left unstaged.
