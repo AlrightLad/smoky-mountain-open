@@ -91,3 +91,14 @@ Three concrete questions:
 - `docs/reports/app-health.html` — engineer's own regen-all output (87.6→88.3, A12 yellow→green)
 
 No code changes. No proposals. No FIQ writes. No bug-report state moves (inbox absent).
+
+## Cycle BS commit-provenance addendum (cron-sweep race — recurrence)
+
+**The cycle BS state files were swept into a concurrent cron commit, not the triage commit.** Sequence (verified via `git log --oneline` + `git show --stat`):
+
+1. The triage staged its 4 own files via explicit pathspec (`wellness/engineer.json` + `wellness/critic.json` + this journal + `docs/reports/app-health.html`).
+2. Before the triage's `git commit` created its object, a concurrent cron job committed `489d3100` (`cron(routine): auto-commit telemetry output before watcher preflight (2026-05-31T04:05:49Z)`), which **absorbed all 4 staged files**.
+3. The triage's own `git commit` then reported `nothing to commit, working tree clean`.
+
+**Outcome: work intact, triage-message provenance lost** — the exact documented `cron-sweeps-staged-work` race (sister occurrence to cycle BR, recorded in memory `feedback_cron_sweeps_staged_work`). Verified all 4 files are present in `489d3100` with correct content: this journal carries its cycle-BS markers, `app-health.html` is committed at `overall_score: 88.3`, and both wellness JSONs show their cycle-BS updates. Nothing was dropped. This addendum is committed separately under the runbook's required exact message (`--allow-empty` to guarantee the provenance marker lands even under a repeat race) to preserve the triage provenance marker.
+
