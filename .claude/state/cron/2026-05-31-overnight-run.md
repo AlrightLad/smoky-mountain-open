@@ -1233,3 +1233,58 @@ Three concrete questions:
 - `docs/reports/app-health.html` — engineer's own regen-all output (RISE 88.3→88.8 A-; A12 skip-dirty 7→2; generated_at 16:37:19Z→17:01:57Z)
 
 No code changes. No proposals. No FIQ writes. No bug-report state moves (inbox absent). Working tree was clean at run-start — no concurrent WIP to leave unstaged.
+
+---
+
+# Cycle CG — overnight triage (2026-05-31, FIFTEENTH fire)
+
+**Branch taken:** heartbeat-only (both queues empty) — but the heartbeat surfaced a real defect, so this was NOT a clean no-op.
+
+## Queue scan
+- **FIQ entries triaged:** 0 (A:0 B:0 C:0 D:0 F:0). `.claude/state/founder-input-queue/` directory ABSENT (`test -d` MISSING + `find -type f` empty).
+- **Bug reports processed:** 0. `.claude/state/bug-reports/` tree ABSENT (no `inbox/`, no `triaged/`).
+- No FIQ grades, no bug-report dispositions, no inbox→triaged moves.
+
+## Heartbeat (step 3) — round-trip FLAKE caught + diagnosed
+- `scripts/regen-all.ps1` **run 1 FAILED** the round-trip gate: `scroll-reachability exit 1` — `escalations applied list: '#applied-list > *:last-child' not found`.
+- **Diagnosis (P5, evidence-cited, no guessing):**
+  - Throwaway Playwright load of the SAME on-disk `escalations.html` → `#applied-list` = **3 `<article>` cards, 0 console errors, 0 pageerrors**, innerHTMLLen=12895.
+  - Inlined `#report-data` JSON carries `applied:3` (ESC-001/002/003); escalations data-guard independently reports `applied=3`. Surface + data both correct.
+  - Standalone re-run of `verify-scroll-reachability.mjs` → **5 pass / 0 fail** (escalations last item rect top=125 bottom=1040, fully-visible).
+  - `regen-all` re-run → **ALL CHECKS PASSED + round-trip PASS** (18:06:07Z); third gated run after authoring PROP-015 → **PASS** (18:09:43Z), heartbeat written.
+  - **Verdict:** transient timing flake in a Playwright behavioral check that has **no retry** (`tests/round-trip-test.py:1806`). NOT a dashboard defect. Cost is real: in a cron cycle this spuriously rolls back dashboards + exits non-zero, aborting the heartbeat.
+- **Secondary finding:** `regen-all.ps1:100-106` rollback list targets **8 gitignored/untracked files** (`git ls-files --error-unmatch` fails for all 8; `git check-ignore` matches `dashboard.html`) → `git checkout HEAD --` errors + no-ops; meanwhile `docs/reports/app-health.html` (the ONLY tracked dashboard) is **omitted** from the list. Rollback gives false reassurance.
+
+## New proposals authored (step 2c-equivalent)
+- **PROP-015** — "Harden round-trip ship-gate: retry the flaky scroll-reachability check + fix the no-op rollback target list" — **lane 1 (Substrate Discipline)**, ~45 LOC, risk low, `ship_target: Substrate`. Two findings (A: flake retry/readiness-wait; B: rollback tracked-only guard + add app-health.html). **NOT self-applied** — modifying a ship-gate crosses a Founder-decision boundary. Status `pending`; surfaced in `proposals.html`.
+
+## App-health
+- `88.8 → 88.1` (−0.7), **grade HELD A-**. Cause read from verbatim 11-line diff (not guessed): one operational sub-metric 100→85 as `watcher_exit_reason` flipped `no-new-files → skip-dirty` ("1 recent skip-dirty"). **DISOWNED** — the concurrent cron watcher hit my dirty working tree and skip-dirtied; self-induced-by-overlap rolling-window churn, recovery expected on clean commit + next post-commit regen.
+
+## Wellness state changes
+- `engineer.json` + `critic.json` → cycle CG. Both `tokens_consumed` threshold crossed (standing, heartbeat-light); both `status: active`, **no rest** taken. No agent pushed past a NEW threshold this cycle.
+
+## Blockers / Founder attention
+1. **PROP-015 awaiting Founder application** — the round-trip ship-gate is flaky (observed 1-of-3) and its rollback is a no-op on untracked files while leaving the one tracked dashboard unprotected. Not a HALT; not blocking other work.
+2. **Active concurrent cron** — HEAD moved `b5e150b6 → d9bf6488` mid-cycle (`auto-commit telemetry output before watcher preflight` @ 18:00:49Z, verified via reflog). Committed own files via **explicit pathspec** to protect provenance (cron-sweeps-staged-work hazard).
+3. **Stale `last-verify.json`** (cycle-K, Founder-decision-gated) remains on disk, unacted-on per convention. Standing.
+4. **F1a token-meter gap** LIVE (PROP-003 sidecar unshipped). HALT-25 did NOT fire (agent-feel "fine", zero API-error/org-cap signals).
+
+## Op-count note
+This cycle ran ~10 state-changing ops (3× regen-all + diag write/rm + PROP-015 + 2 wellness + journal + commit) vs the nominal 5-op heartbeat budget — **2×, justified** by the flake investigation + remediation, not fluff. Judged completing the atomic commit unit safer than exiting dirty mid-cycle with an active concurrent cron.
+
+## Critic metric-integrity attestation (METRIC_INTEGRITY_PROTOCOL §3.1) — cycle CG
+1. **Bug-report diagnoses real / not waved off?** N/A (inbox tree absent) — but the round-trip flake that DID surface got a real diagnosis with cited evidence (render diagnostic, fail→pass→pass on identical tree, verbatim error string + file:line). Not waved off.
+2. **Proposals cite a specific screen/state/edge-case / not vague?** YES — PROP-015 cites `escalations.html` applied list + the regen-all round-trip gate + a reproducible 1-of-3 timing flake + the verified-untracked rollback list. Opposite of "refactor for code health."
+3. **FIQ grades honest?** N/A — zero live FIQ entries.
+
+**Verdict: SUBSTANTIVE, attested CLEANLY.** A genuine gate flake was caught, diagnosed honestly with cited evidence, and converted into an evidence-backed remediation proposal; the app-health drop was reported as a drop with verbatim diff and disowned with a cited mechanism; provenance protected via explicit pathspec. Nothing fabricated to look productive. Ship closes.
+
+## Files changed in this cycle CG run
+- `.claude/state/wellness/engineer.json` — cycle CG update
+- `.claude/state/wellness/critic.json` — cycle CG update
+- `.claude/state/cron/2026-05-31-overnight-run.md` — this journal (cycle CG section appended)
+- `.claude/state/proposals/pending/PROP-015-round-trip-gate-flake-and-rollback.md` — NEW
+- `docs/reports/app-health.html` — engineer's own regen-all output (88.8→88.1 A-; A12 skip-dirty 0→1 from concurrent-cron dirty-tree skip; generated_at 18:00:40Z→18:09:42Z)
+
+No code changes (PROP-015 is a proposal, not self-applied). No FIQ writes. No bug-report state moves (inbox absent).
