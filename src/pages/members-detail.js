@@ -44,35 +44,56 @@ function renderMemberDetailWithData(p) {
   var isOwnProfile = currentUser && (pid === currentUser.uid || (currentProfile && pid === currentProfile.claimedFrom));
   var canEditPhoto = isOwnProfile;
 
-  // ── HERO BANNER ──
-  var bannerBg = getPlayerBannerCss(p) || 'linear-gradient(180deg,var(--grad-hero) 0%,var(--bg) 100%)';
-  var h = '<div style="position:relative;background:' + bannerBg + ';padding:16px 16px 0;border-bottom:1px solid var(--border)">';
-  // Back + Edit buttons
-  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">';
-  h += '<button class="back" onclick="Router.go(\'members\')" style="padding:6px 10px;min-height:40px">← Members</button>';
-  if (isOwnProfile) h += '<button class="btn-sm green" onclick="Router.go(\'members\',{edit:\'' + pid + '\'})">Edit profile</button>';
-  else if (currentUser && currentUser.uid !== pid) {
-    var _isBlocked = typeof pbIsBlocked === "function" && pbIsBlocked(pid);
-    h += '<div style="display:flex;gap:6px;align-items:center">';
-    h += '<button class="btn-sm outline" style="font-size:9px;color:var(--muted)" onclick="toggleBlockMember(\'' + pid + '\')">' + (_isBlocked ? 'Unblock' : 'Block') + '</button>';
-    h += '<button class="btn-sm outline" style="font-size:9px;color:var(--muted)" onclick="reportMember(\'' + pid + '\')">Report</button>';
-    h += '</div>';
-  }
-  h += '</div>';
-  // Avatar + name block
-  h += '<div style="text-align:center;padding-bottom:16px">';
+  // ── EDITORIAL PORTRAIT MASTHEAD (CLUBHOUSE_SPEC-HQ-3o) ──
+  // Mirrors the roster (3e) editorial language: mono eyebrow + Fraunces italic
+  // headline, left-aligned, on chalk. The avatar carries the player's equipped
+  // ring treatment; a purchased banner (if equipped) renders as a contained
+  // signature strip so the shop cosmetic still has a home on the profile.
   var _profColor = playerFrameColor(p);
   var _profGlow = typeof playerRingShadow === "function" ? playerRingShadow(p) : "";
   var _profAnim = typeof playerRingClass === "function" ? playerRingClass(p) : "";
   var _profAnimMap = {'ring-pulse-gold':'ringPulse 2s ease-in-out infinite','ring-diamond-sparkle':'ringShimmer 2.5s ease-in-out infinite','ring-rainbow-shift':'ringRainbow 3s linear infinite','ring-neon-green':'ringNeonGreen 1.8s ease-in-out infinite','ring-crimson-ember':'ringEmber 1.5s ease-in-out infinite'};
   var _profAnimCss = _profAnim && _profAnimMap[_profAnim] ? ';animation:' + _profAnimMap[_profAnim] : '';
-  var _profShadowCombined = (_profGlow ? _profGlow + ',' : '') + '0 4px 20px rgba(0,0,0,.3)';
-  h += '<div class="pd-av" style="width:96px;height:96px;font-size:38px;border:3px solid ' + _profColor + ';box-shadow:' + _profShadowCombined + _profAnimCss + ';margin:0 auto 12px"' + (canEditPhoto ? ' onclick="uploadMemberPhoto(\'' + pid + '\')"' : '') + '>' + Router.getAvatar(p);
-  if (canEditPhoto) h += '<div class="pd-edit"><svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.2" style="vertical-align:middle"><path d="M11 2l3 3-8 8H3v-3z"/></svg></div>';
-  h += '<div style="position:absolute;bottom:-4px;right:-4px;background:var(--gold);color:var(--bg);font-size:9px;font-weight:800;border-radius:10px;padding:2px 7px;border:2px solid var(--bg);line-height:1.3;min-width:18px;text-align:center;z-index:3">' + lvl.level + '</div>';
+  var _profShadowCombined = (_profGlow ? _profGlow + ',' : '') + '0 4px 18px rgba(20,19,15,.14)';
+  var bannerBg = getPlayerBannerCss(p);
+
+  // Topbar: back + viewer actions (edit own / block+report other).
+  // .pf-page caps the single-column profile at 680px inside the shared
+  // [data-page="members"] container (which stays full-width for the roster
+  // grid) — same self-wrapper pattern as .tr-wrap / .league-wrap.
+  var h = '<div class="pf-page">';
+  h += '<div class="pf-topbar">';
+  h += '<button class="back" onclick="Router.go(\'members\')" style="min-height:40px">← Members</button>';
+  if (isOwnProfile) h += '<button class="btn-sm outline" onclick="Router.go(\'members\',{edit:\'' + pid + '\'})">Edit profile</button>';
+  else if (currentUser && currentUser.uid !== pid) {
+    var _isBlocked = typeof pbIsBlocked === "function" && pbIsBlocked(pid);
+    h += '<div style="display:flex;gap:6px;align-items:center">';
+    h += '<button class="btn-sm outline" style="font-size:9px" onclick="toggleBlockMember(\'' + pid + '\')">' + (_isBlocked ? 'Unblock' : 'Block') + '</button>';
+    h += '<button class="btn-sm outline" style="font-size:9px" onclick="reportMember(\'' + pid + '\')">Report</button>';
+    h += '</div>';
+  }
   h += '</div>';
-  h += '<div class="pd-name" style="font-size:24px">' + renderUsername(p, '', false) + '</div>';
-  if (p.username && p.name && p.username !== p.name) h += '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + p.name + '</div>';
+
+  // Purchased banner cosmetic (if equipped) → contained signature strip.
+  if (bannerBg) h += '<div class="pf-band" style="background:' + bannerBg + '"></div>';
+
+  // Editorial masthead: portrait row (avatar + identity column).
+  h += '<div class="roster-masthead pf-masthead">';
+  h += '<div class="pf-portrait">';
+  h += '<div class="pf-av" style="width:104px;height:104px;font-size:40px;border:3px solid ' + _profColor + ';box-shadow:' + _profShadowCombined + _profAnimCss + '"' + (canEditPhoto ? ' onclick="uploadMemberPhoto(\'' + pid + '\')"' : '') + '>' + Router.getAvatar(p);
+  if (canEditPhoto) h += '<div class="pf-av__edit"><svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.3" style="vertical-align:middle"><path d="M11 2l3 3-8 8H3v-3z"/></svg></div>';
+  h += '<div class="pf-av__lvl">' + lvl.level + '</div>';
+  h += '</div>';
+  h += '<div class="pf-id">';
+  h += '<div class="roster-eyebrow">' + escHtml(String(activeTitle).toUpperCase()) + ' · SINCE ' + escHtml(String(p.joinDate || "2026")) + '</div>';
+  h += '<h1 class="roster-headline pf-headline">' + renderUsername(p, '', false) + '</h1>';
+  if (p.username && p.name && p.username !== p.name) h += '<div class="pf-realname">' + escHtml(p.name) + '</div>';
+  var metaParts = [];
+  if (p.homeCourse) metaParts.push(escHtml(p.homeCourse));
+  if (p.range) metaParts.push(escHtml(p.range));
+  if (metaParts.length) h += '<div class="pf-meta">' + metaParts.join(' · ') + '</div>';
+  h += '</div>';
+  h += '</div>';
 
   // Display badges (max 3, player-selected)
   var allBadges = [];
@@ -102,31 +123,25 @@ function renderMemberDetailWithData(p) {
   var displayBadges = p.displayBadges || allBadges.slice(0, 3).map(function(b){return b.id});
   var shownBadges = allBadges.filter(function(b){return displayBadges.indexOf(b.id) !== -1}).slice(0, 3);
 
-  // Title
-  h += '<div style="font-size:12px;color:var(--gold);margin-top:6px;font-weight:600;letter-spacing:.5px">' + activeTitle + '</div>';
-
-  // Badges row
+  // Badges row (player-selected, max 3).
   if (shownBadges.length) {
-    h += '<div style="display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:8px">';
+    h += '<div class="pf-badges">';
     shownBadges.forEach(function(b) {
       h += '<span style="font-size:8px;padding:3px 10px;background:' + b.bg + ';border:1px solid ' + b.border + ';border-radius:var(--radius-full);color:' + b.color + ';font-weight:700;letter-spacing:.5px">' + b.label + '</span>';
     });
     h += '</div>';
   }
 
-  // Bio + meta
-  if (p.bio) h += '<div class="pd-bio" style="margin-top:10px">' + p.bio + '</div>';
-  var metaParts = [];
-  if (p.homeCourse) metaParts.push(p.homeCourse);
-  if (p.range) metaParts.push(p.range);
-  var joinDate = p.joinDate || "2026";
-  metaParts.push('Since ' + joinDate);
-  h += '<div style="font-size:10px;color:var(--muted2);margin-top:6px">' + metaParts.join(' · ') + '</div>';
-  // Social action buttons (Trash Talk)
+  // Bio (escaped — was rendered raw prior to 3o).
+  if (p.bio) h += '<div class="pf-bio">' + escHtml(p.bio) + '</div>';
+
+  // Actions: share profile card + social (Trash Talk).
+  h += '<div class="pf-actions">';
+  h += '<button class="btn-sm outline" onclick="shareProfileCard(\'' + pid + '\')"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle;margin-right:4px"><path d="M4 12V8l4-6 4 6v4"/><path d="M4 8h8"/></svg>Share Profile Card</button>';
   if (typeof renderSocialActions === "function") h += renderSocialActions(pid);
-  // Share profile card button
-  h += '<div style="margin-top:8px"><button class="btn-sm outline" style="font-size:10px" onclick="shareProfileCard(\'' + pid + '\')"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle;margin-right:4px"><path d="M4 12V8l4-6 4 6v4"/><path d="M4 8h8"/></svg>Share Profile Card</button></div>';
-  h += '</div></div>'; // close text-align:center + hero banner
+  h += '</div>';
+
+  h += '</div>'; // close .roster-masthead
 
   // ── XP LEVEL BAR (compact) ──
   var pct = Math.min(100, Math.round(((lvl.xp - lvl.currentLevelXp) / Math.max(1, lvl.nextLevelXp - lvl.currentLevelXp)) * 100));
@@ -763,6 +778,7 @@ function renderMemberDetailWithData(p) {
   }
   h += '</div>'; // close ptab-social
 
+  h += '</div>'; // close .pf-page
   document.querySelector('[data-page="members"]').innerHTML = h;
   setTimeout(initCountAnimations, 50);
 
