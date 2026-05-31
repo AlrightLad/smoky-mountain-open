@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-05-31T08:08:17.250419+00:00",
+  "generated_at": "2026-05-31T09:06:53.636055+00:00",
   "schema_version": 1,
   "source": "~/.claude/projects/C--Users-Zach-smoky-mountain-open/*.jsonl",
-  "session_count": 272,
-  "bucket_count": 321,
-  "all_time_total_tokens": 13836568952,
+  "session_count": 273,
+  "bucket_count": 322,
+  "all_time_total_tokens": 13840642608,
   "by_day_total": {
     "2026-04-17": 294853821,
     "2026-04-20": 362592283,
@@ -35,12 +35,12 @@
     "2026-05-28": 29959892,
     "2026-05-29": 1125370428,
     "2026-05-30": 1110856326,
-    "2026-05-31": 265790238
+    "2026-05-31": 269863894
   },
   "by_model_total": {
     "claude-opus-4-7": 11336701903,
     "<synthetic>": 0,
-    "claude-opus-4-8": 2499867049
+    "claude-opus-4-8": 2503940705
   },
   "buckets": {
     "0c5538f6-fa47-44fc-9519-28830b98ff03|2026-05-13|claude-opus-4-7": {
@@ -4207,14 +4207,27 @@
       "session_id": "a3d47cf4-19b0-49e2-856a-d97fa47a087c",
       "day": "2026-05-31",
       "model": "claude-opus-4-8",
-      "turn_count": 58,
-      "input_tokens": 24203,
-      "output_tokens": 63379,
-      "cache_read_input_tokens": 4749681,
-      "cache_creation_input_tokens": 258913,
-      "total": 5096176,
+      "turn_count": 62,
+      "input_tokens": 24469,
+      "output_tokens": 69241,
+      "cache_read_input_tokens": 5197949,
+      "cache_creation_input_tokens": 269425,
+      "total": 5561084,
       "first_ts": "2026-05-31T08:00:10.023Z",
-      "last_ts": "2026-05-31T08:08:10.322Z"
+      "last_ts": "2026-05-31T08:08:49.467Z"
+    },
+    "39e1e9bd-7e6b-4201-81a9-626bb0568a13|2026-05-31|claude-opus-4-8": {
+      "session_id": "39e1e9bd-7e6b-4201-81a9-626bb0568a13",
+      "day": "2026-05-31",
+      "model": "claude-opus-4-8",
+      "turn_count": 42,
+      "input_tokens": 30644,
+      "output_tokens": 52434,
+      "cache_read_input_tokens": 3182511,
+      "cache_creation_input_tokens": 343159,
+      "total": 3608748,
+      "first_ts": "2026-05-31T09:00:12.965Z",
+      "last_ts": "2026-05-31T09:06:22.316Z"
     }
   }
 }
