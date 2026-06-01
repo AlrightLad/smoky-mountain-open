@@ -133,3 +133,13 @@ Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
   PASS  amendments.html              4 amendment rows OR KPIs (>=1)
   PASS  app-health.html              14 dimension cards (>=5)
   PASS  design-system.html           451 design tokens (>=5)
+  PASS  discussion-bubbles.html      4 threads OR KPIs (>=1)
+  PASS  escalations.html             4 rows OR KPIs (>=1)
+  PASS  founder-checklist.html       5 open checklist items (>=1)
+  PASS  main-flows.html              24 main-flows content (>=1)
+  PASS  proposals.html               4 proposal rows OR KPIs (>=1)
+  PASS  sessions.html                1 session cards (strict, NO empty-state fallback) (>=1)
+  PASS  token-usage.html             3 token rows OR cards (>=1)
+
+visual-gate: ALL 12 PAGES RENDER CONTENT
+[write-regen-heartbeat] OK ts=2026-06-01T06:05:57Z source=post-commit-hook status=PASS
