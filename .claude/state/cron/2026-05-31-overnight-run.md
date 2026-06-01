@@ -1603,3 +1603,68 @@ Clean **5-op** heartbeat (regen-all + 2 wellness writes + journal append + commi
 - `docs/reports/app-health.html` — engineer's own regen-all output (88.8 HELD A-; metadata-only diff: generated_at + audit_trigger sha pointer bbf88242→9020cd8e + total_files_touched 3→4; 0 attention items)
 
 No code changes. No proposals authored (PROP-015 untouched). No FIQ writes. No bug-report state moves (both trees absent). Working tree was clean at run-start — no concurrent WIP to leave unstaged. **Did NOT push** — Founder reviews local diff first.
+
+---
+
+# Cycle CM — overnight-triage (TWENTY-FIRST fire of 2026-05-31)
+
+**Started:** 2026-06-01T00:01:07Z (regen-all START; "ALL DASHBOARDS REGENERATED at 2026-06-01T00:01:12Z"). **HEAD at run-start:** `99099347` (`cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)`) — the post-commit regen that landed on top of cycle CL's triage commit `6b5227c2` in the CL→CM window. **Working tree at run-start: CLEAN** (`git status --short` empty before regen). Cadence: ~60 min after cycle CL's 23:01:16Z regen → ~1h fire.
+
+**DATE-CONVENTION NOTE (carry-over #5, dormant):** UTC has crossed midnight (regen-all START 00:01:07Z UTC), but Founder-local (York PA, UTC-4 EDT) reads **2026-05-31 20:01**, and the `audit_trigger` `committed_at` is `19:06:05-04:00` (= 2026-05-31 Founder-local). Per the established Founder-local journal-date convention, this cycle **stays in the `2026-05-31-overnight-run.md` file as cycle CM** — no fresh date-stamped file opened, no convention conflict actioned (the harness `currentDate` also still reads 2026-05-31). Carry-over #5 remains worth a one-line Founder policy lock for a future UTC-midnight straddle, but it is dormant tonight, not active.
+
+## Step 1 — FIQ triage (cycle CM)
+- **FIQ entries triaged:** 0 (A:0 B:0 C:0 D:0 F:0). `.claude/state/founder-input-queue/` directory ABSENT (`test -d` → MISSING; `find -type f` → empty). `.claude/state/founder_input_queue.json` ABSENT. `.claude/state/proactive-backlog.md` absent (no demotions). `.claude/state/aggregates/fiq-status.json` is the Firestore-index status aggregate (status=green, 26 declared / 26 deployed — unrelated to the Founder-input queue) — not a source of live FIQ entries.
+- IDs: none.
+
+## Step 2 — Bug-report triage (cycle CM)
+- **Bug reports processed:** 0. `.claude/state/bug-reports/` tree ABSENT (no `inbox/`, no `triaged/`; `test -d` → MISSING).
+- Dispositions: none. No P3e discussion bubbles opened (nothing to deliberate).
+- **New proposals authored:** 0. PROP-015 (authored cycle CG, lane 1 Substrate Discipline, ~45 LOC / cost=6000) remains PENDING and untouched — still the lone pending proposal (round-trip `[proposal-cards]` confirms `id=PROP-015 lane=1 cost=6000`; `[cross-dash]` `proposals_pending=1` consistent across dashboard.html / proposals.html / index.html). No proposal manufactured this cycle (no defect to remediate; the CG round-trip flake did not recur).
+
+## Step 3 — Heartbeat (cycle CM)
+### 3a — `scripts/regen-all.ps1`
+- Ran end-to-end 00:01:07Z → **=== ALL CHECKS PASSED ===**, **round-trip test PASS** on the **FIRST run** @ 00:01:12Z — the cycle-CG scroll-reachability timing flake did **NOT** recur (`scroll-reachability 5 pass / 0 fail / 0 skip`).
+- Heartbeat `regen-all-last-pass.json` written: `{"status":"PASS","duration_seconds":27,"last_pass_at_utc":"2026-06-01T00:01:33.9325451Z"}`.
+- All guards green (round-trip 4-view swap + transcript tallies 3/3 + nav 9-link × 9 surfaces + meter-wiring 7/7 + founder-queue 7/7 + quota-type-enum + cross-dash proposals_pending=1 + lifecycle shipped=7 + amendments applied=28 + escalations applied=3 + theme convergence no raw hex + no-charts + protected-layouts 5/5 + W1.S1 primitives + proposal-readiness 0 deferred + install-scripts 7 parse + install-cmd-surface + scroll-reachability 5/0/0 + quota-status auto-derived + pause-discipline clean + wiring 5/5). Telemetry events **19163**, handoffs=1, bubbles=7, proposals_pending=1. meter-wiring 7/7 → HALT-25 NOT in effect.
+- **One standing YELLOW (not new, not a blocker):** `user-context-gate` ~ `main-flows.html` modified 24353.6 min (~16.9 days) after the most recent user-context capture (2026-05-14T23-07-48Z). **Founder-action:** run `node scripts/visual-audit/founder-context-capture.mjs` to seed a fresh capture before ship-close. Carried, not resolvable by agent.
+- **Standing WARN (informational):** `regen-main-flows` 6 orphan components in grid (actor.guest, actor.invitee, dist.capacitor-ios, ext.open-meteo, fn.expire-suspensions, fn.join-league) — referenced by no flow's path. Pre-existing, not new.
+
+### App-health
+- `88.8 → 88.8` — **HELD A-** (`overall_score` `88.8` + `overall_grade` `A-` are unchanged *context* lines in the verbatim `git diff` — read, not guessed; `founder_attention: []` `agent_attention: []` both empty → aggregate-app-health reported **0 attention items**). The diff is **PURE METADATA** (matches CL/CK/CJ/CI/BV/BW pattern): `generated_at` 23:05:02Z → 00:01:11Z, and the `audit_trigger` block re-pointed (`sha 6b5227c2 → 99099347`, subject "Overnight triage…" → "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)", `trigger` `substrate-commit` → `cron`, `committed_at` 19:03:56-04:00 → 19:06:05-04:00) = the current HEAD. NOT a score change; NOT spun as a gain. **Sixth consecutive metadata-only/HELD cycle** (CH recovery → CI → CJ → CK → CL → CM).
+
+### Meter-wiring note (restraint)
+- Round-trip `[meter-wiring] PROP-003.b sidecar` → **7 checks pass**, both aggregators report `meter_status=wired-real`. **However** `quota-status` `data_source=auto-derived` with `weekly_cap`/`org_monthly_cap`/`weekly_pct`/`org_monthly_pct`/`stale_seconds` all **NULL** — the sidecar *schema* is present and consumed, but the **org-monthly cap is not anchored** to a real claude.ai %. Therefore the **F1a defensive-pause heuristic stays active**; the meter gap is **NOT** declared closed this cycle (no over-claim).
+
+### 3b — Wellness
+- `engineer.json` + `critic.json` → cycle CM. Both `tokens_consumed` threshold standing-crossed (heartbeat-light, cumulative estimate, Founder-decision-gated on token-counter-semantics); both `status: active`, **no rest** taken per established convention. Only engineer + critic participated (heartbeat-only cycle — no design-bot / data-integrity invocation, nothing to deliberate). No agent pushed past a NEW threshold this cycle. Checkpoints advanced 23:02:00Z → 00:02:00Z.
+
+## Wellness state changes
+- engineer: cycle CL→CM, status active (no rest), tokens cumulative ~4.10M since last rest (light cycle, +~50k).
+- critic: cycle CL→CM, status active (no rest), tokens cumulative ~0.995M since last rest (light cycle, +~15k).
+- No threshold newly crossed; no rest triggered.
+
+## Blockers / Founder attention
+1. **PROP-015 awaiting Founder application** (standing from cycle CG) — round-trip ship-gate flake retry + no-op rollback fix. Not a HALT; not blocking other work. The gate did not flake this cycle, but the hardening rationale stands.
+2. **`user-context-gate` YELLOW** on `main-flows.html` — Founder runs `founder-context-capture.mjs` to clear. Standing.
+3. **Stale `last-verify.json`** (cycle-K, 2026-05-25, Founder-decision-gated on token-counter-semantics) remains on disk, unacted-on per convention. Standing.
+4. **F1a token-meter gap** — org-monthly cap unanchored (quota caps NULL); defensive-pause heuristic LIVE despite PROP-003.b sidecar schema passing round-trip. HALT-25 did NOT fire (agent-feel "fine"; zero API-error/org-cap signals across all tool calls this cycle).
+5. **Carry-over #5 (date-convention lock)** — UTC-midnight straddle recurred this cycle (regen START 00:01Z UTC); resolved cleanly to Founder-local 2026-05-31 per established convention, but a one-line Founder policy lock would remove ambiguity for future straddles. Dormant, non-blocking.
+- No NEW blockers this cycle.
+
+## Op-count note
+Clean **5-op** heartbeat (regen-all + 2 wellness writes + journal append + commit) — within the nominal heartbeat budget, no investigation overrun. Pause-discipline F1a: no quota wall, no API error, no org-cap signal across any tool result this cycle.
+
+## Critic metric-integrity attestation (METRIC_INTEGRITY_PROTOCOL §3.1) — cycle CM
+1. **Bug-report diagnoses real / not waved off?** N/A — inbox tree absent (verified `test -d` MISSING); and no flake surfaced (regen-all passed first run, scroll-reachability 5/0/0), so nothing was waved off as "looks fine".
+2. **Proposals cite a specific screen/state/edge-case / not vague?** N/A — ZERO new proposals, the correct outcome absent a defect. The critic explicitly did NOT manufacture a "refactor for code health" proposal to look productive.
+3. **FIQ grades honest / not inflated?** N/A — zero live FIQ entries.
+
+**Verdict: SUBSTANTIVE (honest-minimal), attested CLEANLY.** The integrity test for a clean cycle is resistance to inventing work, and it held: no fake proposal, app-health reported as HELD (not spun — `overall_score 88.8`/`overall_grade A-` unchanged context lines, 0 attention items, only-movement = routine provenance: a metadata-only diff re-pointing the `audit_trigger` sha at the current HEAD `99099347` and `trigger` substrate-commit→cron), and meter-wiring restraint upheld (sidecar passes round-trip but caps NULL → F1a gap NOT declared closed). Sixth consecutive metadata-only/HELD cycle (CH recovery → CI → CJ → CK → CL → CM). Nothing fabricated to look productive. Ship closes.
+
+## Files changed in this cycle CM run
+- `.claude/state/wellness/engineer.json` — cycle CM update
+- `.claude/state/wellness/critic.json` — cycle CM update
+- `.claude/state/cron/2026-05-31-overnight-run.md` — this journal (cycle CM section appended)
+- `docs/reports/app-health.html` — engineer's own regen-all output (88.8 HELD A-; metadata-only diff: generated_at + audit_trigger sha pointer 6b5227c2→99099347 + trigger substrate-commit→cron; 0 attention items)
+
+No code changes. No proposals authored (PROP-015 untouched). No FIQ writes. No bug-report state moves (both trees absent). Working tree was clean at run-start — no concurrent WIP to leave unstaged. **Did NOT push** — Founder reviews local diff first.
