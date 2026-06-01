@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-06-01T01:05:59.498330+00:00",
+  "generated_at": "2026-06-01T02:07:51.317149+00:00",
   "schema_version": 1,
   "source": "~/.claude/projects/C--Users-Zach-smoky-mountain-open/*.jsonl",
-  "session_count": 289,
-  "bucket_count": 338,
-  "all_time_total_tokens": 14064498738,
+  "session_count": 290,
+  "bucket_count": 339,
+  "all_time_total_tokens": 14072572196,
   "by_day_total": {
     "2026-04-17": 294853821,
     "2026-04-20": 362592283,
@@ -36,12 +36,12 @@
     "2026-05-29": 1125370428,
     "2026-05-30": 1110856326,
     "2026-05-31": 485615903,
-    "2026-06-01": 8104121
+    "2026-06-01": 16177579
   },
   "by_model_total": {
     "claude-opus-4-7": 11336701903,
     "<synthetic>": 0,
-    "claude-opus-4-8": 2727796835
+    "claude-opus-4-8": 2735870293
   },
   "buckets": {
     "0c5538f6-fa47-44fc-9519-28830b98ff03|2026-05-13|claude-opus-4-7": {
@@ -4429,14 +4429,27 @@
       "session_id": "17714c6f-1fbc-4f18-96ad-425e797604d5",
       "day": "2026-06-01",
       "model": "claude-opus-4-8",
-      "turn_count": 51,
-      "input_tokens": 24147,
-      "output_tokens": 66465,
-      "cache_read_input_tokens": 3485852,
-      "cache_creation_input_tokens": 236616,
-      "total": 3813080,
+      "turn_count": 61,
+      "input_tokens": 25292,
+      "output_tokens": 74155,
+      "cache_read_input_tokens": 4536699,
+      "cache_creation_input_tokens": 244615,
+      "total": 4880761,
       "first_ts": "2026-06-01T01:00:10.673Z",
-      "last_ts": "2026-06-01T01:05:08.719Z"
+      "last_ts": "2026-06-01T01:07:51.571Z"
+    },
+    "ba0333a4-6f03-4529-8d7e-a0bd65224374|2026-06-01|claude-opus-4-8": {
+      "session_id": "ba0333a4-6f03-4529-8d7e-a0bd65224374",
+      "day": "2026-06-01",
+      "model": "claude-opus-4-8",
+      "turn_count": 67,
+      "input_tokens": 24833,
+      "output_tokens": 77034,
+      "cache_read_input_tokens": 6531598,
+      "cache_creation_input_tokens": 372312,
+      "total": 7005777,
+      "first_ts": "2026-06-01T02:00:08.798Z",
+      "last_ts": "2026-06-01T02:07:45.169Z"
     }
   }
 }
