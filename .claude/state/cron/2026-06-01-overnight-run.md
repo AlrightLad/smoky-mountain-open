@@ -602,3 +602,61 @@ Staged via explicit pathspec (own files only, per `cron-sweeps-staged-work` race
 - `docs/reports/app-health.html` — engineer's own regen-all output (88.8 HELD A-; pure-metadata diff)
 
 No code changes. No proposals. No FIQ writes. No bug-report state moves (inbox absent). Working tree clean at run-start.
+
+---
+
+# Cycle CY — ninth fire of 2026-06-01 (Founder-local)
+
+**regen-all START:** 2026-06-01T12:01:14Z UTC (= 2026-06-01 08:01 EDT, York PA UTC-4). ~60 min after CX's 11:01:01Z START — ~1h cadence held. All date axes agree on 2026-06-01 (carry-over #5 date-convention dormant). This cycle APPENDS to the existing 2026-06-01-overnight-run.md (CQ opened; CR/CS/CT/CU/CV/CW/CX/CY appended).
+
+**HEAD at run-start:** `42ca718b` ("cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)"). Working tree CLEAN at run-start (`git status --short` empty; porcelain count 0).
+
+## Steps 1–2 — Triage (BOTH QUEUES EMPTY)
+
+- **FIQ queue:** `.claude/state/founder-input-queue/` ABSENT (`test -d` → NO; `find` returned nothing). Live FIQ surface is the `fiq-status.json` aggregate (status green, 26 declared / 26 deployed, 0 pending). **0 FIQ entries graded.** Grade breakdown A:0 B:0 C:0 D:0 F:0; IDs: none.
+- **Bug-reports inbox:** `.claude/state/bug-reports/inbox/` ABSENT (`test -d` → NO; parent `bug-reports/` also MISSING). **0 bug reports processed.** Dispositions: none — no P3e discussion bubbles opened (nothing to deliberate).
+- `.claude/state/proactive-backlog.md` ABSENT (no demotions this cycle).
+- Heartbeat-only branch invoked per runbook ("If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 only and exit").
+
+## Step 3a — regen-all heartbeat
+
+- `powershell -File scripts/regen-all.ps1` **PASSED ON FIRST RUN** (`=== ALL CHECKS PASSED ===` + round-trip **PASS**; "ALL DASHBOARDS REGENERATED at 2026-06-01T12:01:19Z"). No flake recurrence: scroll-reachability **5 pass / 0 fail / 0 skip**; all ~30 guards green; meter-wiring 7/7; founder-queue 7/7; telemetry **events=19805** (up from 19752 at CX), proposals_pending=1, meter_status=wired-real both aggregators.
+- Heartbeat `regen-all-last-pass.json` written.
+- Only `docs/reports/app-health.html` changed (`git diff --stat`: 1 file, 5 ins / 5 del).
+- **APP-HEALTH 88.8 HELD A-** (`overall_score` 88.8 + `overall_grade` A- are NOT in the diff → unchanged; aggregate-app-health reported **0 attention items**). Diff is **PURE METADATA** (read verbatim from `git diff`):
+  - **(a)** `generated_at` `2026-06-01T11:06:14.132507Z` → `2026-06-01T12:01:18.349556Z` (timestamp bump).
+  - **(b)** `audit_trigger` re-pointed: sha `f07284a4` / "Overnight triage 2026-06-01 - 0 reports, 0 proposals, 0 FIQ entries graded" / committed_at `07:05:09-04:00` → sha `42ca718b` / "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)" / committed_at `07:07:16-04:00` (= current HEAD). NOT a score change.
+- **EIGHTEENTH consecutive metadata-only / HELD cycle** (CH recovery → CI → CJ → CK → CL → CM → CN → CO → CP → CQ → CR → CS → CT → CU → CV → CW → CX → CY).
+- **PROP-015** (cycle CG, lane 1 Substrate Discipline, cost=6000) remains PENDING, untouched, lone pending proposal (`proposals_pending=1` consistent cross-dash).
+- Standing WARN (pre-existing, not new): regen-main-flows 6 orphan components (actor.guest, actor.invitee, dist.capacitor-ios, ext.open-meteo, fn.expire-suspensions, fn.join-league). Standing YELLOW (not new): user-context-gate flags main-flows.html modified 25073.7 min after last user-context capture (2026-05-14T23-07-48Z) — Founder runs `node scripts/visual-audit/founder-context-capture.mjs` to clear.
+
+**NO proposal warranted.** No defect surfaced; regen-all passed first run with no flake. Manufacturing a "refactor for code health" proposal absent a defect would be Rule-2 gaming.
+
+## Step 3b — Wellness refresh
+
+- `engineer.json` + `critic.json` updated for cycle CY (heartbeat-only participants). Status remains `active` for both; **no rest triggered** (heartbeat-only load light, consistent with cycles L–CX). Token-threshold `tokens_consumed` remains crossed (cumulative estimate); Founder token-counter-semantics decision still LIVE (carry-over). **No agent pushed past a *new* threshold this cycle.**
+
+## Step 5 — Commit
+
+Staged via explicit pathspec (own files only, per `cron-sweeps-staged-work` race discipline): `wellness/engineer.json` + `wellness/critic.json` + this journal + the engineer's own `docs/reports/app-health.html` regen output. Working tree clean at run-start — no concurrent WIP to leave unstaged. **DO NOT push** (Founder reviews local diff first). Commit message per runbook exact format.
+
+## Blockers requiring Founder attention (cycle CY)
+
+- **None new / none blocking.** HALT-25 did not fire (agent-feel "fine", zero API-error/org-cap signals). No scope-creep candidates. Standing carry-overs unchanged: (1) date-convention lock (dormant — all axes agree on 2026-06-01); (2) token-counter semantics (non-blocking; no rest incorrectly triggered); (3) F1a token-meter gap LIVE (PROP-003.b sidecar 7/7 but quota-status caps NULL → gap NOT declared closed); (4) runbook path-drift informational (literal triage paths never materialized; live FIQ surface is the `fiq-status.json` aggregate).
+
+## Critic metric-integrity attestation (METRIC_INTEGRITY_PROTOCOL §3.1)
+
+1. **Bug-report diagnoses real / not waved off?** N/A — inbox absent (`test -d` → NO; parent `bug-reports/` MISSING; `find` returned nothing). No flake surfaced (regen-all `=== ALL CHECKS PASSED ===` first run @ 12:01:19Z; scroll-reachability 5/0/0). Nothing waved off as "looks fine."
+2. **Proposals cite a specific screen/state/edge-case / not vague?** N/A — **zero proposals authored**, correctly: no defect surfaced, PROP-015 already pending. Manufacturing a vague "refactor for code health" proposal would be Rule-2 gaming.
+3. **FIQ grades honest / not inflated?** N/A — zero live FIQ entries (founder-input-queue absent; `fiq-status.json` status=green, 0 pending).
+
+**Substantive-vs-fluff verdict: SUBSTANTIVE, attested CLEANLY.** CY is a pure-metadata-diff HELD cycle (44th attribution case; eighteenth consecutive metadata-only heartbeat). The critic read the `app-health.html` git diff verbatim and confirmed `overall_score` is unchanged at 88.8 (A-) and that the only changed lines are metadata (`generated_at` + `audit_trigger` pointer re-pointed `f07284a4` → current HEAD `42ca718b`). Nothing moved that could be credited or blamed — no code authored, nothing shipped, nothing broken. The discipline this cycle was to refuse to manufacture a progress narrative from a metadata-only diff, and to refuse to manufacture a proposal on a no-defect heartbeat. Meter restraint upheld (caps NULL → F1a not declared closed). Commit pathspec scoped to own files. Nothing fabricated; no false credit for the flat score, no false blame, no manufactured proposal. Ship closes.
+
+## Files changed in this cycle CY run
+
+- `.claude/state/wellness/engineer.json` — cycle CY update
+- `.claude/state/wellness/critic.json` — cycle CY update
+- `.claude/state/cron/2026-06-01-overnight-run.md` — this journal (cycle CY section appended)
+- `docs/reports/app-health.html` — engineer's own regen-all output (88.8 HELD A-; pure-metadata diff)
+
+No code changes. No proposals. No FIQ writes. No bug-report state moves (inbox absent). Working tree clean at run-start.
