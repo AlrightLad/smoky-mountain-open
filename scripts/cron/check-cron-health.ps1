@@ -36,7 +36,7 @@ if (-not $tasks) {
 $expectedIntervals = @{
   "PARBAUGHS-Daily-Maintenance"          = 1440
   "PARBAUGHS-Downloads-Watcher"          = 5
-  "PARBAUGHS-Overnight-Triage"           = 60
+  "PARBAUGHS-Overnight-Triage"           = 1440
   "PARBAUGHS-Proposal-Readiness-Scanner" = 15
   "PARBAUGHS-Token-Sidecar"              = 5
 }
@@ -72,7 +72,7 @@ foreach ($t in $tasks) {
     $report.issues += "Hidden=False"
     $issues += @{
       severity = "YELLOW"
-      what = "$($t.TaskName) not Hidden — will flash PowerShell window during cron run"
+      what = "$($t.TaskName) not Hidden - will flash PowerShell window during cron run"
       where = "Task Scheduler"
       what_action = "Run silence-cron-LAUNCH.cmd as Administrator"
     }
@@ -83,7 +83,7 @@ foreach ($t in $tasks) {
     $report.issues += "RunLevel=$($t.Principal.RunLevel) (expected Limited)"
     $issues += @{
       severity = "YELLOW"
-      what = "$($t.TaskName) has elevated RunLevel — future modifications need admin"
+      what = "$($t.TaskName) has elevated RunLevel - future modifications need admin"
       where = "Task Scheduler"
       what_action = "Run silence-cron-LAUNCH.cmd as Administrator to rebuild with Limited"
     }
@@ -91,7 +91,7 @@ foreach ($t in $tasks) {
   }
 
   if ($info.LastTaskResult -ne $null -and $info.LastTaskResult -ne 0 -and $info.LastTaskResult -ne 267009) {
-    # 267009 = "Task is currently running" — not a real error
+    # 267009 = "Task is currently running" - not a real error
     $report.issues += "LastResult=$($info.LastTaskResult)"
     $issues += @{
       severity = "RED"

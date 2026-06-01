@@ -89,7 +89,7 @@ Write-Host ""
 $tasks = @(
     @{ TaskName = "PARBAUGHS-Downloads-Watcher";             InstallScript = "install-downloads-watcher.ps1";             Description = "scans ~/Downloads every 5 min for amendments/decisions/escalations" }
     @{ TaskName = "PARBAUGHS-Daily-Maintenance";              InstallScript = "install-maintenance.ps1";                    Description = "daily 02:55 maintenance: gc, sweep, regen-all heartbeat, telemetry, report" }
-    @{ TaskName = "PARBAUGHS-Overnight-Triage";               InstallScript = "install-overnight-triage.ps1";               Description = "daily 03:00 overnight FIQ + bug report triage" }
+    @{ TaskName = "PARBAUGHS-Overnight-Triage";               InstallScript = "install-overnight-triage.ps1";               Description = "daily 00:00 (midnight) overnight FIQ + bug report triage" }
     @{ TaskName = "PARBAUGHS-Proposal-Readiness-Scanner";     InstallScript = "install-proposal-readiness-scanner.ps1";     Description = "every 2h scan of approved proposals + ship-close trigger" }
     @{ TaskName = "PARBAUGHS-Token-Sidecar";                  InstallScript = "install-sidecar.ps1";                        Description = "every 5 min refresh of quota-status.json from manual paste log" }
 )

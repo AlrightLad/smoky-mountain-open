@@ -1,13 +1,21 @@
 #requires -Version 5.1
 <#
 .SYNOPSIS
-    PARBAUGHS Overnight Triage Cron - fires daily at 03:00 local.
+    PARBAUGHS Overnight Triage Cron - launches Claude once per local
+    calendar day, preferably at midnight.
 
 .DESCRIPTION
     Launches Claude Code with the fixed overnight-triage-prompt.txt to
     process bug reports + FIQ entries while Founder sleeps. Per the
     substrate-build-spec at .claude/state/wave-zero-dry-run/substrate-
     build-spec.md.
+
+    ONCE-PER-DAY GATE (Founder directive 2026-06-01): the only token-using
+    work is the Claude launch below. An in-script gate ensures Claude is
+    launched at most once per local calendar day (the first fire of the
+    day; preferably the 00:00 fire). Any additional fires that day exit at
+    the gate with zero token cost. The gate lives in the script so the cap
+    holds even if the Windows task trigger fires more often than daily.
 
     Wall-clock timeout: 4 hours. Kills the Claude Code process if
     exceeded. Telemetry emit on completion.
@@ -113,6 +121,28 @@ try {
     }
 
     # -------------------------------------------------------------------
+    # Once-per-day gate (Founder directive 2026-06-01: run once daily,
+    # preferably at midnight). The Windows task trigger may still fire more
+    # than once a day, but only the FIRST fire of each local calendar day
+    # launches Claude (the only token-using work). Every other fire exits
+    # here at zero token cost. The stamp lives under heartbeats/ (gitignored)
+    # so claiming the slot never dirties the working tree.
+    # -------------------------------------------------------------------
+    $dailyStampPath = Join-Path $repoRoot ".claude\state\heartbeats\overnight-triage-last-daily-run.json"
+    $alreadyRanToday = $false
+    if (Test-Path $dailyStampPath) {
+        try {
+            $stamp = Get-Content $dailyStampPath -Raw | ConvertFrom-Json
+            if ($stamp.last_run_date -eq $todayLocal) { $alreadyRanToday = $true }
+        } catch { $alreadyRanToday = $false }
+    }
+    if ($alreadyRanToday) {
+        Log "SKIP once-per-day gate: token-using run already happened today ($todayLocal)."
+        Emit-Telemetry "cron.overnight-triage.skipped" @{ reason = "once-per-day-gate"; date = $todayLocal }
+        exit 0
+    }
+
+    # -------------------------------------------------------------------
     # HALT 24 check: resume_after passed by > 1 hour without resume
     # -------------------------------------------------------------------
     if (Should-FireHalt24 -repoRoot $repoRoot) {
@@ -133,6 +163,26 @@ try {
         Log "  halt evidence written: $haltFile"
         Emit-Telemetry "cron.overnight-triage.halted" @{ halt_id = 24; halt_file = $haltFile }
         exit 1
+    }
+
+    # -------------------------------------------------------------------
+    # Claim today's once-per-day slot BEFORE launching Claude, so any
+    # later fire today exits at the once-per-day gate above. (Task
+    # MultipleInstancesPolicy=IgnoreNew also blocks a concurrent launch
+    # while this 4h session runs.)
+    # -------------------------------------------------------------------
+    try {
+        $stampDir = Split-Path $dailyStampPath -Parent
+        $null = New-Item -ItemType Directory -Path $stampDir -Force -ErrorAction SilentlyContinue
+        @{
+            last_run_date = $todayLocal
+            last_run_iso  = $startedIso
+            trigger_hour  = (Get-Date).Hour
+            note          = "Once-per-day gate stamp; written just before Claude launch."
+        } | ConvertTo-Json -Depth 4 | Set-Content -Path $dailyStampPath -Encoding utf8
+        Log "Claimed once-per-day slot for $todayLocal (stamp written)."
+    } catch {
+        Log "  WARN failed to write once-per-day stamp: $_"
     }
 
     # -------------------------------------------------------------------

@@ -4,8 +4,8 @@
     Install (or update) the PARBAUGHS-Overnight-Triage Scheduled Task.
 
 .DESCRIPTION
-    Registers a daily Scheduled Task firing at 03:00 local time, running
-    overnight-triage.ps1 with Highest privileges via S4U.
+    Registers a daily Scheduled Task firing at 00:00 (midnight) local time,
+    running overnight-triage.ps1 with Highest privileges via S4U.
 
 .SECURITY MODEL
     Same security model as install-maintenance.ps1. The Overnight Triage
@@ -41,7 +41,7 @@ if (-not $isAdmin) {
 
 Write-Host "[install-ot] task=$taskName  script=$script"
 Write-Host ""
-Write-Host "This task runs as YOU with admin privileges, fires DAILY at 03:00 local time."
+Write-Host "This task runs as YOU with admin privileges, fires DAILY at 00:00 (midnight) local time."
 Write-Host "Wall-clock timeout: 4 hours. Windows stores your password encrypted in the task."
 Write-Host ""
 Write-Host "NOTE: this task launches Claude Code with the fixed prompt at"
@@ -73,7 +73,7 @@ $action = New-ScheduledTaskAction `
     -Execute "powershell.exe" `
     -Argument "-NoProfile -File `"$script`""
 
-$trigger = New-ScheduledTaskTrigger -Daily -At "03:00"
+$trigger = New-ScheduledTaskTrigger -Daily -At "00:00"   # midnight, per Founder directive 2026-06-01 (once per day)
 
 $settings = New-ScheduledTaskSettingsSet `
     -ExecutionTimeLimit (New-TimeSpan -Hours 4) `
@@ -99,7 +99,7 @@ $created = Get-ScheduledTask -TaskName $taskName
 Write-Host ""
 Write-Host "[install-ot] OK task registered: $($created.TaskName)" -ForegroundColor Green
 Write-Host "[install-ot] State:    $($created.State)"
-Write-Host "[install-ot] Trigger:  Daily 03:00 local"
+Write-Host "[install-ot] Trigger:  Daily 00:00 (midnight) local"
 Write-Host "[install-ot] Timeout:  4 hours"
 Write-Host "[install-ot] RunLevel: Highest (admin)"
 Write-Host "[install-ot] Logs:     $repoRoot\scripts\cron\logs\"
