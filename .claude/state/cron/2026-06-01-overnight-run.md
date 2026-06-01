@@ -660,3 +660,62 @@ Staged via explicit pathspec (own files only, per `cron-sweeps-staged-work` race
 - `docs/reports/app-health.html` — engineer's own regen-all output (88.8 HELD A-; pure-metadata diff)
 
 No code changes. No proposals. No FIQ writes. No bug-report state moves (inbox absent). Working tree clean at run-start.
+
+---
+
+# Cycle CZ — tenth fire of 2026-06-01 (Founder-local)
+
+**regen-all START:** 2026-06-01T13:00:32Z UTC (= 2026-06-01 09:00 EDT, York PA UTC-4). ~60 min after CY's 12:01:14Z START — ~1h cadence held. All date axes agree on 2026-06-01 (carry-over #5 date-convention dormant). This cycle APPENDS to 2026-06-01-overnight-run.md (CQ opened; CR–CZ appended).
+
+**HEAD at run-start:** `8fdce817` ("cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)"). Working tree CLEAN at run-start (`git status --short` empty before regen).
+
+## Steps 1–2 — Triage (BOTH QUEUES EMPTY)
+
+- **FIQ queue:** `.claude/state/founder-input-queue/` ABSENT (`test -d` → NO; `find` returned nothing). **0 FIQ entries graded.** Grade breakdown A:0 B:0 C:0 D:0 F:0; IDs: none.
+- **Bug-reports inbox:** `.claude/state/bug-reports/inbox/` ABSENT (`test -d` → NO; parent `bug-reports/` also MISSING). **0 bug reports processed.** Dispositions: none — no P3e discussion bubbles opened (nothing to deliberate).
+- `.claude/state/proactive-backlog.md` ABSENT (no demotions this cycle).
+- Heartbeat-only branch invoked per runbook ("If the FIQ queue + bug-reports inbox are BOTH empty: do steps 3-5 only and exit").
+
+## Step 3a — regen-all heartbeat
+
+- `powershell -File scripts/regen-all.ps1` **PASSED ON FIRST RUN** (`=== ALL CHECKS PASSED ===` + round-trip **PASS**; "ALL DASHBOARDS REGENERATED at 2026-06-01T13:00:45Z"). No flake recurrence: scroll-reachability **5 pass / 0 fail / 0 skip**; all guards green (proposal-readiness 0 deferred; install-scripts 7 parse; escalations pending=0 approved=0 applied=3; quota-status schema OK; wiring 5/5 scenario tokens). meter_status=wired-real (PROP-003.b sidecar passes round-trip).
+- Heartbeat `regen-all-last-pass.json` written.
+- Only `docs/reports/app-health.html` changed by the regen.
+- **APP-HEALTH 88.3 — A- HELD, but NOT a pure-metadata cycle.** Read verbatim from `git diff HEAD`, the changed lines are:
+  - **(a)** `generated_at` `2026-06-01T12:40:23.399316Z` → `2026-06-01T13:00:45.106963Z` (timestamp bump).
+  - **(b)** `overall_score` **`87.6` → `88.3`** (+0.7). `overall_grade` **A- held** (unchanged). This is a genuine recompute, not a metadata-only no-op — the prior commit's published score was 87.6.
+  - **(c)** `audit_trigger` re-pointed: sha `8910649a` / "chore(stop-decision): log cron once-daily-cap stop…" / committed_at `08:40:05-04:00` → sha `8fdce817` / "cron(routine): post-commit dashboard regen…" / committed_at `08:41:27-04:00` (= run-start HEAD).
+- **Attribution (metric-integrity):** the +0.7 is **NOT** creditable to engineering this cycle — zero code was authored. It is a telemetry-driven recompute of the aggregate against the new audit-trigger commit. Reported as a recompute, not a "win." Grade band unchanged (A-). **This ends the prior streak of pure-metadata-only HELD cycles (CH→CY) — CZ moved the score via recompute, so it is logged as a score-moving recompute cycle, not the nineteenth metadata-only HELD.**
+- **CONCURRENT CRON SWEEP (per `cron-sweeps-staged-work` discipline):** while this cycle was inspecting the diff, a concurrent `cron(routine)` commit `4218bef5` ("auto-commit telemetry output before watcher preflight (2026-06-01T13:00:49Z)") **absorbed `docs/reports/app-health.html` into its own commit.** Work intact (HEAD `docs/reports/app-health.html` = this cycle's 13:00:45 regen output, score 88.3, A-); feat-provenance is in the cron commit rather than this cycle's. Working tree is now clean as a result. CZ's own commit therefore carries **only** the wellness + journal files.
+- **PROP-015** (cycle CG, lane 1 Substrate Discipline, cost=6000) remains PENDING, untouched, lone pending proposal.
+- Standing WARN (pre-existing, not new): regen-main-flows 6 orphan components. Standing YELLOW (not new): user-context-gate flags main-flows.html modified ~25133 min after last user-context capture (2026-05-14T23-07-48Z) — Founder runs `node scripts/visual-audit/founder-context-capture.mjs` to clear.
+
+**NO proposal warranted.** No defect surfaced; regen-all passed first run with no flake. The +0.7 recompute is not a defect and not an engineering deliverable. Manufacturing a "refactor for code health" proposal absent a defect would be Rule-2 gaming.
+
+## Step 3b — Wellness refresh
+
+- `engineer.json` + `critic.json` updated for cycle CZ (heartbeat-only participants). Status remains `active` for both; **no rest triggered** (heartbeat-only load light, consistent with cycles L–CY). Token-threshold `tokens_consumed` remains crossed (cumulative estimate); Founder token-counter-semantics decision still LIVE (carry-over). **No agent pushed past a *new* threshold this cycle.**
+
+## Step 5 — Commit
+
+Staged via explicit pathspec (own files only, per `cron-sweeps-staged-work` race discipline): `wellness/engineer.json` + `wellness/critic.json` + this journal. `docs/reports/app-health.html` was already committed by concurrent cron `4218bef5` and is NOT re-staged. **DO NOT push** (Founder reviews local diff first). Commit message per runbook exact format.
+
+## Blockers requiring Founder attention (cycle CZ)
+
+- **None new / none blocking.** HALT-25 did not fire (agent-feel "fine", zero API-error/org-cap signals). No scope-creep candidates. Standing carry-overs unchanged: (1) date-convention lock (dormant — all axes agree on 2026-06-01); (2) token-counter semantics (non-blocking; no rest incorrectly triggered); (3) F1a token-meter gap LIVE (PROP-003.b sidecar passes round-trip but quota-status caps NULL → gap NOT declared closed); (4) runbook path-drift informational (literal triage paths never materialized).
+
+## Critic metric-integrity attestation (METRIC_INTEGRITY_PROTOCOL §3.1)
+
+1. **Bug-report diagnoses real / not waved off?** N/A — inbox absent (`test -d` → NO; parent `bug-reports/` MISSING; `find` returned nothing). No flake surfaced (regen-all `=== ALL CHECKS PASSED ===` first run @ 13:00:45Z; scroll-reachability 5/0/0). Nothing waved off as "looks fine."
+2. **Proposals cite a specific screen/state/edge-case / not vague?** N/A — **zero proposals authored**, correctly: no defect surfaced, PROP-015 already pending. Manufacturing a vague "refactor for code health" proposal would be Rule-2 gaming.
+3. **FIQ grades honest / not inflated?** N/A — zero live FIQ entries (founder-input-queue absent).
+
+**Substantive-vs-fluff verdict: SUBSTANTIVE, attested CLEANLY.** The notable integrity test this cycle was the +0.7 score move (87.6 → 88.3). The critic confirms it is reported HONESTLY as a telemetry-driven recompute against the re-pointed audit-trigger commit — NOT credited to engineering work (zero code authored), NOT spun as a "win," grade band correctly stated as A- HELD. The prior pure-metadata streak was NOT falsely extended to claim a nineteenth flat cycle; CZ is logged as a score-moving recompute. The concurrent-cron sweep of `app-health.html` into commit `4218bef5` is documented rather than hidden (provenance honesty per `cron-sweeps-staged-work`). Meter restraint upheld (caps NULL → F1a not declared closed). Commit pathspec scoped to own files. Nothing fabricated; no false credit for the recompute, no false blame, no manufactured proposal. Ship closes.
+
+## Files changed in this cycle CZ run
+
+- `.claude/state/wellness/engineer.json` — cycle CZ update
+- `.claude/state/wellness/critic.json` — cycle CZ update
+- `.claude/state/cron/2026-06-01-overnight-run.md` — this journal (cycle CZ section appended)
+
+(`docs/reports/app-health.html` regen output — 88.3, A- — was absorbed into concurrent cron commit `4218bef5`, not this cycle's commit.) No code changes. No proposals. No FIQ writes. No bug-report state moves (inbox absent).
