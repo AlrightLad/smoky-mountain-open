@@ -1,4 +1,4 @@
-=== post-commit hook fired 2026-06-03T08:46:33Z HEAD=1ea5025 ===
+=== post-commit hook fired 2026-06-03T15:28:09Z HEAD=60a6a75a ===
 [scaffold-from-templates] scaffolded activity.html
 [scaffold-from-templates] scaffolded amendments.html
 [scaffold-from-templates] scaffolded dashboard.html
@@ -32,7 +32,7 @@
 [aggregate-token] cursor   write=True (write-no-prior-file) -> .claude/state/telemetry/aggregates/.token-usage-cursor.json
 
 --- scripts/aggregate-test-health.py ---
-[aggregate-test-health] OK status=unknown timestamp=2026-06-03T08:46:33Z write=True (write-no-prior-file)
+[aggregate-test-health] OK status=unknown timestamp=2026-06-03T15:28:09Z write=True (write-no-prior-file)
 
 --- scripts/aggregate-security-health.py ---
 [aggregate-security-health] OK status=green cred_leaks=0 vuln_deps=0 write=True (write-no-prior-file)
@@ -82,7 +82,7 @@
 --- scripts/regen-dashboard.py ---
 [regen-dashboard] OK   dashboard.html
 [regen-dashboard] meter_status=gap-per-F1a
-[regen-dashboard] handoffs=4 ships=10 proposals_pending=0 bubbles=7 events=2
+[regen-dashboard] handoffs=10 ships=10 proposals_pending=0 bubbles=7 events=2
 
 --- scripts/regen-main-flows.py ---
 [regen-main-flows] WARN: 6 orphan components in grid (referenced by no flow's path):
@@ -96,7 +96,7 @@
 [regen-main-flows] 6 columns, 47 components, 62 flows; orphans=6
 
 --- scripts/regen-activity.py ---
-[regen-activity] OK   activity.html — total=5 (handoffs=1 telemetry=1 commits=3)
+[regen-activity] OK   activity.html — total=500 (handoffs=1 telemetry=1 commits=1161)
 
 --- scripts/dry-run-regen-ops-views.py ---
 [regen] 7 bubbles (activity.html owned by regen-activity.py; proposals.html owned by regen-proposals.py)
@@ -132,7 +132,7 @@ Consolidated 0 pages -> .claude/state/aggregates/lighthouse-scores.json
 
 --- scripts/regen-index.py ---
 [regen-index] OK   index.html
-[regen-index] ships=0 proposals_pending=0 bubbles=1 halt=none git=1ea50257
+[regen-index] ships=0 proposals_pending=0 bubbles=1 halt=none git=60a6a75a
 
 --- scripts/dashboard-freshness-sentinel.py ---
 [dashboard-freshness] status=green ok=12 repaired=0 unrepairable=0 mismatches=0 duration=0.0s
@@ -156,7 +156,7 @@ browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwrigh
 }
 
 Node.js v20.20.2
-[write-regen-heartbeat] OK ts=2026-06-03T08:46:46Z source=post-commit-hook status=GATE-FAIL
+[write-regen-heartbeat] OK ts=2026-06-03T15:28:23Z source=post-commit-hook status=GATE-FAIL
 
 --- P9.5 self-test ---
 [ingest-session-transcripts] transcripts dir not found: /home/runner/.claude/projects/C--Users-Zach-smoky-mountain-open
