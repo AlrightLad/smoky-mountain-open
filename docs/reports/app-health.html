@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-03T04:01:03.538968Z",
+  "generated_at": "2026-06-03T04:06:15.432700Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 88.8,
   "overall_grade": "A-",
@@ -994,13 +994,13 @@
   "founder_attention": [],
   "agent_attention": [],
   "audit_trigger": {
-    "sha": "a0427c50",
-    "subject": "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)",
-    "committed_at": "2026-06-02T02:56:50-04:00",
-    "trigger": "cron",
+    "sha": "a37dcb0e",
+    "subject": "Overnight triage 2026-06-03 - 0 reports, 0 proposals, 0 FIQ entries graded",
+    "committed_at": "2026-06-03T00:05:10-04:00",
+    "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 2
+    "total_files_touched": 4
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
