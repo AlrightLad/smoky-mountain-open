@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-06T17:11:35.213870Z",
+  "generated_at": "2026-06-06T17:13:10.160927Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 86.8,
   "overall_grade": "A-",
@@ -1014,13 +1014,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "f82daf15",
-    "subject": "docs(gate): record green 3-project E2E sweep + surface production cutover (#269)",
-    "committed_at": "2026-06-06T13:11:13-04:00",
+    "sha": "056c1a6c",
+    "subject": "chore(cron): PROP-015 scanner re-eval timestamp (Class A auto-clean)",
+    "committed_at": "2026-06-06T13:12:48-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 3
+    "total_files_touched": 1
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
