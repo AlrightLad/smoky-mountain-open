@@ -39,17 +39,24 @@
 // sub-test 4 reuses that ID after sub-test 3 deletes the doc.
 
 const seedRounds = require('../setup/seed-rounds.js');
+const projectGuard = require('../helpers/project-guard.js');
 const seedNotif = require('../setup/seed-notifications.js');
 const SMOKE_UID = seedNotif.SMOKE_UID;
 
 module.exports = {
   id: 'S26',
   name: 'rounds Ship 5+7 e2e (B.44 + edit + delete + non-author reject)',
-  setup: async function() {
-    await seedRounds.clearSmokeRounds();
-  },
   run: async function(ctx) {
     var page = ctx.page;
+
+    // Creates its round via the production browser write path, but reads it back
+    // (plus members + notifications invariants) via the Admin SDK. Skip
+    // (soft-pass) when the admin SA project doesn't match the web-app project —
+    // the readback would target a different project than the browser wrote to.
+    var skip = await projectGuard.roundsSeedGuard(page);
+    if (skip) return skip;
+
+    await seedRounds.clearSmokeRounds();
 
     // Wait for db + currentUser ready (smoke account already auth'd via S1)
     await page.waitForFunction(function() {

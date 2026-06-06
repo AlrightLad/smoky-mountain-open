@@ -3,22 +3,24 @@
 // moves it from liveNotifications to readHistory[0] without waiting for the
 // listener to re-fire.
 
-const seed = require('../setup/seed-notifications.js');
+const bseed = require('../helpers/seed-browser.js');
 const nav = require('../helpers/navigation.js');
 
 module.exports = {
   id: 'S9',
   name: 'mark-read instant promotion',
-  setup: async function() {
-    await seed.clearForSmoke();
-    await seed.insertForSmoke([
+  run: async function(ctx) {
+    var page = ctx.page;
+    // Browser-side seed (window.db) — see helpers/seed-browser.js header.
+    await bseed.clearForSmoke(page);
+    await bseed.insertForSmoke(page, [
       {
         type: 'feed_like',
         title: 'S9-promote',
         message: 'mark me read',
         page: 'chat',
         read: false,
-        createdAt: seed.tsAgo(60)
+        createdAtSecAgo: 60
       },
       {
         type: 'dm',
@@ -26,12 +28,9 @@ module.exports = {
         message: 'do not click',
         page: 'dms',
         read: false,
-        createdAt: seed.tsAgo(120)
+        createdAtSecAgo: 120
       }
     ]);
-  },
-  run: async function(ctx) {
-    var page = ctx.page;
     await nav.resetNotifClientState(page);
     await nav.waitForAllNotifTitles(page, ['S9-promote', 'S9-keep-unread']);
 

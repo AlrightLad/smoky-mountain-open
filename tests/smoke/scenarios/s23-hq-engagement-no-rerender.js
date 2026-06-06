@@ -17,20 +17,26 @@
 // Soft-pass on mobile bypass / no League Pulse cards rendered.
 
 const seedRounds = require('../setup/seed-rounds.js');
+const projectGuard = require('../helpers/project-guard.js');
 const visual = require('../helpers/visual.js');
 
 module.exports = {
   id: 'S23',
   name: 'hq home engagement: surgical patch, no full re-render (S1.2)',
-  setup: async function() {
-    await seedRounds.clearSmokeRounds();
-    var id = await seedRounds.insertSmokeRound({});
-    module.exports.__roundId = id;
-  },
   run: async function(ctx) {
     var page = ctx.page;
-    var roundId = module.exports.__roundId;
-    if (!roundId) throw new Error('seed did not record __roundId');
+
+    // Admin SDK seeds the round whose kudos button this asserts on. Skip
+    // (soft-pass) when the admin SA project doesn't match the web-app project —
+    // otherwise the seeded round never appears and we'd report a spurious fail.
+    var skip = await projectGuard.roundsSeedGuard(page);
+    if (skip) return skip;
+
+    await seedRounds.clearSmokeRounds();
+    var roundId = await seedRounds.insertSmokeRound({});
+    if (!roundId) throw new Error('seed did not return a round id');
+    // Settle so onSnapshot receives the seed (parity with old post-setup() wait).
+    await page.waitForTimeout(2000);
 
     await page.evaluate(function() { Router.go('home'); });
     await page.waitForFunction(function() { return Router.getPage() === 'home'; }, null, { timeout: 5000 });

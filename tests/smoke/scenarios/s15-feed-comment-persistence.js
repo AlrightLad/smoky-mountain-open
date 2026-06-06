@@ -4,20 +4,26 @@
 // /rounds doc comments[] array updated.
 
 const seedRounds = require('../setup/seed-rounds.js');
+const projectGuard = require('../helpers/project-guard.js');
 const visual = require('../helpers/visual.js');
 
 module.exports = {
   id: 'S15',
   name: 'feed comment persistence',
-  setup: async function() {
-    await seedRounds.clearSmokeRounds();
-    var id = await seedRounds.insertSmokeRound({});
-    module.exports.__roundId = id;
-  },
   run: async function(ctx) {
     var page = ctx.page;
-    var roundId = module.exports.__roundId;
-    if (!roundId) throw new Error('seed did not record __roundId');
+
+    // Admin SDK seeds the round; the browser asserts the comment landed. Skip
+    // (soft-pass) when the admin SA project doesn't match the web-app project —
+    // otherwise the seed is invisible to the page and we'd report a spurious fail.
+    var skip = await projectGuard.roundsSeedGuard(page);
+    if (skip) return skip;
+
+    await seedRounds.clearSmokeRounds();
+    var roundId = await seedRounds.insertSmokeRound({});
+    if (!roundId) throw new Error('seed did not return a round id');
+    // Settle so onSnapshot receives the seed (parity with old post-setup() wait).
+    await page.waitForTimeout(2000);
     var testText = 'S15-test-comment-' + Date.now();
 
     await page.evaluate(function() { Router.go('feed'); });

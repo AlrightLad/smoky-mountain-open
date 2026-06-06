@@ -13,18 +13,25 @@
 // textContent wipe that wiped the heart SVG between Phase 5 and Phase 7.
 
 const seedRounds = require('../setup/seed-rounds.js');
+const projectGuard = require('../helpers/project-guard.js');
 const visual = require('../helpers/visual.js');
 
 module.exports = {
   id: 'S13',
   name: 'feed action row integrity (4 buttons wired)',
-  setup: async function() {
-    await seedRounds.clearSmokeRounds();
-    var id = await seedRounds.insertSmokeRound({});
-    module.exports.__roundId = id;
-  },
   run: async function(ctx) {
     var page = ctx.page;
+
+    // Admin SDK seeds a round so a /feed card renders. Skip (soft-pass) when the
+    // admin SA project doesn't match the web-app project — otherwise no seeded
+    // card appears and we'd report a spurious failure.
+    var skip = await projectGuard.roundsSeedGuard(page);
+    if (skip) return skip;
+
+    await seedRounds.clearSmokeRounds();
+    await seedRounds.insertSmokeRound({});
+    // Settle so onSnapshot receives the seed (parity with old post-setup() wait).
+    await page.waitForTimeout(2000);
 
     await page.evaluate(function() { Router.go('feed'); });
     await page.waitForFunction(function() { return Router.getPage() === 'feed'; }, null, { timeout: 5000 });

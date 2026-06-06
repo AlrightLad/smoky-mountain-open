@@ -2,7 +2,7 @@
 // Validates: page field is canonical; clicking a notification with page="X"
 // navigates to X (NOT home, which was the V6 audit bug).
 
-const seed = require('../setup/seed-notifications.js');
+const bseed = require('../helpers/seed-browser.js');
 const nav = require('../helpers/navigation.js');
 
 const TYPES = [
@@ -16,22 +16,20 @@ const TYPES = [
 module.exports = {
   id: 'S4',
   name: 'V6 nav fix (5 types)',
-  setup: async function() {
-    await seed.clearForSmoke();
-    var entries = TYPES.map(function(t, i) {
+  run: async function(ctx) {
+    var page = ctx.page;
+    // Browser-side seed (window.db) — see helpers/seed-browser.js header.
+    await bseed.clearForSmoke(page);
+    await bseed.insertForSmoke(page, TYPES.map(function(t, i) {
       return {
         type: t.type,
         title: 'S4-' + t.type,
         message: 'click test for ' + t.type,
         page: t.page,
         read: false,
-        createdAt: seed.tsAgo(600 - i * 60)
+        createdAtSecAgo: 600 - i * 60
       };
-    });
-    await seed.insertForSmoke(entries);
-  },
-  run: async function(ctx) {
-    var page = ctx.page;
+    }));
     await nav.resetNotifClientState(page);
     await nav.waitForAllNotifTitles(page, TYPES.map(function(t) { return 'S4-' + t.type; }));
 

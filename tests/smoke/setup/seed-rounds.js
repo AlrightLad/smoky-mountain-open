@@ -22,6 +22,19 @@ function getAdmin() {
   return admin;
 }
 
+// Returns the admin service account's project_id, or null if the SA file is
+// absent/unreadable. project_id is public (it appears in src/core/firebase.js
+// client config) — this never reads or exposes the private key. Used by the
+// rounds-seed guard to confirm the admin project matches the web-app project
+// before seeding (see tests/smoke/helpers/project-guard.js).
+function getProjectId() {
+  try {
+    return require(SERVICE_ACCOUNT_PATH).project_id || null;
+  } catch (e) {
+    return null;
+  }
+}
+
 // Clear all rounds in smoke-test-league. Idempotent.
 async function clearSmokeRounds() {
   var admin = getAdmin();
@@ -88,6 +101,7 @@ async function getSmokeRound(roundId) {
 module.exports = {
   SMOKE_LEAGUE_ID: SMOKE_LEAGUE_ID,
   SMOKE_OTHER_UID: SMOKE_OTHER_UID,
+  getProjectId: getProjectId,
   clearSmokeRounds: clearSmokeRounds,
   insertSmokeRound: insertSmokeRound,
   getSmokeRound: getSmokeRound

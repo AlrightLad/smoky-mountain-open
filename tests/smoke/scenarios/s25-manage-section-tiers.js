@@ -18,12 +18,22 @@
 // non-transparent computed color, and intact <svg> child glyphs.
 
 const seedRounds = require('../setup/seed-rounds.js');
+const projectGuard = require('../helpers/project-guard.js');
 const SMOKE_UID = require('../setup/seed-notifications.js').SMOKE_UID;
 
 module.exports = {
   id: 'S25',
   name: 'round detail manage section visibility tiers',
-  setup: async function() {
+  run: async function(ctx) {
+    var page = ctx.page;
+
+    // Admin SDK seeds both tiers; the browser asserts Manage-section visibility.
+    // Skip (soft-pass) when the admin SA project doesn't match the web-app
+    // project — the spectator round must be owned by a non-smoke UID, which only
+    // the Admin SDK can create, so this scenario can't run browser-only.
+    var skip = await projectGuard.roundsSeedGuard(page);
+    if (skip) return skip;
+
     await seedRounds.clearSmokeRounds();
     // Author-tier round: owned by the smoke account itself
     var authorId = await seedRounds.insertSmokeRound({
@@ -38,14 +48,9 @@ module.exports = {
       course: 'S25 Spectator Course',
       score: 80
     });
-    module.exports.__authorRoundId = authorId;
-    module.exports.__spectatorRoundId = spectatorId;
-  },
-  run: async function(ctx) {
-    var page = ctx.page;
-    var authorId = module.exports.__authorRoundId;
-    var spectatorId = module.exports.__spectatorRoundId;
-    if (!authorId || !spectatorId) throw new Error('seed did not record round IDs');
+    if (!authorId || !spectatorId) throw new Error('seed did not return round IDs');
+    // Settle so onSnapshot receives the seeds (parity with old post-setup() wait).
+    await page.waitForTimeout(2000);
 
     // Wait for db + currentUser ready (renderRoundDetail reads currentProfile/currentUser)
     await page.waitForFunction(function() {

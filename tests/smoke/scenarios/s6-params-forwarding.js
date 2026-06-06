@@ -3,28 +3,31 @@
 // to Router.go via handleNotifClick, end-to-end into Router.getParams().
 // Uses linkParams (legacy field name) to also exercise the read-side fallback.
 
-const seed = require('../setup/seed-notifications.js');
+const bseed = require('../helpers/seed-browser.js');
 const nav = require('../helpers/navigation.js');
+
+// Smoke account uid (also the toUserId for every seeded notification). Used as
+// the linkParams.edit payload so the assertion can confirm params forwarding.
+const SMOKE_UID = 'PZpdVJH9mbcT0ukPxa2ZcbTyBgj2';
 
 module.exports = {
   id: 'S6',
   name: 'params forwarding (linkParams legacy)',
-  setup: async function() {
-    await seed.clearForSmoke();
-    await seed.insertForSmoke([
+  run: async function(ctx) {
+    var page = ctx.page;
+    // Browser-side seed (window.db) — see helpers/seed-browser.js header.
+    await bseed.clearForSmoke(page);
+    await bseed.insertForSmoke(page, [
       {
         type: 'profile_reminder',
         title: 'S6-profile-reminder',
         message: 'edit your bio',
         linkPage: 'members',
-        linkParams: { edit: seed.SMOKE_UID },
+        linkParams: { edit: SMOKE_UID },
         read: false,
-        createdAt: seed.tsAgo(60)
+        createdAtSecAgo: 60
       }
     ]);
-  },
-  run: async function(ctx) {
-    var page = ctx.page;
     await nav.resetNotifClientState(page);
     await nav.waitForNotifByTitle(page, 'S6-profile-reminder');
     await nav.openPanelAndWaitForRender(page);

@@ -8,23 +8,28 @@
 // ship gap (P2 process correction: annotation capture).
 
 const seedRounds = require('../setup/seed-rounds.js');
+const projectGuard = require('../helpers/project-guard.js');
 const visual = require('../helpers/visual.js');
 
 module.exports = {
   id: 'S16',
   name: 'hq home action row markup on round cards',
-  setup: async function() {
-    await seedRounds.clearSmokeRounds();
-    // Multiple rounds to maximize chance one surfaces in the HQ Home pull
-    var ids = [];
-    for (var i = 0; i < 3; i++) {
-      var id = await seedRounds.insertSmokeRound({ score: 75 + i, course: 'S16 Course ' + i });
-      ids.push(id);
-    }
-    module.exports.__roundIds = ids;
-  },
   run: async function(ctx) {
     var page = ctx.page;
+
+    // Admin SDK seeds rounds so HQ Home League Pulse cards render. Skip
+    // (soft-pass) when the admin SA project doesn't match the web-app project —
+    // otherwise no seeded card appears and we'd report a spurious failure.
+    var skip = await projectGuard.roundsSeedGuard(page);
+    if (skip) return skip;
+
+    await seedRounds.clearSmokeRounds();
+    // Multiple rounds to maximize chance one surfaces in the HQ Home pull
+    for (var i = 0; i < 3; i++) {
+      await seedRounds.insertSmokeRound({ score: 75 + i, course: 'S16 Course ' + i });
+    }
+    // Settle so onSnapshot receives the seeds (parity with old post-setup() wait).
+    await page.waitForTimeout(2000);
 
     await page.evaluate(function() { Router.go('home'); });
     await page.waitForFunction(function() { return Router.getPage() === 'home'; }, null, { timeout: 5000 });

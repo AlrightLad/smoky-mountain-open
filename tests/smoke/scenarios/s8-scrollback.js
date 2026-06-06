@@ -3,14 +3,16 @@
 // IntersectionObserver. Seeds enough READ notifications to require pagination
 // (loadMoreReadHistory uses limit(20) per page).
 
-const seed = require('../setup/seed-notifications.js');
+const bseed = require('../helpers/seed-browser.js');
 const nav = require('../helpers/navigation.js');
 
 module.exports = {
   id: 'S8',
   name: 'EARLIER section + scroll-back',
-  setup: async function() {
-    await seed.clearForSmoke();
+  run: async function(ctx) {
+    var page = ctx.page;
+    // Browser-side seed (window.db) — see helpers/seed-browser.js header.
+    // 35 aged READ notifications (forces pagination at limit(20)) + 3 unread.
     var entries = [];
     for (var i = 0; i < 35; i++) {
       entries.push({
@@ -19,8 +21,8 @@ module.exports = {
         message: 'old notification ' + i,
         page: 'chat',
         read: true,
-        readAt: seed.tsAgo(86400 + i * 60),
-        createdAt: seed.tsAgo(86400 * 2 + i * 60)
+        readAtSecAgo: 86400 + i * 60,
+        createdAtSecAgo: 86400 * 2 + i * 60
       });
     }
     for (var j = 0; j < 3; j++) {
@@ -30,13 +32,11 @@ module.exports = {
         message: 'recent ' + j,
         page: 'chat',
         read: false,
-        createdAt: seed.tsAgo(60 - j)
+        createdAtSecAgo: 60 - j
       });
     }
-    await seed.insertForSmoke(entries);
-  },
-  run: async function(ctx) {
-    var page = ctx.page;
+    await bseed.clearForSmoke(page);
+    await bseed.insertForSmoke(page, entries);
     // Reset client state — readHistory persists across panel toggles per R1.
     // Without reset, prior scenarios' readHistory cache prevents
     // openNotifPanel from triggering loadMoreReadHistory (which only fires

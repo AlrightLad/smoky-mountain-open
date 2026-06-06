@@ -5,20 +5,26 @@
 // members to write hasOnly(['likes','comments','commentLikes']).
 
 const seedRounds = require('../setup/seed-rounds.js');
+const projectGuard = require('../helpers/project-guard.js');
 const visual = require('../helpers/visual.js');
 
 module.exports = {
   id: 'S14',
   name: 'feed kudos persistence',
-  setup: async function() {
-    await seedRounds.clearSmokeRounds();
-    var id = await seedRounds.insertSmokeRound({});
-    module.exports.__roundId = id;
-  },
   run: async function(ctx) {
     var page = ctx.page;
-    var roundId = module.exports.__roundId;
-    if (!roundId) throw new Error('seed did not record __roundId');
+
+    // Admin SDK seeds the round; the browser asserts the like landed. Skip
+    // (soft-pass) when the admin SA project doesn't match the web-app project —
+    // otherwise the seed is invisible to the page and we'd report a spurious fail.
+    var skip = await projectGuard.roundsSeedGuard(page);
+    if (skip) return skip;
+
+    await seedRounds.clearSmokeRounds();
+    var roundId = await seedRounds.insertSmokeRound({});
+    if (!roundId) throw new Error('seed did not return a round id');
+    // Settle so onSnapshot receives the seed (parity with old post-setup() wait).
+    await page.waitForTimeout(2000);
 
     await page.evaluate(function() { Router.go('feed'); });
     await page.waitForFunction(function() { return Router.getPage() === 'feed'; }, null, { timeout: 5000 });
