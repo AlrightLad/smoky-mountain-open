@@ -1,10 +1,10 @@
 {
   "proposal_id": "PROP-015",
-  "deferred_at": "2026-06-06T14:45:02.052911+00:00",
+  "deferred_at": "2026-06-06T15:00:01.980720+00:00",
   "criteria_failed": [
     "frontmatter_sparse: required field groups missing ['token_cost'] (P7 declares-everything-explicitly)",
     "token_cost_methodology_absent: no token_cost_estimate/cost_tokens field with documented range/methodology"
   ],
   "resolution_path": "team or Founder authors missing fields; scanner re-evaluates next cycle",
-  "scanner_run_id": "20260606T144502Z"
+  "scanner_run_id": "20260606T150001Z"
 }
