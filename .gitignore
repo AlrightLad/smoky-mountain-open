@@ -200,6 +200,7 @@ docs/reports/sessions.html
 # local V1 evidence that stays out of the PUBLIC repo (matches visual-gate +
 # critique-probe ignore policy above).
 /.pw-*.log
+/.agentshield-*.log
 /staging-boot-smoke-*.png
 /critique-*.png
 .claude/state/critique-resume-*/
