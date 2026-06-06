@@ -822,9 +822,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-06T17:51:53.346020Z",
+  "generated_at": "2026-06-06T17:56:46.950143Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 87.6,
+  "overall_score": 88.3,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -838,9 +838,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 92.6,
+    "pre_deduction_score": 93.3,
     "deduction": 5,
-    "post_deduction_score": 87.6
+    "post_deduction_score": 88.3
   },
   "dimensions": {
     "A1_roadmap": {
@@ -979,44 +979,30 @@
       "weak_points": []
     },
     "A12_operational": {
-      "score": 75,
-      "status": "yellow",
-      "label": "pipeline=yellow · 5 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "score": 90,
+      "status": "green",
+      "label": "pipeline=green · 4 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "5 of last 10 cron watcher runs hit skip-dirty",
+          "what": "4 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
       ],
       "details": {
         "watcher_last_status": "PASS",
-        "watcher_exit_reason": "skip-dirty"
+        "watcher_exit_reason": "no-new-files"
       }
     }
   },
-  "attention_items": [
-    {
-      "what": "5 of last 10 cron watcher runs hit skip-dirty",
-      "where": "scripts/cron/logs/*-downloads-watcher.log",
-      "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
-      "dimension": "A12_operational"
-    }
-  ],
+  "attention_items": [],
   "founder_attention": [],
-  "agent_attention": [
-    {
-      "what": "5 of last 10 cron watcher runs hit skip-dirty",
-      "where": "scripts/cron/logs/*-downloads-watcher.log",
-      "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
-      "dimension": "A12_operational"
-    }
-  ],
+  "agent_attention": [],
   "audit_trigger": {
-    "sha": "754c33f6",
-    "subject": "chore(proposals): add PROP-015 token_cost_estimate â†’ clears ship-readiness deferral",
-    "committed_at": "2026-06-06T13:51:29-04:00",
+    "sha": "f0dd50d4",
+    "subject": "chore(stop-decisions): log 2026-06-06 checkpoint stop (condition F + A)",
+    "committed_at": "2026-06-06T13:56:27-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
