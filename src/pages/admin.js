@@ -29,6 +29,7 @@ Router.register("admin", function() {
   var NAV = [
     { k: "reports", label: "Reports", title: "Member reports", note: "" },
     { k: "members", label: "Members", title: "Member management", note: "Manage invite quotas, suspensions, and removals." },
+    { k: "trophies", label: "Trophies", title: "Trophy catalog", note: "Compose and manage custom trophies. Platform-wide trophies appear in every league; league trophies appear only here." },
     { k: "invites", label: "Invites", title: "Invite codes", note: "" },
     { k: "generate", label: "Generate", title: "Bulk generate", note: "Create multiple invite codes at once." },
     { k: "requests", label: "Requests", title: "Feature requests", note: "" },
@@ -45,6 +46,9 @@ Router.register("admin", function() {
   var bodies = {
     reports: '<div id="adminReports"><div class="adm-empty">Loading...</div></div>',
     members: '<div id="adminMemberList"><div class="adm-empty">Loading...</div></div>',
+    trophies:
+      '<button class="adm-btn adm-btn--brass adm-btn--full" onclick="Router.go(\'trophycreate\',{from:\'admin\',scope:\'platform\'})">+ New trophy</button>' +
+      '<div id="adminTrophyCatalog" style="margin-top:14px"><div class="adm-empty">Loading...</div></div>',
     invites: '<div id="adminInviteList"><div class="adm-empty">Loading...</div></div>',
     generate:
       '<div class="ff"><label class="ff-label" for="bulkCount">How many codes?</label>' +
@@ -121,6 +125,9 @@ Router.register("admin", function() {
   loadAdminInviteList();
   loadAdminFeatureRequests();
   loadAdminErrorLog();
+  // Seed the 5 starter trophies (idempotent) then paint the catalog.
+  if (typeof seedStarterTrophies === "function") seedStarterTrophies(function() { loadAdminTrophyCatalog(); });
+  else loadAdminTrophyCatalog();
 });
 
 function adminScrollToSection(key) {
@@ -131,6 +138,65 @@ function adminScrollToSection(key) {
 function admSetMeta(key, text) {
   var el = document.getElementById("adm-meta-" + key);
   if (el) el.textContent = text || "";
+}
+
+// ── Trophy catalog (3q.3) ─────────────────────────────────────────────────────
+function loadAdminTrophyCatalog() {
+  var el = document.getElementById("adminTrophyCatalog");
+  if (!el) return;
+  if (typeof loadTrophyCatalog !== "function") { el.innerHTML = '<div class="adm-empty">Trophy catalog unavailable.</div>'; return; }
+  loadTrophyCatalog(function(defs) { renderAdminTrophyCatalog(defs || []); });
+}
+
+function renderAdminTrophyCatalog(defs) {
+  var el = document.getElementById("adminTrophyCatalog");
+  if (!el) return;
+  var active = defs.filter(function(d) { return d && d.active !== false; });
+  admSetMeta("trophies", active.length + (active.length === 1 ? " trophy" : " trophies"));
+  if (!active.length) {
+    el.innerHTML = '<div class="adm-empty">No trophies yet. Use the New trophy button above to compose the first one.</div>';
+    return;
+  }
+  el.innerHTML = '<div class="adm-panel">' + active.map(adminTrophyRow).join("") + '</div>';
+}
+
+function adminTrophyRow(d) {
+  var emblem = (typeof trophyEmblemSvg === "function") ? trophyEmblemSvg(d) : "";
+  var summary = (typeof trophyCriteriaSummary === "function" && trophyCriteriaSummary(d)) || "";
+  var scopePill = d.scope === "platform" ? '<span class="adm-pill">Platform</span>' : '<span class="adm-pill adm-pill--mute">League</span>';
+  var earned = "";
+  if (typeof evaluateTrophy === "function") {
+    var m = (typeof pbTrophyMeasure === "function") ? pbTrophyMeasure(d.criteria && d.criteria.measure) : null;
+    if (m && m.computable) {
+      var n = (evaluateTrophy(d).earnedIds || []).length;
+      earned = '<span class="adm-pill ' + (n > 0 ? 'adm-pill--ok' : 'adm-pill--mute') + '">' + n + ' earned</span>';
+    } else {
+      earned = '<span class="adm-pill adm-pill--mute">Leader pending</span>';
+    }
+  }
+  var sid = String(d.id || "").replace(/'/g, "\\'");
+  var sscope = d.scope === "platform" ? "platform" : "league";
+  return '<div class="adm-row">' +
+    '<div class="adm-trophy-emblem">' + (emblem || "") + '</div>' +
+    '<div class="adm-row__main">' +
+      '<div class="adm-row__title">' + escHtml(d.name || "Untitled") + ' ' + scopePill + ' ' + earned + '</div>' +
+      '<div class="adm-row__sub">' + escHtml(summary) + '</div>' +
+      '<div class="adm-row__actions">' +
+        '<button class="adm-btn adm-btn--xs" onclick="Router.go(\'trophycreate\',{from:\'admin\',editId:\'' + sid + '\'})">Edit</button>' +
+        '<button class="adm-btn adm-btn--xs" onclick="Router.go(\'trophyroom\')">View wall</button>' +
+        '<button class="adm-btn adm-btn--claret adm-btn--xs" onclick="adminArchiveTrophy(\'' + sid + '\',\'' + sscope + '\')">Archive</button>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+function adminArchiveTrophy(id, scope) {
+  if (typeof archiveTrophyDef !== "function") return;
+  if (!confirm("Archive this trophy? It stops appearing for members but is not deleted.")) return;
+  archiveTrophyDef(id, scope, function(ok, err) {
+    if (ok) { Router.toast("Trophy archived"); loadAdminTrophyCatalog(); }
+    else Router.toast(err || "Failed to archive");
+  });
 }
 
 function loadAdminFeatureRequests() {

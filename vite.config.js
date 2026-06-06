@@ -48,12 +48,16 @@ var IMMEDIATE_PAGES = ['home-hq.js', 'home-hq-league-week.js', 'home-live.js', '
 
 // Pages loaded after initial render (deferred for faster first paint)
 var DEFERRED_PAGES = [
+  // trophies-data.js is a pure data/eval library (no Router.register) consumed by
+  // trophycreate.js, admin.js, trophyroom.js, standings.js. It loads first so dev
+  // (separate <script> tags) has the symbols present before any consumer renders.
+  'trophies-data.js',
   'merch.js', 'rules.js', 'members.js', 'members-detail.js', 'members-graph.js', 'members-edit.js', 'scramble.js', 'aces.js',
   'playnow.js', 'playnow-scoring.js', 'standings.js', 'challenges.js', 'trips.js', 'tournament.js',
   'scorecard.js', 'rounds.js', 'rounds-loghole.js', 'courses.js', 'courses-detail.js', 'records.js',
   'teetimes.js', 'range.js', 'activity.js', 'rangelive.js', 'calendar.js',
   'more.js', 'feed.js', 'feed-comments.js', 'chat.js', 'chat-calendar.js', 'dms.js', 'invite.js', 'admin.js', 'admin-diagnostic.js',
-  'faq.js', 'caddynotes-archive.js', 'caddynotes.js', 'bugreport.js', 'trophyroom.js', 'partygames.js',
+  'faq.js', 'caddynotes-archive.js', 'caddynotes.js', 'bugreport.js', 'trophyroom.js', 'trophycreate.js', 'partygames.js',
   // crisis-banner.js was here briefly — moved to src/core/ since it must
   // load on every page (Firestore listener + overlay rendering).
   'syncround.js', 'scramblelive.js', 'seasonrecap.js', 'awards.js',

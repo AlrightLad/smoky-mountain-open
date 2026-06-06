@@ -188,6 +188,12 @@ Router.register("standings", function(params) {
     }
   }
 
+  // ── League trophies (custom catalog; real computed leaders fill in async) ──
+  h += '<div class="std-section" id="stdLeagueTrophies" style="display:none">';
+  h += '<div class="std-section__head"><span class="std-section__title">League trophies</span><span class="std-section__meta">Live leaders</span></div>';
+  h += '<div class="std-trophies" id="stdLeagueTrophyGrid"></div>';
+  h += '</div>';
+
   // ── Season rules (collapsible) ────────────────────────────────────────
   h += '<div class="std-collapse-head" onclick="toggleSection(\'std-rules\')"><span class="std-section__title">Season rules</span><span id="std-rules-toggle" class="std-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="transition:transform .2s"><path d="M9 18l6-6-6-6"/></svg></span></div>';
   h += '<div id="std-rules" style="display:none" class="std-dl">';
@@ -315,4 +321,36 @@ Router.register("standings", function(params) {
   h += '</div>'; // end .hq-grid
 
   document.querySelector('[data-page="standings"]').innerHTML = h;
+  appendStdLeagueTrophies();
 });
+
+// Custom-catalog trophies on the standings board. Honest by construction: only
+// trophies with a real computed current leader are rendered here (non-computable
+// or no-qualifying-rounds trophies stay off the leaderboard, where they would
+// otherwise read as a fabricated leader — P9). The trophy room shows those with
+// an explicit "leader pending" line.
+function appendStdLeagueTrophies() {
+  var grid = document.getElementById("stdLeagueTrophyGrid");
+  var sec = document.getElementById("stdLeagueTrophies");
+  if (!grid || !sec) return;
+  if (typeof loadTrophyCatalog !== "function" || typeof evaluateTrophy !== "function") return;
+  loadTrophyCatalog(function() {
+    var g = document.getElementById("stdLeagueTrophyGrid");
+    var s = document.getElementById("stdLeagueTrophies");
+    if (!g || !s) return;
+    var defs = (typeof pbCachedTrophyDefs === "function" ? pbCachedTrophyDefs() : []).filter(function(d) { return d && d.active !== false; });
+    var html = "";
+    defs.forEach(function(d) {
+      var ev = evaluateTrophy(d);
+      if (!ev.computable || !ev.leader) return;
+      var wid = String(ev.leader.id || "").replace(/'/g, "\\'");
+      var val = ev.leader.display != null ? ev.leader.display : ev.leader.value;
+      html += '<div class="std-trophy" onclick="Router.go(\'members\',{id:\'' + wid + '\'})">';
+      html += '<div class="std-trophy__label">' + escHtml(String(d.name || "Trophy").toUpperCase()) + '</div>';
+      html += '<div class="std-trophy__value">' + escHtml(String(val)) + '</div>';
+      html += '<div class="std-trophy__winner">' + escHtml(String(ev.leader.name || "Member")) + '</div>';
+      html += '</div>';
+    });
+    if (html) { g.innerHTML = html; s.style.display = ""; }
+  });
+}

@@ -147,6 +147,12 @@ function renderTrophyRoom(p) {
   h += '<div id="trophyAchGrid"></div>';
   h += '</section>';
 
+  // ── League trophies (custom catalog; computed leaders fill in async) ──
+  h += '<section class="tr-sec" aria-label="League and platform trophies">';
+  h += '<div class="tr-sec-head"><h2 class="tr-sec-title">League trophies</h2></div>';
+  h += '<div id="trophyCustomGrid"><div class="tr-empty"><div class="tr-empty__body">Loading trophies...</div></div></div>';
+  h += '</section>';
+
   // ── Titles (level progression rail) ──
   h += '<section class="tr-sec" aria-label="Title progression">';
   h += '<div class="tr-sec-head"><h2 class="tr-sec-title">Titles</h2><div class="tr-sec-count">Level ' + lvl.level + ' of 100</div></div>';
@@ -170,6 +176,7 @@ function renderTrophyRoom(p) {
   document.querySelector('[data-page="trophyroom"]').innerHTML = h;
   trophyShowUnlockedOnly = false;
   renderTrophyAchGrid(pid, false);
+  renderTrophyCustomGrid(pid);
   setTimeout(initCountAnimations, 50);
 }
 
@@ -254,6 +261,62 @@ function renderTrophyAchGrid(pid, unlockedOnly) {
   });
   
   el.innerHTML = h;
+}
+
+// ── Custom league/platform trophies (from config/trophyCatalog + league doc) ──
+// Async: loads the catalog, then renders each active trophy with an honest
+// computed-leader line (no fabricated leaders — P9). Computable measures show a
+// live leader; non-computable ones say so plainly.
+function renderTrophyCustomGrid(pid) {
+  var el = document.getElementById("trophyCustomGrid");
+  if (!el) return;
+  if (typeof loadTrophyCatalog !== "function" || typeof evaluateTrophy !== "function") {
+    var sec = el.closest ? el.closest("section") : null;
+    if (sec) sec.style.display = "none"; else el.innerHTML = "";
+    return;
+  }
+  loadTrophyCatalog(function() {
+    var elNow = document.getElementById("trophyCustomGrid");
+    if (!elNow) return;
+    var defs = (typeof pbCachedTrophyDefs === "function" ? pbCachedTrophyDefs() : []).filter(function(d) { return d && d.active !== false; });
+    if (!defs.length) {
+      elNow.innerHTML = '<div class="tr-empty"><div class="tr-empty__head">No league trophies yet.</div><div class="tr-empty__body">Custom trophies your commissioner composes for the league show up here, alongside any platform-wide trophies.</div></div>';
+      return;
+    }
+    var html = '<div class="tr-custom-grid">';
+    defs.forEach(function(d) { html += trophyCustomCard(d, pid); });
+    html += '</div>';
+    elNow.innerHTML = html;
+  });
+}
+
+function trophyCustomCard(d, pid) {
+  var emblem = (typeof trophyEmblemSvg === "function" && trophyEmblemSvg(d)) || _trCustomPlaceholder();
+  var ev = evaluateTrophy(d);
+  var earned = !!(ev.computable && ev.earnedIds && ev.earnedIds.indexOf(pid) !== -1);
+  var tier = (d.tier === "rare" || d.tier === "championship") ? d.tier : "common";
+  var summary = (typeof trophyCriteriaSummary === "function" && trophyCriteriaSummary(d)) || "";
+  var h = '<div class="tr-custom-card tr-custom-card--' + tier + (earned ? ' tr-custom-card--earned' : '') + '">';
+  h += '<div class="tr-custom-card__emblem">' + emblem + '</div>';
+  h += '<div class="tr-custom-card__body">';
+  h += '<div class="tr-custom-card__name">' + escHtml(d.name || "Trophy") + (earned ? '<span class="tr-custom-card__held">Held</span>' : '') + '</div>';
+  if (summary) h += '<div class="tr-custom-card__criteria">' + escHtml(summary) + '</div>';
+  h += '<div class="tr-custom-card__leader" aria-live="polite">' + _trCustomLeader(ev, pid) + '</div>';
+  h += '</div></div>';
+  return h;
+}
+
+function _trCustomLeader(ev, pid) {
+  if (!ev || !ev.computable) return 'Leader pending. This trophy displays now; its live data source lands in a later stats release.';
+  if (!ev.leader) return 'No qualifying rounds yet.';
+  var lead = ev.leader;
+  var disp = lead.display ? ' (' + escHtml(String(lead.display)) + ')' : '';
+  if (lead.id === pid) return 'Current leader' + disp + '.';
+  return 'Leader: ' + escHtml(String(lead.name || 'Member')) + disp + '.';
+}
+
+function _trCustomPlaceholder() {
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="2.4 2.4" opacity="0.45"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>';
 }
 
 // All possible achievements (for showing locked state)

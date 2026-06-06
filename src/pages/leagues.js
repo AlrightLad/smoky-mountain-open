@@ -365,6 +365,11 @@ function renderLeagueDetail(lid) {
         dh += '<div class="league-toggle"><span class="league-toggle__label">Invite code</span><button class="league-btn league-btn--ghost league-btn--sm" onclick="regenerateInviteCode(\'' + lid + '\')">Regenerate</button></div>';
         dh += '</div>';
 
+        // ── Custom trophies (commissioner-composed, league-scoped) ──
+        dh += '<div class="league-section" id="leagueTrophies"><div class="league-section__head"><div><div class="league-section__eyebrow">TROPHIES</div><div class="league-section__title">Custom trophies</div></div>';
+        dh += '<button class="league-btn league-btn--ghost league-btn--sm" onclick="Router.go(\'trophycreate\',{from:\'leagues\',scope:\'league\'})">+ New</button></div>';
+        dh += '<div id="leagueTrophyList"><div class="league-empty">Loading…</div></div></div>';
+
         if (l.badge !== "founding") {
           dh += '<div class="league-section"><div class="league-section__head"><div><div class="league-section__eyebrow" style="color:var(--cb-claret)">DANGER ZONE</div><div class="league-section__title">Delete league</div></div></div>';
           dh += '<div class="league-danger"><div class="league-danger__hint">Deleting removes this league from all members. Rounds are preserved.</div>';
@@ -398,6 +403,7 @@ function renderLeagueDetail(lid) {
       _loadLeagueMembers(lid, l);
       _loadJoinRequests(lid);
     }
+    if (isComm) _loadLeagueTrophies();
   }).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't load the league.")); });
 }
 
@@ -426,6 +432,47 @@ function switchLeague(lid) {
     if (typeof startRangeSessionListener === "function") startRangeSessionListener();
     Router.go("home");
   }).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't switch leagues.")); });
+}
+
+// ── Commissioner custom-trophy management (league-scoped catalog) ──
+function _loadLeagueTrophies() {
+  var el = document.getElementById("leagueTrophyList");
+  if (!el) return;
+  if (typeof loadTrophyCatalog !== "function") { el.innerHTML = '<div class="league-empty">Trophies are unavailable right now.</div>'; return; }
+  loadTrophyCatalog(function() {
+    var box = document.getElementById("leagueTrophyList");
+    if (!box) return;
+    var defs = (typeof pbCachedTrophyDefs === "function" ? pbCachedTrophyDefs() : []).filter(function(d) { return d && d.scope === "league" && d.active !== false; });
+    if (!defs.length) {
+      box.innerHTML = '<div class="league-empty">No custom trophies yet. Compose one with + New and it appears in every member\'s trophy room, plus on the leaderboard once a leader emerges.</div>';
+      return;
+    }
+    box.innerHTML = '<div class="adm-panel">' + defs.map(_leagueTrophyRow).join("") + '</div>';
+  });
+}
+function _leagueTrophyRow(d) {
+  var emblem = (typeof trophyEmblemSvg === "function") ? trophyEmblemSvg(d) : "";
+  var summary = (typeof trophyCriteriaSummary === "function" && trophyCriteriaSummary(d)) || "";
+  var sid = String(d.id || "").replace(/'/g, "\\'");
+  return '<div class="adm-row">' +
+    '<div class="adm-trophy-emblem">' + (emblem || "") + '</div>' +
+    '<div class="adm-row__main">' +
+      '<div class="adm-row__title">' + escHtml(d.name || "Untitled") + '</div>' +
+      '<div class="adm-row__sub">' + escHtml(summary) + '</div>' +
+      '<div class="adm-row__actions">' +
+        '<button class="adm-btn adm-btn--xs" onclick="Router.go(\'trophycreate\',{from:\'leagues\',editId:\'' + sid + '\'})">Edit</button>' +
+        '<button class="adm-btn adm-btn--claret adm-btn--xs" onclick="_leagueArchiveTrophy(\'' + sid + '\')">Archive</button>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+function _leagueArchiveTrophy(id) {
+  if (typeof archiveTrophyDef !== "function") return;
+  if (!confirm("Archive this trophy? It stops appearing for members but is not deleted.")) return;
+  archiveTrophyDef(id, "league", function(ok, err) {
+    if (ok) { Router.toast("Trophy archived"); _loadLeagueTrophies(); }
+    else Router.toast(err || "Couldn't archive the trophy.");
+  });
 }
 
 function requestJoinLeague(lid) {
