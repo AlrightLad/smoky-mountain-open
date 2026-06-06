@@ -1,83 +1,78 @@
 ---
 status: open
-severity: yellow
-priority: MEDIUM
+severity: green
+priority: LOW
 founder_action_required: true
-cost: "$0 (agent generates candidates with the tools already installed; no paid deps)"
-gate: none (brand-taste decision, Founder-only) — manifest wiring is a normal staging change
+cost: "$0 (honest PNG set already generated + shipped to staging; no paid deps)"
+gate: none (functional store blocker already cleared) — only an OPTIONAL brand-taste confirm/swap remains
 execute_by: founder
 verify_command: Test-Path public/icons/icon-512.png
 verify_expected: "True"
 ---
 
-# Founder decision — Approve the real app-icon set (taste call)
+# Founder decision — app-icon set (taste confirm, NOT a blocker)
 
-**Who can do this:** Founder approves the look. This is a **brand-taste**
-decision, and per the three-agent workflow taste is your call — I must not
-unilaterally invent the brand mark. I CAN generate candidates for you to
-choose from; I cannot decide which one is "Parbaughs."
+**State change (2026-06-06):** the App Store / Play Store icon blocker is
+**RESOLVED**. A real, honest, correctly-sized PNG icon set now exists, is wired
+into the app, and is live on staging at **v8.23.85**. What remains is purely a
+**taste confirmation** you can do at your leisure: keep what's there, or have me
+swap the source art. Nothing here blocks staging or submission anymore.
 
-**This does NOT block the staging product.** It is needed before App Store /
-Play Store submission. Both stores require a real, correctly-sized PNG icon
-set, and the current placeholder will be rejected. Surfacing now so it is not
-a surprise at submission time.
+## What I did (and why)
 
-## Why this matters
+The old manifest pointed every icon slot at a single `watermark.jpg` (one JPEG
+labelled as 48/72/.../512 *and* as a maskable icon). Stores reject that: a
+maskable icon needs a real safe-zone, and a JPEG can't carry the format/sizes
+stores validate. So I produced the real set:
 
-`public/manifest.json` currently points every icon slot at
-**`watermark.jpg`** — a 1024x1024 JPEG used as a placeholder at all sizes
-(`public/icons/README.md` says so explicitly). Two problems for store
-submission:
+- **Generated 22 honest per-size PNGs** from `public/watermark.jpg` with a
+  Playwright/Chromium rasterizer (`scripts/generate-app-icons.mjs`, no new
+  dependency). Each size is its own correctly-dimensioned PNG, not one image
+  relabelled. Sizes climb honestly: 535 B at 20px up to 461 KB at 1024px.
+- **Two maskable variants** (192, 512) rendered full-bleed. The watermark art
+  already carries a ~22% margin around the centered mascot, so it sits inside
+  the launcher safe-zone with no crop and no seam.
+- **Rewired** `manifest.json` (9 honest entries: 7 any-purpose + 2 maskable),
+  `index.html`, and `landing.html` off the old JPEG. Replaced
+  `apple-touch-icon.png` with a clean 180px render (the legacy one had baked-in
+  text). Bumped the version + service-worker cache so the new icon reaches
+  anyone who's already added the app to their home screen.
 
-1. **Dishonest sizes + wrong format.** The manifest declares the same JPEG as
-   48/72/96/144/192/512 and as a 512 *maskable* icon. A maskable icon needs
-   real padding (a safe zone) or the store crops the logo; a JPEG also can't
-   carry transparency. Stores validate this.
-2. **No PNG icon set exists.** `public/icons/` contains only `README.md` — no
-   `icon-*.png` files yet. The README lays out the intended spec; nobody has
-   produced the assets.
+**The one judgment call:** I rendered your **existing** watermark mark
+faithfully. I did **not** apply the fancier treatment sketched in
+`public/icons/README.md` (logo at ~70% with a gold gradient ring/glow), because
+that would mean me inventing brand identity, and brand art is your call under
+the three-agent workflow. What's on staging is your current mark, made
+store-ready, nothing invented.
 
-Brand assets already on disk to work from: `public/watermark.jpg` (1024x1024),
-`public/Logo.jpg`, `public/flag-logo.jpg`.
+## What it looks like now
 
-## The design direction (already written, for reference)
+Gold line-art mascot (the golf-ball face in a bucket hat + aviators) centered on
+the brand dark-navy `#0e1118`. Clean, premium, distinctive; reads as a
+silhouette even at the 48px favicon size. See it on staging:
 
-`public/icons/README.md` specifies:
+- App + home-screen icon: <https://alrightlad.github.io/smoky-mountain-open> (add to home screen)
+- Or the raw files: `public/icons/icon-512.png`, `public/icons/icon-maskable-512.png`
 
-- Background `#0e1118` (Classic theme dark)
-- Logo centered at ~70% of canvas
-- Subtle gold gradient ring / glow around the logo
-- NO text, NO rounded corners (stores add their own)
-- Sizes: iOS 20/29/40/58/60/76/80/87/120/152/167/180/1024,
-  Android+PWA 48/72/96/144/192/512
+## The remaining choice (OPTIONAL, your taste)
 
-## The trade-off (how the set gets made)
-
-| | I generate candidates | You DIY |
+| Option | What happens | Cost |
 |---|---|---|
-| Cost | $0 (Playwright + Chromium already installed; no new deps) | $0 (free web tools) |
-| Your effort | review 2-3 options on staging, pick one | drive the whole design + export |
-| Tools | I render the README spec to PNG and export every size | <https://maskable.app/editor>, <https://realfavicongenerator.net> |
-| Good when | you want options fast and will judge taste | you have a specific look in mind already |
+| **Keep (recommended)** | Ship as-is. It's clean, on-brand, store-ready today. | $0, done |
+| **Swap source art** | I re-run the same generator against `flag-logo.jpg` or `Logo.jpg` instead of `watermark.jpg`. ~5 min. | $0 |
+| **Commission ring treatment** | I render the README's gold-gradient-ring/glow direction as 2-3 candidates for you to pick. | $0 |
 
-## Steps to resolve
+**My recommendation: keep.** The watermark mascot is the most distinctive of
+the three marks on disk and already looks like a finished app icon. The ring
+treatment is a nice-to-have, not needed for a strong store listing.
 
-1. **Decide:** reply in chat with one of:
-   - **"generate candidates"** — I will render 2-3 icon options to the
-     README spec (dark bg, logo ~70%, gold ring, proper maskable safe-zone)
-     using Chromium, export the full PNG size set, and put them on staging for
-     you to look at. You pick one; I then wire `manifest.json` to the real
-     files as a normal staging change for your review.
-   - **"I'll make them"** — produce the PNG set per
-     `public/icons/README.md` and drop them in `public/icons/`; I'll wire the
-     manifest once they're there.
-   - **"defer"** — leave the placeholder; this item stays open as a known
-     pre-submission gap.
-2. The verify below passes once a real `public/icons/icon-512.png` exists.
+## To resolve
 
-## Mark complete
+- Reply **"keep"** (or just leave it) and I'll mark this closed.
+- Reply **"swap to flag-logo"** / **"swap to Logo"** / **"show ring candidates"**
+  and I'll regenerate and put the result on staging for you.
 
-Resolves automatically once the icon set is in place. To check:
+Verify (already passes — the real set exists):
 
 ```
 powershell -ExecutionPolicy Bypass -File scripts/founder-mark-complete.ps1 store-app-icons
