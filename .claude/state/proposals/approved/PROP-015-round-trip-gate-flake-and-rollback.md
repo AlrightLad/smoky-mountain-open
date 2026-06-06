@@ -26,6 +26,12 @@
   "authored_by": "claude-code",
   "bubble_of_record": "overnight-2026-05-31-round-trip-flake",
   "estimate_tokens_to_apply": 6000,
+  "token_cost_estimate": {
+    "low": 4000,
+    "expected": 6000,
+    "high": 9000,
+    "methodology": "Derived from the two-file diff scope (~45 LoC: verify-scroll-reachability.mjs readiness-wait + single-retry; regen-all.ps1 tracked-only rollback guard + app-health.html addition) plus the round_trip_coverage acceptance protocol (5 consecutive regen-all.ps1 runs for flake-absorption evidence, one deliberate list-id break to confirm true-negative preservation, one forced gate-failure to confirm app-health.html rollback). Low = clean apply with minimal re-runs; expected matches the original 6000-token point estimate with full prescribed verification; high adds flake re-runs and the rollback failure-path exercise."
+  },
   "status": "pending",
   "evidence": {
     "flake_run_1": "scripts/regen-all.ps1 gated run ~17:0x — round-trip FAIL, scroll-reachability exit 1, 'escalations applied list: last item #applied-list > *:last-child not found'",
