@@ -110,27 +110,65 @@ function calcScoringZones(rounds) {
 }
 
 // ── Course Breakdown (hole-by-hole at a specific course) ──
+// Per-hole {hole,par,avg,diff,count,std,best,worst,samples[]} plus course-level
+// {rounds,avgScore,bestScore,bestDate,holeCount,course}. The per-hole `samples`
+// (score+date+roundId) and `std` power the 3r HeatMap's variance opacity and
+// cell-detail drill-down. The legacy {hole,avg,par,diff} fields are preserved
+// unchanged for existing svgBarChart consumers — this extension is additive.
 function calcCourseBreakdown(courseName, playerRounds) {
   var courseRounds = (playerRounds || []).filter(function(r){return r.course===courseName&&r.holeScores&&r.holePars&&r.holeScores.length>=9});
   if (courseRounds.length < 3) return null;
 
   var holeStats = {};
+  var maxHoleIdx = 0;
   courseRounds.forEach(function(r) {
     for (var i = 0; i < Math.min(r.holeScores.length, r.holePars.length); i++) {
       var s = parseInt(r.holeScores[i]), p = r.holePars[i] || 4;
       if (s > 0) {
-        if (!holeStats[i]) holeStats[i] = {total:0, count:0, par:p};
+        if (!holeStats[i]) holeStats[i] = {total:0, count:0, par:p, scores:[], samples:[]};
         holeStats[i].total += s;
         holeStats[i].count++;
+        holeStats[i].scores.push(s);
+        holeStats[i].samples.push({score:s, par:p, date:r.date||"", roundId:r.id||"", format:r.format||"stroke"});
+        if (i > maxHoleIdx) maxHoleIdx = i;
       }
     }
   });
 
   var holes = Object.entries(holeStats).filter(function(e){return e[1].count>=2}).map(function(e) {
-    return {hole:parseInt(e[0])+1, avg:Math.round(e[1].total/e[1].count*10)/10, par:e[1].par, diff:Math.round((e[1].total/e[1].count-e[1].par)*10)/10};
+    var st = e[1];
+    var mean = st.total / st.count;
+    var variance = st.scores.reduce(function(a,v){return a + (v-mean)*(v-mean)}, 0) / st.count;
+    var std = Math.round(Math.sqrt(variance) * 100) / 100;
+    var byScore = st.samples.slice().sort(function(a,b){return a.score-b.score});
+    return {
+      hole: parseInt(e[0]) + 1,
+      par: st.par,
+      avg: Math.round(mean * 10) / 10,
+      diff: Math.round((mean - st.par) * 10) / 10,
+      count: st.count,
+      std: std,
+      best: byScore[0],
+      worst: byScore[byScore.length - 1],
+      samples: st.samples.slice().sort(function(a,b){return (b.date||"") > (a.date||"") ? 1 : -1})
+    };
   });
   holes.sort(function(a,b){return a.hole-b.hole});
-  return holes.length >= 9 ? {holes:holes, rounds:courseRounds.length, course:courseName} : null;
+  if (holes.length < 9) return null;
+
+  var scored = courseRounds.filter(function(r){return r.score>0});
+  var avgScore = scored.length ? Math.round(scored.reduce(function(a,r){return a+r.score},0) / scored.length * 10) / 10 : null;
+  var bestRound = scored.slice().sort(function(a,b){return a.score-b.score})[0] || null;
+
+  return {
+    holes: holes,
+    rounds: courseRounds.length,
+    course: courseName,
+    holeCount: maxHoleIdx >= 9 ? 18 : 9,
+    avgScore: avgScore,
+    bestScore: bestRound ? bestRound.score : null,
+    bestDate: bestRound ? (bestRound.date || "") : null
+  };
 }
 
 // ── Stat Trends (FIR%, GIR%, putts, penalty over time) ──

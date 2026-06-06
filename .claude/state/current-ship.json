@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "ship_id": "W1-3d-leaderboard-editorial",
-  "started_at": "2026-06-06T00:00:00Z",
+  "ship_id": null,
+  "started_at": null,
   "notes": "Per ESC-003 (approved 2026-05-14, Approach A): Agent 3 writes {ship_id: 'PROP-NNN' | 'AMD-NNN' | 'ESC-NNN' | '<descriptive-slug>', started_at: ISO8601} at ship-plan-author time. Clears (sets ship_id=null) at ship-close commit. session.team-work.summary emits read this file. Multi-ship sessions are sequential (one ship at a time). Manual emit scripts + aggregator use ship_id from here when present, otherwise carry the prior fallback signal (often empty / unattributed)."
 }

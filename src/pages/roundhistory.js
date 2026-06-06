@@ -71,6 +71,20 @@ Router.register("roundhistory", function(params) {
   }
   h += '</div>';
 
+  // Hole heat map (per-course, >=3 hole-by-hole rounds) per CLUBHOUSE_SPEC-HQ-3r
+  var hmCourse = _rhCourse || (mostPlayed !== "—" ? mostPlayed : "");
+  if (hmCourse && typeof renderHeatMap === "function") {
+    var hmEligible = allRounds.filter(function(r){ return r.course === hmCourse && r.holeScores && r.holePars && r.holeScores.length >= 9; });
+    h += '<div style="padding:16px;border-bottom:1px solid var(--border)">';
+    if (hmEligible.length >= 3) {
+      var hmBd = calcCourseBreakdown(hmCourse, allRounds);
+      h += (hmBd && hmBd.holes.length >= 9) ? renderHeatMap(hmBd, { linkRounds: true }) : renderHeatMapLocked(hmCourse, hmEligible.length);
+    } else {
+      h += renderHeatMapLocked(hmCourse, hmEligible.length);
+    }
+    h += '</div>';
+  }
+
   // Hole dot legend
   h += '<div style="padding:6px 16px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap;font-size:9px;color:var(--muted)">';
   h += '<span style="display:flex;align-items:center;gap:3px"><span style="width:6px;height:6px;border-radius:50%;background:#FFD700"></span>Eagle</span>';

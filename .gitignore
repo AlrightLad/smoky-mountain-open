@@ -88,6 +88,10 @@ scripts/visual-audit/*.png
 .claude/state/main-flows-v2/iter*/
 .claude/state/main-flows-v2/*.png
 .claude/state/main-flows-v2/*.jpg
+# design-iteration capture PNGs are regenerable via scripts/visual-audit/*.mjs;
+# keep the .mjs sources tracked, gitignore the binary output (pre-2026-06 dirs
+# stay grandfathered-tracked — gitignore never untracks).
+.claude/state/design-iteration/2026-06-*/**/*.png
 .claude/state/user-journey-audits/
 .claude/state/dashboard-audit-*/**/*.png
 .claude/state/dashboard-audit-*/screenshots/

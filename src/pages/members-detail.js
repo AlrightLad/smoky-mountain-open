@@ -602,11 +602,9 @@ function renderMemberDetailWithData(p) {
     if (topCourse && topCourse[1] >= 3) {
       var breakdown = calcCourseBreakdown(topCourse[0], rounds);
       if (breakdown && breakdown.holes.length >= 9) {
-        var bkData = breakdown.holes.map(function(h2){return {label:"#"+h2.hole, value:h2.diff, color:h2.diff<=0?"var(--birdie)":h2.diff<=1?"var(--gold)":"var(--red)"}});
-        h += '<div class="section"><div class="sec-head"><span class="sec-title">Hole-by-Hole: ' + escHtml(topCourse[0]) + '</span></div>';
-        h += '<div class="card"><div style="padding:14px 16px">';
-        h += '<div style="font-size:10px;color:var(--muted);margin-bottom:8px">Avg strokes over par per hole (' + breakdown.rounds + ' rounds)</div>';
-        h += svgBarChart(bkData, {width:310, height:120, showLabels:true, showValues:false});
+        h += '<div class="section"><div class="sec-head"><span class="sec-title">Hole-by-Hole</span></div>';
+        h += '<div class="card"><div style="padding:16px">';
+        h += renderHeatMap(breakdown, { linkRounds: isOwnProfile });
         h += '</div></div></div>';
       }
     }
