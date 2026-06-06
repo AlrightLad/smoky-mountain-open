@@ -1,119 +1,139 @@
 /* ================================================
-   PAGE: SEASON
-   ================================================ */
+   PAGE: SEASON STANDINGS — CLUBHOUSE_SPEC-HQ-3d (Leaderboard)
+   ================================================
+   Editorial redesign (W1 3d). Structural language mirrors the Members
+   roster (3e): editorial masthead + scope tabs + dense .roster-table +
+   two-column .hq-grid with an agate right rail. Every visible value
+   traces to source (P9). Spec features with no data model are skipped,
+   not fabricated: week-over-week "Movers" deltas and the WeekDoc[]
+   Schedule rail have no source, so neither renders. The spec's
+   Stableford/Stroke/Net scope maps to the existing season selector
+   (the only ranking dimension the data model carries: season points).
+
+   Trophy Watch stays in the MAIN column (not the agate rail): the rail
+   is hidden <960px and Trophy Watch (birdies, best round) is not
+   derivable from the standings table, so railing it would drop the
+   content on mobile — a regression for a mobile-first PWA. */
 
 Router.register("standings", function(params) {
   var year = (params && params.year) ? parseInt(params.year) : new Date().getFullYear();
   var seasonKey = (params && params.season) ? params.season : null;
   var season = PB.getSeasonStandings(year, seasonKey);
-  var currentSeason = PB.getCurrentSeason();
+  var standings = season.standings || [];
   var now = new Date();
   var todayStr = localDateStr(now);
-  var inSeason = todayStr >= season.seasonStart && todayStr <= season.seasonEnd;
+  var isUpcoming = todayStr < season.seasonStart;
+  var isComplete = todayStr > season.seasonEnd;
+  var inSeason = !isUpcoming && !isComplete;
 
-  var h = '<div class="sh"><h2>Season</h2><button class="back" onclick="Router.back(\'records\')">← Back</button></div>';
+  var monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var sStartD = new Date(season.seasonStart + "T12:00:00");
+  var sEndD = new Date(season.seasonEnd + "T12:00:00");
+  var dateRange = monthNames[sStartD.getMonth()] + " " + sStartD.getDate() + " – " +
+                  monthNames[sEndD.getMonth()] + " " + sEndD.getDate() + ", " + year;
 
-  // Season selector tabs
-  h += '<div class="toggle-bar" style="justify-content:center">';
+  var totalRounds = standings.reduce(function(a, s){ return a + (s.rounds || 0); }, 0);
+  var bestScore = Math.min.apply(null, standings.filter(function(s){ return s.best; }).map(function(s){ return s.best; }).concat([999]));
+  var leader = standings.length ? standings[0] : null;
+  var leaderName = leader ? (leader.name || leader.username || "A member") : "";
+  var leaderPts = leader ? (leader.points || 0) : 0;
+
+  var viewerUid = (typeof currentUser !== "undefined" && currentUser) ? currentUser.uid : null;
+  var viewerClaimed = (typeof currentProfile !== "undefined" && currentProfile) ? currentProfile.claimedFrom : null;
+
+  // ── Masthead ──────────────────────────────────────────────────────────
+  var headlineMain, headlineAccent;
+  if (!standings.length) { headlineMain = "The board "; headlineAccent = "awaits."; }
+  else if (isComplete) { headlineMain = "The final "; headlineAccent = "board."; }
+  else { headlineMain = "The board "; headlineAccent = "so far."; }
+
+  var deck;
+  if (!standings.length) {
+    deck = isUpcoming
+      ? "The " + season.seasonLabel + " season has not teed off yet."
+      : "No rounds logged yet this " + season.seasonLabel + ". Log a round to open the board.";
+  } else if (isComplete) {
+    deck = leaderPts > 0
+      ? leaderName + " takes the " + season.seasonLabel + " title with " + leaderPts + " pts."
+      : leaderName + " tops the final " + season.seasonLabel + " board.";
+  } else {
+    deck = standings.length + " golfer" + (standings.length !== 1 ? "s" : "") + ", " +
+           totalRounds + " round" + (totalRounds !== 1 ? "s" : "") + " in." +
+           (leaderPts > 0 ? " " + leaderName + " leads with " + leaderPts + " pts." : "");
+  }
+
+  var badge;
+  if (isUpcoming) {
+    badge = '<span class="std-badge">Upcoming</span>';
+  } else if (inSeason) {
+    var daysLeft = Math.max(0, Math.ceil((sEndD - now) / 86400000));
+    badge = '<span class="std-badge std-badge--live"><span class="std-badge__dot"></span>In season · ' + daysLeft + ' day' + (daysLeft !== 1 ? 's' : '') + ' left</span>';
+  } else {
+    badge = '<span class="std-badge">Season complete</span>';
+  }
+
+  var h = '<div class="hq-grid"><div class="hq-grid__main">';
+  h += '<div class="roster-masthead">';
+  h += '<div class="roster-eyebrow">' + escHtml("Standings · " + season.seasonLabel) + '</div>';
+  h += '<h1 class="roster-headline">' + escHtml(headlineMain) + '<span class="std-accent">' + escHtml(headlineAccent) + '</span></h1>';
+  h += '<p class="std-deck">' + escHtml(deck) + '</p>';
+  h += '<div class="std-dateline">' + escHtml(dateRange) + badge + '</div>';
+  h += '</div>';
+
+  // ── Scope: season selector (the only real ranking dimension) ──────────
+  h += '<div class="roster-scope"><div class="roster-tabs" role="tablist">';
   PB.SEASON_CONFIG.forEach(function(cfg) {
     var isActive = season.seasonKey === cfg.key && season.year === year;
-    h += '<button' + (isActive ? ' class="a"' : '') + ' onclick="Router.go(\'standings\',{year:' + year + ',season:\'' + cfg.key + '\'},true)">' + cfg.label + '</button>';
+    h += '<button type="button" class="roster-tab' + (isActive ? ' roster-tab--active' : '') + '" role="tab" aria-selected="' + (isActive ? 'true' : 'false') + '" onclick="Router.go(\'standings\',{year:' + year + ',season:\'' + cfg.key + '\'},true)">' + escHtml(cfg.label) + '</button>';
   });
-  h += '</div>';
+  h += '</div></div>';
 
-  h += '<div style="text-align:center;padding:20px 16px 24px;background:linear-gradient(180deg,var(--grad-hero),var(--bg));border-bottom:1px solid var(--border)">';
-  h += '<div style="font-family:var(--font-display);font-size:28px;color:var(--gold);font-weight:700">' + escHtml(season.seasonLabel) + '</div>';
-  var monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  var sStart = new Date(season.seasonStart + "T12:00:00");
-  var sEnd = new Date(season.seasonEnd + "T12:00:00");
-  h += '<div style="font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:1.5px;text-transform:uppercase">' + monthNames[sStart.getMonth()] + ' ' + sStart.getDate() + ' – ' + monthNames[sEnd.getMonth()] +' ' + sEnd.getDate() + ', ' + year + '</div>';
-  if (inSeason) {
-    var daysLeft = Math.ceil((sEnd - now) / (1000*60*60*24));
-    h += '<div style="display:inline-block;margin-top:10px;padding:5px 14px;background:rgba(var(--birdie-rgb),.08);border:1px solid rgba(var(--birdie-rgb),.15);border-radius:12px;font-size:10px;color:var(--birdie);font-weight:600;letter-spacing:.5px">IN SEASON · ' + daysLeft + ' DAYS LEFT</div>';
+  // ── Standings table ───────────────────────────────────────────────────
+  if (standings.length) {
+    h += '<table class="roster-table">';
+    h += '<thead><tr>';
+    h += '<th class="std-rank-col" scope="col">#</th>';
+    h += '<th class="roster-cell-av" scope="col" aria-label="Avatar"></th>';
+    h += '<th scope="col">Member</th>';
+    h += '<th class="roster-num roster-col-rounds" scope="col">Rds</th>';
+    h += '<th class="roster-num std-col-avg" scope="col">Avg</th>';
+    h += '<th class="roster-num" scope="col">Pts</th>';
+    h += '</tr></thead><tbody>';
+    standings.forEach(function(s, idx) {
+      var rank = idx + 1;
+      var isFirst = idx === 0;
+      var isViewer = !!(viewerUid && (s.id === viewerUid || s.id === viewerClaimed));
+      var pl = (PB.getPlayer && PB.getPlayer(s.id)) || s;
+      var name = s.username || s.name || "Member";
+      var titleSub = "";
+      if (pl.equippedTitle && pl.equippedTitle !== "Member" && pl.equippedTitle !== "Rookie") titleSub = escHtml(pl.equippedTitle);
+      var rowClass = "roster-row std-row" + (isFirst ? " std-row--leader" : "") + (isViewer ? " std-row--you" : "");
+      var aria = name + ", rank " + rank + ", " + (s.rounds || 0) + (s.rounds === 1 ? " round" : " rounds") + ", " + (s.points || 0) + " points";
+      var go = "Router.go('members',{id:'" + s.id + "'})";
+      h += '<tr class="' + rowClass + '" tabindex="0" aria-label="' + escHtml(aria) + '" onclick="' + go + '" onkeydown="if(event.key===\'Enter\'){' + go + '}">';
+      h += '<td class="std-rank">' + rank + '</td>';
+      h += '<td class="roster-cell-av">' + renderAvatar(pl, 40, false) + '</td>';
+      h += '<td><div class="roster-name"><span class="std-name-txt">' + escHtml(name) + '</span>' + (isViewer ? '<span class="std-you-chip">YOU</span>' : '') + '</div>' + (titleSub ? '<div class="roster-handle">' + titleSub + '</div>' : '') + '</td>';
+      h += '<td class="roster-num roster-col-rounds"><span class="roster-rounds">' + (s.rounds || 0) + '</span></td>';
+      h += '<td class="roster-num std-col-avg"><span class="std-avg">' + (s.avg || "—") + '</span></td>';
+      h += '<td class="roster-num"><span class="std-pts">' + (s.points || 0) + '</span></td>';
+      h += '</tr>';
+    });
+    h += '</tbody></table>';
   } else {
-    h += '<div style="display:inline-block;margin-top:10px;padding:5px 14px;background:rgba(var(--gold-rgb),.06);border:1px solid rgba(var(--gold-rgb),.12);border-radius:12px;font-size:10px;color:var(--gold);font-weight:600;letter-spacing:.5px">SEASON COMPLETE</div>';
-  }
-  h += '</div>';
-
-  if (season.standings.length) {
-    var totalRounds = season.standings.reduce(function(a,s){return a+s.rounds},0);
-    var bestScore = Math.min.apply(null, season.standings.filter(function(s){return s.best}).map(function(s){return s.best}).concat([999]));
-    h += '<div class="stats-grid" style="padding:12px 16px">';
-    h += '<div class="stat-box"><div class="stat-val" data-count="' + season.standings.length + '">0</div><div class="stat-label">Active</div></div>';
-    h += '<div class="stat-box"><div class="stat-val" data-count="' + totalRounds + '">0</div><div class="stat-label">Rounds</div></div>';
-    h += '<div class="stat-box"><div class="stat-val"' + (bestScore < 999 ? ' data-count="' + bestScore + '">0' : '>—') + '</div><div class="stat-label">Low round</div></div>';
+    h += '<div class="std-empty">';
+    h += '<div class="std-empty__title">' + (isUpcoming ? "Tee off is coming." : "Nobody on the board yet.") + '</div>';
+    h += '<div class="std-empty__sub">' + (isUpcoming ? escHtml("The " + season.seasonLabel + " season has not started.") : "Log a round between March and September to appear.") + '</div>';
     h += '</div>';
   }
 
-  h += '<div class="section"><div class="sec-head"><span class="sec-title">Standings</span></div>';
-  if (season.standings.length) {
-    // Highlight the viewer's own row so they can locate themselves at a
-    // glance in long leagues: gold-tinted full border + faint gold wash +
-    // "YOU" chip (full border, not a side-stripe — retired 2026-05-29). Only
-    // 1st place is otherwise emphasised; the viewer mark adds a second
-    // "find-me" affordance without disrupting the podium hierarchy.
-    var viewerUid = (typeof currentUser !== "undefined" && currentUser) ? currentUser.uid : null;
-    var viewerClaimed = (typeof currentProfile !== "undefined" && currentProfile) ? currentProfile.claimedFrom : null;
-    season.standings.forEach(function(s, idx) {
-      var medal = idx === 0 ? '1st' : idx === 1 ? '2nd' : idx === 2 ? '3rd' : (idx+1) + '';
-      var medalColor = idx === 0 ? 'var(--gold)' : idx === 1 ? 'var(--medal-silver)' : idx === 2 ? 'var(--medal-bronze)' : 'var(--muted)';
-      var isFirst = idx === 0;
-      var isViewer = !!(viewerUid && (s.id === viewerUid || s.id === viewerClaimed));
-      var cardStyle = '';
-      if (isFirst) {
-        cardStyle = 'border-color:rgba(var(--gold-rgb),.2);background:linear-gradient(135deg,var(--grad-card),var(--card))';
-      } else if (isViewer) {
-        // Viewer's row — gold-tinted full border + faint gold wash (matches the
-        // isFirst treatment above; side-stripe retired in the 2026-05-29 pass).
-        cardStyle = 'border-color:rgba(var(--gold-rgb),.45);background:rgba(var(--gold-rgb),0.05);transition:background 180ms ease-out';
-      }
-      h += '<div class="card" style="' + cardStyle + '" data-rank="' + (idx + 1) + (isViewer ? '" data-viewer="1' : '') + '">';
-      h += '<div style="padding:14px 16px;display:flex;justify-content:space-between;align-items:center">';
-      h += '<div style="display:flex;align-items:center;gap:14px">';
-      h += '<div style="font-size:16px;width:32px;text-align:center;font-weight:800;color:' + medalColor + '">' + medal + '</div>';
-      h += '<div><div style="font-size:14px;font-weight:600;display:flex;align-items:center;gap:8px"><span style="max-width:160px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(s.username) + '</span>';
-      if (isViewer) {
-        h += '<span style="flex-shrink:0;font-family:var(--font-mono);font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--gold);background:rgba(var(--gold-rgb),0.14);padding:2px 6px;border-radius:3px">YOU</span>';
-      }
-      h += '</div>';
-      h += '<div style="font-size:10px;color:var(--muted);margin-top:3px">' + s.rounds + ' rds · Avg: ' + (s.avg||"—") + ' · Best: ' + (s.best||"—") + '</div>';
-      if (s.courses && s.courses.length) {
-        // Polish 2026-05-22 (iter4): cap displayed courses at 4 with "+N more"
-        // overflow tail. Long lists (8+ courses for active members) were
-        // wrapping to 2-3 lines and visually flattening the rank hierarchy.
-        // Top 4 + "+N more" keeps row height predictable across ranks.
-        var courseList = s.courses;
-        var courseStr;
-        if (courseList.length > 4) {
-          courseStr = courseList.slice(0, 4).join(', ') + ' +' + (courseList.length - 4) + ' more';
-        } else {
-          courseStr = courseList.join(', ');
-        }
-        h += '<div style="font-size:9px;color:var(--muted2);margin-top:3px;line-height:1.4">' + courseStr + '</div>';
-      }
-      h += '</div></div>';
-      h += '<div style="text-align:right"><div style="font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--gold)" data-count="' + (s.points||0) + '">0</div>';
-      h += '<div style="font-size:9px;color:var(--muted);letter-spacing:.5px">PTS</div></div>';
-      h += '</div></div>';
-    });
-  } else {
-    h += '<div class="card"><div class="empty" style="padding:28px"><div style="width:40px;height:40px;margin:0 auto 8px;opacity:.3;border-radius:8px;overflow:hidden"><img alt="" src="watermark.jpg" style="width:100%;height:100%;object-fit:cover"></div>';
-    h += '<div class="empty-text">No rounds this season</div>';
-    h += '<div style="font-size:10px;color:var(--muted2);margin-top:4px">Log rounds March–September to appear</div></div></div>';
-  }
-  h += '</div>';
-
-  // v8.22+ (design-pass 2026-05-22 / W2.S2 pull-forward): Trophy Watch agate —
-  // 5 sub-leaderboards showing who's winning each category this season.
-  // Per W2.S2 spec § Trophy Watch (5 starting trophies):
-  //   1. Stroke avg (lowest)
-  //   2. Net avg (lowest, hcap-adjusted)
-  //   3. Most birdies (count from rounds)
-  //   4. Best round (lowest single-round score)
-  //   5. Most rounds (count)
-  if (season.standings.length) {
+  // ── Trophy Watch (real-data sub-leaderboards, kept main-column) ───────
+  // Per W2.S2 spec: stroke avg / best round / most rounds / most birdies.
+  // Net avg needs a per-round handicap join not modeled here, so it is
+  // not rendered (P9 — no fabricated leader).
+  if (standings.length) {
     function _twLeader(label, statKey, formatVal, sortDir) {
-      var pool = season.standings.filter(function(s) {
+      var pool = standings.filter(function(s) {
         var v = s[statKey];
         return v != null && !isNaN(v) && (statKey === "best" || statKey === "rounds" || s.rounds >= 3);
       });
@@ -122,26 +142,19 @@ Router.register("standings", function(params) {
         return sortDir === "desc" ? (b[statKey] - a[statKey]) : (a[statKey] - b[statKey]);
       });
       var top = pool[0];
-      return {
-        label: label,
-        winnerName: top.name || top.username || "Member",
-        winnerId: top.id,
-        value: formatVal(top[statKey])
-      };
+      return { label: label, winnerName: top.name || top.username || "Member", winnerId: top.id, value: formatVal(top[statKey]) };
     }
 
     var trophies = [];
     var t1 = _twLeader("STROKE AVG", "avg", function(v){ return (+v).toFixed(1); }, "asc"); if (t1) trophies.push(t1);
     var t2 = _twLeader("BEST ROUND", "best", function(v){ return String(v); }, "asc"); if (t2) trophies.push(t2);
     var t3 = _twLeader("MOST ROUNDS", "rounds", function(v){ return v + " rds"; }, "desc"); if (t3) trophies.push(t3);
-    // Birdies count + Net avg need rounds-data join. Compute from PB.getRounds.
     if (typeof PB !== "undefined" && PB.getRounds) {
       var allRounds = PB.getRounds() || [];
       var perPlayer = {};
       allRounds.forEach(function(r) {
         if (!r.player || !r.score || r.format === "scramble" || r.format === "scramble4") return;
-        if (!perPlayer[r.player]) perPlayer[r.player] = { birdies: 0, scores: [] };
-        // Birdies count — count holes where hole-score is at least 1 below hole-par
+        if (!perPlayer[r.player]) perPlayer[r.player] = { birdies: 0 };
         if (r.holeScores && r.holePars && r.holeScores.length === r.holePars.length) {
           for (var i = 0; i < r.holeScores.length; i++) {
             var sc = parseInt(r.holeScores[i]) || 0;
@@ -149,93 +162,95 @@ Router.register("standings", function(params) {
             if (sc > 0 && pr > 0 && sc <= pr - 1) perPlayer[r.player].birdies++;
           }
         }
-        perPlayer[r.player].scores.push(r.score);
       });
       var birdiePool = Object.keys(perPlayer).map(function(pid) {
         return { id: pid, birdies: perPlayer[pid].birdies };
       }).filter(function(p){ return p.birdies > 0; });
       birdiePool.sort(function(a, b) { return b.birdies - a.birdies; });
       if (birdiePool.length) {
-        var bWin = season.standings.find(function(s){ return s.id === birdiePool[0].id; });
-        if (bWin) trophies.push({
-          label: "MOST BIRDIES",
-          winnerName: bWin.name || bWin.username || "Member",
-          winnerId: bWin.id,
-          value: birdiePool[0].birdies + " ♦"
-        });
+        var bWin = standings.find(function(s){ return s.id === birdiePool[0].id; });
+        if (bWin) trophies.push({ label: "MOST BIRDIES", winnerName: bWin.name || bWin.username || "Member", winnerId: bWin.id, value: birdiePool[0].birdies + " ♦" });
       }
     }
 
     if (trophies.length) {
-      h += '<div class="section"><div class="sec-head"><span class="sec-title">Trophy Watch</span><span class="sec-link" style="font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:1px">This season</span></div>';
-      h += '<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:8px;padding:0 16px">';
+      h += '<div class="std-section">';
+      h += '<div class="std-section__head"><span class="std-section__title">Trophy Watch</span><span class="std-section__meta">This season</span></div>';
+      h += '<div class="std-trophies">';
       trophies.forEach(function(t) {
-        h += '<div class="card" style="margin:0;cursor:pointer" onclick="Router.go(\'members\',{id:\'' + t.winnerId + '\'})">';
-        h += '<div style="padding:12px 14px">';
-        h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--gold);text-transform:uppercase;margin-bottom:6px">' + t.label + '</div>';
-        h += '<div style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--cream);margin-bottom:3px">' + escHtml(t.value) + '</div>';
-        h += '<div style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(t.winnerName) + '</div>';
-        h += '</div></div>';
+        h += '<div class="std-trophy" onclick="Router.go(\'members\',{id:\'' + t.winnerId + '\'})">';
+        h += '<div class="std-trophy__label">' + escHtml(t.label) + '</div>';
+        h += '<div class="std-trophy__value">' + escHtml(t.value) + '</div>';
+        h += '<div class="std-trophy__winner">' + escHtml(t.winnerName) + '</div>';
+        h += '</div>';
       });
       h += '</div></div>';
     }
   }
 
+  // ── Season rules (collapsible) ────────────────────────────────────────
+  h += '<div class="std-collapse-head" onclick="toggleSection(\'std-rules\')"><span class="std-section__title">Season rules</span><span id="std-rules-toggle" class="std-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="transition:transform .2s"><path d="M9 18l6-6-6-6"/></svg></span></div>';
+  h += '<div id="std-rules" style="display:none" class="std-dl">';
+  var rules = [
+    ["Seasons", "Spring (Mar–May), Summer (Jun–Aug), Fall (Sep–Nov)"],
+    ["Off-season", "Dec–Feb: rounds count for handicap, no season points"],
+    ["Ranking method", "Season point system"],
+    ["Base rules", "USGA rules apply"],
+    ["Breakfast balls", "2 per round (1 front, 1 back)"],
+    ["Honor system", "Scouts honor: attested scores earn 150 XP"],
+    ["Inactivity", "3 months = 3 rounds to reactivate"],
+    ["Eligible rounds", "Public rounds only"],
+    ["Season winner", "Earns title + Champion Red theme + ParCoins"]
+  ];
+  rules.forEach(function(r) {
+    h += '<div class="std-dl-row"><span class="std-dl-row__k">' + escHtml(r[0]) + '</span><span class="std-dl-row__v">' + escHtml(r[1]) + '</span></div>';
+  });
+  h += '</div>';
 
-  h += '<div class="section"><div class="sec-head" onclick="toggleSection(\'season-rules\')" style="cursor:pointer"><span class="sec-title">Season rules</span><span class="sec-link" id="season-rules-toggle" style="display:inline-flex;transition:transform .2s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="transition:transform .2s;color:var(--muted)"><path d="M9 18l6-6-6-6"/></svg></span></div>';
-  h += '<div id="season-rules" style="display:none">';
-  h += '<div class="club-row"><span class="club-name">Seasons</span><span class="club-yd">Spring (Mar\u2013May), Summer (Jun\u2013Aug), Fall (Sep\u2013Nov)</span></div>';
-  h += '<div class="club-row"><span class="club-name">Off-season</span><span class="club-yd">Dec\u2013Feb: rounds count for handicap, no season points</span></div>';
-  h += '<div class="club-row"><span class="club-name">Ranking method</span><span class="club-yd">Season point system</span></div>';
-  h += '<div class="club-row"><span class="club-name">Base rules</span><span class="club-yd">USGA rules apply</span></div>';
-  h += '<div class="club-row"><span class="club-name">Breakfast balls</span><span class="club-yd">2 per round (1 front, 1 back)</span></div>';
-  h += '<div class="club-row"><span class="club-name">Honor system</span><span class="club-yd">Scouts honor: attested scores earn 150 XP</span></div>';
-  h += '<div class="club-row"><span class="club-name">Inactivity</span><span class="club-yd">3 months = 3 rounds to reactivate</span></div>';
-  h += '<div class="club-row"><span class="club-name">Eligible rounds</span><span class="club-yd">Public rounds only</span></div>';
-  h += '<div class="club-row"><span class="club-name">Season winner</span><span class="club-yd">Earns title + Champion Red theme + ParCoins</span></div>';
-  h += '</div></div>';
-
-  // Season archive — past season champions
-  var archiveContent = '';
+  // ── Season archive (past champions) ───────────────────────────────────
   var archiveSeasons = [];
   var curYear = new Date().getFullYear();
   for (var ay = curYear; ay >= 2026; ay--) {
     PB.SEASON_CONFIG.forEach(function(cfg) {
-      var sEnd = ay + cfg.end;
-      if (localDateStr() > sEnd) {
+      var aEnd = ay + cfg.end;
+      if (localDateStr() > aEnd) {
         try {
           var ss = PB.getSeasonStandings(ay, cfg.key);
           if (ss.standings.length) {
             var isInaugural = ay === 2026 && cfg.key === "spring";
-            archiveSeasons.push({label: cfg.label + " " + ay, champ: ss.standings[0].name || ss.standings[0].username, pts: ss.standings[0].points, rounds: ss.standings.reduce(function(a,s){return a+s.rounds},0), inaugural: isInaugural});
+            archiveSeasons.push({
+              label: cfg.label + " " + ay,
+              champ: ss.standings[0].name || ss.standings[0].username,
+              pts: ss.standings[0].points,
+              rounds: ss.standings.reduce(function(a, s){ return a + s.rounds; }, 0),
+              inaugural: isInaugural
+            });
           }
-        } catch(e) {}
+        } catch (e) {}
       }
     });
   }
   if (archiveSeasons.length) {
-    archiveContent = '';
+    h += '<div class="std-section"><div class="std-section__head"><span class="std-section__title">Season Archive</span></div>';
     archiveSeasons.forEach(function(as) {
-      archiveContent += '<div class="card" style="margin-bottom:4px"><div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:center">';
-      archiveContent += '<div><div style="font-size:13px;font-weight:600;color:var(--cream)">' + escHtml(as.label) + (as.inaugural ? ' <span style="font-size:8px;color:var(--gold);font-weight:700;letter-spacing:.5px">INAUGURAL</span>' : '') + '</div>';
-      archiveContent += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + as.rounds + ' total rounds</div></div>';
-      archiveContent += '<div style="text-align:right"><div style="font-size:13px;font-weight:700;color:var(--gold)">' + escHtml(as.champ) + '</div>';
-      archiveContent += '<div style="font-size:9px;color:var(--muted)">' + as.pts + ' pts</div></div>';
-      archiveContent += '</div></div>';
+      h += '<div class="std-arch-row">';
+      h += '<div><div class="std-arch-row__season">' + escHtml(as.label) + (as.inaugural ? '<span class="std-inaugural">INAUGURAL</span>' : '') + '</div><div class="std-arch-row__meta">' + as.rounds + ' total rounds</div></div>';
+      h += '<div><div class="std-arch-row__champ">' + escHtml(as.champ) + '</div><div class="std-arch-row__pts">' + as.pts + ' pts</div></div>';
+      h += '</div>';
     });
-    h += '<div class="section"><div class="sec-head"><span class="sec-title">Season Archive</span></div>' + archiveContent + '</div>';
+    h += '</div>';
   }
 
-  // Courses this season — individual rounds only (no scramble)
-  var seasonStart = year + '-03-01';
-  var seasonEnd = year + '-09-30';
+  // ── Courses this season (collapsible) ─────────────────────────────────
+  var seasonStartCourses = year + '-03-01';
+  var seasonEndCourses = year + '-09-30';
   var seasonRounds = PB.getRounds().filter(function(r){
-    return r.visibility !== "private" && r.date >= seasonStart && r.date <= seasonEnd && r.format !== "scramble" && r.format !== "scramble4";
+    return r.visibility !== "private" && r.date >= seasonStartCourses && r.date <= seasonEndCourses && r.format !== "scramble" && r.format !== "scramble4";
   });
   var seasonCourseMap = {};
   seasonRounds.forEach(function(r){
     if (!r.course) return;
-    if (!seasonCourseMap[r.course]) seasonCourseMap[r.course] = {name: r.course, rounds: 0, best18: null, best18player: null, best9: null, best9player: null, best9mode: null, players: {}};
+    if (!seasonCourseMap[r.course]) seasonCourseMap[r.course] = { name: r.course, rounds: 0, best18: null, best18player: null, best9: null, best9player: null, best9mode: null, players: {} };
     seasonCourseMap[r.course].rounds++;
     if (r.playerName) seasonCourseMap[r.course].players[r.playerName] = 1;
     var is18 = !r.holesPlayed || r.holesPlayed >= 18;
@@ -249,8 +264,9 @@ Router.register("standings", function(params) {
       seasonCourseMap[r.course].best9mode = r.holesMode === "back9" ? "B9" : "F9";
     }
   });
-  var seasonCourseList = Object.values(seasonCourseMap).sort(function(a,b){return b.rounds - a.rounds;});
-  var scContent = '';
+  var seasonCourseList = Object.values(seasonCourseMap).sort(function(a, b){ return b.rounds - a.rounds; });
+  h += '<div class="std-collapse-head" onclick="toggleSection(\'std-courses\')"><span class="std-section__title">Courses this season <span class="std-section__meta" style="margin-left:6px">(' + seasonCourseList.length + ')</span></span><span id="std-courses-toggle" class="std-chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="transition:transform .2s"><path d="M9 18l6-6-6-6"/></svg></span></div>';
+  h += '<div id="std-courses" style="display:none" class="std-dl">';
   if (seasonCourseList.length) {
     seasonCourseList.forEach(function(c){
       var playerCount = Object.keys(c.players).length;
@@ -258,27 +274,45 @@ Router.register("standings", function(params) {
       if (c.best18) bestParts.push(c.best18 + ' (' + escHtml(c.best18player) + ')');
       if (c.best9) bestParts.push(c.best9 + ' ' + c.best9mode + ' (' + escHtml(c.best9player) + ')');
       var bestLabel = bestParts.length ? bestParts.join(' · ') : '—';
-      scContent += '<div class="club-row"><span class="club-name">' + escHtml(c.name) + ' <span style="color:var(--muted);font-size:9px">(' + c.rounds + ' rds · ' + playerCount + ' player' + (playerCount !== 1 ? 's' : '') + ')</span></span><span class="club-yd" style="font-size:11px">' + bestLabel + '</span></div>';
+      h += '<div class="std-dl-row"><span class="std-dl-row__k">' + escHtml(c.name) + ' <span style="color:var(--cb-mute);font-family:var(--font-mono);font-size:10px">(' + c.rounds + ' rds · ' + playerCount + ' player' + (playerCount !== 1 ? 's' : '') + ')</span></span><span class="std-dl-row__v">' + bestLabel + '</span></div>';
     });
   } else {
-    scContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No courses played this season</div>';
+    h += '<div class="std-dl-row"><span class="std-dl-row__v" style="max-width:100%;text-align:left">No courses played this season</span></div>';
   }
-  h += '<div class="section"><div class="sec-head" onclick="toggleSection(\'season-courses\')" style="cursor:pointer"><span class="sec-title">Courses this season <span style="font-size:11px;color:var(--muted);font-weight:400">(' + seasonCourseList.length + ')</span></span><span class="sec-link" id="season-courses-toggle" style="display:inline-flex;transition:transform .2s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="transition:transform .2s;color:var(--muted)"><path d="M9 18l6-6-6-6"/></svg></span></div>';
-  h += '<div id="season-courses" style="display:none"><div class="card">' + scContent + '</div></div></div>';
-
-  // Season Recap, Courses & Awards links
-  h += '<div class="section" style="padding:0 16px 16px;display:flex;gap:8px;flex-wrap:wrap">';
-  // M3 fix (iter 16, 2026-05-14, CLAUDE.md Known Bug #6): Courses button on
-  // season standings should land users in the "Our Courses" view (courses
-  // where PARBAUGHS has played rounds), not the unfiltered "All Courses"
-  // catalog. Sets window._courseViewMode='ours' before navigation (same
-  // mechanism the courses page's own Our/All toggle uses).
-  h += '<button class="btn full outline" onclick="window._courseViewMode=\'ours\';Router.go(\'courses\')" style="flex:1;min-width:45%"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14" style="vertical-align:middle"><path d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3V7z"/><path d="M9 4v13M15 7v13"/></svg> Courses</button>';
-  h += '<button class="btn full outline" onclick="Router.go(\'seasonrecap\',{year:' + year + '})" style="flex:1;min-width:45%"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14" style="vertical-align:middle"><path d="M18 20V10M12 20V4M6 20v-6"/></svg> Season Recap</button>';
-  h += '<button class="btn full outline" onclick="Router.go(\'awards\',{year:' + year + '})" style="flex:1;min-width:45%"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14" style="vertical-align:middle"><path d="M6 9H4a2 2 0 01-2-2V5h4M18 9h2a2 2 0 002-2V5h-4M4 5h16v4a6 6 0 01-6 6h-4a6 6 0 01-6-6V5z"/><path d="M12 15v3M8 21h8"/></svg> Awards Night</button>';
   h += '</div>';
-  
-  document.querySelector('[data-page="standings"]').innerHTML = h;
-  setTimeout(initCountAnimations, 50);
-});
 
+  // ── Recap / Courses / Awards links ────────────────────────────────────
+  h += '<div class="std-links">';
+  h += '<button class="btn full outline" onclick="window._courseViewMode=\'ours\';Router.go(\'courses\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14" style="vertical-align:middle"><path d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3V7z"/><path d="M9 4v13M15 7v13"/></svg> Courses</button>';
+  h += '<button class="btn full outline" onclick="Router.go(\'seasonrecap\',{year:' + year + '})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14" style="vertical-align:middle"><path d="M18 20V10M12 20V4M6 20v-6"/></svg> Season Recap</button>';
+  h += '<button class="btn full outline" onclick="Router.go(\'awards\',{year:' + year + '})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14" style="vertical-align:middle"><path d="M6 9H4a2 2 0 01-2-2V5h4M18 9h2a2 2 0 002-2V5h-4M4 5h16v4a6 6 0 01-6 6h-4a6 6 0 01-6-6V5z"/><path d="M12 15v3M8 21h8"/></svg> Awards Night</button>';
+  h += '</div>';
+
+  h += '</div>'; // end .hq-grid__main
+
+  // ── Agate rail (desktop ≥960px only) ──────────────────────────────────
+  var rail = '';
+  if (standings.length >= 2) {
+    var a = standings[0], b = standings[1];
+    var gap = (a.points || 0) - (b.points || 0);
+    var aName = a.name || a.username || "Leader";
+    var bName = b.name || b.username || "Second";
+    var raceHtml = gap <= 0
+      ? 'Dead heat. <strong>' + escHtml(aName) + '</strong> and <strong>' + escHtml(bName) + '</strong> are tied at the top.'
+      : '<strong>' + escHtml(aName) + '</strong> leads <strong>' + escHtml(bName) + '</strong> by <em>' + gap + ' pt' + (gap !== 1 ? 's' : '') + '</em>.';
+    rail += '<div class="hq-rail-module"><div class="hq-rail-module__eyebrow">Closest race</div><p class="std-race">' + raceHtml + '</p></div>';
+  }
+  if (standings.length) {
+    rail += '<div class="hq-rail-module"><div class="hq-rail-module__eyebrow">This season</div>';
+    rail += '<div class="std-glance-row"><span class="std-glance-row__k">Active</span><span class="std-glance-row__v">' + standings.length + '</span></div>';
+    rail += '<div class="std-glance-row"><span class="std-glance-row__k">Rounds</span><span class="std-glance-row__v">' + totalRounds + '</span></div>';
+    rail += '<div class="std-glance-row"><span class="std-glance-row__k">Low round</span><span class="std-glance-row__v">' + (bestScore < 999 ? bestScore : '—') + '</span></div>';
+    rail += '</div>';
+  }
+  rail += '<div class="hq-rail-module"><div class="hq-rail-module__eyebrow">Clubhouse</div><p class="std-pull">"Community over competition. The board\'s just for bragging rights."</p></div>';
+  h += '<aside class="hq-grid__rail-right" aria-label="Standings highlights">' + rail + '</aside>';
+
+  h += '</div>'; // end .hq-grid
+
+  document.querySelector('[data-page="standings"]').innerHTML = h;
+});

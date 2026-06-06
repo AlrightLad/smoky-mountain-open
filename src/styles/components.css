@@ -418,6 +418,77 @@ input.s:disabled,
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   SEASON STANDINGS / LEADERBOARD (3d) — editorial; shares roster (3e) language
+   ═══════════════════════════════════════════════════════════════════════════ */
+.std-deck{font-family:var(--font-ui);font-size:14px;line-height:1.5;color:var(--cb-charcoal);max-width:60ch;margin:14px 0 0}
+.std-accent{color:var(--cb-brass)}
+.std-dateline{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px;font-family:var(--font-mono);font-size:10.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute)}
+.std-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;font-family:var(--font-mono);font-size:9.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border:1px solid var(--cb-chalk-3);color:var(--cb-mute)}
+.std-badge--live{color:var(--cb-moss);border-color:rgba(var(--cb-moss-rgb),0.35);background:rgba(var(--cb-moss-rgb),0.07)}
+.std-badge__dot{width:6px;height:6px;border-radius:50%;background:var(--cb-moss);display:inline-block}
+
+/* Table cells layered on .roster-table */
+.std-rank-col{width:34px}
+.std-rank{font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--cb-mute-2);font-variant-numeric:tabular-nums;width:34px}
+.std-row--leader{background:rgba(var(--cb-brass-rgb),0.05)}
+.std-row--leader .std-rank{color:var(--cb-brass)}
+.std-row--you{background:rgba(var(--cb-brass-rgb),0.05);box-shadow:inset 0 0 0 1px rgba(var(--cb-brass-rgb),0.30)}
+.std-name-txt{max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.std-you-chip{flex-shrink:0;font-family:var(--font-mono);font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--cb-brass);background:rgba(var(--cb-brass-rgb),0.14);padding:2px 6px;border-radius:3px;margin-left:2px}
+.std-avg{font-family:var(--font-mono);font-size:13px;color:var(--cb-charcoal);font-variant-numeric:tabular-nums}
+.std-pts{font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--cb-brass);font-variant-numeric:tabular-nums}
+
+.std-empty{padding:48px 16px;text-align:center}
+.std-empty__title{font-family:var(--font-display);font-style:italic;font-size:18px;color:var(--cb-ink)}
+.std-empty__sub{font-family:var(--font-ui);font-size:13px;color:var(--cb-mute);margin-top:6px}
+
+/* Section motif: brass top-rule heads, shared by Trophy Watch + collapsibles */
+.std-section{margin-top:32px}
+.std-section__head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-top:2px solid var(--cb-brass);padding-top:14px;margin-bottom:14px}
+.std-section__title{font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-ink)}
+.std-section__meta{font-family:var(--font-mono);font-size:10px;letter-spacing:1px;color:var(--cb-mute);text-transform:uppercase}
+
+.std-trophies{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.std-trophy{padding:14px;border:1px solid var(--cb-chalk-3);border-radius:10px;cursor:pointer;transition:border-color var(--duration-fast) var(--ease-default),background var(--duration-fast) var(--ease-default)}
+.std-trophy:hover{border-color:var(--cb-brass);background:var(--cb-chalk-2)}
+.std-trophy__label{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:7px}
+.std-trophy__value{font-family:var(--font-display);font-weight:700;font-size:20px;color:var(--cb-ink);margin-bottom:3px;line-height:1}
+.std-trophy__winner{font-family:var(--font-ui);font-size:12px;color:var(--cb-charcoal);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.std-collapse-head{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:2px solid var(--cb-brass);padding-top:14px;margin-top:32px;cursor:pointer}
+.std-chevron{display:inline-flex;color:var(--cb-mute);transition:transform .2s}
+.std-dl{margin-top:4px}
+.std-dl-row{display:flex;justify-content:space-between;gap:16px;padding:11px 2px;border-bottom:1px solid var(--cb-chalk-3)}
+.std-dl-row:last-child{border-bottom:none}
+.std-dl-row__k{font-family:var(--font-ui);font-size:13px;font-weight:600;color:var(--cb-ink)}
+.std-dl-row__v{font-family:var(--font-ui);font-size:12px;color:var(--cb-mute);text-align:right;max-width:60%}
+
+.std-arch-row{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:13px 2px;border-bottom:1px solid var(--cb-chalk-3)}
+.std-arch-row:last-child{border-bottom:none}
+.std-arch-row__season{font-family:var(--font-display);font-style:italic;font-size:15px;color:var(--cb-ink)}
+.std-arch-row__meta{font-family:var(--font-mono);font-size:10px;color:var(--cb-mute);margin-top:2px;letter-spacing:0.3px}
+.std-arch-row__champ{font-family:var(--font-display);font-weight:700;font-size:14px;color:var(--cb-brass);text-align:right}
+.std-arch-row__pts{font-family:var(--font-mono);font-size:10px;color:var(--cb-mute);text-align:right;margin-top:2px}
+.std-inaugural{font-family:var(--font-mono);font-size:8px;font-weight:700;letter-spacing:1px;color:var(--cb-brass);margin-left:6px;vertical-align:middle}
+
+.std-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:32px}
+.std-links .btn{flex:1;min-width:45%}
+
+/* Rail modules */
+.std-race{font-family:var(--font-display);font-style:italic;font-size:16px;line-height:1.4;color:var(--cb-charcoal);margin:6px 0 0}
+.std-race strong{font-style:normal;font-weight:700;color:var(--cb-ink)}
+.std-race em{font-style:normal;color:var(--cb-brass);font-weight:700}
+.std-glance-row{display:flex;align-items:baseline;justify-content:space-between;padding:7px 0}
+.std-glance-row__k{font-family:var(--font-mono);font-size:11px;letter-spacing:0.5px;color:var(--cb-mute);text-transform:uppercase}
+.std-glance-row__v{font-family:var(--font-display);font-weight:700;font-size:17px;color:var(--cb-ink);font-variant-numeric:tabular-nums}
+.std-pull{font-family:var(--font-display);font-style:italic;font-size:17px;line-height:1.4;color:var(--cb-charcoal);margin:8px 0 0}
+
+@media (max-width:640px){
+  .std-col-avg{display:none}
+  .std-name-txt{max-width:140px}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    PROFILE DETAIL
    ═══════════════════════════════════════════════════════════════════════════ */
 .pd-banner{text-align:center;padding:20px 16px 16px}
