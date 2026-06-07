@@ -10,7 +10,7 @@ const OUT = 'scratch/premium-assess-2026-06-07-after';
 if (!existsSync(OUT)) mkdirSync(OUT, { recursive: true });
 
 const BASE = 'http://localhost:5173/smoky-mountain-open/?emulator=1';
-const ROUTES = ['home', 'rounds', 'standings', 'feed', 'shop'];
+const ROUTES = ['home', 'rounds', 'standings', 'feed', 'shop', 'playnow', 'profile', 'trophyroom', 'calendar', 'courses'];
 
 process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
 process.env.FIREBASE_AUTH_EMULATOR_HOST = '127.0.0.1:9099';
@@ -39,6 +39,7 @@ for (const route of ROUTES) {
         await page.evaluate((r) => Router.go(r), route);
         await page.waitForTimeout(1800);
         await page.screenshot({ path: OUT + '/' + route + '.png', fullPage: true });
+        await page.screenshot({ path: OUT + '/' + route + '-fold.png', clip: { x: 0, y: 0, width: 390, height: 920 } });
         console.log('  ok ' + route);
     } catch (e) {
         console.log('  FAIL ' + route + ': ' + e.message.slice(0, 80));
