@@ -19,14 +19,14 @@ I fetched all three live surfaces today (2026-06-07):
 | Surface | URL | Live version |
 |---|---|---|
 | **PRODUCTION** (GitHub Pages — the canonical app) | https://alrightlad.github.io/smoky-mountain-open/ | **v8.23.1** ← STALE |
-| Staging hosting (Firebase) | https://parbaughs-staging.web.app | **v8.23.92** |
-| Staging branch (GitHub) | origin/staging | **v8.23.92** |
+| Staging hosting (Firebase) | https://parbaughs-staging.web.app | **v8.23.93** |
+| Staging branch (GitHub) | origin/staging | **v8.23.93** |
 
-**Production is 91 ships behind.** Everything from the design marathon — the
+**Production is 92 ships behind.** Everything from the design marathon — the
 side-stripe removal, the depth/figure-ground foundation, the premium home
 front-door redesign, every W1-W4 page redesign, the page-transition motion, the
-honest icons — landed on **staging only**. Production has served **none** of it
-since v8.23.1.
+honest icons, and now the brass front-door CTA + login entrance — landed on
+**staging only**. Production has served **none** of it since v8.23.1.
 
 So if you have been judging the UI from the production URL, or from the app
 icon on your phone's home screen (an installed PWA caches hard and keeps serving
@@ -39,7 +39,7 @@ Open this on your phone or desktop:
 
 > **https://parbaughs-staging.web.app**
 
-That is v8.23.92, live, with all 91 ships. Nothing to approve, nothing for me to
+That is v8.23.93, live, with all 92 ships. Nothing to approve, nothing for me to
 run. If it looks dramatically better than what you've been seeing, the problem
 was staleness, not the design.
 
@@ -67,37 +67,41 @@ $env:CLAUDE_PARBAUGHS_FOUNDER_PUSH='1'; git fetch origin; git push origin origin
 ```
 
 GitHub Pages auto-deploys on push to `main` (`.github/workflows/deploy.yml`), so
-production will rebuild to v8.23.92 within a few minutes.
+production will rebuild to v8.23.93 within a few minutes.
 
 **Path B — you authorize, I execute.** Set the env var persistently once
 (`[System.Environment]::SetEnvironmentVariable('CLAUDE_PARBAUGHS_FOUNDER_PUSH','1','User')`,
 then restart my shell), and reply "do the prod cutover." I run the push, verify
-production serves v8.23.92, write the DONE marker, and report.
+production serves v8.23.93, write the DONE marker, and report.
 
 ## The cutover is SAFE — re-verified today, no work is lost
 
-Live divergence right now: **origin/staging is 831 ahead of origin/main; origin/main
-is 88 ahead of staging.** I triaged the full 88-commit main-only range. It touches
-**only these 5 files**, all machine-regenerated:
+Live divergence right now (re-measured after today's staging push): **origin/staging
+is 841 ahead of origin/main; origin/main is 0 ahead of staging.** That second number
+is the important one — it is now **zero**. origin/staging is a strict superset of
+origin/main: there is **no** commit on production's branch that staging is missing.
+Earlier today main carried 88 cron-only commits staging lacked; pushing main to
+staging folded those in, so nothing unique remains on the production branch.
 
-- `.claude/state/cycle-history.json` (cron bookkeeping)
-- `.claude/state/dashboard-health/post-commit-hook.log` (cron log)
-- `.claude/state/proactive-proposals/2026-06-01.md` (cron output)
-- `docs/agents/SESSION_JOURNAL.md` (cron journal)
-- `docs/reports/app-health.html` (regenerated dashboard)
-
-**Zero** changes to `src/`, `functions/`, `public/`, or `firestore.rules`. There
-is no member-facing production work the cutover would overwrite — the 88 are
-cron/dashboard noise the automation regenerates on `main` after the push. That is
-why this is a `--force-with-lease` replication, not a fast-forward.
+**Zero** main-only work means **zero** risk of overwrite — there is no
+member-facing (or even cron) production work the cutover could discard, because
+production's branch has nothing staging doesn't already contain. The push is still
+issued as `--force-with-lease` (the two branches diverged historically), but it is
+effectively a clean replication, not a destructive overwrite.
 
 ## Evidence the gate requires — GREEN
 
-Staging is byte-verified live at v8.23.92 (sw.js `CACHE_NAME = parbaughs-v8.23.92`
-on both the Firebase runtime and the GitHub branch). The page-transition ship
-(v8.23.92) passed full Playwright E2E: **190 passed / 0 failed / 0 flaky** across
-all three viewports (chromium + iphone-14 + pixel-7), log read in full per your
-"even 1 flaky violates the gate" rule. Detail under `.claude/state/e2e-evidence/`.
+Staging is byte-verified live at v8.23.93 (Firebase runtime serves
+`APP_VERSION = 8.23.93` and sw.js `CACHE_NAME = parbaughs-v8.23.93`; the GitHub
+branch tip is `87e9407f`, both checked live today). The front-door UI-elevation
+ship (v8.23.93 — brass CTA + login entrance) passed full Playwright E2E:
+**190 passed / 0 failed / 0 flaky / 23 skipped** across all three viewports
+(chromium + iphone-14 webkit + pixel-7 mobile-chromium), log read in full per your
+"even 1 flaky violates the gate" rule. Full log committed at
+`.claude/state/ui-upgrade-2026-06-07/e2e-full.log` (commit `6b84ce7d`). The one
+prior flaky — a `net::ERR_FAILED` from Sentry's fire-and-forget beacon outliving
+the test page — was root-caused and fixed (commit `cb18ba0a`: Sentry no longer
+initializes in dev/test/loopback), and the re-run is the clean 0-flaky result above.
 
 ## Mark complete
 
