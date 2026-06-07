@@ -1,4 +1,4 @@
-=== post-commit hook fired 2026-06-07T13:20:56Z HEAD=02b0e141 ===
+=== post-commit hook fired 2026-06-07T13:30:06Z HEAD=c162f671 ===
 [scaffold-from-templates] done: scaffolded=0 skipped=15
 
 --- scripts/scan-shipped-proposals.py ---
@@ -14,48 +14,48 @@ Traceback (most recent call last):
   File "C:\Users\Zach\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 23, in decode
     return codecs.charmap_decode(input,self.errors,decoding_table)[0]
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 253124: character maps to <undefined>
+UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 254213: character maps to <undefined>
 [scan-shipped] approved=1 candidate-commits-90d=0
 [scan-shipped] done: moved=0 skipped_already_shipped=0 warnings=0
 
 --- scripts/aggregate-telemetry.py ---
 [aggregate] wrote .claude\state\telemetry\aggregates\current-snapshot.json (write-content-changed)
 [aggregate] meter_status=wired-real
-[aggregate] events=26620 handoffs=1 bubbles=7 proposals_pending=0
+[aggregate] events=26630 handoffs=1 bubbles=7 proposals_pending=0
 
 --- scripts/ingest-session-transcripts.py ---
-[ingest-session-transcripts] scanned a3e3471a-7db9-4c9d-a1f1-37284a43520d.jsonl: +75 new entries (offset 541274810\u2192543660351)
-[ingest-session-transcripts] scanned 301 JSONL file(s), found 75 new assistant turns
-[ingest-session-transcripts] wrote session-transcript-summary.json (359 buckets, 14534450719 total tokens, 307 sessions) [write-content-changed]
+[ingest-session-transcripts] scanned a3e3471a-7db9-4c9d-a1f1-37284a43520d.jsonl: +66 new entries (offset 543660351\u2192545682418)
+[ingest-session-transcripts] scanned 301 JSONL file(s), found 66 new assistant turns
+[ingest-session-transcripts] wrote session-transcript-summary.json (359 buckets, 14541575823 total tokens, 307 sessions) [write-content-changed]
 
 --- scripts/aggregate-token-usage.py ---
-[aggregate-token] real_events=360 estimated_events=15309 manual_entries=0
-[aggregate-token] all-time: real=14534552719 estimated=19014010 manual=0
+[aggregate-token] real_events=360 estimated_events=15313 manual_entries=0
+[aggregate-token] all-time: real=14541677823 estimated=19014010 manual=0
 [aggregate-token] snapshot write=True (write-content-changed) -> .claude\state\telemetry\aggregates\token-usage-snapshot.json
 [aggregate-token] cursor   write=True (write-content-changed) -> .claude\state\telemetry\aggregates\.token-usage-cursor.json
 
 --- scripts/aggregate-test-health.py ---
-[aggregate-test-health] OK status=green timestamp=2026-06-07T13:21:01Z write=False (skip-idempotent-grace-content-unchanged-793724s)
+[aggregate-test-health] OK status=green timestamp=2026-06-07T13:30:11Z write=False (skip-idempotent-grace-content-unchanged-794274s)
 
 --- scripts/aggregate-security-health.py ---
-[aggregate-security-health] OK status=green cred_leaks=0 vuln_deps=0 write=False (skip-idempotent-grace-content-unchanged-1355589s)
+[aggregate-security-health] OK status=green cred_leaks=0 vuln_deps=0 write=False (skip-idempotent-grace-content-unchanged-1356139s)
 
 --- scripts/aggregate-approvals-pipeline.py ---
-[aggregate-approvals-pipeline] OK status=yellow summary=watcher cycling · last 2 runs skipped on dirty tree · 2 in inbox write=True (write-content-changed)
+[aggregate-approvals-pipeline] OK status=yellow summary=watcher cycling · last 2 runs skipped on dirty tree · 2 in inbox write=False (skip-idempotent-fresh-178s)
 
 --- scripts/aggregate-architecture-review.py ---
-[aggregate-architecture-review] OK status=yellow findings=2 pending_recs=0 write=False (skip-idempotent-grace-content-unchanged-47928s)
+[aggregate-architecture-review] OK status=yellow findings=2 pending_recs=0 write=False (skip-idempotent-grace-content-unchanged-48478s)
 
 --- scripts/aggregate-fiq-status.py ---
-[aggregate-fiq-status] OK status=green declared=26 deployed=26 write=False (skip-idempotent-grace-content-unchanged-252231s)
+[aggregate-fiq-status] OK status=green declared=26 deployed=26 write=False (skip-idempotent-grace-content-unchanged-252781s)
 
 --- scripts/aggregate-self-tests.py ---
 [aggregate-self-tests] starting D40 parity checks across 5 aggregators
-  [aggregate-test-health] PASS status=green age=793729s [content-stable 793729s, idempotent skip]
-  [aggregate-security-health] PASS status=green age=1355591s [content-stable 1355591s, idempotent skip]
-  [aggregate-approvals-pipeline] PASS status=yellow age=2s
-  [aggregate-architecture-review] PASS status=yellow age=47930s
-  [aggregate-fiq-status] PASS status=green age=252231s [content-stable 252231s, idempotent skip]
+  [aggregate-test-health] PASS status=green age=794280s [content-stable 794280s, idempotent skip]
+  [aggregate-security-health] PASS status=green age=1356142s [content-stable 1356142s, idempotent skip]
+  [aggregate-approvals-pipeline] PASS status=yellow age=181s
+  [aggregate-architecture-review] PASS status=yellow age=48481s
+  [aggregate-fiq-status] PASS status=green age=252782s [content-stable 252782s, idempotent skip]
 [aggregate-self-tests] OK all 5 aggregators pass parity
 
 --- scripts/inject-health-banners.py ---
@@ -89,7 +89,7 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 253124: c
 --- scripts/regen-dashboard.py ---
 [regen-dashboard] OK   dashboard.html
 [regen-dashboard] meter_status=wired-real
-[regen-dashboard] handoffs=10 ships=10 proposals_pending=0 bubbles=7 events=26620
+[regen-dashboard] handoffs=10 ships=10 proposals_pending=0 bubbles=7 events=26630
 
 --- scripts/regen-main-flows.py ---
 [regen-main-flows] WARN: 6 orphan components in grid (referenced by no flow's path):
@@ -103,7 +103,7 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 253124: c
 [regen-main-flows] 6 columns, 47 components, 62 flows; orphans=6
 
 --- scripts/regen-activity.py ---
-[regen-activity] OK   activity.html — total=500 (handoffs=1 telemetry=266 commits=718)
+[regen-activity] OK   activity.html — total=500 (handoffs=1 telemetry=267 commits=720)
 
 --- scripts/dry-run-regen-ops-views.py ---
 [regen] 7 bubbles (activity.html owned by regen-activity.py; proposals.html owned by regen-proposals.py)
@@ -111,7 +111,7 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 253124: c
 
 --- scripts/regen-token-usage.py ---
 [regen-token-usage] OK   token-usage.html
-[regen-token-usage] all-time: real=14534552719 estimated=19014010 manual=0
+[regen-token-usage] all-time: real=14541677823 estimated=19014010 manual=0
 [regen-token-usage] pie_views slices: agent=3 work=2 session_top10=10
 
 --- scripts/consolidate-lighthouse.py ---
@@ -139,7 +139,7 @@ Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
 
 --- scripts/regen-index.py ---
 [regen-index] OK   index.html
-[regen-index] ships=0 proposals_pending=0 bubbles=1 halt=none git=02b0e141
+[regen-index] ships=0 proposals_pending=0 bubbles=1 halt=none git=c162f671
 
 --- scripts/dashboard-freshness-sentinel.py ---
 [dashboard-freshness] status=green ok=11 repaired=1 unrepairable=0 mismatches=1 duration=2.3s
@@ -159,9 +159,9 @@ Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
   PASS  token-usage.html             3 token rows OR cards (>=1)
 
 visual-gate: ALL 12 PAGES RENDER CONTENT
-[write-regen-heartbeat] OK ts=2026-06-07T13:21:33Z source=post-commit-hook status=PASS
+[write-regen-heartbeat] OK ts=2026-06-07T13:30:44Z source=post-commit-hook status=PASS
 
 --- P9.5 self-test ---
 [ingest-session-transcripts] scanned 301 JSONL file(s), found 0 new assistant turns
-[ingest-session-transcripts] skipped session-transcript-summary.json (359 buckets, 14534450719 total tokens, 307 sessions) [skip-idempotent-fresh-80s]
-[ingest-session-transcripts] SELF-TEST OK: 301 JSONLs \u2192 14534450719 tokens across 359 buckets
+[ingest-session-transcripts] skipped session-transcript-summary.json (359 buckets, 14541575823 total tokens, 307 sessions) [skip-idempotent-fresh-81s]
+[ingest-session-transcripts] SELF-TEST OK: 301 JSONLs \u2192 14541575823 tokens across 359 buckets
