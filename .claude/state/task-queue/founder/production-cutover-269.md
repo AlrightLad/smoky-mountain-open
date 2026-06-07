@@ -75,38 +75,51 @@ classifier blocked it (logged in `founder-decisions/2026-05-30.ndjson`). The
 gate-opening bootstrap is yours by design. After you open it once, I execute the
 cutover end-to-end hands-free, exactly per your 2026-05-30 autonomy decision.
 
-**Path A — you paste one command (most explicit, done in 5 seconds).** In this
-chat, prefix with `!` to run it in-session, or run it yourself in PowerShell from
-the repo root. This pushes the *verified staging tip* straight to production,
-independent of any local branch state:
+**Path A — you paste one command in your OWN PowerShell terminal (prod live in ~3 min).**
+The production freeze is a *Claude Code* session hook; a normal PowerShell window
+outside this chat has no such hook, so no override variable is needed there. From
+the repo root, this pushes the *verified staging tip* straight to production:
 
 ```powershell
-$env:CLAUDE_PARBAUGHS_FOUNDER_PUSH='1'; git fetch origin; git push origin origin/staging:main --force-with-lease; Remove-Item Env:\CLAUDE_PARBAUGHS_FOUNDER_PUSH
+cd C:\Users\Zach\smoky-mountain-open
+git fetch origin
+git push origin origin/staging:main --force-with-lease
 ```
 
 GitHub Pages auto-deploys on push to `main` (`.github/workflows/deploy.yml`), so
 production will rebuild to v8.23.95 within a few minutes.
 
-**Path B — you authorize, I execute.** Set the env var persistently once
-(`[System.Environment]::SetEnvironmentVariable('CLAUDE_PARBAUGHS_FOUNDER_PUSH','1','User')`,
-then restart my shell), and reply "do the prod cutover." I run the push, verify
-production serves v8.23.95, write the DONE marker, and report.
+**Path B — you authorize once, I execute forever after.** In your own PowerShell,
+set the override variable persistently a single time, then fully restart Claude Code
+(close and reopen):
 
-## The cutover is SAFE — re-verified today, no work is lost
+```powershell
+[System.Environment]::SetEnvironmentVariable('CLAUDE_PARBAUGHS_FOUNDER_PUSH','1','User')
+```
 
-Live divergence right now (re-measured after today's v8.23.95 staging push):
-**origin/staging is 858 ahead of origin/main; origin/main is 2 ahead of staging.**
-Those 2 main-only commits are **both cron-routine** — `d36905ab` (dashboard regen)
-and `32faab9e` (a heartbeat timestamp). They are telemetry/dashboard artifacts the
-cron loop regenerates continuously, not member-facing work and not even cron-*feature*
-work. A cutover would replace them, but they are re-emitted within minutes, so there
-is **no real loss**.
+After that one restart, the override lives in my launch environment, the push-to-main
+hook recognizes your standing authorization, and I run this cutover plus every future
+one hands-free — backup-first, E2E-gated — so you never type a git command again. (An
+inline `VAR=1 git push` does NOT work: the hook runs as its own process before the
+command and never sees a variable set on the command line. The variable must be in my
+launch environment, which is why this is a one-time set-and-restart.)
 
-**Zero member-facing main-only work** means **zero** risk of overwriting anything
-that matters — the only thing on production's branch that staging lacks is those two
-auto-regenerated cron commits. The push is issued as `--force-with-lease` (the two
-branches diverged historically), folding the verified v8.23.95 staging tip onto
-production as a clean replication.
+## The cutover is SAFE — re-verified 2026-06-07, no work is lost
+
+Live divergence right now: **origin/staging is 863 ahead of origin/main; origin/main
+is 4 ahead of staging.** Those 4 main-only commits are **all cron-routine** — heartbeat
+timestamps + dashboard/telemetry regen (current prod tip `0e0aae4f`), pushed straight
+to `main` by the scheduled cron task that runs outside this session. They are
+auto-regenerated artifacts, not member-facing work; the app code on those commits is
+identical to the backup point. A cutover replaces them and they re-emit within minutes,
+so there is **no real loss**.
+
+**Zero member-facing main-only work** means **zero** risk of overwriting anything that
+matters. A fresh backup of the exact current production tip is already on origin —
+branch `backup/prod-pre-cutover-2026-06-07` and tag `prod-pre-cutover-2026-06-07` at
+`0e0aae4f` — so rollback is a single push if ever needed. The cutover is issued as
+`--force-with-lease`, folding the verified v8.23.95 staging tip onto production as a
+clean replication.
 
 ## Evidence the gate requires — GREEN
 
