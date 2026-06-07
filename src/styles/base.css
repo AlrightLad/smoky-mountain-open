@@ -107,7 +107,7 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --surface-secondary: var(--cb-chalk-2);
   --surface-tertiary: var(--cb-chalk-3);
   --surface-inverse: var(--cb-green);
-  --surface-raised: var(--cb-chalk);
+  --surface-raised: var(--cb-paper);
 
   /* Clubhouse · semantic text tokens (light mode default) */
   --text-primary: var(--cb-ink);
@@ -324,8 +324,8 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --medal-gold: var(--cb-brass);
   --medal-silver: var(--cb-mute-2);
   --medal-bronze: var(--cb-copper);
-  --shadow-sm: 0 1px 3px rgba(28,24,14,0.07), 0 5px 14px rgba(28,24,14,0.06);
-  --shadow-md: 0 2px 6px rgba(28,24,14,0.08), 0 14px 32px rgba(28,24,14,0.11);
+  --shadow-sm: 0 1px 2px rgba(28,24,14,0.10), 0 4px 10px rgba(28,24,14,0.08), 0 12px 28px rgba(28,24,14,0.05);
+  --shadow-md: 0 2px 6px rgba(28,24,14,0.12), 0 8px 20px rgba(28,24,14,0.10), 0 24px 48px rgba(28,24,14,0.07);
   --shadow-lg: var(--shadow-soft);
   --shadow-glow: 0 0 12px rgba(180,137,62,0.15);
   --radius-full: var(--radius-pill);

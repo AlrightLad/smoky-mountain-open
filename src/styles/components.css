@@ -97,8 +97,8 @@
    CARDS
    ═══════════════════════════════════════════════════════════════════════════ */
 .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:0 16px 8px;transition:transform var(--duration-fast) var(--ease-default),background var(--duration-fast) var(--ease-default),border-color var(--duration-fast) var(--ease-default),box-shadow var(--duration-fast) var(--ease-default)}
-.card:hover{box-shadow:var(--shadow-md);background:var(--bg3);border-color:rgba(var(--gold-rgb),.12)}
-.card:active{transform:scale(.985);background:var(--bg3)}
+.card:hover{box-shadow:var(--shadow-md);background:var(--cb-paper);border-color:rgba(var(--gold-rgb),.18);transform:translateY(-1px)}
+.card:active{transform:scale(.985);background:var(--cb-chalk)}
 .card-body{padding:14px 16px}
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -444,6 +444,12 @@ input.s:disabled,
 
 /* Section motif: brass top-rule heads, shared by Trophy Watch + collapsibles */
 .std-section{margin-top:32px}
+/* v8.23.89 — uniform 16px page gutter: move the gutter to the container so
+   editorial sections + archive rows align with the masthead instead of jamming
+   the screen edge. Masthead/tabs self-padding zeroed here to avoid doubling. */
+[data-page="standings"] .hq-grid__main{padding-left:16px;padding-right:16px}
+[data-page="standings"] .roster-masthead{padding-left:0;padding-right:0}
+[data-page="standings"] .roster-scope{padding-left:0;padding-right:0}
 .std-section__head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-top:2px solid var(--cb-brass);padding-top:14px;margin-bottom:14px}
 .std-section__title{font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-ink)}
 .std-section__meta{font-family:var(--font-mono);font-size:10px;letter-spacing:1px;color:var(--cb-mute);text-transform:uppercase}
@@ -464,10 +470,12 @@ input.s:disabled,
 .std-dl-row__v{font-family:var(--font-ui);font-size:12px;color:var(--cb-mute);text-align:right;max-width:60%}
 
 .std-arch-row{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:13px 2px;border-bottom:1px solid var(--cb-chalk-3)}
+.std-arch-row > div{min-width:0}
+.std-arch-row > div:last-child{flex:0 1 auto;max-width:50%}
 .std-arch-row:last-child{border-bottom:none}
 .std-arch-row__season{font-family:var(--font-display);font-style:italic;font-size:15px;color:var(--cb-ink)}
 .std-arch-row__meta{font-family:var(--font-mono);font-size:10px;color:var(--cb-mute);margin-top:2px;letter-spacing:0.3px}
-.std-arch-row__champ{font-family:var(--font-display);font-weight:700;font-size:14px;color:var(--cb-brass);text-align:right}
+.std-arch-row__champ{font-family:var(--font-display);font-weight:700;font-size:14px;color:var(--cb-brass);text-align:right;overflow-wrap:anywhere}
 .std-arch-row__pts{font-family:var(--font-mono);font-size:10px;color:var(--cb-mute);text-align:right;margin-top:2px}
 .std-inaugural{font-family:var(--font-mono);font-size:8px;font-weight:700;letter-spacing:1px;color:var(--cb-brass);margin-left:6px;vertical-align:middle}
 
