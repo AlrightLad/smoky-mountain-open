@@ -298,7 +298,7 @@ function _renderEmailVerifyBanner() {
 function _renderGreeting(greetingWord, firstName) {
   var h = '<div style="padding:28px 22px 0">';
   h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:10px">' + _formatDateEyebrow() + '</div>';
-  h += '<div style="font-family:var(--font-display);font-size:32px;font-weight:700;color:var(--cb-ink);line-height:1.15;letter-spacing:-0.5px">';
+  h += '<div style="font-family:var(--font-display);font-size:33px;font-weight:700;color:var(--cb-ink);line-height:1.12;letter-spacing:-0.5px;font-variation-settings:\'opsz\' 40">';
   h += escHtml(greetingWord) + ',<br>';
   h += '<span style="font-style:italic;font-weight:600">' + escHtml(firstName) + '.</span>';
   h += '</div>';
@@ -402,11 +402,11 @@ function _renderUnfinishedTripBanner(trips, uid, claimedFrom) {
 
 function _renderReadyCTA() {
   var h = '<div style="padding:18px 22px 0">';
-  h += '<div class="tappable" onclick="Router.go(\'playnow\')" style="position:relative;overflow:hidden;padding:24px;background:var(--cb-green);border-radius:var(--r-4);box-shadow:var(--shadow-md);color:var(--cb-chalk);cursor:pointer">';
-  h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:12px">NO ROUND TODAY</div>';
-  h += '<div style="font-family:var(--font-display);font-size:26px;font-weight:700;color:var(--cb-chalk);line-height:1.15;letter-spacing:-0.3px;margin-bottom:8px">Ready when you are.</div>';
-  h += '<div style="font-family:var(--font-ui);font-size:13px;color:rgba(var(--bg-rgb),0.66);line-height:1.55;max-width:380px;margin-bottom:18px">Start a round and the scorecard, skins pot and your caddie will wake up.</div>';
-  h += '<div style="display:inline-flex;align-items:center;gap:var(--sp-2);padding:12px 20px;background:var(--cb-chalk);color:var(--cb-green);border-radius:var(--r-2);font-family:var(--font-display);font-size:14px;font-weight:700;letter-spacing:0.3px">';
+  h += '<div class="home-hero tappable" onclick="Router.go(\'playnow\')">';
+  h += '<div class="home-hero__eyebrow">NO ROUND TODAY</div>';
+  h += '<div class="home-hero__title">Ready when you are.</div>';
+  h += '<div class="home-hero__sub">Start a round and your scorecard, skins pot and caddie all wake up.</div>';
+  h += '<div class="home-hero__cta">';
   h += '<svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 14V2l8 3-8 3"/></svg>';
   h += 'Start a round';
   h += '</div>';
@@ -510,31 +510,39 @@ function _renderStatsStrip(totalRounds, handicap, bestRound, bestRoundId, isNew)
     } catch (e) { /* defensive — fall back to empty captions */ }
   }
 
-  var h = '<div style="padding:22px;display:grid;grid-template-columns:repeat(3, 1fr);gap:10px">';
+  // v8.23.90 — the mobile stat strip now speaks the same "by-the-numbers"
+  // brass-double-rule editorial language as round detail (.rd-stats) and the
+  // league hero (.league-hero__strip): full-bleed band, hairline dividers,
+  // opsz-60 tabular Fraunces numerals. Preserves data-stat/data-count so the
+  // flow-04 layout regression test + readRoundCount helper keep matching.
+  var h = '<div class="home-statline">';
+  h += '<div class="home-statline__eyebrow">By the Numbers</div>';
+  h += '<div class="home-statline__band">';
 
   // ROUNDS
   var roundsClickable = !isNew && totalRounds > 0;
-  h += '<div' + (roundsClickable ? ' class="tappable" onclick="Router.go(\'roundhistory\')"' : '') + ' style="padding:var(--sp-3) 10px;background:var(--cb-chalk);border-radius:12px;box-shadow:var(--shadow-sm);' + (roundsClickable ? 'cursor:pointer' : '') + '">';
-  h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:6px">ROUNDS</div>';
-  h += '<div data-stat="round-count" data-count="' + roundsStr + '" style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cb-ink);line-height:1">' + roundsStr + '</div>';
-  if (roundsCaption) h += '<div style="font-family:var(--font-mono);font-size:8.5px;font-weight:600;letter-spacing:0.8px;color:' + roundsColor + ';text-transform:uppercase;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + roundsCaption + '</div>';
+  h += '<div class="home-stat' + (roundsClickable ? ' home-stat--tap" onclick="Router.go(\'roundhistory\')' : '') + '">';
+  h += '<div class="home-stat__label">ROUNDS</div>';
+  h += '<div class="home-stat__num" data-stat="round-count" data-count="' + roundsStr + '">' + roundsStr + '</div>';
+  if (roundsCaption) h += '<div class="home-stat__cap" style="color:' + roundsColor + '">' + roundsCaption + '</div>';
   h += '</div>';
 
   // HCP
-  h += '<div style="padding:var(--sp-3) 10px;background:var(--cb-chalk);border-radius:12px;box-shadow:var(--shadow-sm)">';
-  h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:6px">HCP</div>';
-  h += '<div data-stat="handicap" style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cb-ink);line-height:1">' + hcapStr + '</div>';
-  if (hcapCaption) h += '<div style="font-family:var(--font-mono);font-size:8.5px;font-weight:600;letter-spacing:0.8px;color:' + hcapColor + ';text-transform:uppercase;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + hcapCaption + '</div>';
+  h += '<div class="home-stat">';
+  h += '<div class="home-stat__label">HCP</div>';
+  h += '<div class="home-stat__num" data-stat="handicap">' + hcapStr + '</div>';
+  if (hcapCaption) h += '<div class="home-stat__cap" style="color:' + hcapColor + '">' + hcapCaption + '</div>';
   h += '</div>';
 
   // BEST
   var bestClickable = !!bestRoundId;
-  h += '<div' + (bestClickable ? ' class="tappable" onclick="Router.go(\'rounds\',{roundId:\'' + escHtml(bestRoundId) + '\'})"' : '') + ' style="padding:var(--sp-3) 10px;background:var(--cb-chalk);border-radius:12px;box-shadow:var(--shadow-sm);' + (bestClickable ? 'cursor:pointer' : '') + '">';
-  h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:6px">BEST</div>';
-  h += '<div data-stat="best-round" style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cb-ink);line-height:1">' + bestStr + '</div>';
-  if (bestCaption) h += '<div style="font-family:var(--font-mono);font-size:8.5px;font-weight:600;letter-spacing:0.8px;color:' + bestColor + ';text-transform:uppercase;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + bestCaption + '</div>';
+  h += '<div class="home-stat' + (bestClickable ? ' home-stat--tap" onclick="Router.go(\'rounds\',{roundId:\'' + escHtml(bestRoundId) + '\'})' : '') + '">';
+  h += '<div class="home-stat__label">BEST</div>';
+  h += '<div class="home-stat__num" data-stat="best-round">' + bestStr + '</div>';
+  if (bestCaption) h += '<div class="home-stat__cap" style="color:' + bestColor + '">' + bestCaption + '</div>';
   h += '</div>';
 
+  h += '</div>';
   h += '</div>';
   return h;
 }
