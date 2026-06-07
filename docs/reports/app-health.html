@@ -822,9 +822,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-06T17:56:46.950143Z",
+  "generated_at": "2026-06-07T04:07:03.854787Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 88.3,
+  "overall_score": 88.8,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -838,9 +838,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 93.3,
+    "pre_deduction_score": 93.8,
     "deduction": 5,
-    "post_deduction_score": 88.3
+    "post_deduction_score": 88.8
   },
   "dimensions": {
     "A1_roadmap": {
@@ -979,17 +979,11 @@
       "weak_points": []
     },
     "A12_operational": {
-      "score": 90,
+      "score": 100,
       "status": "green",
-      "label": "pipeline=green · 4 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=green · 0 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
-      "weak_points": [
-        {
-          "what": "4 of last 10 cron watcher runs hit skip-dirty",
-          "where": "scripts/cron/logs/*-downloads-watcher.log",
-          "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
-        }
-      ],
+      "weak_points": [],
       "details": {
         "watcher_last_status": "PASS",
         "watcher_exit_reason": "no-new-files"
@@ -1000,10 +994,10 @@
   "founder_attention": [],
   "agent_attention": [],
   "audit_trigger": {
-    "sha": "f0dd50d4",
-    "subject": "chore(stop-decisions): log 2026-06-06 checkpoint stop (condition F + A)",
-    "committed_at": "2026-06-06T13:56:27-04:00",
-    "trigger": "substrate-commit",
+    "sha": "6b3513c0",
+    "subject": "cron(routine): auto-commit telemetry output before watcher preflight (2026-06-06T18:00:48.9796455Z)",
+    "committed_at": "2026-06-06T14:00:49-04:00",
+    "trigger": "cron",
     "is_app_commit": false,
     "app_files_touched": [],
     "total_files_touched": 1
