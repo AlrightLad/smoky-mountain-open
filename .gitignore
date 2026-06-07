@@ -204,3 +204,9 @@ docs/reports/sessions.html
 /staging-boot-smoke-*.png
 /critique-*.png
 .claude/state/critique-resume-*/
+
+# Transient design-verification scratch dir + loose root capture PNGs
+# (regenerable via scripts/visual-audit/*.mjs; stay out of the PUBLIC repo).
+/scratch/
+/depth-swatch*.png
+/staging-signin-*.png

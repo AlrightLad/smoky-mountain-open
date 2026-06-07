@@ -52,6 +52,11 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --cb-chalk: #F4EFE4;
   --cb-chalk-2: #EBE5D6;
   --cb-chalk-3: #DCD4C0;
+  /* v8.23.86 — figure-ground depth: a page ground deeper than chalk so cards
+     float, and a paper tone brighter than chalk for the primary hero. Defined
+     per-theme below so every palette gets accurate elevation. */
+  --cb-canvas: #E7E0CD;         /* page ground — sits just below chalk-2 so chalk cards lift */
+  --cb-paper: #FCFAF5;          /* brightest surface — primary hero / featured card */
 
   /* Clubhouse · ink palette (v8.14.0 — mute family expanded to 3 tiers) */
   --cb-ink: #14130F;
@@ -264,7 +269,7 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
      in src/pages/ and src/core/. Every existing token name preserved but
      its VALUE is remapped to a Clubhouse equivalent. No legacy aesthetic.
      ═════════════════════════════════════════════════════════════════════════ */
-  --bg: var(--cb-chalk);
+  --bg: var(--cb-canvas);
   --bg2: var(--cb-chalk-2);
   --bg3: var(--cb-chalk-3);
   --cream: var(--cb-ink);
@@ -319,8 +324,8 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --medal-gold: var(--cb-brass);
   --medal-silver: var(--cb-mute-2);
   --medal-bronze: var(--cb-copper);
-  --shadow-sm: 0 1px 2px rgba(20,19,15,0.06);
-  --shadow-md: 0 2px 8px rgba(20,19,15,0.08);
+  --shadow-sm: 0 1px 3px rgba(28,24,14,0.07), 0 5px 14px rgba(28,24,14,0.06);
+  --shadow-md: 0 2px 6px rgba(28,24,14,0.08), 0 14px 32px rgba(28,24,14,0.11);
   --shadow-lg: var(--shadow-soft);
   --shadow-glow: 0 0 12px rgba(180,137,62,0.15);
   --radius-full: var(--radius-pill);
@@ -370,6 +375,8 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --cb-chalk: #F4EFE4;
   --cb-chalk-2: #EBE5D6;
   --cb-chalk-3: #DCD4C0;
+  --cb-canvas: #E7E0CD;
+  --cb-paper: #FCFAF5;
   --cb-green: #2F4A3A;
   --cb-green-2: #3D5C48;
   --cb-ink: #14130F;
@@ -386,6 +393,8 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --cb-chalk: #ECE5D2;
   --cb-chalk-2: #DFD5BE;
   --cb-chalk-3: #CFC3A6;
+  --cb-canvas: #DACFB6;
+  --cb-paper: #F6F0E0;
   --cb-green: #1A2A3E;
   --cb-green-2: #0F1D2D;
   --cb-ink: #0F1620;
@@ -402,6 +411,8 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --cb-chalk: #F8F3E6;
   --cb-chalk-2: #EDE4CE;
   --cb-chalk-3: #DCCFB4;
+  --cb-canvas: #E8DEC5;
+  --cb-paper: #FDFAF1;
   --cb-green: #2B3A2E;
   --cb-green-2: #1D2A20;
   --cb-ink: #2B3A2E;
@@ -418,6 +429,8 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --cb-chalk: #F1E8D6;
   --cb-chalk-2: #E6DAC1;
   --cb-chalk-3: #D3C4A4;
+  --cb-canvas: #E0D3B7;
+  --cb-paper: #FAF4E6;
   --cb-green: #4A1D24;
   --cb-green-2: #341016;
   --cb-ink: #1E1412;
@@ -434,6 +447,8 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --cb-chalk: #F0E4CC;
   --cb-chalk-2: #E3D3B2;
   --cb-chalk-3: #C9B689;
+  --cb-canvas: #DCCAA4;
+  --cb-paper: #FAF1DD;
   --cb-green: #3D2817;
   --cb-green-2: #281A0E;
   --cb-ink: #2A1A0E;
@@ -450,6 +465,8 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --cb-chalk: #F6F1E3;
   --cb-chalk-2: #E9E0C8;
   --cb-chalk-3: #CDC3A8;
+  --cb-canvas: #E3D8BD;
+  --cb-paper: #FCF9EF;
   --cb-green: #0C2A22;
   --cb-green-2: #071C17;
   --cb-ink: #0C1612;

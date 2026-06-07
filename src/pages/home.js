@@ -226,7 +226,7 @@ function _renderMobileLeaguePulse() {
   h += '<div style="display:flex;flex-direction:column;gap:8px">';
   items.slice(0, 3).forEach(function(it) {
     var clickAttr = it.dest ? ' onclick="' + it.dest + '"' : '';
-    h += '<div' + clickAttr + ' style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--cb-chalk-2);border-radius:8px;' + (it.dest ? 'cursor:pointer;' : '') + '">';
+    h += '<div' + clickAttr + ' style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--cb-chalk);border-radius:10px;box-shadow:var(--shadow-sm);' + (it.dest ? 'cursor:pointer;' : '') + '">';
     // Avatar (32px)
     var actorPlayer = (it.actorUid && typeof PB !== "undefined" && PB.getPlayer) ? PB.getPlayer(it.actorUid) : null;
     if (typeof renderAvatar === "function") {

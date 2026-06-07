@@ -11,7 +11,7 @@ function _renderSeasonPositionStrip(ctx) {
   var label = (season && season.label) ? season.label.toUpperCase() : "SEASON";
   var eyebrow = label + " · WEEK " + weekInfo.week + "/" + weekInfo.total;
 
-  var h = '<div onclick="Router.go(\'standings\')" style="background:var(--cb-chalk-2);border-radius:var(--r-3);padding:18px 24px;cursor:pointer">';
+  var h = '<div onclick="Router.go(\'standings\')" style="background:var(--cb-chalk);border-radius:var(--r-3);padding:18px 24px;box-shadow:var(--shadow-sm);cursor:pointer">';
   h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:8px">' + escHtml(eyebrow) + '</div>';
   if (myIdx < 0) {
     h += '<div style="display:flex;align-items:baseline;gap:14px">';

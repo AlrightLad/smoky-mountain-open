@@ -402,11 +402,11 @@ function _renderUnfinishedTripBanner(trips, uid, claimedFrom) {
 
 function _renderReadyCTA() {
   var h = '<div style="padding:18px 22px 0">';
-  h += '<div class="tappable" onclick="Router.go(\'playnow\')" style="padding:22px;background:var(--cb-chalk);border:1px dashed var(--cb-chalk-3);border-radius:14px;cursor:pointer">';
-  h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:10px">NO ROUND TODAY</div>';
-  h += '<div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--cb-ink);line-height:1.2;letter-spacing:-0.2px;margin-bottom:8px">Ready when you are.</div>';
-  h += '<div style="font-family:var(--font-ui);font-size:13px;color:var(--cb-charcoal);line-height:1.55;max-width:380px;margin-bottom:16px">Start a round and the scorecard, skins pot and your caddie will wake up.</div>';
-  h += '<div style="display:inline-flex;align-items:center;gap:var(--sp-2);padding:11px 18px;background:var(--cb-green);color:var(--cb-chalk);border-radius:var(--r-2);font-family:var(--font-display);font-size:14px;font-weight:700;letter-spacing:0.3px">';
+  h += '<div class="tappable" onclick="Router.go(\'playnow\')" style="position:relative;overflow:hidden;padding:24px;background:var(--cb-green);border-radius:var(--r-4);box-shadow:var(--shadow-md);color:var(--cb-chalk);cursor:pointer">';
+  h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:12px">NO ROUND TODAY</div>';
+  h += '<div style="font-family:var(--font-display);font-size:26px;font-weight:700;color:var(--cb-chalk);line-height:1.15;letter-spacing:-0.3px;margin-bottom:8px">Ready when you are.</div>';
+  h += '<div style="font-family:var(--font-ui);font-size:13px;color:rgba(var(--bg-rgb),0.66);line-height:1.55;max-width:380px;margin-bottom:18px">Start a round and the scorecard, skins pot and your caddie will wake up.</div>';
+  h += '<div style="display:inline-flex;align-items:center;gap:var(--sp-2);padding:12px 20px;background:var(--cb-chalk);color:var(--cb-green);border-radius:var(--r-2);font-family:var(--font-display);font-size:14px;font-weight:700;letter-spacing:0.3px">';
   h += '<svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 14V2l8 3-8 3"/></svg>';
   h += 'Start a round';
   h += '</div>';
@@ -425,13 +425,13 @@ function _renderNewUserIntro() {
 function _renderNewUserCTAs() {
   var h = '<div style="padding:18px 22px 0;display:flex;gap:10px;flex-wrap:wrap">';
   // First round
-  h += '<div class="tappable" onclick="Router.go(\'playnow\')" style="flex:1 1 180px;padding:18px 16px;background:var(--cb-chalk);border:1px dashed var(--cb-chalk-3);border-radius:14px;cursor:pointer">';
+  h += '<div class="tappable" onclick="Router.go(\'playnow\')" style="flex:1 1 180px;padding:18px 16px;background:var(--cb-green);border-radius:14px;box-shadow:var(--shadow-md);cursor:pointer">';
   h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:8px">START HERE</div>';
-  h += '<div style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--cb-ink);line-height:1.25;letter-spacing:-0.2px">Your first round.</div>';
-  h += '<div style="font-family:var(--font-ui);font-size:12px;color:var(--cb-mute);margin-top:6px;line-height:1.5">Log a full round and the Clubhouse comes alive.</div>';
+  h += '<div style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--cb-chalk);line-height:1.25;letter-spacing:-0.2px">Your first round.</div>';
+  h += '<div style="font-family:var(--font-ui);font-size:12px;color:rgba(var(--bg-rgb),0.66);margin-top:6px;line-height:1.5">Log a full round and the Clubhouse comes alive.</div>';
   h += '</div>';
   // Range session
-  h += '<div class="tappable" onclick="Router.go(\'range\')" style="flex:1 1 180px;padding:18px 16px;background:var(--cb-chalk);border:1px dashed var(--cb-chalk-3);border-radius:14px;cursor:pointer">';
+  h += '<div class="tappable" onclick="Router.go(\'range\')" style="flex:1 1 180px;padding:18px 16px;background:var(--cb-paper);border:1px solid var(--cb-chalk-3);border-radius:14px;box-shadow:var(--shadow-sm);cursor:pointer">';
   h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:8px">OR WARM UP</div>';
   h += '<div style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--cb-ink);line-height:1.25;letter-spacing:-0.2px">Range session.</div>';
   h += '<div style="font-family:var(--font-ui);font-size:12px;color:var(--cb-mute);margin-top:6px;line-height:1.5">Track your bucket and focus drills.</div>';
@@ -514,14 +514,14 @@ function _renderStatsStrip(totalRounds, handicap, bestRound, bestRoundId, isNew)
 
   // ROUNDS
   var roundsClickable = !isNew && totalRounds > 0;
-  h += '<div' + (roundsClickable ? ' class="tappable" onclick="Router.go(\'roundhistory\')"' : '') + ' style="padding:var(--sp-3) 10px;background:var(--cb-chalk-2);border-radius:10px;' + (roundsClickable ? 'cursor:pointer' : '') + '">';
+  h += '<div' + (roundsClickable ? ' class="tappable" onclick="Router.go(\'roundhistory\')"' : '') + ' style="padding:var(--sp-3) 10px;background:var(--cb-chalk);border-radius:12px;box-shadow:var(--shadow-sm);' + (roundsClickable ? 'cursor:pointer' : '') + '">';
   h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:6px">ROUNDS</div>';
   h += '<div data-stat="round-count" data-count="' + roundsStr + '" style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cb-ink);line-height:1">' + roundsStr + '</div>';
   if (roundsCaption) h += '<div style="font-family:var(--font-mono);font-size:8.5px;font-weight:600;letter-spacing:0.8px;color:' + roundsColor + ';text-transform:uppercase;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + roundsCaption + '</div>';
   h += '</div>';
 
   // HCP
-  h += '<div style="padding:var(--sp-3) 10px;background:var(--cb-chalk-2);border-radius:10px">';
+  h += '<div style="padding:var(--sp-3) 10px;background:var(--cb-chalk);border-radius:12px;box-shadow:var(--shadow-sm)">';
   h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:6px">HCP</div>';
   h += '<div data-stat="handicap" style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cb-ink);line-height:1">' + hcapStr + '</div>';
   if (hcapCaption) h += '<div style="font-family:var(--font-mono);font-size:8.5px;font-weight:600;letter-spacing:0.8px;color:' + hcapColor + ';text-transform:uppercase;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + hcapCaption + '</div>';
@@ -529,7 +529,7 @@ function _renderStatsStrip(totalRounds, handicap, bestRound, bestRoundId, isNew)
 
   // BEST
   var bestClickable = !!bestRoundId;
-  h += '<div' + (bestClickable ? ' class="tappable" onclick="Router.go(\'rounds\',{roundId:\'' + escHtml(bestRoundId) + '\'})"' : '') + ' style="padding:var(--sp-3) 10px;background:var(--cb-chalk-2);border-radius:10px;' + (bestClickable ? 'cursor:pointer' : '') + '">';
+  h += '<div' + (bestClickable ? ' class="tappable" onclick="Router.go(\'rounds\',{roundId:\'' + escHtml(bestRoundId) + '\'})"' : '') + ' style="padding:var(--sp-3) 10px;background:var(--cb-chalk);border-radius:12px;box-shadow:var(--shadow-sm);' + (bestClickable ? 'cursor:pointer' : '') + '">';
   h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:6px">BEST</div>';
   h += '<div data-stat="best-round" style="font-family:var(--font-display);font-size:28px;font-weight:700;color:var(--cb-ink);line-height:1">' + bestStr + '</div>';
   if (bestCaption) h += '<div style="font-family:var(--font-mono);font-size:8.5px;font-weight:600;letter-spacing:0.8px;color:' + bestColor + ';text-transform:uppercase;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + bestCaption + '</div>';
