@@ -648,9 +648,8 @@ function showClubhouseWelcomeToast() {
   } catch(e) { return; }
   setTimeout(function() {
     var t = document.createElement('div');
-    t.className = 'toast show';
-    t.style.cssText = 'max-width:320px;padding:14px 20px;line-height:1.4;font-size:12px';
-    t.innerHTML = '<div style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--text-inverse);margin-bottom:4px">The Clubhouse is open.</div><div style="font-family:var(--font-ui);font-size:11px;color:var(--text-inverse);opacity:0.85">We have refreshed the look. Your data is safe.</div>';
+    t.className = 'toast toast--welcome show';
+    t.innerHTML = '<div class="wt-kicker">Welcome back</div><div class="wt-title">The Clubhouse is open.</div><div class="wt-body">We\'ve refreshed the look. Your rounds and ParCoins are safe.</div>';
     document.body.appendChild(t);
     setTimeout(function() {
       t.classList.remove('show');
