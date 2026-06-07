@@ -822,9 +822,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-07T13:03:43.000181Z",
+  "generated_at": "2026-06-07T13:21:14.905645Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 86.8,
+  "overall_score": 87.6,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -838,9 +838,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 91.8,
+    "pre_deduction_score": 92.6,
     "deduction": 5,
-    "post_deduction_score": 86.8
+    "post_deduction_score": 87.6
   },
   "dimensions": {
     "A1_roadmap": {
@@ -979,13 +979,13 @@
       "weak_points": []
     },
     "A12_operational": {
-      "score": 60,
+      "score": 75,
       "status": "yellow",
-      "label": "pipeline=red · 8 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=yellow · 7 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "8 of last 10 cron watcher runs hit skip-dirty",
+          "what": "7 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -998,7 +998,7 @@
   },
   "attention_items": [
     {
-      "what": "8 of last 10 cron watcher runs hit skip-dirty",
+      "what": "7 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
@@ -1007,16 +1007,16 @@
   "founder_attention": [],
   "agent_attention": [
     {
-      "what": "8 of last 10 cron watcher runs hit skip-dirty",
+      "what": "7 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "dbb8ad0b",
-    "subject": "chore: premium-sweep capture writes to after-dir + suppresses welcome toast",
-    "committed_at": "2026-06-07T09:03:22-04:00",
+    "sha": "02b0e141",
+    "subject": "chore(visual-audit): add authed home ground-truth capture with DOM probe",
+    "committed_at": "2026-06-07T09:20:53-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
