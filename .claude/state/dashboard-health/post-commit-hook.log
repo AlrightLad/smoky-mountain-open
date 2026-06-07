@@ -1,4 +1,4 @@
-=== post-commit hook fired 2026-06-07T17:07:01Z HEAD=0fc50ce7 ===
+=== post-commit hook fired 2026-06-07T17:11:31Z HEAD=badaa529 ===
 [scaffold-from-templates] done: scaffolded=0 skipped=15
 
 --- scripts/scan-shipped-proposals.py ---
@@ -14,48 +14,48 @@ Traceback (most recent call last):
   File "C:\Users\Zach\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 23, in decode
     return codecs.charmap_decode(input,self.errors,decoding_table)[0]
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 274419: character maps to <undefined>
+UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 274723: character maps to <undefined>
 [scan-shipped] approved=1 candidate-commits-90d=0
 [scan-shipped] done: moved=0 skipped_already_shipped=0 warnings=0
 
 --- scripts/aggregate-telemetry.py ---
 [aggregate] wrote .claude\state\telemetry\aggregates\current-snapshot.json (write-content-changed)
 [aggregate] meter_status=wired-real
-[aggregate] events=26841 handoffs=1 bubbles=7 proposals_pending=0
+[aggregate] events=26847 handoffs=1 bubbles=7 proposals_pending=0
 
 --- scripts/ingest-session-transcripts.py ---
-[ingest-session-transcripts] scanned a3e3471a-7db9-4c9d-a1f1-37284a43520d.jsonl: +41 new entries (offset 581964615\u2192582482971)
-[ingest-session-transcripts] scanned 301 JSONL file(s), found 41 new assistant turns
-[ingest-session-transcripts] wrote session-transcript-summary.json (359 buckets, 14682372673 total tokens, 307 sessions) [write-content-changed]
+[ingest-session-transcripts] scanned a3e3471a-7db9-4c9d-a1f1-37284a43520d.jsonl: +8 new entries (offset 582901112\u2192583050079)
+[ingest-session-transcripts] scanned 301 JSONL file(s), found 8 new assistant turns
+[ingest-session-transcripts] wrote session-transcript-summary.json (359 buckets, 14685170979 total tokens, 307 sessions) [write-content-changed]
 
 --- scripts/aggregate-token-usage.py ---
-[aggregate-token] real_events=360 estimated_events=15418 manual_entries=0
-[aggregate-token] all-time: real=14682474673 estimated=19014010 manual=0
+[aggregate-token] real_events=360 estimated_events=15420 manual_entries=0
+[aggregate-token] all-time: real=14685272979 estimated=19014010 manual=0
 [aggregate-token] snapshot write=True (write-content-changed) -> .claude\state\telemetry\aggregates\token-usage-snapshot.json
 [aggregate-token] cursor   write=True (write-content-changed) -> .claude\state\telemetry\aggregates\.token-usage-cursor.json
 
 --- scripts/aggregate-test-health.py ---
-[aggregate-test-health] OK status=green timestamp=2026-06-07T17:07:06Z write=False (skip-idempotent-grace-content-unchanged-807289s)
+[aggregate-test-health] OK status=green timestamp=2026-06-07T17:11:35Z write=False (skip-idempotent-grace-content-unchanged-807558s)
 
 --- scripts/aggregate-security-health.py ---
-[aggregate-security-health] OK status=green cred_leaks=0 vuln_deps=0 write=False (skip-idempotent-grace-content-unchanged-1369154s)
+[aggregate-security-health] OK status=green cred_leaks=0 vuln_deps=0 write=False (skip-idempotent-grace-content-unchanged-1369422s)
 
 --- scripts/aggregate-approvals-pipeline.py ---
-[aggregate-approvals-pipeline] OK status=red summary=watcher cycling · applies blocked (6 skips on dirty tree) · 2 in inbox write=True (write-content-changed)
+[aggregate-approvals-pipeline] OK status=red summary=watcher cycling · applies blocked (7 skips on dirty tree) · 2 in inbox write=True (write-content-changed)
 
 --- scripts/aggregate-architecture-review.py ---
-[aggregate-architecture-review] OK status=yellow findings=2 pending_recs=0 write=False (skip-idempotent-grace-content-unchanged-61494s)
+[aggregate-architecture-review] OK status=yellow findings=2 pending_recs=0 write=False (skip-idempotent-grace-content-unchanged-61762s)
 
 --- scripts/aggregate-fiq-status.py ---
-[aggregate-fiq-status] OK status=green declared=26 deployed=26 write=False (skip-idempotent-grace-content-unchanged-265797s)
+[aggregate-fiq-status] OK status=green declared=26 deployed=26 write=False (skip-idempotent-grace-content-unchanged-266065s)
 
 --- scripts/aggregate-self-tests.py ---
 [aggregate-self-tests] starting D40 parity checks across 5 aggregators
-  [aggregate-test-health] PASS status=green age=807295s [content-stable 807295s, idempotent skip]
-  [aggregate-security-health] PASS status=green age=1369157s [content-stable 1369157s, idempotent skip]
+  [aggregate-test-health] PASS status=green age=807563s [content-stable 807563s, idempotent skip]
+  [aggregate-security-health] PASS status=green age=1369425s [content-stable 1369425s, idempotent skip]
   [aggregate-approvals-pipeline] PASS status=red age=3s
-  [aggregate-architecture-review] PASS status=yellow age=61496s
-  [aggregate-fiq-status] PASS status=green age=265797s [content-stable 265797s, idempotent skip]
+  [aggregate-architecture-review] PASS status=yellow age=61764s
+  [aggregate-fiq-status] PASS status=green age=266065s [content-stable 266065s, idempotent skip]
 [aggregate-self-tests] OK all 5 aggregators pass parity
 
 --- scripts/inject-health-banners.py ---
@@ -89,7 +89,7 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 274419: c
 --- scripts/regen-dashboard.py ---
 [regen-dashboard] OK   dashboard.html
 [regen-dashboard] meter_status=wired-real
-[regen-dashboard] handoffs=10 ships=10 proposals_pending=0 bubbles=7 events=26842
+[regen-dashboard] handoffs=10 ships=10 proposals_pending=0 bubbles=7 events=26847
 
 --- scripts/regen-main-flows.py ---
 [regen-main-flows] WARN: 6 orphan components in grid (referenced by no flow's path):
@@ -103,7 +103,7 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 274419: c
 [regen-main-flows] 6 columns, 47 components, 62 flows; orphans=6
 
 --- scripts/regen-activity.py ---
-[regen-activity] OK   activity.html — total=500 (handoffs=1 telemetry=276 commits=825)
+[regen-activity] OK   activity.html — total=500 (handoffs=1 telemetry=277 commits=827)
 
 --- scripts/dry-run-regen-ops-views.py ---
 [regen] 7 bubbles (activity.html owned by regen-activity.py; proposals.html owned by regen-proposals.py)
@@ -111,7 +111,7 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 274419: c
 
 --- scripts/regen-token-usage.py ---
 [regen-token-usage] OK   token-usage.html
-[regen-token-usage] all-time: real=14682474673 estimated=19014010 manual=0
+[regen-token-usage] all-time: real=14685272979 estimated=19014010 manual=0
 [regen-token-usage] pie_views slices: agent=3 work=2 session_top10=10
 
 --- scripts/consolidate-lighthouse.py ---
@@ -139,10 +139,10 @@ Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
 
 --- scripts/regen-index.py ---
 [regen-index] OK   index.html
-[regen-index] ships=0 proposals_pending=0 bubbles=1 halt=none git=0fc50ce7
+[regen-index] ships=0 proposals_pending=0 bubbles=1 halt=none git=badaa529
 
 --- scripts/dashboard-freshness-sentinel.py ---
-[dashboard-freshness] status=green ok=11 repaired=1 unrepairable=0 mismatches=1 duration=2.4s
+[dashboard-freshness] status=green ok=11 repaired=1 unrepairable=0 mismatches=1 duration=2.5s
 
 --- visual-gate ---
   PASS  dashboard.html               30 KPI cells populated (>=20)
@@ -159,10 +159,9 @@ Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
   PASS  token-usage.html             3 token rows OR cards (>=1)
 
 visual-gate: ALL 12 PAGES RENDER CONTENT
-[write-regen-heartbeat] OK ts=2026-06-07T17:07:40Z source=post-commit-hook status=PASS
+[write-regen-heartbeat] OK ts=2026-06-07T17:12:08Z source=post-commit-hook status=PASS
 
 --- P9.5 self-test ---
-[ingest-session-transcripts] scanned a3e3471a-7db9-4c9d-a1f1-37284a43520d.jsonl: +13 new entries (offset 582482971\u2192582901112)
-[ingest-session-transcripts] scanned 301 JSONL file(s), found 13 new assistant turns
-[ingest-session-transcripts] wrote session-transcript-summary.json (359 buckets, 14684502121 total tokens, 307 sessions) [write-content-changed]
-[ingest-session-transcripts] SELF-TEST OK: 301 JSONLs \u2192 14684502121 tokens across 359 buckets
+[ingest-session-transcripts] scanned 301 JSONL file(s), found 0 new assistant turns
+[ingest-session-transcripts] skipped session-transcript-summary.json (359 buckets, 14685170979 total tokens, 307 sessions) [skip-idempotent-fresh-80s]
+[ingest-session-transcripts] SELF-TEST OK: 301 JSONLs \u2192 14685170979 tokens across 359 buckets

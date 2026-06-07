@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-07T17:07:20.700515Z",
+  "generated_at": "2026-06-07T17:11:48.775065Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 86.8,
   "overall_grade": "A-",
@@ -1014,13 +1014,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "0fc50ce7",
-    "subject": "docs(founder): refresh #269 cutover to v8.23.94 + recompute divergence",
-    "committed_at": "2026-06-07T13:06:57-04:00",
+    "sha": "badaa529",
+    "subject": "chore: v8.23.94 ship evidence (firebase deploy log + deployed-staging home capture)",
+    "committed_at": "2026-06-07T13:11:28-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 1
+    "total_files_touched": 2
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
