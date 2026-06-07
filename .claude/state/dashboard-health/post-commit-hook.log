@@ -1,5 +1,18 @@
-=== post-commit hook fired 2026-06-07T14:46:44Z HEAD=106ca9e2 ===
-[scaffold-from-templates] done: scaffolded=0 skipped=15
+=== post-commit hook fired 2026-06-07T13:17:22Z HEAD=b6332ea ===
+[scaffold-from-templates] scaffolded activity.html
+[scaffold-from-templates] scaffolded amendments.html
+[scaffold-from-templates] scaffolded dashboard.html
+[scaffold-from-templates] scaffolded design-system.html
+[scaffold-from-templates] scaffolded discussion-bubbles.html
+[scaffold-from-templates] scaffolded escalations.html
+[scaffold-from-templates] scaffolded founder-checklist.html
+[scaffold-from-templates] scaffolded index.html
+[scaffold-from-templates] scaffolded main-flows.html
+[scaffold-from-templates] scaffolded proposals.html
+[scaffold-from-templates] scaffolded sessions.html
+[scaffold-from-templates] scaffolded token-usage.html
+[scaffold-from-templates] scaffolded _assets/
+[scaffold-from-templates] done: scaffolded=13 skipped=2
 
 --- scripts/scan-shipped-proposals.py ---
 Exception in thread Thread-1 (_readerthread):
@@ -35,7 +48,7 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 257093: c
 [aggregate-token] cursor   write=True (write-content-changed) -> .claude\state\telemetry\aggregates\.token-usage-cursor.json
 
 --- scripts/aggregate-test-health.py ---
-[aggregate-test-health] OK status=green timestamp=2026-06-07T14:46:49Z write=False (skip-idempotent-grace-content-unchanged-798872s)
+[aggregate-test-health] OK status=unknown timestamp=2026-06-07T13:17:22Z write=True (write-no-prior-file)
 
 --- scripts/aggregate-security-health.py ---
 [aggregate-security-health] OK status=green cred_leaks=0 vuln_deps=0 write=False (skip-idempotent-grace-content-unchanged-1360736s)
@@ -51,12 +64,10 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 257093: c
 
 --- scripts/aggregate-self-tests.py ---
 [aggregate-self-tests] starting D40 parity checks across 5 aggregators
-  [aggregate-test-health] PASS status=green age=798877s [content-stable 798877s, idempotent skip]
-  [aggregate-security-health] PASS status=green age=1360739s [content-stable 1360739s, idempotent skip]
-  [aggregate-approvals-pipeline] PASS status=red age=3s
-  [aggregate-architecture-review] PASS status=yellow age=53078s
-  [aggregate-fiq-status] PASS status=green age=257379s [content-stable 257379s, idempotent skip]
-[aggregate-self-tests] OK all 5 aggregators pass parity
+  [aggregate-test-health] PASS status=unknown age=6s
+  [aggregate-security-health] PASS status=green age=5s
+  [aggregate-approvals-pipeline] PASS status=missing age=0s
+  [aggregate-architecture-review] PASS status=yellow age=0s
 
 --- scripts/inject-health-banners.py ---
 [inject-health-banners] banner-architecture      already-present
@@ -139,7 +150,7 @@ Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
 
 --- scripts/regen-index.py ---
 [regen-index] OK   index.html
-[regen-index] ships=0 proposals_pending=0 bubbles=1 halt=none git=106ca9e2
+[regen-index] ships=0 proposals_pending=0 bubbles=1 halt=none git=b6332ea1
 
 --- scripts/dashboard-freshness-sentinel.py ---
 [dashboard-freshness] status=green ok=11 repaired=1 unrepairable=0 mismatches=1 duration=2.5s
@@ -158,8 +169,21 @@ Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
   PASS  sessions.html                1 session cards (strict, NO empty-state fallback) (>=1)
   PASS  token-usage.html             3 token rows OR cards (>=1)
 
-visual-gate: ALL 12 PAGES RENDER CONTENT
-[write-regen-heartbeat] OK ts=2026-06-07T14:47:20Z source=post-commit-hook status=PASS
+browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1223/chrome-headless-shell-linux64/chrome-headless-shell
+╔════════════════════════════════════════════════════════════╗
+║ Looks like Playwright was just installed or updated.       ║
+║ Please run the following command to download new browsers: ║
+║                                                            ║
+║     npx playwright install                                 ║
+║                                                            ║
+║ <3 Playwright Team                                         ║
+╚════════════════════════════════════════════════════════════╝
+    at /home/runner/work/smoky-mountain-open/smoky-mountain-open/tests/dashboard-smoke/visual-gate.mjs:57:32 {
+  name: 'Error'
+}
+
+Node.js v20.20.2
+[write-regen-heartbeat] OK ts=2026-06-07T13:17:35Z source=post-commit-hook status=GATE-FAIL
 
 --- P9.5 self-test ---
 [ingest-session-transcripts] scanned 301 JSONL file(s), found 0 new assistant turns
