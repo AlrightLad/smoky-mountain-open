@@ -78,7 +78,7 @@ function filterPlayers() {
       _fpFilter === "advanced" ? "No advanced players yet" :
       "No players found"
     );
-    el.innerHTML = '<div style="margin:14px 16px;padding:30px 22px;text-align:center;background:var(--bg2);border:1px dashed var(--border);border-radius:12px">' +
+    el.innerHTML = '<div style="margin:14px 16px;padding:30px 22px;text-align:center;background:var(--cb-paper);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-sm)">' +
       '<div style="font-family:var(--font-display);font-size:16px;font-weight:600;color:var(--cream);margin-bottom:6px">' + noMatchLabel + '.</div>' +
       '<div style="font-size:11px;color:var(--muted);line-height:1.5;max-width:280px;margin:0 auto">Adjust your search or the handicap filter. Profiles set to <span style="color:var(--birdie)">PUBLIC</span> show up across all leagues.</div>' +
       '</div>';
