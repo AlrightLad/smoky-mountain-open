@@ -393,6 +393,10 @@ function renderPlaySetup() {
     document.querySelector('[data-page="playnow"]').innerHTML = h;
     return;
   }
+  // v8.23.87 — elevated paper "form sheet" gives the setup figure-ground depth:
+  // the card lifts off the deeper canvas so the fields read as crisp inset wells
+  // (this page was the lone flat surface where fields sat muddy on the same ground).
+  h += '<div class="pn-setup-card" style="background:var(--cb-paper);border:1px solid var(--border);border-radius:var(--r-4);box-shadow:var(--shadow-md);padding:20px 18px 18px">';
   h += '<div class="ff"><label class="ff-label">Playing as</label><div class="ff-input" style="background:var(--bg4);color:var(--gold);font-weight:600">' + escHtml(playAs.name) + '</div><input type="hidden" id="pn-player" value="' + playAs.id + '"></div>';
 
   h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="pn-course" placeholder="Search courses..." autocomplete="off" oninput="showPlayCourseSearch(this)"><div id="search-pn-course" class="search-results"></div></div>';
@@ -403,8 +407,9 @@ function renderPlaySetup() {
   h += '<div class="ff"><label class="ff-label">Holes</label><select class="ff-input" id="pn-holes"><option value="18">18 holes</option><option value="front9">Front 9 (holes 1–9)</option><option value="back9">Back 9 (holes 10–18)</option></select></div>';
   h += '<div id="pn-scramble-team-section"></div>';
 
-  h += '<button class="btn full green" onclick="startLiveRound()" style="margin-top:8px;font-size:15px;padding:15px 20px;letter-spacing:.4px">Tee it up</button>';
-  h += '</div>';
+  h += '<button class="btn full green" onclick="startLiveRound()" style="margin-top:14px;font-size:15px;padding:15px 20px;letter-spacing:.4px">Tee it up</button>';
+  h += '</div>'; // .pn-setup-card
+  h += '</div>'; // .form-section
 
   document.querySelector('[data-page="playnow"]').innerHTML = h;
 }

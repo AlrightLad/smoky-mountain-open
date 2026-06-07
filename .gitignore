@@ -209,4 +209,4 @@ docs/reports/sessions.html
 # (regenerable via scripts/visual-audit/*.mjs; stay out of the PUBLIC repo).
 /scratch/
 /depth-swatch*.png
-/staging-signin-*.png
+/staging-*.png
