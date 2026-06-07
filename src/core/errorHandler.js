@@ -26,6 +26,27 @@ var __sentryInitialized = false;
 export function initSentry(opts) {
   if (__sentryInitialized) return;
 
+  // Sentry runs only for real users on real deployments. Skip it in:
+  //   - non-production builds — `npm run dev` (import.meta.env.PROD === false),
+  //     which is exactly what the Playwright E2E webServer runs against; and
+  //   - any loopback / emulator context (a prod build served from localhost or
+  //     pointed at the Firebase emulator via ?emulator=1).
+  // Why this guard exists: Sentry's session + trace envelopes are fire-and-forget
+  // POSTs to ingest.us.sentry.io. In the E2E env they outlive the page and abort
+  // as "Failed to load resource: net::ERR_FAILED" — a URL-less console error that
+  // flaked flow 01's strict zero-console-error baseline (pixel-7 testuser_01,
+  // 2026-06-07). A bare net::ERR_FAILED filter would be unsafe (it could mask a
+  // real bundle 404), so the correct fix is to not fire the beacon in test/dev at
+  // all. It also keeps dev/test errors out of the production Sentry project.
+  // Production + staging are both `vite build` (PROD === true) → Sentry stays on.
+  var isLoopbackOrEmulator =
+    (typeof location !== 'undefined') &&
+    (/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname) ||
+     /[?&]emulator=1\b/.test(location.search || ''));
+  if (!import.meta.env.PROD || isLoopbackOrEmulator) {
+    return;
+  }
+
   var dsn = (opts && opts.dsn) || import.meta.env.VITE_SENTRY_DSN || '';
   var release = (opts && opts.release) || import.meta.env.VITE_APP_VERSION || 'unknown';
   var environment = (opts && opts.environment) || import.meta.env.MODE || 'production';
