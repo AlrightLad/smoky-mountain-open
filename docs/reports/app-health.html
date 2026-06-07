@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-07T15:46:57.257507Z",
+  "generated_at": "2026-06-07T16:16:48.115958Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 86.8,
   "overall_grade": "A-",
@@ -981,11 +981,11 @@
     "A12_operational": {
       "score": 60,
       "status": "yellow",
-      "label": "pipeline=red · 7 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=red · 10 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "7 of last 10 cron watcher runs hit skip-dirty",
+          "what": "10 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -998,7 +998,7 @@
   },
   "attention_items": [
     {
-      "what": "7 of last 10 cron watcher runs hit skip-dirty",
+      "what": "10 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
@@ -1007,26 +1007,22 @@
   "founder_attention": [],
   "agent_attention": [
     {
-      "what": "7 of last 10 cron watcher runs hit skip-dirty",
+      "what": "10 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "f82c57e8",
-    "subject": "feat: v8.23.93 front-door polish (brass home CTA + sign-in entrance)",
-    "committed_at": "2026-06-07T11:46:33-04:00",
+    "sha": "cb18ba0a",
+    "subject": "fix: skip Sentry init in dev/test/loopback to stop E2E console-error flake",
+    "committed_at": "2026-06-07T12:16:22-04:00",
     "trigger": "app-commit",
     "is_app_commit": true,
     "app_files_touched": [
-      "public/sw.js",
-      "src/core/utils.js",
-      "src/pages/caddynotes.js",
-      "src/pages/home-rail-newuser.js",
-      "src/styles/components.css"
+      "src/core/errorHandler.js"
     ],
-    "total_files_touched": 19
+    "total_files_touched": 1
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
