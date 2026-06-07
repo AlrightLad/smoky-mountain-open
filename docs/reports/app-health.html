@@ -822,9 +822,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-07T18:37:48.866846Z",
+  "generated_at": "2026-06-07T21:50:15.138211Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 88.3,
+  "overall_score": 88.8,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -838,9 +838,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 93.3,
+    "pre_deduction_score": 93.8,
     "deduction": 5,
-    "post_deduction_score": 88.3
+    "post_deduction_score": 88.8
   },
   "dimensions": {
     "A1_roadmap": {
@@ -979,17 +979,11 @@
       "weak_points": []
     },
     "A12_operational": {
-      "score": 90,
+      "score": 100,
       "status": "green",
-      "label": "pipeline=green · 6 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=green · 0 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
-      "weak_points": [
-        {
-          "what": "6 of last 10 cron watcher runs hit skip-dirty",
-          "where": "scripts/cron/logs/*-downloads-watcher.log",
-          "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
-        }
-      ],
+      "weak_points": [],
       "details": {
         "watcher_last_status": "PASS",
         "watcher_exit_reason": "no-new-files"
@@ -1000,9 +994,9 @@
   "founder_attention": [],
   "agent_attention": [],
   "audit_trigger": {
-    "sha": "fffe0f02",
-    "subject": "chore(state): log continuation-discipline stop decision (cond F+G, queue drained)",
-    "committed_at": "2026-06-07T14:37:29-04:00",
+    "sha": "148b384b",
+    "subject": "docs(cutover): correct #269 Path A (inline prefix never reaches the hook) + refresh divergence/backup to current prod tip",
+    "committed_at": "2026-06-07T17:49:51-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
