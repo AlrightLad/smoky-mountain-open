@@ -102,12 +102,27 @@ if ($testRc -ne 0) {
         "docs/reports/proposals.html", "docs/reports/amendments.html",
         "docs/reports/discussion-bubbles.html",
         "docs/reports/index.html", "docs/reports/main-flows.html",
-        "docs/reports/token-usage.html"
+        "docs/reports/token-usage.html",
+        "docs/reports/app-health.html"
     )
     foreach ($f in $files) {
-        if (Test-Path $f) {
-            git checkout HEAD -- $f 2>$null
-            if ($LASTEXITCODE -ne 0) { Write-Host "[regen-all] could not roll back $f (not tracked or no HEAD)" }
+        # PROP-015 Finding B: only roll back files git actually tracks.
+        # Most dashboards are gitignored (regenerated locally, never
+        # committed per the dashboard-is-production-direct policy), so
+        # 'git checkout HEAD --' on them errors with 'pathspec did not
+        # match' and rolls back nothing. Guard with ls-files: skip+log the
+        # untracked ones, and actually restore the one tracked dashboard
+        # (app-health.html) so a bad regen of it is the thing rolled back.
+        git ls-files --error-unmatch $f 2>$null | Out-Null
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "[regen-all] skip rollback $f (untracked - regenerated locally, nothing to restore)"
+            continue
+        }
+        git checkout HEAD -- $f 2>$null
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "[regen-all] could not roll back $f (checkout failed)"
+        } else {
+            Write-Host "[regen-all] rolled back $f to HEAD" -ForegroundColor Yellow
         }
     }
     Pop-Location

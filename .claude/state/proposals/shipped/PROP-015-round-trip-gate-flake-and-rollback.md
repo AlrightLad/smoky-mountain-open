@@ -32,7 +32,9 @@
     "high": 9000,
     "methodology": "Derived from the two-file diff scope (~45 LoC: verify-scroll-reachability.mjs readiness-wait + single-retry; regen-all.ps1 tracked-only rollback guard + app-health.html addition) plus the round_trip_coverage acceptance protocol (5 consecutive regen-all.ps1 runs for flake-absorption evidence, one deliberate list-id break to confirm true-negative preservation, one forced gate-failure to confirm app-health.html rollback). Low = clean apply with minimal re-runs; expected matches the original 6000-token point estimate with full prescribed verification; high adds flake re-runs and the rollback failure-path exercise."
   },
-  "status": "pending",
+  "status": "shipped",
+  "shipped_at": "2026-06-07T17:37:00Z",
+  "applied_by": "claude-code",
   "evidence": {
     "flake_run_1": "scripts/regen-all.ps1 gated run ~17:0x — round-trip FAIL, scroll-reachability exit 1, 'escalations applied list: last item #applied-list > *:last-child not found'",
     "flake_run_2_standalone": "node scripts/visual-audit/verify-scroll-reachability.mjs — 5 pass / 0 fail / 0 skip; escalations last-item rect top=125 bottom=1040 fully-visible=true",
@@ -44,6 +46,18 @@
 ---
 
 # PROP-015 — Harden the round-trip ship-gate (flake retry + rollback correctness)
+
+> **SHIPPED 2026-06-07 by claude-code.** Approved via the `pending/`→`approved/`
+> decision step (commit `728a114c`), then applied per the Founder APPROVE/DENY
+> model ("approved and then completed by you"). The authoring-time "do not
+> self-apply, surface to Founder" note in the deliberation below is therefore
+> superseded — the surface-and-approve step already happened. Both edits landed;
+> verified per `round_trip_coverage`: scroll-reachability run 5× consecutively
+> (0 spurious failures), a deliberately broken selector still FAILed both
+> attempts (true-negatives preserved, exit 1), the rollback loop skipped all 8
+> untracked dashboards with no `pathspec` errors and restored the one tracked
+> dashboard (`app-health.html`), and the full `regen-all.ps1` gate passed green
+> end-to-end (round-trip ALL CHECKS PASSED).
 
 Authored 2026-05-31 during the overnight heartbeat run. Both findings are evidence-backed (see the `evidence` block in the frontmatter); neither is a speculative "refactor for code health."
 

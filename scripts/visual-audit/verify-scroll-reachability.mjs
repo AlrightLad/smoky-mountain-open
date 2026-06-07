@@ -134,6 +134,23 @@ async function checkSurface(browser, surface) {
             await page.waitForTimeout(500);
         }
 
+        // Bounded render-readiness wait (PROP-015 Finding A): the fixed
+        // 1500ms + 300ms sleeps above do not guarantee the last item has
+        // rendered — Chromium layout can still be settling, which produced
+        // a one-off "last item not found" flake on a surface that was
+        // actually correct. Poll for the last-item selector up to 3s.
+        // Non-fatal on timeout: the explicit count check below records the
+        // real verdict (and main() retries the whole surface once).
+        try {
+            await page.waitForFunction(
+                (sel) => !!document.querySelector(sel),
+                surface.lastItemSelector,
+                { timeout: 3000 }
+            );
+        } catch {
+            // selector never appeared within the cap; fall through.
+        }
+
         // For inner-scroller surfaces, the container must exist.
         if (surface.scrollKind === "inner") {
             const containerCount = await page.locator(surface.container).count();
@@ -249,7 +266,16 @@ async function main() {
     const browser = await chromium.launch();
     const results = [];
     for (const surface of SURFACES) {
-        const r = await checkSurface(browser, surface);
+        let r = await checkSurface(browser, surface);
+        // PROP-015 Finding A: a single per-surface retry in a fresh
+        // context absorbs single-frame timing flakes. checkSurface() opens
+        // a new context every call, so this re-check is genuinely fresh. A
+        // true regression fails both attempts and still reports FAIL.
+        if (!r.ok && !r.details.skipped) {
+            const retry = await checkSurface(browser, surface);
+            retry.details.retried = true;
+            r = retry;
+        }
         results.push(r);
     }
     await browser.close();
@@ -263,6 +289,7 @@ async function main() {
         const status = r.details.skipped ? "SKIP" : (r.ok ? "PASS" : "FAIL");
         console.log(`  [${status}] ${r.surface}`);
         if (r.details.skipped) console.log(`         ${r.details.skipped}`);
+        if (r.details.retried) console.log(`         (first attempt missed; this is the fresh-context retry result)`);
         if (r.details.error) console.log(`         ${r.details.error}`);
         if (r.details.evidence) console.log(`         evidence: ${r.details.evidence}`);
         if (r.ok && r.details.visibility) {
