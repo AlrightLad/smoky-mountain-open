@@ -822,9 +822,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-07T16:48:44.873303Z",
+  "generated_at": "2026-06-07T17:02:31.615161Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 87.6,
+  "overall_score": 86.8,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -838,9 +838,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 92.6,
+    "pre_deduction_score": 91.8,
     "deduction": 5,
-    "post_deduction_score": 87.6
+    "post_deduction_score": 86.8
   },
   "dimensions": {
     "A1_roadmap": {
@@ -979,9 +979,9 @@
       "weak_points": []
     },
     "A12_operational": {
-      "score": 75,
+      "score": 60,
       "status": "yellow",
-      "label": "pipeline=yellow · 8 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=red · 8 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
@@ -1014,18 +1014,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "1add117f",
-    "subject": "feat: v8.23.94 â€” premium entry-screen depth (brass spotlight, felt vignette, floating card, sheen CTA)",
-    "committed_at": "2026-06-07T12:48:19-04:00",
-    "trigger": "app-commit",
-    "is_app_commit": true,
-    "app_files_touched": [
-      "public/sw.js",
-      "src/core/utils.js",
-      "src/pages/caddynotes.js",
-      "src/styles/components.css"
-    ],
-    "total_files_touched": 7
+    "sha": "7b0cd484",
+    "subject": "test: full E2E green for v8.23.94 (190 passed / 0 failed / 0 flaky / 23 skipped)",
+    "committed_at": "2026-06-07T13:01:22-04:00",
+    "trigger": "substrate-commit",
+    "is_app_commit": false,
+    "app_files_touched": [],
+    "total_files_touched": 1
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
