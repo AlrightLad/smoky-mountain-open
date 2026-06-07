@@ -33,6 +33,22 @@ icon on your phone's home screen (an installed PWA caches hard and keeps serving
 the old version), **you have not seen any of the upgrade work.** That is the
 single most likely reason the UI "still looks like shit."
 
+### See it for yourself — same login screen, two versions
+
+`.claude/state/ui-upgrade-2026-06-07/staleness-comparison-v8.23.1-vs-v8.23.94.png`
+is a labeled side-by-side I captured live today: the **left** is the actual
+production sign-in screen you see now (flat cream, flat button, no depth); the
+**right** is the same screen on staging (deep felt green, brass spotlight behind
+the badge, a floating sign-in card, a sheened CTA). Both pulled from the live
+URLs minutes ago — production's runtime literally reports `APP_VERSION = 8.23.1`.
+
+I also re-walked the **deployed** staging app today at iPhone width and captured
+six surfaces unedited (`deployed-sweep-2026-06-07/`): Home, Range, Courses,
+Events, More, and the Profile. Every one renders premium — serif headlines,
+real figure-ground depth, branded course monograms, the champion-badge event
+card, the brass-ringed profile portrait. None of that exists on production.
+**The design isn't the problem; the staleness is.**
+
 ## FASTEST fix — see the work right now (no permission needed, zero risk)
 
 Open this on your phone or desktop:
