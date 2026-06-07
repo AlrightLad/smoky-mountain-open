@@ -822,9 +822,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-07T17:22:31.010815Z",
+  "generated_at": "2026-06-07T17:36:44.685953Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 86.8,
+  "overall_score": 87.6,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -838,9 +838,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 91.8,
+    "pre_deduction_score": 92.6,
     "deduction": 5,
-    "post_deduction_score": 86.8
+    "post_deduction_score": 87.6
   },
   "dimensions": {
     "A1_roadmap": {
@@ -979,9 +979,9 @@
       "weak_points": []
     },
     "A12_operational": {
-      "score": 60,
+      "score": 75,
       "status": "yellow",
-      "label": "pipeline=red · 9 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=yellow · 9 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
@@ -1014,13 +1014,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "af9a625c",
-    "subject": "docs(founder): visual staleness proof for #269 (prod v8.23.1 vs staging v8.23.94 side-by-side + 6-surface deployed sweep)",
-    "committed_at": "2026-06-07T13:22:09-04:00",
-    "trigger": "substrate-commit",
+    "sha": "0d6cfcdf",
+    "subject": "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)",
+    "committed_at": "2026-06-07T13:23:38-04:00",
+    "trigger": "cron",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 10
+    "total_files_touched": 4
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
