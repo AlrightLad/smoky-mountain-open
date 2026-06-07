@@ -1,0 +1,35 @@
+Building staging bundle (vite --base=/)...
+
+> the-parbaughs@8.23.94 build:staging
+> vite build --base=/
+
+[36mvite v8.0.13 [32mbuilding client environment for production...[36m[39m
+[2Ktransforming...✓ 1115 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/assets/Logo-CIUuKkXU.jpg        95.52 kB
+dist/index.html                     875.06 kB │ gzip: 212.34 kB
+dist/assets/deferred-b660fd24.js  1,008.83 kB
+
+[32m✓ built in 387ms[39m
+
+Deploying parbaughs-staging Hosting via wrapper script...
+  GOOGLE_APPLICATION_CREDENTIALS=C:\Users\Zach\smoky-mountain-open\scripts\.service-account.json
+
+
+[1m[37m===[39m Deploying to 'parbaughs-staging'...[22m
+
+[36m[1mi [22m[39m deploying [1mhosting[22m
+[36m[1mi  hosting[parbaughs-staging]:[22m[39m beginning deploy...
+[36m[1mi  hosting[parbaughs-staging]:[22m[39m found 44 files in [1mdist[22m
+[36m[1mi  hosting:[22m[39m upload complete
+[32m[1m+  hosting[parbaughs-staging]:[22m[39m file upload complete
+[36m[1mi  hosting[parbaughs-staging]:[22m[39m finalizing version...
+[32m[1m+  hosting[parbaughs-staging]:[22m[39m version finalized
+[36m[1mi  hosting[parbaughs-staging]:[22m[39m releasing new version...
+[32m[1m+  hosting[parbaughs-staging]:[22m[39m release complete
+
+[32m[1m+ [22m[39m [1m[4mDeploy complete![24m[22m
+
+[1mProject Console:[22m https://console.firebase.google.com/project/parbaughs-staging/overview
+[1mHosting URL:[22m https://parbaughs-staging.web.app
