@@ -1,4 +1,4 @@
-=== post-commit hook fired 2026-06-07T06:55:38Z HEAD=91729e89 ===
+=== post-commit hook fired 2026-06-07T11:44:57Z HEAD=ce1d859f ===
 [scaffold-from-templates] done: scaffolded=0 skipped=15
 
 --- scripts/scan-shipped-proposals.py ---
@@ -14,48 +14,48 @@ Traceback (most recent call last):
   File "C:\Users\Zach\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 23, in decode
     return codecs.charmap_decode(input,self.errors,decoding_table)[0]
            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 247828: character maps to <undefined>
+UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 249244: character maps to <undefined>
 [scan-shipped] approved=1 candidate-commits-90d=0
 [scan-shipped] done: moved=0 skipped_already_shipped=0 warnings=0
 
 --- scripts/aggregate-telemetry.py ---
 [aggregate] wrote .claude\state\telemetry\aggregates\current-snapshot.json (write-content-changed)
 [aggregate] meter_status=wired-real
-[aggregate] events=26280 handoffs=1 bubbles=7 proposals_pending=0
+[aggregate] events=26522 handoffs=1 bubbles=7 proposals_pending=0
 
 --- scripts/ingest-session-transcripts.py ---
-[ingest-session-transcripts] scanned 5b35bf5a-1693-422e-b71b-819284587fed.jsonl: +2 new entries (offset 703909\u2192718044)
-[ingest-session-transcripts] scanned 301 JSONL file(s), found 2 new assistant turns
-[ingest-session-transcripts] wrote session-transcript-summary.json (358 buckets, 14430573302 total tokens, 307 sessions) [write-content-changed]
+[ingest-session-transcripts] scanned a3e3471a-7db9-4c9d-a1f1-37284a43520d.jsonl: +254 new entries (offset 515586693\u2192521718569)
+[ingest-session-transcripts] scanned 301 JSONL file(s), found 254 new assistant turns
+[ingest-session-transcripts] wrote session-transcript-summary.json (359 buckets, 14461091009 total tokens, 307 sessions) [write-content-changed]
 
 --- scripts/aggregate-token-usage.py ---
-[aggregate-token] real_events=359 estimated_events=15121 manual_entries=0
-[aggregate-token] all-time: real=14430675302 estimated=19014010 manual=0
+[aggregate-token] real_events=360 estimated_events=15261 manual_entries=0
+[aggregate-token] all-time: real=14461193009 estimated=19014010 manual=0
 [aggregate-token] snapshot write=True (write-content-changed) -> .claude\state\telemetry\aggregates\token-usage-snapshot.json
 [aggregate-token] cursor   write=True (write-content-changed) -> .claude\state\telemetry\aggregates\.token-usage-cursor.json
 
 --- scripts/aggregate-test-health.py ---
-[aggregate-test-health] OK status=green timestamp=2026-06-07T06:55:43Z write=False (skip-idempotent-grace-content-unchanged-770606s)
+[aggregate-test-health] OK status=green timestamp=2026-06-07T11:45:02Z write=False (skip-idempotent-grace-content-unchanged-787965s)
 
 --- scripts/aggregate-security-health.py ---
-[aggregate-security-health] OK status=green cred_leaks=0 vuln_deps=0 write=False (skip-idempotent-grace-content-unchanged-1332470s)
+[aggregate-security-health] OK status=green cred_leaks=0 vuln_deps=0 write=False (skip-idempotent-grace-content-unchanged-1349829s)
 
 --- scripts/aggregate-approvals-pipeline.py ---
-[aggregate-approvals-pipeline] OK status=green summary=watcher no-new-files 5.0min ago · 2 in inbox write=True (write-content-changed)
+[aggregate-approvals-pipeline] OK status=red summary=watcher cycling · applies blocked (8 skips on dirty tree) · 2 in inbox write=False (skip-idempotent-fresh-167s)
 
 --- scripts/aggregate-architecture-review.py ---
-[aggregate-architecture-review] OK status=yellow findings=2 pending_recs=0 write=False (skip-idempotent-grace-content-unchanged-24809s)
+[aggregate-architecture-review] OK status=yellow findings=2 pending_recs=0 write=False (skip-idempotent-grace-content-unchanged-42168s)
 
 --- scripts/aggregate-fiq-status.py ---
-[aggregate-fiq-status] OK status=green declared=26 deployed=26 write=False (skip-idempotent-grace-content-unchanged-229113s)
+[aggregate-fiq-status] OK status=green declared=26 deployed=26 write=False (skip-idempotent-grace-content-unchanged-246472s)
 
 --- scripts/aggregate-self-tests.py ---
 [aggregate-self-tests] starting D40 parity checks across 5 aggregators
-  [aggregate-test-health] PASS status=green age=770611s [content-stable 770611s, idempotent skip]
-  [aggregate-security-health] PASS status=green age=1332473s [content-stable 1332473s, idempotent skip]
-  [aggregate-approvals-pipeline] PASS status=green age=-1s
-  [aggregate-architecture-review] PASS status=yellow age=24812s
-  [aggregate-fiq-status] PASS status=green age=229113s [content-stable 229113s, idempotent skip]
+  [aggregate-test-health] PASS status=green age=787970s [content-stable 787970s, idempotent skip]
+  [aggregate-security-health] PASS status=green age=1349832s [content-stable 1349832s, idempotent skip]
+  [aggregate-approvals-pipeline] PASS status=red age=170s
+  [aggregate-architecture-review] PASS status=yellow age=42171s
+  [aggregate-fiq-status] PASS status=green age=246472s [content-stable 246472s, idempotent skip]
 [aggregate-self-tests] OK all 5 aggregators pass parity
 
 --- scripts/inject-health-banners.py ---
@@ -89,7 +89,7 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 247828: c
 --- scripts/regen-dashboard.py ---
 [regen-dashboard] OK   dashboard.html
 [regen-dashboard] meter_status=wired-real
-[regen-dashboard] handoffs=10 ships=10 proposals_pending=0 bubbles=7 events=26280
+[regen-dashboard] handoffs=10 ships=10 proposals_pending=0 bubbles=7 events=26522
 
 --- scripts/regen-main-flows.py ---
 [regen-main-flows] WARN: 6 orphan components in grid (referenced by no flow's path):
@@ -103,7 +103,7 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 247828: c
 [regen-main-flows] 6 columns, 47 components, 62 flows; orphans=6
 
 --- scripts/regen-activity.py ---
-[regen-activity] OK   activity.html — total=500 (handoffs=1 telemetry=268 commits=726)
+[regen-activity] OK   activity.html — total=500 (handoffs=1 telemetry=263 commits=714)
 
 --- scripts/dry-run-regen-ops-views.py ---
 [regen] 7 bubbles (activity.html owned by regen-activity.py; proposals.html owned by regen-proposals.py)
@@ -111,7 +111,7 @@ UnicodeDecodeError: 'charmap' codec can't decode byte 0x8f in position 247828: c
 
 --- scripts/regen-token-usage.py ---
 [regen-token-usage] OK   token-usage.html
-[regen-token-usage] all-time: real=14430675302 estimated=19014010 manual=0
+[regen-token-usage] all-time: real=14461193009 estimated=19014010 manual=0
 [regen-token-usage] pie_views slices: agent=3 work=2 session_top10=10
 
 --- scripts/consolidate-lighthouse.py ---
@@ -122,10 +122,10 @@ Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
   seo               : 92
 
 --- scripts/aggregate-app-health.py ---
-[aggregate-app-health] overall=A- (88.8) · 0 attention items · .claude\state\aggregates\app-health.json
+[aggregate-app-health] overall=A- (86.8) · 1 attention items · .claude\state\aggregates\app-health.json
 
 --- scripts/regen-app-health.py ---
-[regen-app-health] OK  overall=A- (88.8) · 12 dimensions · docs\reports\app-health.html
+[regen-app-health] OK  overall=A- (86.8) · 12 dimensions · docs\reports\app-health.html
 
 --- scripts/regen-sessions.py ---
 [regen-sessions] OK   sessions.html 1 sessions
@@ -139,16 +139,16 @@ Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
 
 --- scripts/regen-index.py ---
 [regen-index] OK   index.html
-[regen-index] ships=0 proposals_pending=0 bubbles=1 halt=none git=91729e89
+[regen-index] ships=0 proposals_pending=0 bubbles=1 halt=none git=ce1d859f
 
 --- scripts/dashboard-freshness-sentinel.py ---
-[dashboard-freshness] status=green ok=12 repaired=0 unrepairable=0 mismatches=0 duration=0.2s
+[dashboard-freshness] status=green ok=11 repaired=1 unrepairable=0 mismatches=1 duration=2.5s
 
 --- visual-gate ---
   PASS  dashboard.html               30 KPI cells populated (>=20)
   PASS  activity.html                4 activity rows OR KPIs (>=1)
   PASS  amendments.html              4 amendment rows OR KPIs (>=1)
-  PASS  app-health.html              14 dimension cards (>=5)
+  PASS  app-health.html              15 dimension cards (>=5)
   PASS  design-system.html           451 design tokens (>=5)
   PASS  discussion-bubbles.html      4 threads OR KPIs (>=1)
   PASS  escalations.html             4 rows OR KPIs (>=1)
@@ -159,9 +159,9 @@ Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
   PASS  token-usage.html             3 token rows OR cards (>=1)
 
 visual-gate: ALL 12 PAGES RENDER CONTENT
-[write-regen-heartbeat] OK ts=2026-06-07T06:56:12Z source=post-commit-hook status=PASS
+[write-regen-heartbeat] OK ts=2026-06-07T11:45:34Z source=post-commit-hook status=PASS
 
 --- P9.5 self-test ---
 [ingest-session-transcripts] scanned 301 JSONL file(s), found 0 new assistant turns
-[ingest-session-transcripts] skipped session-transcript-summary.json (358 buckets, 14430573302 total tokens, 307 sessions) [skip-idempotent-fresh-77s]
-[ingest-session-transcripts] SELF-TEST OK: 301 JSONLs \u2192 14430573302 tokens across 358 buckets
+[ingest-session-transcripts] skipped session-transcript-summary.json (359 buckets, 14461091009 total tokens, 307 sessions) [skip-idempotent-fresh-80s]
+[ingest-session-transcripts] SELF-TEST OK: 301 JSONLs \u2192 14461091009 tokens across 359 buckets
