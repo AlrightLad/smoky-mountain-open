@@ -796,6 +796,17 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .auth-link{color:var(--cb-ink-link);font-size:13px;font-weight:600;cursor:pointer;margin-top:8px;display:inline-block;letter-spacing:.2px}
 .auth-divider{display:flex;align-items:center;gap:var(--sp-3);margin:16px 0;color:var(--cb-ink-faint);font-size:10px;text-transform:uppercase;letter-spacing:2px}
 .auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--cb-chalk-3)}
+/* First-impression entrance: staggered fade-up on the members-only lockup.
+   transform+opacity only (GPU), ease-out, plays once on initial paint. */
+@keyframes authEntrance{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.auth-logo,.auth-title,.auth-sub,.auth-form{animation:authEntrance .52s var(--ease-out) both}
+.auth-logo{animation-delay:.04s}
+.auth-title{animation-delay:.11s}
+.auth-sub{animation-delay:.17s}
+.auth-form{animation-delay:.23s}
+@media (prefers-reduced-motion:reduce){
+  .auth-logo,.auth-title,.auth-sub,.auth-form{animation:none}
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    TEE TIME CARDS
@@ -4366,8 +4377,10 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 .home-hero__cta {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 13px 22px; min-height: 44px; box-sizing: border-box;
-  background: var(--cb-chalk); color: var(--cb-green);
+  background: var(--cb-brass); color: var(--cb-ink);
   border-radius: var(--r-2); box-shadow: var(--shadow-sm);
   font-family: var(--font-display); font-size: 14.5px; font-weight: 700;
   letter-spacing: 0.2px;
+  transition: background var(--duration-fast) var(--ease-default);
 }
+@media (hover: hover) { .home-hero:hover .home-hero__cta { background: var(--cb-brass-3); } }

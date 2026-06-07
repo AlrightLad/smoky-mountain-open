@@ -402,7 +402,7 @@ function _renderUnfinishedTripBanner(trips, uid, claimedFrom) {
 
 function _renderReadyCTA() {
   var h = '<div style="padding:18px 22px 0">';
-  h += '<div class="home-hero tappable" onclick="Router.go(\'playnow\')">';
+  h += '<div class="home-hero tappable tappable--primary" onclick="Router.go(\'playnow\')">';
   h += '<div class="home-hero__eyebrow">NO ROUND TODAY</div>';
   h += '<div class="home-hero__title">Ready when you are.</div>';
   h += '<div class="home-hero__sub">Start a round and your scorecard, skins pot and caddie all wake up.</div>';
