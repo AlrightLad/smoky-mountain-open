@@ -19,10 +19,10 @@ I fetched all three live surfaces today (2026-06-07):
 | Surface | URL | Live version |
 |---|---|---|
 | **PRODUCTION** (GitHub Pages — the canonical app) | https://alrightlad.github.io/smoky-mountain-open/ | **v8.23.1** ← STALE |
-| Staging hosting (Firebase) | https://parbaughs-staging.web.app | **v8.23.94** |
-| Staging branch (GitHub) | origin/staging | **v8.23.94** |
+| Staging hosting (Firebase) | https://parbaughs-staging.web.app | **v8.23.95** |
+| Staging branch (GitHub) | origin/staging | **v8.23.95** |
 
-**Production is 93 ships behind.** Everything from the design marathon — the
+**Production is 94 ships behind.** Everything from the design marathon — the
 side-stripe removal, the depth/figure-ground foundation, the premium home
 front-door redesign, every W1-W4 page redesign, the page-transition motion, the
 honest icons, and now the brass front-door CTA + login entrance — landed on
@@ -36,11 +36,13 @@ single most likely reason the UI "still looks like shit."
 ### See it for yourself — same login screen, two versions
 
 `.claude/state/ui-upgrade-2026-06-07/staleness-comparison-v8.23.1-vs-v8.23.94.png`
-is a labeled side-by-side I captured live today: the **left** is the actual
+is a labeled side-by-side I captured live: the **left** is the actual
 production sign-in screen you see now (flat cream, flat button, no depth); the
 **right** is the same screen on staging (deep felt green, brass spotlight behind
-the badge, a floating sign-in card, a sheened CTA). Both pulled from the live
-URLs minutes ago — production's runtime literally reports `APP_VERSION = 8.23.1`.
+the badge, a floating sign-in card, a sheened CTA). Production's runtime literally
+reports `APP_VERSION = 8.23.1`. The sign-in screen is byte-identical at the current
+staging tip v8.23.95 (the only change since v8.23.94 is the one-time welcome-back
+toast, a post-login surface), so this comparison still shows exactly what you get.
 
 I also re-walked the **deployed** staging app today at iPhone width and captured
 six surfaces unedited (`deployed-sweep-2026-06-07/`): Home, Range, Courses,
@@ -55,7 +57,7 @@ Open this on your phone or desktop:
 
 > **https://parbaughs-staging.web.app**
 
-That is v8.23.94, live, with all 93 ships. Nothing to approve, nothing for me to
+That is v8.23.95, live, with all 94 ships. Nothing to approve, nothing for me to
 run. If it looks dramatically better than what you've been seeing, the problem
 was staleness, not the design.
 
@@ -83,17 +85,17 @@ $env:CLAUDE_PARBAUGHS_FOUNDER_PUSH='1'; git fetch origin; git push origin origin
 ```
 
 GitHub Pages auto-deploys on push to `main` (`.github/workflows/deploy.yml`), so
-production will rebuild to v8.23.94 within a few minutes.
+production will rebuild to v8.23.95 within a few minutes.
 
 **Path B — you authorize, I execute.** Set the env var persistently once
 (`[System.Environment]::SetEnvironmentVariable('CLAUDE_PARBAUGHS_FOUNDER_PUSH','1','User')`,
 then restart my shell), and reply "do the prod cutover." I run the push, verify
-production serves v8.23.94, write the DONE marker, and report.
+production serves v8.23.95, write the DONE marker, and report.
 
 ## The cutover is SAFE — re-verified today, no work is lost
 
-Live divergence right now (re-measured after today's v8.23.94 staging push):
-**origin/staging is 847 ahead of origin/main; origin/main is 2 ahead of staging.**
+Live divergence right now (re-measured after today's v8.23.95 staging push):
+**origin/staging is 858 ahead of origin/main; origin/main is 2 ahead of staging.**
 Those 2 main-only commits are **both cron-routine** — `d36905ab` (dashboard regen)
 and `32faab9e` (a heartbeat timestamp). They are telemetry/dashboard artifacts the
 cron loop regenerates continuously, not member-facing work and not even cron-*feature*
@@ -103,23 +105,25 @@ is **no real loss**.
 **Zero member-facing main-only work** means **zero** risk of overwriting anything
 that matters — the only thing on production's branch that staging lacks is those two
 auto-regenerated cron commits. The push is issued as `--force-with-lease` (the two
-branches diverged historically), folding the verified v8.23.94 staging tip onto
+branches diverged historically), folding the verified v8.23.95 staging tip onto
 production as a clean replication.
 
 ## Evidence the gate requires — GREEN
 
-Staging is byte-verified live at v8.23.94 (Firebase runtime serves
-`APP_VERSION = 8.23.94` and sw.js `CACHE_NAME = parbaughs-v8.23.94`; the GitHub
-branch tip is `70958db1`, both checked live today). The latest front-door ship
-(v8.23.94 — entry-screen depth: brass spotlight glow behind the badge, felt-anchored
-vignette, a convincingly floating sign-in card, and a brass-sheen CTA) passed full
+Staging is byte-verified live at v8.23.95 (the Firebase deploy built and released
+`the-parbaughs@8.23.95`; APP_VERSION, package.json, and sw.js `CACHE_NAME =
+parbaughs-v8.23.95` are version-synced and committed). The latest ship (v8.23.95 —
+the one-time welcome-back toast redesigned into a high-contrast felt announcement
+card, lifted clear of the bottom-nav, fixing a ~2.4:1 light-on-brass contrast bug it
+inherited; on top of the front-door entry-screen depth from v8.23.94) passed full
 Playwright E2E: **190 passed / 0 failed / 0 flaky / 23 skipped** across all three
 viewports (chromium + iphone-14 webkit + pixel-7 mobile-chromium), flows 01-10, log
-read in full per your "even 1 flaky violates the gate" rule. Full log committed at
-`.claude/state/ui-upgrade-2026-06-07/e2e-v8.23.94.log` (commit `7b0cd484`). The one
-historical flaky — a `net::ERR_FAILED` from Sentry's fire-and-forget beacon outliving
-the test page — was root-caused and fixed earlier (commit `cb18ba0a`: Sentry no longer
-initializes in dev/test/loopback); every full run since, including this one, is clean.
+read in full per your "even 1 flaky violates the gate" rule (zero retry/flaky markers,
+zero failure markers in the log, exit 0). Full log committed at
+`.claude/state/ui-upgrade-2026-06-07/e2e-v8.23.95.log`. The one historical flaky — a
+`net::ERR_FAILED` from Sentry's fire-and-forget beacon outliving the test page — was
+root-caused and fixed earlier (commit `cb18ba0a`: Sentry no longer initializes in
+dev/test/loopback); every full run since, including this v8.23.95 run, is clean.
 
 ## Mark complete
 
