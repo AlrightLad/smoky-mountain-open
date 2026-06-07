@@ -2780,7 +2780,7 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 
 /* LIFT — forward (default direction) */
 [data-transition="lift"][data-direction="in"]:not([data-nav="back"]) {
-  animation: pt-lift-in var(--dur-base) var(--ease-default) 80ms both;
+  animation: pt-lift-in var(--dur-base) var(--ease-default) 80ms backwards;
 }
 [data-transition="lift"][data-direction="out"]:not([data-nav="back"]) {
   animation: pt-lift-out var(--dur-base) var(--ease-default) both;
@@ -2796,7 +2796,7 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 
 /* LIFT — back (inverted Y) */
 [data-transition="lift"][data-direction="in"][data-nav="back"] {
-  animation: pt-lift-in-back var(--dur-base) var(--ease-default) 80ms both;
+  animation: pt-lift-in-back var(--dur-base) var(--ease-default) 80ms backwards;
 }
 [data-transition="lift"][data-direction="out"][data-nav="back"] {
   animation: pt-lift-out-back var(--dur-base) var(--ease-default) both;
@@ -2812,7 +2812,7 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 
 /* MASTHEAD — content crossfade (entrance only; exit is no-op per design) */
 [data-transition="masthead"][data-direction="in"] {
-  animation: pt-masthead-in var(--dur-smooth) var(--ease-default) var(--dur-quick) both;
+  animation: pt-masthead-in var(--dur-smooth) var(--ease-default) var(--dur-quick) backwards;
   position: relative;
 }
 @keyframes pt-masthead-in {

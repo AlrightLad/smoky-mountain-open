@@ -2,6 +2,9 @@ var Router = (function() {
   var current = { page: "home", params: {} };
   var pages = {};
   var _skipHistoryPush = false;
+  // Back-nav flag — set by back() and popstate so go() can pick the inverted
+  // entrance motion (pt-lift-in-back) instead of the forward lift.
+  var _isBack = false;
   // Explicit nav stack — always knows exactly where back() should go
   // Scales to any depth: Home→Members→Profile→EditProfile→back→back→back works correctly
   var _navStack = [];
@@ -11,6 +14,7 @@ var Router = (function() {
     if (_navStack.length > 0) _navStack.pop();
     var state = e.state;
     _skipHistoryPush = true;
+    _isBack = true;
     if (state && state.page) {
       go(state.page, state.params || {});
     } else {
@@ -18,6 +22,7 @@ var Router = (function() {
       go("home", {});
     }
     _skipHistoryPush = false;
+    _isBack = false;
   });
 
   function register(name, renderFn) {
@@ -48,6 +53,19 @@ var Router = (function() {
     if (target) {
       target.classList.remove("hidden");
       if (pages[page]) pages[page](current.params);
+      // Entrance motion — fluid page transitions (pt-lift / pt-masthead).
+      // Keyframes + reduced-motion guard live in components.css; the tier
+      // is computed in transitions.js. Clear + force a reflow before
+      // applying so the animation replays on every navigation — re-setting
+      // an identical data-transition attribute alone will not restart a
+      // CSS animation. The "in" rules use fill-mode:backwards so no
+      // transform lingers afterward (a retained translateY would create a
+      // containing block and break position:fixed descendants).
+      if (typeof applyTransition === "function" && typeof getTransitionTier === "function") {
+        _clearTransition(target);
+        void target.offsetWidth;
+        applyTransition(target, getTransitionTier(prev, page), "in", _isBack);
+      }
     }
     window.scrollTo(0, 0);
     // Hide footer on pages with sticky input (chat, DMs)
@@ -165,9 +183,11 @@ var Router = (function() {
       var prev = _navStack.pop();
       // Keep browser history in sync without adding a new entry
       _skipHistoryPush = true;
+      _isBack = true;
       history.back();
       go(prev.page, prev.params);
       _skipHistoryPush = false;
+      _isBack = false;
     } else {
       go(fallback || "home", {});
     }
