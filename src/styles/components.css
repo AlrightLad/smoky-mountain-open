@@ -25,7 +25,7 @@
 .hof-card{box-shadow:var(--shadow-sm)}
 .stat-box{box-shadow:var(--shadow-sm)}
 .tee-card{box-shadow:var(--shadow-sm)}
-.auth-screen .auth-form{box-shadow:none}
+.auth-screen .auth-form{box-shadow:var(--shadow-md)}
 .lb-card{box-shadow:var(--shadow-sm)}
 .lb-card.first{box-shadow:var(--shadow-md)}
 
@@ -762,26 +762,40 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 /* ═══════════════════════════════════════════════════════════════════════════
    AUTH SCREENS
    ═══════════════════════════════════════════════════════════════════════════ */
-.auth-screen{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:var(--sp-5);text-align:center}
-.auth-logo{width:100px;height:100px;border-radius:var(--r-5);border:1px solid var(--border);overflow:hidden;margin-bottom:20px;background:var(--bg3)}
+/* Members' entrance — a felt-green threshold that speaks the interior's hero
+   language (billiard-green field + brass crest + gold-on-green wordmark) and
+   floats a raised cream sign-in card. Token-only so it re-themes with every
+   pb_appearance palette. The bright clubhouse opens once you cross it. */
+.auth-screen{
+  position:relative; min-height:100vh; min-height:100dvh;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:var(--sp-5);
+  padding-top:max(var(--sp-5), env(safe-area-inset-top));
+  padding-bottom:max(var(--sp-5), env(safe-area-inset-bottom));
+  text-align:center;
+  background:
+    radial-gradient(120% 78% at 50% -8%, rgba(var(--cb-brass-rgb), .20), transparent 60%),
+    linear-gradient(160deg, var(--cb-green-2) 0%, var(--surface-inverse) 56%, var(--cb-green-2) 100%);
+}
+.auth-logo{width:84px;height:84px;border-radius:var(--r-4);overflow:hidden;margin-bottom:20px;background:var(--cb-ink);border:1.5px solid rgba(var(--cb-brass-rgb),.55);box-shadow:0 10px 30px rgba(0,0,0,.34)}
 .auth-logo img{width:100%;height:100%;object-fit:cover}
-.auth-title{font-family:var(--font-display);font-size:var(--text-3xl);font-weight:800;color:var(--gold);letter-spacing:3px;margin-bottom:4px}
-.auth-sub{font-size:var(--text-xs);color:var(--muted);letter-spacing:5px;text-transform:uppercase;margin-bottom:32px;font-weight:500}
-.auth-form{width:100%;max-width:320px}
-.auth-input{width:100%;padding:var(--sp-3) 14px;background:var(--bg2);border:1px solid var(--cb-mute-2);border-radius:var(--r-2);color:var(--cream);font-size:var(--text-md);margin-bottom:10px;outline:none;transition:border var(--duration-fast) var(--ease-default),box-shadow var(--duration-fast) var(--ease-default);font-family:var(--font-ui)}
-.auth-input:hover{border-color:var(--cb-mute)}
-.auth-input:focus{border-color:var(--gold);box-shadow:0 0 0 2px rgba(var(--gold-rgb),.2)}
-.auth-input::placeholder{color:var(--muted2)}
-.auth-btn{width:100%;padding:13px;background:var(--gold);color:var(--bg);border:none;border-radius:var(--r-2);font:700 13px 'Inter',sans-serif;letter-spacing:.5px;margin-bottom:10px;cursor:pointer;transition:transform var(--duration-fast) var(--ease-default),opacity var(--duration-fast) var(--ease-default),background var(--duration-fast) var(--ease-default)}
-.auth-btn:hover{background:var(--cb-brass-3)}
-.auth-btn:active{transform:scale(.97);opacity:.85}
-.auth-btn-alt{width:100%;padding:var(--sp-3);background:transparent;color:var(--cream);border:1px solid var(--cb-mute-2);border-radius:var(--r-2);font:600 12px 'Inter',sans-serif;margin-bottom:8px;cursor:pointer;transition:background var(--duration-fast) var(--ease-default)}
-.auth-btn-alt:hover{background:var(--bg3);border-color:rgba(var(--gold-rgb),.15)}
+.auth-title{font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--cb-brass-3);letter-spacing:1.5px;line-height:1.04;margin-bottom:7px;font-variation-settings:"opsz" 60}
+.auth-sub{font-family:var(--font-mono);font-size:10px;font-weight:600;color:var(--cb-chalk-3);letter-spacing:5px;text-transform:uppercase;margin-bottom:30px}
+.auth-form{width:100%;max-width:340px;box-sizing:border-box;background:var(--cb-chalk);border:1px solid rgba(var(--cb-brass-rgb),.26);border-radius:var(--r-4);padding:22px 20px 20px;box-shadow:var(--shadow-md)}
+.auth-input{width:100%;box-sizing:border-box;padding:13px 14px;background:var(--cb-chalk-2);border:1px solid var(--cb-chalk-3);border-radius:var(--r-2);color:var(--cb-ink);font-size:16px;margin-bottom:10px;outline:none;transition:border var(--duration-fast) var(--ease-default),box-shadow var(--duration-fast) var(--ease-default);font-family:var(--font-ui);box-shadow:inset 0 1px 2px rgba(28,24,14,.06)}
+.auth-input:hover{border-color:var(--cb-brass)}
+.auth-input:focus{border-color:var(--cb-brass);box-shadow:0 0 0 3px rgba(var(--cb-brass-rgb),.18),inset 0 1px 2px rgba(28,24,14,.06)}
+.auth-input::placeholder{color:var(--cb-ink-faint)}
+.auth-btn{width:100%;padding:14px;min-height:48px;box-sizing:border-box;background:var(--cb-brass);color:var(--cb-chalk);border:none;border-radius:var(--r-2);font-family:var(--font-display);font-weight:700;font-size:15px;letter-spacing:.3px;margin-top:4px;margin-bottom:10px;cursor:pointer;box-shadow:var(--shadow-sm);transition:transform var(--duration-fast) var(--ease-default),opacity var(--duration-fast) var(--ease-default),background var(--duration-fast) var(--ease-default)}
+.auth-btn:hover{background:var(--cb-brass-deep)}
+.auth-btn:active{transform:scale(.98);opacity:.9}
+.auth-btn-alt{width:100%;padding:13px;min-height:46px;box-sizing:border-box;background:transparent;color:var(--cb-green);border:1px solid rgba(var(--cb-brass-rgb),.3);border-radius:var(--r-2);font-family:var(--font-ui);font-weight:700;font-size:13px;margin-bottom:4px;cursor:pointer;transition:background var(--duration-fast) var(--ease-default),border-color var(--duration-fast) var(--ease-default)}
+.auth-btn-alt:hover{background:var(--cb-chalk-2);border-color:var(--cb-green)}
 .auth-error{background:rgba(var(--red-rgb),.1);color:var(--red);padding:10px 14px;border-radius:var(--r-2);font-size:var(--text-base);margin-bottom:10px;display:none;text-align:left}
 .auth-error.show{display:block}
-.auth-link{color:var(--gold);font-size:var(--text-base);cursor:pointer;margin-top:6px;display:inline-block;letter-spacing:.2px}
-.auth-divider{display:flex;align-items:center;gap:var(--sp-3);margin:18px 0;color:var(--muted2);font-size:var(--text-xs);text-transform:uppercase;letter-spacing:2px}
-.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.auth-link{color:var(--cb-ink-link);font-size:13px;font-weight:600;cursor:pointer;margin-top:8px;display:inline-block;letter-spacing:.2px}
+.auth-divider{display:flex;align-items:center;gap:var(--sp-3);margin:16px 0;color:var(--cb-ink-faint);font-size:10px;text-transform:uppercase;letter-spacing:2px}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--cb-chalk-3)}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    TEE TIME CARDS
@@ -4336,7 +4350,7 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 }
 .home-hero__eyebrow {
   font-family: var(--font-mono); font-size: 9px; font-weight: 700;
-  letter-spacing: 2.5px; text-transform: uppercase; color: var(--cb-brass);
+  letter-spacing: 2.5px; text-transform: uppercase; color: var(--cb-brass-3);
   margin-bottom: 12px;
 }
 .home-hero__title {
