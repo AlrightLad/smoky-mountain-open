@@ -6,11 +6,11 @@
 import { chromium } from 'playwright';
 import { mkdirSync, existsSync } from 'fs';
 
-const OUT = 'scratch/dashed-fix-2026-06-07';
+const OUT = 'scratch/premium-assess-2026-06-07-after';
 if (!existsSync(OUT)) mkdirSync(OUT, { recursive: true });
 
 const BASE = 'http://localhost:5173/smoky-mountain-open/?emulator=1';
-const ROUTES = ['wagers', 'bounties', 'challenges', 'teetimes', 'partygames', 'courses'];
+const ROUTES = ['home', 'rounds', 'standings', 'feed', 'shop'];
 
 process.env.FIRESTORE_EMULATOR_HOST = '127.0.0.1:8080';
 process.env.FIREBASE_AUTH_EMULATOR_HOST = '127.0.0.1:9099';
@@ -22,6 +22,7 @@ const token = await admin.auth().createCustomToken('test_zach_uid_01');
 const b = await chromium.launch();
 const ctx = await b.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
 const page = await ctx.newPage();
+await page.addInitScript(() => { try { localStorage.setItem('pb_clubhouse_welcomed', '1'); } catch (e) {} });
 await page.goto(BASE);
 await page.waitForFunction(
     () => typeof window.firebase !== 'undefined' && typeof window.auth !== 'undefined' && window._pbEmulator === true,
