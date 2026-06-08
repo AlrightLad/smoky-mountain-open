@@ -34,6 +34,8 @@
   },
   "status": "shipped",
   "shipped_at": "2026-06-07T17:37:00Z",
+  "shipped_in_commit": "35eec381",
+  "shipped_note": "shipped_in_commit backfilled 2026-06-08 overnight cycle to satisfy round-trip immutability contract § 3 rule 5 (lifecycle:shipped-fields requires both shipped_at AND shipped_in_commit; round-trip-test.py:970-975). Value 35eec381 is the literal ship commit ('fix(gate): PROP-015 round-trip gate flake-retry + rollback correctness', 2026-06-07T17:40:33Z) that landed both code edits (regen-all.ps1 +23, verify-scroll-reachability.mjs +29) and set status:shipped/shipped_at — the field was omitted at ship time because a commit cannot self-reference its own hash. Same backfill pattern as PROP-006 + PROP-010 + PROP-011.",
   "applied_by": "claude-code",
   "evidence": {
     "flake_run_1": "scripts/regen-all.ps1 gated run ~17:0x — round-trip FAIL, scroll-reachability exit 1, 'escalations applied list: last item #applied-list > *:last-child not found'",
