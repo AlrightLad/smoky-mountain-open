@@ -1,0 +1,145 @@
+{
+  "generated_at_note": "stamp after run",
+  "viewports": [
+    "desktop",
+    "mobile"
+  ],
+  "surfaces": {
+    "home": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "feed": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "activity": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "rounds": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "roundhistory": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "range": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "drills": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "courses": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "teetimes": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "calendar": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "standings": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "leaderboard": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "records": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "awards": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "aces": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "shop": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "richlist": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "wagers": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "bounties": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "challenges": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "members": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "findplayers": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "leagues": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "chat": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "dms": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "scramble": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "trips": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "partygames": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "social": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "more": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "settings": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "invite": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "trophyroom": {
+      "desktop": "ok",
+      "mobile": "ok"
+    },
+    "spectator": {
+      "desktop": "ok",
+      "mobile": "ok"
+    }
+  }
+}
