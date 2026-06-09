@@ -335,6 +335,46 @@ function computeRivalries(pid) {
   return { nemesis: rivalries.length ? rivalries[0] : null, rivalries: rivalries };
 }
 
+// Course Legend (roadmap rank 14) — the most-DEDICATED player at a course, not the
+// best scorer: whoever has logged the most rounds there in a rolling 90-day window.
+// Community-over-competition by design (the weekend regular can hold a crown the
+// ringer never will). Pure read over rounds already loaded; no writes. Honest:
+// returns null until someone has >=2 rounds in window (never crowns a single round).
+function computeCourseLegend(courseName) {
+  if (!courseName || typeof PB === "undefined" || !PB.getCourseRounds) return null;
+  var rounds = PB.getCourseRounds(courseName) || [];
+  var cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 90);
+  var cutoffStr = cutoff.getFullYear() + "-" + String(cutoff.getMonth() + 1).padStart(2, "0") + "-" + String(cutoff.getDate()).padStart(2, "0");
+  var counts = {};
+  rounds.forEach(function(r) {
+    if (r.format === "scramble" || r.format === "scramble4") return;
+    if (!r.player || !r.date || r.date < cutoffStr) return;
+    if (!counts[r.player]) counts[r.player] = { id: r.player, name: r.playerName || r.player, count: 0, last: r.date };
+    counts[r.player].count++;
+    if (r.date > counts[r.player].last) counts[r.player].last = r.date;
+  });
+  var arr = Object.keys(counts).map(function(k) { return counts[k]; });
+  if (!arr.length) return null;
+  arr.sort(function(a, b) { return b.count - a.count || (b.last > a.last ? 1 : (b.last < a.last ? -1 : 0)); });
+  if (arr[0].count < 2) return null;
+  var runnerUp = arr[1] || null;
+  return { legend: arr[0], runnerUp: runnerUp, runnerUpGap: runnerUp ? (arr[0].count - runnerUp.count) : null };
+}
+
+// All courses where `pid` currently holds the Course Legend crown — a profile
+// accolade. O(courses x rounds); fine at league scale.
+function computeMemberCourseLegends(pid) {
+  if (!pid || typeof PB === "undefined" || !PB.getCourses) return [];
+  var out = [];
+  (PB.getCourses() || []).forEach(function(c) {
+    if (!c || !c.name) return;
+    var cl = computeCourseLegend(c.name);
+    if (cl && cl.legend && cl.legend.id === pid) out.push({ course: c.name, count: cl.legend.count });
+  });
+  out.sort(function(a, b) { return b.count - a.count; });
+  return out;
+}
+
 // Caddy one-liner for a rivalry row, from the player's perspective. Record-only
 // (calcH2H carries no result ordering, so we never fabricate a "won the last two").
 function rivalryCaddyLine(r, oppName) {

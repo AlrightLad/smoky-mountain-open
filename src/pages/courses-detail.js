@@ -90,6 +90,22 @@ function renderCourseDetail(courseId) {
     h += '</div></div>';
   }
 
+  // Course Legend (rank 14) — the most-DEDICATED regular here (most rounds in 90
+  // days), not the best scorer. Community-over-competition: rewards showing up.
+  var _cl = (typeof computeCourseLegend === "function") ? computeCourseLegend(c.name) : null;
+  if (_cl && _cl.legend) {
+    var _lg = _cl.legend;
+    var _lgP = PB.getPlayer(_lg.id);
+    var _clSub = (_cl.runnerUp && _cl.runnerUpGap > 0)
+      ? escHtml(_cl.runnerUp.name) + " needs " + _cl.runnerUpGap + " more to take it"
+      : "The most-played regular here";
+    h += '<div class="course-legend" onclick="Router.go(\'members\',{id:\'' + String(_lg.id).replace(/'/g, "\\'") + '\'})" role="button" tabindex="0" onkeydown="if(event.key===\'Enter\'){Router.go(\'members\',{id:\'' + String(_lg.id).replace(/'/g, "\\'") + '\'})}">';
+    h += '<div class="course-legend__crown"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 20h14M6.5 20c-1.2-5-2-8-1-12 2.2 2 4 2 5-1 1 3 2.8 3 5 1 1 4 .2 7-1 12"/></svg></div>';
+    h += '<div class="course-legend__main"><div class="course-legend__label">Course Legend</div><div class="course-legend__name">' + escHtml(_lg.name) + '</div><div class="course-legend__sub">' + _lg.count + ' rounds in 90 days · ' + _clSub + '</div></div>';
+    h += renderAvatar(_lgP, 40, false);
+    h += '</div>';
+  }
+
   // Course leaderboard — top 3 per format category
   h += '<div class="section"><div class="sec-head"><span class="sec-title">Leaderboard</span></div>';
 
