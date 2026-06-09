@@ -29,7 +29,10 @@ case "$base" in
 esac
 case "$normalized" in
   */scripts/.service-account.json|scripts/.service-account.json) protected=1 ;;
-  */firestore.rules|firestore.rules) protected=1 ;;
+  # firestore.rules UNGATED per Founder directive 2026-06-09: at this scale the agent
+  # maintains the security-rules + Firebase ecosystem (edits land in the per-feature
+  # loop — emulator-tested, staging-deployed, reviewed, then prod). Credentials (.env,
+  # service-account) + payments/ + auth/ stay gated.
   */payments/*|payments/*) protected=1 ;;
   */auth/*|auth/*) protected=1 ;;
 esac
