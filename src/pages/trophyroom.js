@@ -71,6 +71,27 @@ function _trRecRow(label, value, ctx, onclick) {
   return s;
 }
 
+// Roll of Honor (rank 13) — past season champions, most-recent first, for the
+// trophy-lineage chain. Reuses the standings archive logic: a season counts only
+// once complete and with a points-bearing winner (P9 — never crown an open season).
+function _trRollOfHonor() {
+  if (typeof PB === "undefined" || !PB.getSeasonStandings || !PB.SEASON_CONFIG) return [];
+  var out = [];
+  var curYear = new Date().getFullYear();
+  for (var y = curYear; y >= 2026; y--) {
+    PB.SEASON_CONFIG.forEach(function(cfg) {
+      try {
+        var ss = PB.getSeasonStandings(y, cfg.key);
+        if (ss && ss.standings && ss.standings.length && localDateStr() > ss.seasonEnd && (ss.standings[0].points || 0) > 0) {
+          var champ = ss.standings[0];
+          out.push({ id: champ.id, champName: champ.name || champ.username || "A champion", season: cfg.label + " " + y, pts: champ.points });
+        }
+      } catch (e) {}
+    });
+  }
+  return out;
+}
+
 function renderTrophyRoom(p) {
   var pid = p.id;
   // XP source precedence (see PB.getPlayerXPForDisplay in core/data.js).
@@ -140,6 +161,30 @@ function renderTrophyRoom(p) {
   h += _trRecRow("Aces", String(aceCount), aceCount === 1 ? "hole-in-one" : "holes-in-one", "Router.go('aces')");
   h += '</div>';
   h += '</section>';
+
+  // ── Roll of Honor (rank 13) — the league's chain of season champions ──
+  // Lineage, not a flat badge: each past season's champion, reigning holder lit
+  // at the top. Pure read from getSeasonStandings per completed season (P9 — only
+  // real, points-bearing champions; nobody crowned for an unfinished season).
+  var honor = _trRollOfHonor();
+  if (honor.length) {
+    h += '<section class="tr-sec" aria-label="Roll of Honor">';
+    h += '<div class="tr-sec-head"><h2 class="tr-sec-title">Roll of Honor</h2><div class="tr-sec-count">' + honor.length + ' season' + (honor.length !== 1 ? 's' : '') + '</div></div>';
+    h += '<div class="tr-honor">';
+    honor.forEach(function(e, i) {
+      var champPlayer = (PB.getPlayer && PB.getPlayer(e.id)) || { name: e.champName };
+      var go = "Router.go('members',{id:'" + String(e.id).replace(/'/g, "\\'") + "'})";
+      h += '<div class="tr-honor__row' + (i === 0 ? ' tr-honor__row--current' : '') + '" role="button" tabindex="0" onclick="' + go + '" onkeydown="if(event.key===\'Enter\'){' + go + '}">';
+      h += '<span class="tr-honor__node"></span>';
+      h += renderAvatar(champPlayer, i === 0 ? 42 : 32, false);
+      h += '<div class="tr-honor__main"><div class="tr-honor__season">' + escHtml(e.season) + (i === 0 ? '<span class="tr-honor__reign">Reigning</span>' : '') + '</div><div class="tr-honor__champ">' + escHtml(e.champName) + '</div></div>';
+      h += '<div class="tr-honor__pts">' + e.pts + '<span>pts</span></div>';
+      h += '</div>';
+    });
+    h += '</div>';
+    h += '<div class="tr-honor__caption">' + escHtml(honor.length === 1 ? honor[0].champName + " holds the only crown so far — someone take it off him." : "The crown has changed hands across " + honor.length + " seasons. Whose name goes on next?") + '</div>';
+    h += '</section>';
+  }
 
   // ── The wall (full catalog with locked silhouettes; toggle filters to earned) ──
   h += '<section class="tr-sec" aria-label="Achievement wall">';
