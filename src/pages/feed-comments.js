@@ -70,6 +70,34 @@ function _patchCommentCount(roundId, count) {
   });
 }
 
+// v8.24.8 — Brass Tee-Tap reaction patch. Mirrors _patchKudosButton: keeps the
+// data-i-tapped + data-tap-count attributes (revert state) and the brass active
+// color in sync across every surface rendering this round (feed lead + satellite
+// card + HQ League Pulse). The Tee Tap is the golfer's "well played" — distinct
+// from Kudos, stored in rounds/{id}.reactions.teeTap (engagement subfield).
+function _patchTeeTapButton(roundId, tapped, count) {
+  var rows = document.querySelectorAll('[data-round-id="' + roundId + '"]');
+  var color = tapped ? "var(--cb-brass)" : "var(--cb-mute)";
+  rows.forEach(function(row) {
+    var btn = row.querySelector('[data-action="teetap"]');
+    if (!btn) return;
+    btn.setAttribute('data-i-tapped', tapped ? '1' : '0');
+    btn.setAttribute('data-tap-count', count);
+    btn.setAttribute('aria-pressed', tapped ? 'true' : 'false');
+    btn.style.color = color;
+    var svg = btn.querySelector('svg');
+    if (svg) {
+      svg.setAttribute('fill', tapped ? 'currentColor' : 'none');
+      svg.style.color = color;
+    }
+    var span = btn.querySelector('span');
+    if (span) {
+      span.style.color = color;
+      span.textContent = "Tee Tap" + (count > 0 ? " " + count : "");
+    }
+  });
+}
+
 // Append a comment row to the thread. If the thread doesn't exist yet (first
 // comment on this round), create it after the action row.
 function _appendCommentRowToDOM(roundId, comment, newIdx, commentLikes) {
@@ -175,6 +203,58 @@ function feedToggleLike(roundId) {
     if (typeof pbWarn === "function") pbWarn("[feed] toggleLike failed:", err && err.message);
     _patchKudosButton(roundId, prevLiked, prevCount);
     Router.toast("Couldn't add kudos, please try again");
+  });
+}
+
+// v8.24.8 — Brass Tee-Tap reaction toggle. Same optimistic-patch + reconcile
+// + suppress-rerender machinery as feedToggleLike, but writes the engagement
+// subfield rounds/{id}.reactions.teeTap (allowed server-side as of the v8.24.x
+// rules deploy; blocked members are denied by the same rules). The Tee Tap is
+// golf's "well played" nod — a distinct social signal from Kudos.
+function feedToggleTeeTap(roundId) {
+  if (!db || !currentUser) { Router.toast("Sign in to tee-tap"); return; }
+  if (!roundId) return;
+  var uid = currentUser.uid;
+
+  var btn = document.querySelector('[data-round-id="' + roundId + '"] [data-action="teetap"]');
+  var prevTapped = btn ? (btn.getAttribute('data-i-tapped') === '1') : false;
+  var prevCount = btn ? parseInt(btn.getAttribute('data-tap-count') || '0', 10) : 0;
+
+  var newTapped = !prevTapped;
+  var newCount = prevCount + (newTapped ? 1 : -1);
+  if (newCount < 0) newCount = 0;
+  _patchTeeTapButton(roundId, newTapped, newCount);
+
+  window._suppressRoundsRerender = true;
+  db.collection("rounds").doc(roundId).get().then(function(doc) {
+    if (!doc.exists) return;
+    var data = doc.data();
+    var reactions = data.reactions || {};
+    var taps = reactions.teeTap || [];
+    var idx = taps.indexOf(uid);
+    var isTapping = idx === -1;
+    if (idx !== -1) taps.splice(idx, 1);
+    else taps.push(uid);
+    reactions.teeTap = taps;
+    return db.collection("rounds").doc(roundId).update({ reactions: reactions }).then(function() {
+      _patchTeeTapButton(roundId, isTapping, taps.length);
+      if (isTapping && data.player && data.player !== uid) {
+        var myName = currentProfile ? PB.getDisplayName(currentProfile) : "Someone";
+        var courseLabel = data.course ? " at " + data.course : "";
+        sendNotification(data.player, {
+          type: "round_teetap",
+          title: "Tee Tap",
+          message: myName + " tee-tapped your round" + courseLabel,
+          page: "feed"
+        });
+      }
+      setTimeout(function() { window._suppressRoundsRerender = false; }, 2000);
+    });
+  }).catch(function(err) {
+    window._suppressRoundsRerender = false;
+    if (typeof pbWarn === "function") pbWarn("[feed] toggleTeeTap failed:", err && err.message);
+    _patchTeeTapButton(roundId, prevTapped, prevCount);
+    Router.toast("Couldn't tee-tap, please try again");
   });
 }
 

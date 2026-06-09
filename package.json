@@ -1,6 +1,6 @@
 {
   "name": "the-parbaughs",
-  "version": "8.24.7",
+  "version": "8.24.8",
   "private": true,
   "scripts": {
     "dev": "vite",
