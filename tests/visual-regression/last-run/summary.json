@@ -1,729 +1,818 @@
 {
-  "iter": "iter46",
-  "ts": "2026-05-29T02:20:54.284Z",
+  "iter": "iter52",
+  "ts": "2026-06-09T00:41:34.862Z",
   "pages": [
     {
       "profile": "hq",
       "page": "home-hq",
-      "status": "pass",
-      "diff": 6195,
-      "total": 2841120,
-      "pct": 0.218
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "hq",
       "page": "standings",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 2638080,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "hq",
       "page": "members",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 4294080,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "hq",
       "page": "rounds",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 1667520,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "hq",
       "page": "caddynotes",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 3575520,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "hq",
       "page": "playnow",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 1296000,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "hq",
       "page": "feed",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 1296000,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "hq",
       "page": "settings",
-      "status": "pass",
-      "diff": 251,
-      "total": 3121920,
-      "pct": 0.008
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "hq",
       "page": "profile",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "hq",
+      "page": "trophyroom",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "hq",
+      "page": "shop",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "hq",
+      "page": "courses",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "hq",
+      "page": "calendar",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "hq",
+      "page": "teetimes",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "hq",
+      "page": "more",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "hq",
+      "page": "records",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "hq",
+      "page": "aces",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "hq",
+      "page": "awards",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "hq",
+      "page": "range",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "hq",
+      "page": "trips",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "hq",
+      "page": "wagers",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "hq",
+      "page": "bounties",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "hq",
+      "page": "challenges",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "hq",
+      "page": "richlist",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "hq",
+      "page": "leagues",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "hq",
+      "page": "partygames",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "hq",
+      "page": "seasonrecap",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "hq",
+      "page": "findplayers",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "hq",
+      "page": "scorecard",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "hq",
+      "page": "scramble",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "home-hq",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "standings",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "members",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "rounds",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "caddynotes",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "playnow",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "feed",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "settings",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "profile",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "trophyroom",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "shop",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "courses",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "calendar",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "teetimes",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "more",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "records",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "aces",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "awards",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "range",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "trips",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "wagers",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "bounties",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "challenges",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "richlist",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "leagues",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "partygames",
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
+    },
+    {
+      "profile": "iphone14",
+      "page": "seasonrecap",
       "status": "pass",
-      "diff": 2977,
-      "total": 3558240,
+      "diff": 669,
+      "total": 794820,
       "pct": 0.084
     },
     {
-      "profile": "hq",
-      "page": "trophyroom",
-      "status": "pass",
-      "diff": 0,
-      "total": 12038400,
-      "pct": 0
-    },
-    {
-      "profile": "hq",
-      "page": "shop",
-      "status": "pass",
-      "diff": 649,
-      "total": 3121920,
-      "pct": 0.021
-    },
-    {
-      "profile": "hq",
-      "page": "courses",
-      "status": "pass",
-      "diff": 0,
-      "total": 1296000,
-      "pct": 0
-    },
-    {
-      "profile": "hq",
-      "page": "calendar",
-      "status": "pass",
-      "diff": 194,
-      "total": 2409120,
-      "pct": 0.008
-    },
-    {
-      "profile": "hq",
-      "page": "teetimes",
-      "status": "pass",
-      "diff": 0,
-      "total": 1296000,
-      "pct": 0
-    },
-    {
-      "profile": "hq",
-      "page": "more",
-      "status": "pass",
-      "diff": 0,
-      "total": 2376000,
-      "pct": 0
-    },
-    {
-      "profile": "hq",
-      "page": "records",
-      "status": "pass",
-      "diff": 0,
-      "total": 1808640,
-      "pct": 0
-    },
-    {
-      "profile": "hq",
-      "page": "aces",
-      "status": "pass",
-      "diff": 0,
-      "total": 1296000,
-      "pct": 0
-    },
-    {
-      "profile": "hq",
-      "page": "awards",
-      "status": "pass",
-      "diff": 0,
-      "total": 1800000,
-      "pct": 0
-    },
-    {
-      "profile": "hq",
-      "page": "range",
-      "status": "pass",
-      "diff": 0,
-      "total": 1296000,
-      "pct": 0
-    },
-    {
-      "profile": "hq",
-      "page": "trips",
-      "status": "pass",
-      "diff": 0,
-      "total": 1296000,
-      "pct": 0
-    },
-    {
-      "profile": "hq",
-      "page": "wagers",
-      "status": "pass",
-      "diff": 231,
-      "total": 1296000,
-      "pct": 0.018
-    },
-    {
-      "profile": "hq",
-      "page": "bounties",
-      "status": "pass",
-      "diff": 117,
-      "total": 1296000,
-      "pct": 0.009
-    },
-    {
-      "profile": "hq",
-      "page": "challenges",
-      "status": "pass",
-      "diff": 0,
-      "total": 1296000,
-      "pct": 0
-    },
-    {
-      "profile": "hq",
-      "page": "richlist",
-      "status": "pass",
-      "diff": 227,
-      "total": 1337760,
-      "pct": 0.017
-    },
-    {
-      "profile": "hq",
-      "page": "leagues",
-      "status": "pass",
-      "diff": 0,
-      "total": 1296000,
-      "pct": 0
-    },
-    {
-      "profile": "hq",
-      "page": "partygames",
-      "status": "pass",
-      "diff": 0,
-      "total": 1296000,
-      "pct": 0
-    },
-    {
-      "profile": "hq",
-      "page": "seasonrecap",
-      "status": "pass",
-      "diff": 0,
-      "total": 3021120,
-      "pct": 0
-    },
-    {
-      "profile": "hq",
-      "page": "findplayers",
-      "status": "pass",
-      "diff": 0,
-      "total": 3728160,
-      "pct": 0
-    },
-    {
-      "profile": "hq",
-      "page": "scorecard",
-      "status": "pass",
-      "diff": 0,
-      "total": 2766240,
-      "pct": 0
-    },
-    {
-      "profile": "hq",
-      "page": "scramble",
-      "status": "pass",
-      "diff": 0,
-      "total": 1296000,
-      "pct": 0
-    },
-    {
-      "profile": "iphone14",
-      "page": "home-hq",
-      "status": "pass",
-      "diff": 928,
-      "total": 453180,
-      "pct": 0.205
-    },
-    {
-      "profile": "iphone14",
-      "page": "standings",
-      "status": "pass",
-      "diff": 0,
-      "total": 779610,
-      "pct": 0
-    },
-    {
-      "profile": "iphone14",
-      "page": "members",
-      "status": "pass",
-      "diff": 0,
-      "total": 1162980,
-      "pct": 0
-    },
-    {
-      "profile": "iphone14",
-      "page": "rounds",
-      "status": "pass",
-      "diff": 0,
-      "total": 444210,
-      "pct": 0
-    },
-    {
-      "profile": "iphone14",
-      "page": "caddynotes",
-      "status": "pass",
-      "diff": 0,
-      "total": 1207050,
-      "pct": 0
-    },
-    {
-      "profile": "iphone14",
-      "page": "playnow",
-      "status": "pass",
-      "diff": 0,
-      "total": 329160,
-      "pct": 0
-    },
-    {
-      "profile": "iphone14",
-      "page": "feed",
-      "status": "pass",
-      "diff": 0,
-      "total": 329160,
-      "pct": 0
-    },
-    {
-      "profile": "iphone14",
-      "page": "settings",
-      "status": "pass",
-      "diff": 183,
-      "total": 880620,
-      "pct": 0.021
-    },
-    {
-      "profile": "iphone14",
-      "page": "profile",
-      "status": "pass",
-      "diff": 2984,
-      "total": 932490,
-      "pct": 0.32
-    },
-    {
-      "profile": "iphone14",
-      "page": "trophyroom",
-      "status": "pass",
-      "diff": 0,
-      "total": 3340740,
-      "pct": 0
-    },
-    {
-      "profile": "iphone14",
-      "page": "shop",
-      "status": "pass",
-      "diff": 596,
-      "total": 863070,
-      "pct": 0.069
-    },
-    {
-      "profile": "iphone14",
-      "page": "courses",
-      "status": "pass",
-      "diff": 0,
-      "total": 329160,
-      "pct": 0
-    },
-    {
-      "profile": "iphone14",
-      "page": "calendar",
-      "status": "pass",
-      "diff": 191,
-      "total": 402480,
-      "pct": 0.047
-    },
-    {
-      "profile": "iphone14",
-      "page": "teetimes",
-      "status": "pass",
-      "diff": 0,
-      "total": 329160,
-      "pct": 0
-    },
-    {
-      "profile": "iphone14",
-      "page": "more",
-      "status": "pass",
-      "diff": 0,
-      "total": 645840,
-      "pct": 0
-    },
-    {
-      "profile": "iphone14",
-      "page": "records",
-      "status": "pass",
-      "diff": 0,
-      "total": 490230,
-      "pct": 0
-    },
-    {
-      "profile": "iphone14",
-      "page": "aces",
-      "status": "pass",
-      "diff": 0,
-      "total": 329160,
-      "pct": 0
-    },
-    {
-      "profile": "iphone14",
-      "page": "awards",
-      "status": "pass",
-      "diff": 0,
-      "total": 487500,
-      "pct": 0
-    },
-    {
-      "profile": "iphone14",
-      "page": "range",
-      "status": "pass",
-      "diff": 0,
-      "total": 329160,
-      "pct": 0
-    },
-    {
-      "profile": "iphone14",
-      "page": "trips",
-      "status": "pass",
-      "diff": 0,
-      "total": 329160,
-      "pct": 0
-    },
-    {
-      "profile": "iphone14",
-      "page": "wagers",
-      "status": "pass",
-      "diff": 239,
-      "total": 329160,
-      "pct": 0.073
-    },
-    {
-      "profile": "iphone14",
-      "page": "bounties",
-      "status": "pass",
-      "diff": 142,
-      "total": 329160,
-      "pct": 0.043
-    },
-    {
-      "profile": "iphone14",
-      "page": "challenges",
-      "status": "pass",
-      "diff": 0,
-      "total": 329160,
-      "pct": 0
-    },
-    {
-      "profile": "iphone14",
-      "page": "richlist",
-      "status": "pass",
-      "diff": 220,
-      "total": 356460,
-      "pct": 0.062
-    },
-    {
-      "profile": "iphone14",
-      "page": "leagues",
-      "status": "pass",
-      "diff": 0,
-      "total": 329160,
-      "pct": 0
-    },
-    {
-      "profile": "iphone14",
-      "page": "partygames",
-      "status": "pass",
-      "diff": 0,
-      "total": 329160,
-      "pct": 0
-    },
-    {
-      "profile": "iphone14",
-      "page": "seasonrecap",
-      "status": "pass",
-      "diff": 0,
-      "total": 794820,
-      "pct": 0
-    },
-    {
       "profile": "iphone14",
       "page": "findplayers",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 1029600,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "iphone14",
       "page": "scorecard",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 753870,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "iphone14",
       "page": "scramble",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 329160,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "home-hq",
-      "status": "pass",
-      "diff": 946,
-      "total": 478744,
-      "pct": 0.198
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "standings",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 823588,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "members",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 1228584,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "rounds",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 469268,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "caddynotes",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 1231468,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "playnow",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 376980,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "feed",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 376980,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "settings",
-      "status": "pass",
-      "diff": 183,
-      "total": 924528,
-      "pct": 0.02
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "profile",
-      "status": "pass",
-      "diff": 2983,
-      "total": 985092,
-      "pct": 0.303
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "trophyroom",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 3507768,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "shop",
-      "status": "pass",
-      "diff": 551,
-      "total": 906400,
-      "pct": 0.061
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "courses",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 376980,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "calendar",
-      "status": "pass",
-      "diff": 185,
-      "total": 431776,
-      "pct": 0.043
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "teetimes",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 376980,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "more",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 680212,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "records",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 517884,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "aces",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 376980,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "awards",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 515000,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "range",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 376980,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "trips",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 376980,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "wagers",
-      "status": "pass",
-      "diff": 239,
-      "total": 376980,
-      "pct": 0.063
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "bounties",
-      "status": "pass",
-      "diff": 142,
-      "total": 376980,
-      "pct": 0.038
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "challenges",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 376980,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "richlist",
-      "status": "pass",
-      "diff": 229,
-      "total": 376980,
-      "pct": 0.061
+      "status": "skip",
+      "diff": 0,
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "leagues",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 376980,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "partygames",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 376980,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "seasonrecap",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 839656,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "findplayers",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 1087680,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "scorecard",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 791452,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     },
     {
       "profile": "pixel7",
       "page": "scramble",
-      "status": "pass",
+      "status": "skip",
       "diff": 0,
-      "total": 376980,
-      "pct": 0
+      "total": 0,
+      "pct": 0,
+      "note": "capture missing"
     }
   ],
-  "pass": 90,
+  "pass": 1,
   "fail": 0,
-  "skip": 0
+  "skip": 89
 }

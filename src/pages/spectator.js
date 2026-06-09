@@ -27,7 +27,17 @@
 // Render full SpectatorHUD shell HTML. Round is the Firestore /liverounds/ doc
 // with status='active' and ownership !== currentUser.uid.
 function _renderSpectatorHUDShell(round) {
-  if (!round) return '';
+  // Defensive fallback (design-audit 2026-06-08): normal navigation routes every
+  // missing/loading case through _renderRoundMissing, so this null path is not
+  // reached in production — but a blank slot here (e.g. a stale spectator link)
+  // reads as broken. Show a friendly, actionable empty state instead of ''.
+  if (!round) {
+    return '<div class="empty" style="padding:48px 24px;text-align:center">' +
+      '<div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--cb-mute)"><circle cx="12" cy="12" r="3"/><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/></svg></div>' +
+      '<div class="empty-text">No live round to watch right now</div>' +
+      '<div style="margin-top:8px"><a href="#" onclick="Router.go(\'rounds\');return false" style="color:var(--cb-ink-link);font-weight:600;text-decoration:none">Go to your rounds &rarr;</a></div>' +
+      '</div>';
+  }
   var h = '';
 
   // Hero score panel — calls home.js _renderLiveRoundSecondary in 'live-page' mode.

@@ -63,9 +63,15 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --cb-ink-2: #2D2B24;
   --cb-charcoal: #4A4740;
   --cb-ink-link: #5A4318;       /* deep brass for link colors on chalk */
-  --cb-mute: #7A766B;
-  --cb-mute-1: #6B6862;         /* body-secondary copy on chalk */
-  --cb-mute-2: #A8A395;         /* default mute (was #8A8478 — v8.14.0 lighter sage-tinted) */
+  /* WCAG AA guardrail (verified 2026-06-08, scripts/visual-audit/contrast-check.mjs).
+     Normal-text floor is 4.5:1. The page ground is --cb-canvas #E7E0CD (darker than
+     chalk), so tokens must clear AA on CANVAS to be safe everywhere:
+       mute-soft 2.49 · mute 3.44 · mute-1 4.22  → all FAIL on canvas (text-unsafe)
+       ink-faint 5.09 · charcoal 7.03            → AA-safe on canvas
+     For muted body/label TEXT on the page ground, use --cb-ink-faint (not mute/mute-1). */
+  --cb-mute: #7A766B;           /* 3.44:1 on canvas / 3.95 on chalk — FAILS AA; large/decorative only, not body text */
+  --cb-mute-1: #6B6862;         /* body-secondary on chalk/paper (4.84/5.32); FAILS on canvas (4.22) — use ink-faint there */
+  --cb-mute-2: #A8A395;         /* default mute (was #8A8478 — v8.14.0 lighter sage-tinted) — decorative only */
   --cb-mute-3: #C9C5BD;         /* light mute, disabled states / hairline-on-chalk-3 */
 
   /* W2.S0 reveal additions (W1.S1.b foundation per AMD-013) — 5 new tokens
@@ -75,8 +81,8 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
      ship plan refinement. Not yet consumed by any production code path. */
   --cb-felt: #0F3D2E;           /* primary dark surface — billiard green starting point; mobile CTA backgrounds + masthead overlay; HQ text-color usage per CLUBHOUSE_SPEC.md §1.1 */
   --cb-ink-soft: #3A372F;       /* PLACEHOLDER — body text less prominent than --cb-ink (Fraunces 13.5px on chalk per HQ Pass 3 specs) */
-  --cb-ink-faint: #5F5C50;      /* PLACEHOLDER — tertiary text on chalk (mono conditions, empty-state italic per HQ Pass 3 specs) */
-  --cb-mute-soft: #928E80;      /* PLACEHOLDER — context lines (mono 11px) on chalk per HQ Pass 3 specs */
+  --cb-ink-faint: #5F5C50;      /* tertiary/muted TEXT — lightest AA-safe token on canvas (5.09:1); AA on chalk/paper too. Use for muted body/label text on the page ground. */
+  --cb-mute-soft: #928E80;      /* decorative/non-essential ONLY — 2.49:1 on canvas FAILS AA; never for text that must be read */
   --cb-mute-faint: #BAB6A8;     /* PLACEHOLDER — empty-state italic, low-emphasis on chalk per HQ Pass 3 specs */
 
   /* Clubhouse · accents (v8.14.0 — brass family expanded for partner accents + live-pulse) */

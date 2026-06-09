@@ -117,7 +117,7 @@ Router.register("awards", function(params) {
     h += '<div class="card" style="margin:8px 16px;border-color:' + borderColor + ';background:' + bgGrad + '">';
     h += '<div style="padding:16px;display:flex;align-items:center;gap:16px">';
     h += '<div style="font-size:36px;flex-shrink:0">' + a.icon + '</div>';
-    h += '<div style="flex:1"><div style="font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px">' + a.title + '</div>';
+    h += '<div style="flex:1"><div style="font-size:10px;font-weight:600;color:var(--cb-ink-link);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:3px">' + a.title + '</div>';
     h += '<div style="font-family:var(--font-display);font-size:18px;color:var(--cream);font-weight:700">' + escHtml(a.winner) + '</div>';
     h += '<div style="font-size:11px;color:var(--muted);margin-top:3px">' + escHtml(a.detail) + '</div>';
     h += '</div></div></div>';
