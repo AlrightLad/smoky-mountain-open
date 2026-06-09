@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-09T01:31:11.864669Z",
+  "generated_at": "2026-06-09T01:34:26.910168Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 88.3,
   "overall_grade": "A-",
@@ -1000,13 +1000,13 @@
   "founder_attention": [],
   "agent_attention": [],
   "audit_trigger": {
-    "sha": "f5163cad",
-    "subject": "cron(routine): post-watcher-commit drift sweep (2026-06-09T01:30:55.8855849Z)",
-    "committed_at": "2026-06-08T21:30:56-04:00",
-    "trigger": "cron",
+    "sha": "929d0acf",
+    "subject": "chore(state): default-theme AA fix complete (v8.23.96-99); log stop decision (cond A, only unlock-theme follow-up remains)",
+    "committed_at": "2026-06-08T21:33:55-04:00",
+    "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 3
+    "total_files_touched": 2
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
