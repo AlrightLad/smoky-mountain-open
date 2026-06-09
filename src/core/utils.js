@@ -4,7 +4,7 @@
    ================================================ */
 
 // ── App version — single source of truth ──
-var APP_VERSION = "8.24.3";
+var APP_VERSION = "8.24.4";
 
 // ══════════════════════════════════════════════════════════════════════════
 // LEAGUE ISOLATION — Nuclear approach. Makes leaking PHYSICALLY IMPOSSIBLE.
@@ -198,7 +198,20 @@ function checkFoundingCodeAvailability() {
   if (!db) return Promise.resolve(true);
   return db.collection("members").where("isFoundingFour", "==", true).get().then(function(s) { return s.size < FOUNDING_CODE_MAX_USES; }).catch(function() { return true; });
 }
-function escHtml(s) { if (!s) return ""; var d = document.createElement("div"); d.textContent = s; return d.innerHTML; }
+// HTML-escape for both text AND attribute contexts. Escapes all five special
+// chars — including " and ' — so user-controlled strings (member names, course
+// names) are safe when interpolated into double/single-quoted attributes
+// (aria-label, title, data-*), closing the attribute-breakout stored-XSS vector
+// the old textContent-only escape left open. Pure string replace (no DOM alloc).
+function escHtml(s) {
+  if (!s) return "";
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
 
 // Dismiss mobile keyboard by blurring the active input
 function pbDismissKeyboard() {

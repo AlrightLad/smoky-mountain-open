@@ -344,9 +344,14 @@ function _caddyWeeklyReport(items) {
   var report = { weekStart: weekStart, rounds: rounds.length, bullets: [], empty: rounds.length === 0 };
   if (!rounds.length) return report;
 
-  // Round of the Week — lowest score to par.
+  // Round of the Week — lowest score to par. 18-hole only, so a 9-hole round's
+  // half-par to-par can't out-rank a full round (P9 — don't over-crown).
   var rotw = null, rotwDiff = 9999;
-  rounds.forEach(function(r) { var par = roundParTotal(r); var d = (r.score && par) ? r.score - par : null; if (d !== null && d < rotwDiff) { rotwDiff = d; rotw = r; } });
+  rounds.forEach(function(r) {
+    if (r.holesPlayed && r.holesPlayed < 18) return;
+    var par = roundParTotal(r); var d = (r.score && par) ? r.score - par : null;
+    if (d !== null && d < rotwDiff) { rotwDiff = d; rotw = r; }
+  });
   if (rotw) {
     var dStr = rotwDiff === 0 ? "even" : (rotwDiff > 0 ? "+" + rotwDiff : String(rotwDiff));
     report.bullets.push({ label: "Round of the Week", player: rotw.player, name: rotw.playerName, line: rotw.score + " (" + dStr + ") at " + (rotw.course || "the course"), roundId: rotw.roundId });
