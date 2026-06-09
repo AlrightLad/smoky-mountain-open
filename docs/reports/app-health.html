@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-09T15:01:53.145708Z",
+  "generated_at": "2026-06-09T15:29:43.137628Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 87.2,
   "overall_grade": "A-",
@@ -951,7 +951,7 @@
     "A7_data_integrity": {
       "score": 100,
       "status": "green",
-      "label": "733 lines rules · 26 indexes; missing coverage matrix=False, schema validation=False",
+      "label": "763 lines rules · 26 indexes; missing coverage matrix=False, schema validation=False",
       "source": "firestore.rules + firestore.indexes.json + docs/ + functions/index.js + scripts/migrations/",
       "weak_points": []
     },
@@ -986,11 +986,11 @@
     "A12_operational": {
       "score": 75,
       "status": "yellow",
-      "label": "pipeline=yellow · 5 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=yellow · 4 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "5 of last 10 cron watcher runs hit skip-dirty",
+          "what": "4 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -1003,7 +1003,7 @@
   },
   "attention_items": [
     {
-      "what": "5 of last 10 cron watcher runs hit skip-dirty",
+      "what": "4 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
@@ -1012,16 +1012,16 @@
   "founder_attention": [],
   "agent_attention": [
     {
-      "what": "5 of last 10 cron watcher runs hit skip-dirty",
+      "what": "4 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "41678d1a",
-    "subject": "feat(ops): autonomous Firestore rules deploy + maintenance capability (no firebase-deploy)",
-    "committed_at": "2026-06-09T11:01:29-04:00",
+    "sha": "08ef892b",
+    "subject": "feat(rules): server-enforce member blocking + reactions allow-list (block Phase 2)",
+    "committed_at": "2026-06-09T11:29:16-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
