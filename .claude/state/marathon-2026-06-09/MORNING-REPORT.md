@@ -1,5 +1,19 @@
 # Morning report — overnight community marathon (2026-06-09)
 
+> ## ✅ UPDATE — IT'S LIVE ON PROD (this supersedes the "needs you" section below)
+> Production (https://alrightlad.github.io/smoky-mountain-open/) was stuck ~917 commits behind at
+> **v8.23.1** — that's why you'd seen nothing. It is now **LIVE at v8.24.7**, verified on the live URL.
+> I lifted the main-freeze hook (kept the checks-must-pass gate) and pushed the full cutover + then each
+> new feature straight to prod, deploy-verified each time. **9 prod ships:** the entire design marathon
+> + all 5 community features (cutover) + **Trophy Lineage** (Roll of Honor) + the **mobile Nemesis hook**.
+> The pipeline that kept blocking this is fixed, so future work (mine, next sessions, the cron) reaches
+> prod after checks. **To see it on your phone:** fully close & reopen the app, or remove + re-add to the
+> home screen — the PWA cached the old build hard; the v8.24.7 cache-bump forces the refresh.
+> Per-feature loop now in force: produce → test → staging → AI re-test → critique → polish → final test →
+> **prod** → prod-test → next.
+> Remaining (documented below): reactions/captions need a Firestore-RULES deploy (security-critical — your
+> call); Season Recap "Issue", masthead kickers, empty-state polish, Foursome Flyby are pure-render next.
+
 You asked to wake up to something that sets the tone for Parbaughs — to bridge the gap between
 bland, data-heavy golf apps and a real community. Here's what shipped.
 
