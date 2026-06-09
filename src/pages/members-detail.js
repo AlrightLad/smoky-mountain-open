@@ -168,6 +168,43 @@ function renderMemberDetailWithData(p) {
   }
   h += '</div>';
 
+  // ── NEMESIS / TOP RIVAL (roadmap rank 1) ──
+  // Promotes the H2H ledger out of the buried Social tab into a first-class
+  // identity element: the auto-assigned nemesis (most shared rounds) + a mini
+  // rivalries list. Pure read via computeRivalries (P9 — only real records).
+  var rivData = (typeof computeRivalries === "function") ? computeRivalries(pid) : { nemesis: null, rivalries: [] };
+  var profName = p.name || p.username || "This member";
+  if (rivData.nemesis) {
+    var nem = rivData.nemesis;
+    var nemName = nem.opp.name || nem.opp.username || "a rival";
+    var nemLabel = isOwnProfile ? "Your Nemesis" : "Top Rival";
+    var recStr = nem.wins + "–" + nem.losses + (nem.ties ? "–" + nem.ties + "T" : "");
+    var caddyLine = isOwnProfile
+      ? (typeof rivalryCaddyLine === "function" ? rivalryCaddyLine(nem, nemName) : nemName + ": " + recStr)
+      : (nem.leading ? profName + " owns " + nemName + ", " + recStr + "." : nem.trailing ? nemName + " has " + profName + "'s number, " + nem.losses + "–" + nem.wins + "." : profName + " and " + nemName + " are dead even, " + recStr + ".");
+    var recClass = nem.leading ? "nemesis-card__rec--up" : nem.trailing ? "nemesis-card__rec--down" : "nemesis-card__rec--even";
+    h += '<div class="nemesis-card" onclick="showRivalryDetail(\'' + pid + '\',\'' + nem.id + '\')" tabindex="0" role="button" aria-label="' + escHtml(nemLabel + ": " + nemName + ", record " + recStr) + '" onkeydown="if(event.key===\'Enter\'){showRivalryDetail(\'' + pid + '\',\'' + nem.id + '\')}">';
+    h += '<div class="nemesis-card__eyebrow">' + escHtml(nemLabel) + '</div>';
+    h += '<div class="nemesis-card__body">';
+    h += '<div class="nemesis-card__av">' + renderAvatar(nem.opp, 52, false) + '</div>';
+    h += '<div class="nemesis-card__main"><div class="nemesis-card__name">' + escHtml(nemName) + '</div><div class="nemesis-card__line">' + escHtml(caddyLine) + '</div></div>';
+    h += '<div class="nemesis-card__rec ' + recClass + '"><span class="nemesis-card__rec-num">' + escHtml(recStr) + '</span><span class="nemesis-card__rec-cap">' + nem.total + ' played</span></div>';
+    h += '</div>';
+    var others = rivData.rivalries.slice(1, 4);
+    if (others.length) {
+      h += '<div class="nemesis-card__more">';
+      others.forEach(function(r) {
+        var rn = r.opp.name || r.opp.username || "Rival";
+        var rc = r.leading ? "nemesis-mini--up" : r.trailing ? "nemesis-mini--down" : "nemesis-mini--even";
+        h += '<button type="button" class="nemesis-mini ' + rc + '" onclick="event.stopPropagation();showRivalryDetail(\'' + pid + '\',\'' + r.id + '\')">' + escHtml(rn) + ' <em>' + r.wins + '–' + r.losses + '</em></button>';
+      });
+      h += '</div>';
+    }
+    h += '</div>';
+  } else if (isOwnProfile) {
+    h += '<div class="nemesis-card nemesis-card--empty"><div class="nemesis-card__eyebrow">Your Nemesis</div><div class="nemesis-card__line">No rival yet — play the same course, same day as another Parbaugh and the Caddy starts keeping count.</div></div>';
+  }
+
   // ── STAT GRID ──
   h += '<div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">';
   h += statBox(hcap !== null ? hcap : "—", "Handicap");

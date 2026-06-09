@@ -457,6 +457,39 @@ input.s:disabled,
 .std-chase__line{font-family:var(--font-ui);font-size:12.5px;line-height:1.5;color:var(--cb-charcoal);margin:13px 0 0}
 @media (prefers-reduced-motion:reduce){.std-chase__fill{transition:none}}
 
+/* ── Nemesis / Rivalry card (rank 1) — first-class H2H on the profile ──────── */
+.nemesis-card{position:relative;margin:0 16px 14px;padding:14px 16px 15px;background:var(--cb-paper);border:1px solid rgba(var(--cb-brass-rgb),.4);border-radius:var(--r-4);box-shadow:var(--el-1);cursor:pointer;transition:transform var(--duration-fast) var(--ease-out),box-shadow var(--duration-fast) var(--ease-out)}
+.nemesis-card:hover{transform:translateY(-1px);box-shadow:var(--el-2)}
+.nemesis-card:focus-visible{outline:2px solid var(--cb-brass);outline-offset:2px}
+.nemesis-card--empty{cursor:default;border-style:dashed}
+.nemesis-card--empty:hover{transform:none;box-shadow:var(--el-1)}
+.nemesis-card__eyebrow{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:10px}
+.nemesis-card__body{display:flex;align-items:center;gap:13px}
+.nemesis-card__av{flex-shrink:0}
+.nemesis-card__main{flex:1;min-width:0}
+.nemesis-card__name{font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--cb-ink);line-height:1.1}
+.nemesis-card__line{font-family:var(--font-ui);font-size:12px;line-height:1.4;color:var(--cb-ink-faint);margin-top:3px}
+.nemesis-card__rec{flex-shrink:0;text-align:right;display:flex;flex-direction:column;align-items:flex-end}
+.nemesis-card__rec-num{font-family:var(--font-display);font-weight:700;font-size:24px;font-variant-numeric:tabular-nums;line-height:1}
+.nemesis-card__rec-cap{font-family:var(--font-mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--cb-mute);margin-top:4px}
+.nemesis-card__rec--up .nemesis-card__rec-num{color:var(--cb-moss)}
+.nemesis-card__rec--down .nemesis-card__rec-num{color:var(--cb-claret)}
+.nemesis-card__rec--even .nemesis-card__rec-num{color:var(--cb-brass)}
+.nemesis-card__more{display:flex;flex-wrap:wrap;gap:7px;margin-top:13px;padding-top:12px;border-top:1px solid var(--cb-chalk-2)}
+.nemesis-mini{font-family:var(--font-ui);font-size:11px;color:var(--cb-charcoal);background:var(--cb-chalk-2);border:none;border-radius:20px;padding:5px 11px;cursor:pointer;transition:background var(--duration-fast) var(--ease-out)}
+.nemesis-mini:hover{background:var(--cb-chalk-3)}
+.nemesis-mini em{font-style:normal;font-variant-numeric:tabular-nums;font-weight:700;margin-left:3px}
+.nemesis-mini--up em{color:var(--cb-moss)}
+.nemesis-mini--down em{color:var(--cb-claret)}
+.nemesis-mini--even em{color:var(--cb-brass)}
+/* HQ felt-hero nemesis hook (light-on-felt) */
+.hq-nemesis{margin-top:14px;display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+.hq-nemesis__tag{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-brass-2);opacity:.85}
+.hq-nemesis__txt{font-family:var(--font-ui);font-size:13px;color:var(--text-inverse);opacity:.92}
+.hq-nemesis__link{color:var(--cb-brass-2);cursor:pointer;font-weight:600;white-space:nowrap}
+.hq-nemesis__link:hover{text-decoration:underline;text-underline-offset:2px}
+.hq-nemesis__link:focus-visible{outline:2px solid var(--cb-brass-2);outline-offset:2px;border-radius:2px}
+
 .std-empty{padding:48px 16px;text-align:center}
 .std-empty__title{font-family:var(--font-display);font-style:italic;font-size:18px;color:var(--cb-ink)}
 .std-empty__sub{font-family:var(--font-ui);font-size:13px;color:var(--cb-mute);margin-top:6px}

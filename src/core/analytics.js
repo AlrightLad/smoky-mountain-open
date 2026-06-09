@@ -300,3 +300,50 @@ function calcH2HDeepStats(p1Id, p2Id, allRounds) {
     p2: {gir:p2Gir, fir:p2Fir, puttsPerHole:p2Putts, rounds:p2.length}
   };
 }
+
+// computeRivalries — the player's head-to-head ledger across the whole roster,
+// reusing calcH2H (same-course/same-day result counting). Returns the auto-assigned
+// NEMESIS (the opponent sharing the most rounds; tie-break = narrowest W–L margin)
+// plus the full sorted rivalries list. Pure read over rounds already loaded; no
+// new data (roadmap rank 1). Honest by construction: an opponent only appears once
+// a real shared-round result exists, so the nemesis never fabricates a rivalry.
+function computeRivalries(pid) {
+  if (typeof calcH2H !== "function" || typeof PB === "undefined" || !PB.getPlayers) {
+    return { nemesis: null, rivalries: [] };
+  }
+  // Resolve this player's own ids (uid + claimedFrom aliases) so we never rival self.
+  var selfIds = [pid];
+  var self = PB.getPlayer ? PB.getPlayer(pid) : null;
+  if (self && self.claimedFrom && selfIds.indexOf(self.claimedFrom) === -1) selfIds.push(self.claimedFrom);
+  PB.getPlayers().forEach(function(pl) { if (pl.claimedFrom === pid && selfIds.indexOf(pl.id) === -1) selfIds.push(pl.id); });
+
+  var rivalries = [];
+  PB.getPlayers().forEach(function(opp) {
+    if (selfIds.indexOf(opp.id) !== -1) return;
+    var h = calcH2H(pid, opp.id);
+    var total = h.p1wins + h.p2wins + h.ties;
+    if (total === 0) return;
+    rivalries.push({
+      id: opp.id, opp: opp,
+      wins: h.p1wins, losses: h.p2wins, ties: h.ties,
+      total: total, margin: Math.abs(h.p1wins - h.p2wins),
+      leading: h.p1wins > h.p2wins, trailing: h.p2wins > h.p1wins, even: h.p1wins === h.p2wins
+    });
+  });
+  // Nemesis = most shared rounds; tie-break = closest record (narrowest margin).
+  rivalries.sort(function(a, b) { return b.total - a.total || a.margin - b.margin; });
+  return { nemesis: rivalries.length ? rivalries[0] : null, rivalries: rivalries };
+}
+
+// Caddy one-liner for a rivalry row, from the player's perspective. Record-only
+// (calcH2H carries no result ordering, so we never fabricate a "won the last two").
+function rivalryCaddyLine(r, oppName) {
+  if (!r) return "";
+  if (r.even) return "Dead even with " + oppName + ", " + r.wins + "–" + r.losses + ". Someone has to blink.";
+  if (r.leading) {
+    if (r.margin >= 4) return "You own " + oppName + ", " + r.wins + "–" + r.losses + ". It's not close.";
+    return "You've got " + oppName + "'s number — " + r.wins + "–" + r.losses + ", but he's lurking.";
+  }
+  if (r.margin >= 4) return oppName + " owns you, " + r.losses + "–" + r.wins + ". Time for a reckoning.";
+  return oppName + " leads it " + r.losses + "–" + r.wins + " — close enough to flip Saturday.";
+}

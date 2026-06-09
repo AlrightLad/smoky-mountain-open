@@ -129,10 +129,30 @@ function _renderEditorialGreetingHero(ctx) {
   h += '</div>';
   // Subhead — chalk, dimmed via opacity (theme-agnostic)
   h += '<div style="font-family:var(--font-ui);font-size:var(--hq-subhead-size);font-weight:500;color:var(--text-inverse);opacity:.80;max-width:440px;line-height:1.45">' + escHtml(_hqHeroSubhead(ctx)) + '</div>';
+  // Nemesis hook — the rivalry the viewer is in, one line into the front door (rank 1).
+  h += _hqNemesisLine();
   // Brass hairline + stat scoreboard row
   h += _hqHeroPullquote(ctx);
   h += '</div>';
   return h;
+}
+
+// Viewer's nemesis hook for the felt hero — light-on-felt brass line, or '' if the
+// viewer has no shared-round rivalry yet (P9 — never fabricated). Rank 1.
+function _hqNemesisLine() {
+  if (typeof computeRivalries !== "function" || typeof currentUser === "undefined" || !currentUser) return "";
+  var riv = computeRivalries(currentUser.uid);
+  if (!riv.nemesis) return "";
+  var n = riv.nemesis;
+  var nm = n.opp.name || n.opp.username || "a rival";
+  var verb = n.leading ? "You own " + nm + ", " + n.wins + "–" + n.losses
+    : n.trailing ? nm + " leads you " + n.losses + "–" + n.wins
+    : "Dead even with " + nm + ", " + n.wins + "–" + n.losses;
+  var uid = String(currentUser.uid).replace(/'/g, "\\'");
+  var oid = String(n.id).replace(/'/g, "\\'");
+  return '<div class="hq-nemesis"><span class="hq-nemesis__tag">Nemesis</span>'
+    + '<span class="hq-nemesis__txt">' + escHtml(verb) + '. '
+    + '<span class="hq-nemesis__link" role="button" tabindex="0" onclick="showRivalryDetail(\'' + uid + '\',\'' + oid + '\')" onkeydown="if(event.key===\'Enter\'){showRivalryDetail(\'' + uid + '\',\'' + oid + '\')}">See the tape →</span></span></div>';
 }
 
 function _hqHeroSubhead(ctx) {
