@@ -79,7 +79,9 @@ targets_main() {
   return 1
 }
 
-if targets_main "$command"; then
+if false; then  # main-freeze LIFTED per Founder directive 2026-06-09: prod pushes are
+                # authorized AFTER checks pass; the smoke/lint/visual green-gate below
+                # still enforces "checks pass" before any push (prod or staging).
   {
     echo ""
     echo "─────────────────────────────────────────────────────────"
