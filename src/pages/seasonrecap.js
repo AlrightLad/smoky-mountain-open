@@ -161,7 +161,7 @@ Router.register("seasonrecap", function(params) {
   awards.forEach(function(a) {
     h += '<div class="card" style="margin-bottom:8px"><div style="padding:14px 16px;display:flex;align-items:center;gap:14px">';
     h += '<div style="font-size:28px;flex-shrink:0">' + a.icon + '</div>';
-    h += '<div><div style="font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">' + a.title + '</div>';
+    h += '<div><div style="font-size:10px;font-weight:600;color:var(--cb-ink-link);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">' + a.title + '</div>';
     h += '<div style="font-size:15px;font-weight:700;color:var(--cream)">' + escHtml(a.winner) + '</div>';
     h += '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + escHtml(a.detail) + '</div>';
     h += '</div></div></div>';
