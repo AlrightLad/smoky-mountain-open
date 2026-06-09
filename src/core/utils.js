@@ -4,7 +4,7 @@
    ================================================ */
 
 // ── App version — single source of truth ──
-var APP_VERSION = "8.23.99";
+var APP_VERSION = "8.24.0";
 
 // ══════════════════════════════════════════════════════════════════════════
 // LEAGUE ISOLATION — Nuclear approach. Makes leaking PHYSICALLY IMPOSSIBLE.
@@ -233,6 +233,14 @@ function tsMillis(v) {
 }
 function genId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 6); }
 function localDateStr(d) { d = d || new Date(); return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0"); }
+// Ordinal label for a rank/position: 1 -> "1st", 2 -> "2nd", 3 -> "3rd", 11 -> "11th".
+// Used wherever the app names a standings/race position in editorial copy.
+function ordinalNum(n) {
+  n = parseInt(n, 10) || 0;
+  var rem100 = n % 100;
+  if (rem100 >= 11 && rem100 <= 13) return n + "th";
+  switch (n % 10) { case 1: return n + "st"; case 2: return n + "nd"; case 3: return n + "rd"; default: return n + "th"; }
+}
 
 // ========== SHARED UI HELPERS ==========
 // These are used across multiple pages — must be in core, not in a page file.

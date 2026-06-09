@@ -72,6 +72,87 @@ Router.register("standings", function(params) {
     badge = '<span class="std-badge">Season complete</span>';
   }
 
+  // ── The Chase: relational season tension (rank 9) ─────────────────────
+  // Reframes the flat global ladder as the race the VIEWER is actually in:
+  // the title fight at the top, plus the two members directly above/below
+  // them rendered as a tug-of-war. Pure render over the standings already
+  // computed (P9 — every gap traces to real points); no new data, no writes.
+  var chaseHtml = '';
+  if (standings.length >= 2 && !isUpcoming) {
+    var t1 = standings[0], t2 = standings[1];
+    var titleGap = (t1.points || 0) - (t2.points || 0);
+    var t1Name = t1.name || t1.username || "The leader";
+    var t2Name = t2.name || t2.username || "the chaser";
+    var weeksLeft = inSeason ? Math.max(1, Math.ceil((sEndD - now) / 604800000)) : 0;
+    var chaseEyebrow = "The Chase" + (inSeason ? " · " + weeksLeft + " week" + (weeksLeft !== 1 ? "s" : "") + " left" : " · Final");
+
+    var titleHeadline, titleDeck;
+    if (titleGap <= 0) {
+      titleHeadline = "Dead heat at the top.";
+      titleDeck = t1Name + " and " + t2Name + " are level — whoever posts next takes the lead.";
+    } else if (titleGap <= 3) {
+      titleHeadline = titleGap + " point" + (titleGap !== 1 ? "s" : "") + " for the lead.";
+      titleDeck = t1Name + " holds the top by a thread" + (inSeason ? " — one good round flips the whole board." : ".");
+    } else {
+      titleHeadline = t1Name + " commands the board.";
+      titleDeck = "Up " + titleGap + " at the top" + (inSeason ? " with " + weeksLeft + " week" + (weeksLeft !== 1 ? "s" : "") + " left to chase." : ".");
+    }
+
+    chaseHtml += '<div class="std-chase">';
+    chaseHtml += '<div class="std-chase__eyebrow">' + escHtml(chaseEyebrow) + '</div>';
+    chaseHtml += '<h2 class="std-chase__title">' + escHtml(titleHeadline) + '</h2>';
+    chaseHtml += '<p class="std-chase__deck">' + escHtml(titleDeck) + '</p>';
+
+    // Viewer's personal tug-of-war (only if the viewer is on the board).
+    var viewerIdx = -1;
+    for (var ci = 0; ci < standings.length; ci++) {
+      if (viewerUid && (standings[ci].id === viewerUid || standings[ci].id === viewerClaimed)) { viewerIdx = ci; break; }
+    }
+    if (viewerIdx >= 0) {
+      var you = standings[viewerIdx];
+      var above = viewerIdx > 0 ? standings[viewerIdx - 1] : null;
+      var below = viewerIdx < standings.length - 1 ? standings[viewerIdx + 1] : null;
+      var youPts = you.points || 0;
+      var aheadGap = above ? ((above.points || 0) - youPts) : null;  // points you trail the member above
+      var cushion = below ? (youPts - (below.points || 0)) : null;   // points you lead the member below
+      var aboveName = above ? (above.name || above.username || "the leader") : null;
+      var belowName = below ? (below.name || below.username || "the chaser") : null;
+      var yourRank = viewerIdx + 1;
+
+      // Tug marker: viewer's position along the below(0%)→above(100%) range.
+      var fillPct = 50;
+      if (above && below) {
+        var rng = (above.points || 0) - (below.points || 0);
+        fillPct = rng > 0 ? Math.round(((youPts - (below.points || 0)) / rng) * 100) : 50;
+      } else if (above) { fillPct = 15; } else if (below) { fillPct = 85; }
+      fillPct = Math.max(8, Math.min(92, fillPct));
+
+      var chaseLine;
+      if (!above) {
+        chaseLine = "You're top of the board" + (cushion != null ? " — " + belowName + " is " + cushion + " back. Defend it." : ".");
+      } else if (!below) {
+        chaseLine = "You sit " + ordinalNum(yourRank) + ". " + aboveName + " is +" + aheadGap + " up the ladder — " + (aheadGap <= 4 ? "one good round flips it." : "time to make a charge.");
+      } else {
+        var aheadClause = aboveName + " is +" + aheadGap + " ahead" + (aheadGap <= 4 ? " (one round flips it)" : "");
+        var belowClause = belowName + " is " + cushion + " back" + (cushion <= 2 ? ", breathing down your neck" : "");
+        chaseLine = "You sit " + ordinalNum(yourRank) + ". " + aheadClause + "; " + belowClause + ".";
+      }
+
+      chaseHtml += '<div class="std-chase__tug">';
+      chaseHtml += '<div class="std-chase__ends">';
+      chaseHtml += '<span class="std-chase__end">' + (below ? escHtml(belowName) + ' <em>' + cushion + ' back</em>' : '<em>—</em>') + '</span>';
+      chaseHtml += '<span class="std-chase__end std-chase__end--r">' + (above ? escHtml(aboveName) + ' <em>+' + aheadGap + '</em>' : '<em>the top</em>') + '</span>';
+      chaseHtml += '</div>';
+      chaseHtml += '<div class="std-chase__track" role="img" aria-label="' + escHtml("You are " + ordinalNum(yourRank) + (above ? "; " + aheadGap + " points behind " + aboveName : "") + (below ? "; " + cushion + " points ahead of " + belowName : "")) + '">';
+      chaseHtml += '<div class="std-chase__fill" style="width:' + fillPct + '%"></div>';
+      chaseHtml += '<span class="std-chase__marker" style="left:' + fillPct + '%">' + yourRank + '</span>';
+      chaseHtml += '</div>';
+      chaseHtml += '<p class="std-chase__line">' + escHtml(chaseLine) + '</p>';
+      chaseHtml += '</div>';
+    }
+    chaseHtml += '</div>';
+  }
+
   var h = '<div class="hq-grid"><div class="hq-grid__main">';
   h += '<div class="roster-masthead">';
   h += '<div class="roster-eyebrow">' + escHtml("Standings · " + season.seasonLabel) + '</div>';
@@ -87,6 +168,9 @@ Router.register("standings", function(params) {
     h += '<button type="button" class="roster-tab' + (isActive ? ' roster-tab--active' : '') + '" role="tab" aria-selected="' + (isActive ? 'true' : 'false') + '" onclick="Router.go(\'standings\',{year:' + year + ',season:\'' + cfg.key + '\'},true)">' + escHtml(cfg.label) + '</button>';
   });
   h += '</div></div>';
+
+  // The Chase band leads the board — the race the viewer is in, before the full table.
+  h += chaseHtml;
 
   // ── Standings table ───────────────────────────────────────────────────
   if (standings.length) {

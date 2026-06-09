@@ -438,6 +438,25 @@ input.s:disabled,
 .std-avg{font-family:var(--font-mono);font-size:13px;color:var(--cb-charcoal);font-variant-numeric:tabular-nums}
 .std-pts{font-family:var(--font-display);font-weight:700;font-size:18px;color:var(--cb-brass);font-variant-numeric:tabular-nums}
 
+/* ── The Chase — relational season-tension band (rank 9) ──────────────────
+   Leads the Standings board: the title race + the viewer's personal tug-of-war
+   with the members directly above/below them. Felt-spined editorial card. */
+.std-chase{position:relative;margin:0 0 22px;padding:18px 18px 20px;background:var(--cb-paper);border:1px solid var(--cb-chalk-3);border-radius:var(--r-4);box-shadow:var(--el-2);overflow:hidden}
+.std-chase::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--cb-brass)}
+.std-chase__eyebrow{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:8px}
+.std-chase__title{font-family:var(--font-display);font-size:21px;font-weight:700;line-height:1.14;color:var(--cb-ink);margin:0}
+.std-chase__deck{font-family:var(--font-ui);font-size:13px;line-height:1.45;color:var(--cb-ink-faint);margin:6px 0 0;max-width:54ch}
+.std-chase__tug{margin-top:16px;padding-top:14px;border-top:1px solid var(--cb-chalk-2)}
+.std-chase__ends{display:flex;justify-content:space-between;gap:12px;font-family:var(--font-mono);font-size:10px;letter-spacing:.5px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:9px}
+.std-chase__end{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.std-chase__end--r{text-align:right}
+.std-chase__end em{font-style:normal;color:var(--cb-brass);font-variant-numeric:tabular-nums}
+.std-chase__track{position:relative;height:8px;border-radius:6px;background:var(--cb-chalk-2);margin:0 12px}
+.std-chase__fill{height:100%;border-radius:6px;background:linear-gradient(90deg,rgba(var(--cb-brass-rgb),.4),var(--cb-brass));transition:width var(--duration-slow) var(--ease-emphasized)}
+.std-chase__marker{position:absolute;top:50%;transform:translate(-50%,-50%);width:24px;height:24px;border-radius:50%;background:var(--cb-felt);color:var(--cb-chalk);border:2px solid var(--cb-brass);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:11px;box-shadow:0 2px 7px rgba(0,0,0,.28)}
+.std-chase__line{font-family:var(--font-ui);font-size:12.5px;line-height:1.5;color:var(--cb-charcoal);margin:13px 0 0}
+@media (prefers-reduced-motion:reduce){.std-chase__fill{transition:none}}
+
 .std-empty{padding:48px 16px;text-align:center}
 .std-empty__title{font-family:var(--font-display);font-style:italic;font-size:18px;color:var(--cb-ink)}
 .std-empty__sub{font-family:var(--font-ui);font-size:13px;color:var(--cb-mute);margin-top:6px}
