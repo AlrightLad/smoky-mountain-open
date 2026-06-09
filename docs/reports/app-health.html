@@ -822,9 +822,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-09T04:33:45.138028Z",
+  "generated_at": "2026-06-09T04:42:39.883195Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 87.6,
+  "overall_score": 87.2,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -838,9 +838,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 92.6,
+    "pre_deduction_score": 92.2,
     "deduction": 5,
-    "post_deduction_score": 87.6
+    "post_deduction_score": 87.2
   },
   "dimensions": {
     "A1_roadmap": {
@@ -878,9 +878,9 @@
       "weak_points": []
     },
     "A5_code_quality": {
-      "score": 85,
+      "score": 82,
       "status": "green",
-      "label": "0 core + 5 page files over budget; missing eslint=False, knip=False, jscpd=False",
+      "label": "0 core + 6 page files over budget; missing eslint=False, knip=False, jscpd=False",
       "source": "src/core/, src/pages/, package.json",
       "weak_points": [
         {
@@ -900,11 +900,16 @@
         }
       ],
       "details": {
-        "over_budget_count": 5,
+        "over_budget_count": 6,
         "files": [
           {
             "file": "src/pages/courses.js",
             "lines": 842,
+            "budget": 800
+          },
+          {
+            "file": "src/pages/feed.js",
+            "lines": 807,
             "budget": 800
           },
           {
@@ -981,11 +986,11 @@
     "A12_operational": {
       "score": 75,
       "status": "yellow",
-      "label": "pipeline=yellow · 4 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=yellow · 5 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "4 of last 10 cron watcher runs hit skip-dirty",
+          "what": "5 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -998,7 +1003,7 @@
   },
   "attention_items": [
     {
-      "what": "4 of last 10 cron watcher runs hit skip-dirty",
+      "what": "5 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
@@ -1007,16 +1012,16 @@
   "founder_attention": [],
   "agent_attention": [
     {
-      "what": "4 of last 10 cron watcher runs hit skip-dirty",
+      "what": "5 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "e90afdf3",
-    "subject": "feat(feed): The Caddy's Front Page lead story + H2H chips (v8.24.2, roadmap ranks 2 + 1c)",
-    "committed_at": "2026-06-09T00:33:18-04:00",
+    "sha": "36e7bdc7",
+    "subject": "feat(feed): The Caddy's Weekly Report â€” the app authors the conversation (v8.24.3, roadmap rank 4)",
+    "committed_at": "2026-06-09T00:42:14-04:00",
     "trigger": "app-commit",
     "is_app_commit": true,
     "app_files_touched": [
