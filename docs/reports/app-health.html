@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-09T14:31:22.385149Z",
+  "generated_at": "2026-06-09T14:39:22.643438Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 87.8,
   "overall_grade": "A-",
@@ -986,7 +986,7 @@
     "A12_operational": {
       "score": 85,
       "status": "green",
-      "label": "pipeline=yellow · 1 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=yellow · 2 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [],
       "details": {
@@ -999,19 +999,18 @@
   "founder_attention": [],
   "agent_attention": [],
   "audit_trigger": {
-    "sha": "ee7d2775",
-    "subject": "feat(trophyroom): Roll of Honor â€” season-champion lineage chain (v8.24.6, roadmap rank 13)",
-    "committed_at": "2026-06-09T10:30:51-04:00",
+    "sha": "37843170",
+    "subject": "feat(home): mobile-home Nemesis hook â€” the grudge greets you on the primary surface (v8.24.7, rank 1)",
+    "committed_at": "2026-06-09T10:38:07-04:00",
     "trigger": "app-commit",
     "is_app_commit": true,
     "app_files_touched": [
       "public/sw.js",
       "src/core/utils.js",
-      "src/pages/caddynotes.js",
-      "src/pages/trophyroom.js",
+      "src/pages/home.js",
       "src/styles/components.css"
     ],
-    "total_files_touched": 11
+    "total_files_touched": 7
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
