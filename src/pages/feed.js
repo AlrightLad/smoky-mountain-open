@@ -307,6 +307,9 @@ function _renderFeedItems() {
   }
 
   var fh = '';
+  // The Caddy's Report (rank 4) — the week's superlatives lead the league feed,
+  // the app authoring the conversation. Honest "quiet week" state when no rounds.
+  if (_feedScope === "league") fh += _renderWeeklyReport(_caddyWeeklyReport(items));
   // The Caddy's Front Page (rank 2) — crown the single most newsworthy recent
   // round as an oversize editorial LEAD, then run the rest as the uniform stream
   // below (asymmetric: one hero + satellites, never a wall of identical rows).
@@ -325,6 +328,74 @@ function _renderFeedItems() {
     else if (item.type === "range") fh += _renderRangeCard(item);
   });
   el.innerHTML = fh;
+}
+
+// ── The Caddy's Weekly Report (rank 4) — the app authors the conversation ────
+// Reduces the current ISO week's rounds (already loaded into _feedItems) into a
+// digest of superlatives in the Caddy's voice. Pure render-time computation over
+// data already fetched — no scheduled function, no new write. P9: every
+// superlative traces to a real round; a quiet week says so honestly.
+function _caddyWeeklyReport(items) {
+  var now = new Date();
+  var dow = (now.getDay() + 6) % 7;                 // 0 = Monday
+  var weekStart = new Date(now); weekStart.setDate(now.getDate() - dow); weekStart.setHours(0, 0, 0, 0);
+  var ws = weekStart.getTime();
+  var rounds = (items || []).filter(function(it) { return it.type === "round" && !it.isScramble && it.ts >= ws; });
+  var report = { weekStart: weekStart, rounds: rounds.length, bullets: [], empty: rounds.length === 0 };
+  if (!rounds.length) return report;
+
+  // Round of the Week — lowest score to par.
+  var rotw = null, rotwDiff = 9999;
+  rounds.forEach(function(r) { var par = roundParTotal(r); var d = (r.score && par) ? r.score - par : null; if (d !== null && d < rotwDiff) { rotwDiff = d; rotw = r; } });
+  if (rotw) {
+    var dStr = rotwDiff === 0 ? "even" : (rotwDiff > 0 ? "+" + rotwDiff : String(rotwDiff));
+    report.bullets.push({ label: "Round of the Week", player: rotw.player, name: rotw.playerName, line: rotw.score + " (" + dStr + ") at " + (rotw.course || "the course"), roundId: rotw.roundId });
+  }
+
+  // The Grinder — most rounds logged this week.
+  var byPlayer = {};
+  rounds.forEach(function(r) { var k = r.playerId; if (!k) return; if (!byPlayer[k]) byPlayer[k] = { count: 0, name: r.playerName, player: r.player }; byPlayer[k].count++; });
+  var grinderKey = null;
+  Object.keys(byPlayer).forEach(function(k) { if (!grinderKey || byPlayer[k].count > byPlayer[grinderKey].count) grinderKey = k; });
+  if (grinderKey && byPlayer[grinderKey].count >= 2) {
+    var g = byPlayer[grinderKey];
+    report.bullets.push({ label: "The Grinder", player: g.player, name: g.name, line: g.count + " rounds logged — nobody's out there more." });
+  }
+
+  // Hot Hand / Sandbagger Watch — beat their season average by the most (18-hole).
+  var hot = null, hotDelta = 0;
+  rounds.forEach(function(r) {
+    if (!r.playerId || !r.score || (r.holesPlayed && r.holesPlayed < 18)) return;
+    var avg = (typeof PB !== "undefined" && PB.getPlayerAvg) ? PB.getPlayerAvg(r.playerId) : null;
+    if (avg && !isNaN(avg)) { var delta = avg - r.score; if (delta > hotDelta) { hotDelta = delta; hot = r; } }
+  });
+  if (hot && hotDelta >= 3 && (!rotw || hot.roundId !== rotw.roundId)) {
+    var label = hotDelta >= 8 ? "Sandbagger Watch" : "Hot Hand";
+    var tail = hotDelta >= 8 ? " under his average. All in good fun." : " under his average.";
+    report.bullets.push({ label: label, player: hot.player, name: hot.playerName, line: hot.score + ", " + hotDelta.toFixed(0) + tail, roundId: hot.roundId });
+  }
+  return report;
+}
+
+function _renderWeeklyReport(report) {
+  if (!report) return "";
+  var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  var weekLabel = months[report.weekStart.getMonth()] + " " + report.weekStart.getDate();
+  var h = '<section class="feed-report" aria-label="The Caddy\'s Report">';
+  h += '<div class="feed-report__masthead"><div class="feed-report__kicker">The Caddy\'s Report</div><div class="feed-report__week">Week of ' + escHtml(weekLabel) + '</div></div>';
+  if (report.empty) {
+    h += '<div class="feed-report__quiet">Quiet week at the club. First tee\'s yours.</div>';
+  } else {
+    report.bullets.forEach(function(b) {
+      var click = b.roundId ? "Router.go('rounds',{roundId:'" + b.roundId + "'})" : "";
+      h += '<div class="feed-report__row"' + (click ? ' role="button" tabindex="0" onclick="' + click + '" onkeydown="if(event.key===\'Enter\'){' + click + '}"' : '') + '>';
+      h += renderAvatar(b.player, 32, false);
+      h += '<div class="feed-report__rowmain"><div class="feed-report__label">' + escHtml(b.label) + '</div><div class="feed-report__line"><strong>' + escHtml(b.name || "A Parbaugh") + '</strong> — ' + escHtml(b.line) + '</div></div>';
+      h += '</div>';
+    });
+  }
+  h += '</section>';
+  return h;
 }
 
 // ── The Caddy's Front Page — lead-story selection + render (rank 2) ──────────

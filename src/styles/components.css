@@ -314,6 +314,20 @@ input.s:disabled,
 .feed-h2h-chip:hover{background:rgba(var(--cb-brass-rgb),.16)}
 .feed-h2h-chip:focus-visible{outline:2px solid var(--cb-brass);outline-offset:2px}
 
+/* ── The Caddy's Report — weekly digest box atop the feed (rank 4) ─────────
+   A felt-green "issue masthead" — the app's own voice opening the week. */
+.feed-report{margin:0 0 6px;padding:16px 18px;background:var(--cb-felt);color:var(--cb-chalk);border-bottom:1px solid var(--cb-chalk-3)}
+.feed-report__masthead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding-bottom:11px;margin-bottom:8px;border-bottom:1px solid rgba(var(--cb-brass-rgb),.3)}
+.feed-report__kicker{font-family:var(--font-display);font-style:italic;font-weight:700;font-size:18px;color:var(--cb-chalk)}
+.feed-report__week{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-brass-2);white-space:nowrap}
+.feed-report__row{display:flex;align-items:center;gap:11px;padding:8px 0}
+.feed-report__row[role=button]{cursor:pointer}
+.feed-report__row+.feed-report__row{border-top:1px solid rgba(var(--cb-chalk-rgb),.12)}
+.feed-report__rowmain{flex:1;min-width:0}
+.feed-report__label{font-family:var(--font-mono);font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-brass-2);margin-bottom:2px}
+.feed-report__line{font-family:var(--font-ui);font-size:13px;line-height:1.35;color:var(--cb-chalk);opacity:.95}
+.feed-report__quiet{font-family:var(--font-display);font-style:italic;font-size:15px;color:var(--cb-chalk);opacity:.85;padding:2px 0}
+
 /* Hole dots + stat chips. */
 .feed-dots{display:flex;flex-wrap:wrap;gap:4px;margin-top:12px}
 .feed-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
