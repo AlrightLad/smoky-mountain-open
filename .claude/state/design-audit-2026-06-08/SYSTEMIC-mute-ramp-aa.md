@@ -33,6 +33,24 @@ Per-theme `--cb-mute` darkening factor ≈ 0.82–0.84 of current brightness cle
 (twilight #74798A, linen #8A8974, champion #8A7264, bourbon #8C6B4A, course-record #7A8078 each need their
 own computed value — same method).
 
+## Key constraint — the tier-vs-AA conflict (this is a DESIGN decision, not a mechanical darkening)
+The family is designed as 3 *faint readable* tiers (mute-soft faintest → mute → mute-1). But the lightest
+value clearing AA on canvas is ~#66635A (4.56:1). To make all three AA-safe, all three must sit in a narrow
+dark band → they become **visually indistinguishable**, collapsing the 3-tier hierarchy. **You cannot have
+three distinct faint readable tiers that are all AA-compliant on the canvas ground.** So the real decision is
+a design-architecture call: reduce to fewer readable secondary tiers (one AA-safe secondary + decorative-only
+faints), and explicitly designate which tokens are text vs decorative-only. That is the Founder/design-lead's
+call — exactly why this is surfaced, not auto-shipped.
+
+## Blast radius — `--cb-mute-soft` (#928E80, 2.49:1, the worst) is widely used for essential + interactive text
+28+ `color:var(--cb-mute-soft)` uses in components.css alone span: calendar (subdecks, metas, eyebrows,
+empty-state bodies, day-card meta, legend, list separators), settings-nav links (`.set-nav__link` — an
+interactive nav control), admin-nav links, onboarding (counter/detail/link), and the chip composer
+(close button, counter, placeholder). Many are essential body text (`.cal-empty__b` 14px, `.cal-dcard__meta`
+13px, `.cal-sec-sub` 13px) or interactive controls (nav links, view toggles, close buttons) — all at 2.49:1.
+These are not isolated nits; they are the same systemic root and must be resolved as part of the tier decision
+above (essential text → AA-safe token; decorative → explicitly restricted), not patched one-by-one.
+
 ## Why surfaced, not auto-shipped
 This darkens **every** secondary-text line across the marathon-tuned palette in all 6 themes — an app-wide
 aesthetic shift the Founder tuned + approved. It's legally motivated (AA = Legal RED) so it WILL be fixed,
