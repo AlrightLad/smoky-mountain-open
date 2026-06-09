@@ -1,9 +1,11 @@
 # Secondary-text ramp WCAG AA — default theme FIXED (v8.23.98); follow-up remains
 
-**Status:** DEFAULT-theme core SHIPPED v8.23.98 (`--cb-mute` #7A766B→#656259 4.63:1, `--cb-mute-1`
-#6B6862→#5F5C50 5.09:1 — verified contrast-check.mjs + vision across More/Members/Home/etc.).
-Remaining = (a) the 5 unlock themes' `--cb-mute`, (b) the `--cb-mute-soft` faintest-tier decision +
-per-consumer reclassification. · **Severity:** medium (ADA/WCAG) · **Type:** app-wide palette
+**Status:** DEFAULT theme FULLY AA-COMPLIANT across v8.23.98 + v8.23.99:
+`--cb-mute` #7A766B→#656259 (4.63:1), `--cb-mute-1` #6B6862→#5F5C50 (5.09:1), and `--cb-mute-soft`
+(#928E80 2.49:1 — worst) RETIRED as a text color (all 28 components + leagues.js uses → AA-safe
+`--cb-mute`). Verified contrast-check.mjs + vision (More/Members/Home/Feed/Settings/Calendar/Leagues).
+**ONLY remaining:** the 5 unlock themes' `--cb-mute` (computed values below) — a focused per-theme
+follow-up needing theme-switch visual verification. · **Severity:** medium (ADA/WCAG) · **Type:** palette
 
 ## REMAINING follow-up (each needs per-theme vision verification → a focused ship)
 1. **5 unlock-theme `--cb-mute` darkening** — computed AA-safe values (verified ≥4.6 on each theme's
