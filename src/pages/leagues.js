@@ -161,7 +161,7 @@ function renderLoneWolf() {
 
   var h = '<div class="league-wrap league-wrap--wide">';
   h += '<div class="roster-masthead"><div class="roster-eyebrow">LONE WOLF</div><h1 class="roster-headline">Find your league.</h1></div>';
-  h += '<p style="font-family:var(--font-display);font-style:italic;font-size:18px;line-height:1.5;color:var(--cb-mute-soft);margin:0 0 24px;max-width:60ch">Three ways in. Start your own crew, accept an invite, or scout the public clubhouses already underway.</p>';
+  h += '<p style="font-family:var(--font-display);font-style:italic;font-size:18px;line-height:1.5;color:var(--cb-mute);margin:0 0 24px;max-width:60ch">Three ways in. Start your own crew, accept an invite, or scout the public clubhouses already underway.</p>';
   h += '<div class="lonewolf-grid" role="list">';
   h += card(icoCreate, 'Create your league', 'Commission a new league, set the season, and invite your foursome. You run the show.', 'Continue →', "Router.go('leagues',{create:true})");
   h += card(icoJoin, 'Join a league', 'Have an invite code from a commissioner? Drop it in and you are on the tee sheet.', 'Continue →', "Router.go('leagues',{join:true})");
@@ -181,7 +181,7 @@ function renderCreateLeague() {
   var h = '<div class="league-wrap">';
   h += '<button class="back" onclick="Router.back(\'leagues\')" style="margin:8px 0">← Back</button>';
   h += '<div class="roster-masthead"><div class="roster-eyebrow">NEW LEAGUE</div><h1 class="roster-headline">Start a league.</h1></div>';
-  h += '<p style="font-family:var(--font-display);font-style:italic;font-size:16px;line-height:1.5;color:var(--cb-mute-soft);margin:0 0 22px">You will be the commissioner: you set the season, the rules, and the roster.</p>';
+  h += '<p style="font-family:var(--font-display);font-style:italic;font-size:16px;line-height:1.5;color:var(--cb-mute);margin:0 0 22px">You will be the commissioner: you set the season, the rules, and the roster.</p>';
   h += '<div class="ff"><label class="ff-label">League name</label><input class="ff-input" id="cl-name" placeholder="e.g. Weekend Warriors"></div>';
   h += '<div class="ff"><label class="ff-label">Location</label><input class="ff-input" id="cl-location" placeholder="e.g. York, PA"></div>';
   h += '<div class="ff"><label class="ff-label">Description</label><textarea class="ff-input" id="cl-desc" rows="3" placeholder="What makes your crew special?"></textarea></div>';
@@ -247,7 +247,7 @@ function renderJoinLeague() {
   var h = '<div class="league-wrap">';
   h += '<button class="back" onclick="Router.back(\'leagues\')" style="margin:8px 0">← Back</button>';
   h += '<div class="roster-masthead"><div class="roster-eyebrow">JOIN</div><h1 class="roster-headline">Join a league.</h1></div>';
-  h += '<p style="font-family:var(--font-display);font-style:italic;font-size:16px;line-height:1.5;color:var(--cb-mute-soft);margin:0 0 22px">Enter the invite code your commissioner shared, or browse public leagues from the directory.</p>';
+  h += '<p style="font-family:var(--font-display);font-style:italic;font-size:16px;line-height:1.5;color:var(--cb-mute);margin:0 0 22px">Enter the invite code your commissioner shared, or browse public leagues from the directory.</p>';
   h += '<div class="ff"><label class="ff-label">Invite code</label><input class="ff-input" id="jl-code" placeholder="LG-XXXXXXXX" style="text-transform:uppercase;letter-spacing:2px;text-align:center;font-family:var(--font-mono)"></div>';
   h += '<button class="league-btn league-btn--brass" style="width:100%;margin-top:14px" onclick="submitJoinLeague()">Join league</button>';
   h += '<div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.5px;color:var(--cb-mute);text-align:center;margin-top:10px">Ask the league commissioner for an invite code.</div>';
@@ -326,7 +326,7 @@ function renderLeagueDetail(lid) {
     if (isComm) dh += '<a class="league-settings-pill" role="button" aria-label="League settings (Commissioner only)" onclick="_leagueScrollTo(\'leagueSettings\')">Settings →</a>';
     dh += '</div>';
     var deck = (l.memberCount || 0) + (l.memberCount === 1 ? ' member' : ' members') + ' · ' + access + ' league' + (founded ? ' · Founded ' + founded : '');
-    dh += '<p style="font-family:var(--font-display);font-style:italic;font-size:18px;line-height:1.45;color:var(--cb-mute-soft);margin:10px 0 0">' + escHtml(l.description ? l.description : deck) + '</p>';
+    dh += '<p style="font-family:var(--font-display);font-style:italic;font-size:18px;line-height:1.45;color:var(--cb-mute);margin:10px 0 0">' + escHtml(l.description ? l.description : deck) + '</p>';
     dh += '</div>';
 
     // ── Section A — Hero stat-strip (3j.1.A.4) ──
