@@ -307,8 +307,17 @@ function _renderFeedItems() {
   }
 
   var fh = '';
+  // The Caddy's Front Page (rank 2) — crown the single most newsworthy recent
+  // round as an oversize editorial LEAD, then run the rest as the uniform stream
+  // below (asymmetric: one hero + satellites, never a wall of identical rows).
+  // Honest by construction: falls back to the most recent round when nothing
+  // clears the newsworthiness bar; never invents drama.
+  var lead = (_feedScope === "league") ? _feedLeadPick(items) : null;
+  if (lead) fh += _renderLeadStory(lead);
+
   var lastDay = null;
   items.slice(0, 60).forEach(function(item) {
+    if (lead && item === lead) return; // the lead is already crowned above
     var dk = _feedDayKey(item.ts);
     if (dk !== lastDay) { fh += _feedDayEyebrow(item.ts); lastDay = dk; }
     if (item.type === "round") fh += _renderRoundCard(item);
@@ -316,6 +325,124 @@ function _renderFeedItems() {
     else if (item.type === "range") fh += _renderRangeCard(item);
   });
   el.innerHTML = fh;
+}
+
+// ── The Caddy's Front Page — lead-story selection + render (rank 2) ──────────
+// Scores recent (<=14d) individual rounds by newsworthiness (eagles, low to-par,
+// birdies, today-bonus) and returns the lead, or the most-recent round as a
+// calmer fallback. Pure read over the items already loaded; no new data.
+function _feedLeadPick(items) {
+  if (!items || !items.length) return null;
+  var now = Date.now();
+  var WINDOW = 14 * 86400000;
+  var startToday = new Date(); startToday.setHours(0, 0, 0, 0);
+  var best = null, bestNws = -1, firstRound = null;
+  items.forEach(function(it) {
+    if (it.type !== "round" || it.isScramble) return;
+    if (!firstRound) firstRound = it;
+    if (it.ts && (now - it.ts) > WINDOW) return;
+    var par = roundParTotal(it);
+    var diff = (it.score && par) ? it.score - par : null;
+    var eagles = 0, birdies = 0;
+    if (it.holeScores && it.holePars && it.holeScores.length === it.holePars.length) {
+      for (var i = 0; i < it.holeScores.length; i++) {
+        var sc = parseInt(it.holeScores[i]) || 0, pr = parseInt(it.holePars[i]) || 0;
+        if (sc > 0 && pr > 0) { if (sc <= pr - 2) eagles++; else if (sc === pr - 1) birdies++; }
+      }
+    }
+    var nws = 0;
+    if (eagles > 0) nws += 50 + eagles * 10;
+    if (diff !== null) nws += Math.max(0, 40 - diff);
+    nws += birdies * 3;
+    if (it.ts >= startToday.getTime()) nws += 15;
+    it._nws = nws; it._eagles = eagles; it._birdies = birdies; it._diff = diff;
+    if (nws > bestNws) { bestNws = nws; best = it; }
+  });
+  if (best && bestNws >= 25) return best;
+  return firstRound; // calmer lead — most recent round, no fabricated drama
+}
+
+function _feedLeadKicker(ts) {
+  var d = new Date(ts), now = new Date();
+  var sameDay = d.toDateString() === now.toDateString();
+  if (sameDay) return "Today";
+  var y = new Date(now); y.setDate(now.getDate() - 1);
+  if (d.toDateString() === y.toDateString()) return "Yesterday";
+  return "This Week";
+}
+
+function _feedLeadHeadline(item) {
+  var name = item.playerName || "A Parbaugh";
+  var course = item.course || "the course";
+  var diff = (item._diff != null) ? item._diff : null;
+  if (item._eagles > 0) return item._eagles > 1 ? name + " drops " + item._eagles + " eagles at " + course + "." : name + " eagles " + course + ".";
+  if (diff !== null && diff <= -3) return name + " torches " + course + ", " + item.score + ".";
+  if (diff !== null && diff < 0) return name + " goes " + diff + " at " + course + ".";
+  if (diff === 0) return name + " plays " + course + " to even par.";
+  if (item._birdies >= 3) return name + " cards " + item._birdies + " birdies at " + course + ".";
+  return name + " posts " + item.score + " at " + course + ".";
+}
+
+function _renderLeadStory(item) {
+  var par = roundParTotal(item);
+  var diff = (item.score && par) ? item.score - par : null;
+  var diffStr = diff === null ? "" : (diff === 0 ? "E" : (diff > 0 ? "+" + diff : String(diff)));
+  var diffCls = (diff !== null && diff <= 0) ? "feed-topar--under" : "feed-topar--over";
+  var roundClick = item.roundId ? "Router.go('rounds',{roundId:'" + item.roundId + "'})" : "";
+  var headline = _feedLeadHeadline(item);
+  var h = '<article class="feed-lead" role="article" aria-label="' + escHtml("Lead story: " + headline) + '">';
+  h += '<div class="feed-lead__kicker">The Back Nine · ' + escHtml(_feedLeadKicker(item.ts)) + '</div>';
+  h += '<h2 class="feed-lead__headline"' + (roundClick ? ' role="button" tabindex="0" onclick="' + roundClick + '" onkeydown="if(event.key===\'Enter\'){' + roundClick + '}"' : '') + '>' + escHtml(headline) + '</h2>';
+  h += '<div class="feed-lead__byline">' + renderAvatar(item.player, 28, true) + '<span class="feed-lead__by">' + renderUsername(item.player, "font-weight:600;", true) + '</span><span class="feed-lead__time">' + escHtml(feedTimeAgo(item.ts)) + '</span></div>';
+  h += '<div class="feed-lead__scoreline">';
+  h += '<div class="feed-lead__score">' + (item.score != null ? item.score : "—") + (diffStr ? '<span class="feed-lead__topar ' + diffCls + '">' + diffStr + '</span>' : '') + '</div>';
+  h += '<div class="feed-lead__coursewrap"><div class="feed-lead__course">' + escHtml(item.course || "") + '</div>' + (item._eagles > 0 ? '<div class="feed-lead__flag">' + item._eagles + ' eagle' + (item._eagles !== 1 ? 's' : '') + '</div>' : (item._birdies > 0 ? '<div class="feed-lead__flag">' + item._birdies + ' birdie' + (item._birdies !== 1 ? 's' : '') + '</div>' : '')) + '</div>';
+  h += '</div>';
+  var dots = _feedHoleDots(item.holeScores, item.holePars, item.holesPlayed, item.holesMode);
+  if (dots) h += dots;
+  if (item.quip) h += '<blockquote class="feed-lead__quote">' + escHtml(item.quip) + '</blockquote>';
+  h += _feedRoundFooter(item, roundClick);
+  h += '</article>';
+  return h;
+}
+
+// Shared interactive footer (action row + comment thread + reply input) for round
+// surfaces. Extracted so the lead story and the satellite round card stay in sync;
+// the satellite card keeps its own inline copy (smoke-locked DOM) for now.
+function _feedRoundFooter(item, roundClick) {
+  var likes = item.likes || [];
+  var comments = item.comments || [];
+  var iLiked = currentUser && likes.indexOf(currentUser.uid) !== -1;
+  var likeLabel = "Kudos" + (likes.length ? " " + likes.length : "");
+  var commentLabel = "Reply" + (comments.length ? " " + comments.length : "");
+  var h = '<div class="feed-actions" data-feed-action-row="1" data-round-id="' + item.roundId + '">';
+  h += '<button class="feed-action" type="button" data-action="scorecard" aria-label="View scorecard" onclick="event.stopPropagation();' + roundClick + '"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M5 6h6M5 8h4M5 10h5"/></svg><span>Scorecard</span></button>';
+  h += '<button class="feed-action' + (iLiked ? ' feed-action--on' : '') + '" type="button" data-action="kudos" data-i-liked="' + (iLiked ? '1' : '0') + '" data-likes-count="' + likes.length + '" aria-pressed="' + (iLiked ? 'true' : 'false') + '" aria-label="Kudos, ' + likes.length + ' reactions" onclick="event.stopPropagation();feedToggleLike(\'' + item.roundId + '\')"><svg viewBox="0 0 16 16" width="14" height="14" fill="' + (iLiked ? "currentColor" : "none") + '" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4a3.5 3.5 0 015.5 3c0 3.5-5.5 7-5.5 7z"/></svg><span>' + likeLabel + '</span></button>';
+  h += '<button class="feed-action" type="button" data-action="comment" aria-label="Reply" onclick="event.stopPropagation();feedShowCommentInput(\'' + item.roundId + '\')"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M14 10a1.5 1.5 0 01-1.5 1.5H5L2 14V3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5z"/></svg><span>' + commentLabel + '</span></button>';
+  h += '<button class="feed-action" type="button" data-action="share" aria-label="Share to DM" onclick="event.stopPropagation();shareScorecard(\'' + item.roundId + '\')"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M4 12V8l4-6 4 6v4"/><path d="M4 8h8"/></svg><span>Share</span></button>';
+  h += '</div>';
+  h += _renderCommentThread(item.roundId, comments, item.commentLikes);
+  h += '<div class="feed-commentinput" id="feedComment-' + item.roundId + '" style="display:none">';
+  h += '<input type="text" class="ff-input" id="feedCommentText-' + item.roundId + '" placeholder="Add a reply…" onkeydown="if(event.key===\'Enter\')feedSubmitComment(\'' + item.roundId + '\')">';
+  h += '<button class="feed-commentinput__post" type="button" onclick="event.stopPropagation();feedSubmitComment(\'' + item.roundId + '\')">Post</button>';
+  h += '</div>';
+  return h;
+}
+
+// H2H chip data — does another member have a public round at the same course on
+// the same day as this round? Used to surface the rivalry where it happened.
+function _feedH2HOpponent(item) {
+  if (!item || item.type !== "round" || item.isScramble || !item.course || !item.date) return null;
+  var items = window._feedItems || [];
+  for (var i = 0; i < items.length; i++) {
+    var o = items[i];
+    if (o === item || o.type !== "round" || o.isScramble) continue;
+    if (o.playerId && o.playerId !== item.playerId && o.date === item.date &&
+        (typeof PB === "undefined" || !PB.normCourseName || PB.normCourseName(o.course) === PB.normCourseName(item.course))) {
+      return o;
+    }
+  }
+  return null;
 }
 
 // ── ROUND CARD (Card C — round post) ──
@@ -353,6 +480,14 @@ function _renderRoundCard(item) {
   h += '<div class="feed-card__coursename">' + escHtml(item.course) + '</div>';
   if (meta) h += '<div class="feed-card__meta">' + escHtml(meta) + '</div>';
   h += '</div>';
+
+  // H2H chip (rank 1) — when another member played the same course/day, surface
+  // the rivalry right where it happened, one tap into the head-to-head tape.
+  var _opp = _feedH2HOpponent(item);
+  if (_opp && item.playerId && _opp.playerId) {
+    var _oppName = _opp.playerName || (_opp.player ? (_opp.player.name || _opp.player.username) : "a Parbaugh");
+    h += '<button type="button" class="feed-h2h-chip" onclick="event.stopPropagation();showRivalryDetail(\'' + String(item.playerId).replace(/'/g, "\\'") + '\',\'' + String(_opp.playerId).replace(/'/g, "\\'") + '\')" aria-label="' + escHtml("Head to head vs " + _oppName) + '"><svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 3v10M11 3v10M3 6h4M9 10h4"/></svg>H2H vs ' + escHtml(_oppName) + '</button>';
+  }
 
   var dots = _feedHoleDots(item.holeScores, item.holePars, item.holesPlayed, item.holesMode);
   if (dots) h += dots;

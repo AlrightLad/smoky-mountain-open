@@ -292,6 +292,28 @@ input.s:disabled,
 .feed-topar--under{color:var(--cb-brass-deep)}
 .feed-topar--over{color:var(--cb-mute)}
 
+/* ── The Caddy's Front Page — editorial lead story (rank 2) ────────────────
+   One oversize hero crowning the feed; the satellite .feed-card rows run below.
+   Felt-spined paper panel, Fraunces hero headline, brass pull-quote. */
+.feed-lead{position:relative;margin:0 0 6px;padding:18px 18px 16px;background:var(--cb-paper);border-bottom:1px solid var(--cb-chalk-3);box-shadow:inset 3px 0 0 var(--cb-brass)}
+.feed-lead__kicker{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:9px}
+.feed-lead__headline{font-family:var(--font-display);font-size:27px;font-weight:700;line-height:1.08;letter-spacing:-.4px;color:var(--cb-ink);margin:0;cursor:pointer}
+.feed-lead__headline:focus-visible{outline:2px solid var(--cb-brass);outline-offset:3px;border-radius:2px}
+.feed-lead__byline{display:flex;align-items:center;gap:8px;margin-top:11px}
+.feed-lead__by{font-family:var(--font-display);font-style:italic;font-weight:600;font-size:14px;color:var(--cb-ink)}
+.feed-lead__time{font-family:var(--font-mono);font-size:10px;letter-spacing:.5px;color:var(--cb-mute);margin-left:auto}
+.feed-lead__scoreline{display:flex;align-items:baseline;gap:14px;margin-top:14px;padding-top:13px;border-top:1px solid var(--cb-chalk-2)}
+.feed-lead__score{font-family:var(--font-display);font-size:40px;font-weight:700;line-height:1;color:var(--cb-brass);font-variant-numeric:tabular-nums;display:flex;align-items:baseline;gap:8px}
+.feed-lead__topar{font-family:var(--font-mono);font-size:14px;font-weight:700;letter-spacing:.5px}
+.feed-lead__coursewrap{flex:1;min-width:0}
+.feed-lead__course{font-family:var(--font-display);font-style:italic;font-weight:600;font-size:17px;color:var(--cb-ink);line-height:1.15}
+.feed-lead__flag{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cb-brass-deep);margin-top:3px}
+.feed-lead__quote{font-family:var(--font-display);font-style:italic;font-size:16px;line-height:1.4;color:var(--cb-charcoal);margin:14px 0 4px;padding-left:14px;border-left:2px solid var(--cb-brass)}
+/* H2H chip on a round card (rank 1) — brass-outline pill, the rivalry where it happened */
+.feed-h2h-chip{display:inline-flex;align-items:center;gap:5px;margin-top:11px;padding:4px 11px;font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cb-brass-deep);background:rgba(var(--cb-brass-rgb),.08);border:1px solid rgba(var(--cb-brass-rgb),.35);border-radius:20px;cursor:pointer;transition:background var(--duration-fast) var(--ease-out)}
+.feed-h2h-chip:hover{background:rgba(var(--cb-brass-rgb),.16)}
+.feed-h2h-chip:focus-visible{outline:2px solid var(--cb-brass);outline-offset:2px}
+
 /* Hole dots + stat chips. */
 .feed-dots{display:flex;flex-wrap:wrap;gap:4px;margin-top:12px}
 .feed-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
