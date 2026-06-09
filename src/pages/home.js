@@ -158,11 +158,30 @@ function _buildHomeContext() {
   };
 }
 
+// Mobile-home nemesis chip (rank 1) — cream-surface variant of the HQ felt hook.
+// Returns '' when the viewer has no shared-round rivalry yet (P9, never fabricated).
+function _renderMobileNemesis() {
+  if (typeof computeRivalries !== "function" || typeof currentUser === "undefined" || !currentUser) return "";
+  var riv = computeRivalries(currentUser.uid);
+  if (!riv.nemesis) return "";
+  var n = riv.nemesis;
+  var nm = n.opp.name || n.opp.username || "a rival";
+  var verb = n.leading ? "You own " + nm + ", " + n.wins + "–" + n.losses
+    : n.trailing ? nm + " leads you " + n.losses + "–" + n.wins
+    : "Dead even with " + nm + ", " + n.wins + "–" + n.losses;
+  var uid = String(currentUser.uid).replace(/'/g, "\\'");
+  var oid = String(n.id).replace(/'/g, "\\'");
+  return '<div class="hm-nemesis" role="button" tabindex="0" aria-label="' + escHtml("Nemesis: " + verb) + '" onclick="showRivalryDetail(\'' + uid + '\',\'' + oid + '\')" onkeydown="if(event.key===\'Enter\'){showRivalryDetail(\'' + uid + '\',\'' + oid + '\')}"><span class="hm-nemesis__tag">Nemesis</span><span class="hm-nemesis__txt">' + escHtml(verb) + ' &rarr;</span></div>';
+}
+
 // v8.4.1 mobile-editorial layout — preserved unchanged below HQ_BREAKPOINT.
 function _renderMobileHome(ctx) {
   var h = "";
   h += _renderEmailVerifyBanner();
   h += _renderGreeting(ctx.greetingWord, ctx.firstName);
+  // Nemesis hook on mobile home too (rank 1) — the grudge greets you on the
+  // primary surface, not just desktop HQ. Honest: empty unless a real rivalry exists.
+  if (ctx.state !== "new") h += _renderMobileNemesis();
 
   if (ctx.state === "active") {
     h += _renderLiveRoundCard();
