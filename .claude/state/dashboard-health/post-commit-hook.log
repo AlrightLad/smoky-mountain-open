@@ -1,1 +1,26 @@
 === post-commit hook fired 2026-06-09T01:30:46Z HEAD=7bb2c285 ===
+[scaffold-from-templates] done: scaffolded=0 skipped=15
+
+--- scripts/scan-shipped-proposals.py ---
+[scan-shipped] approved/ is empty; nothing to scan
+
+--- scripts/aggregate-telemetry.py ---
+[aggregate] wrote .claude\state\telemetry\aggregates\current-snapshot.json (write-content-changed)
+[aggregate] meter_status=wired-real
+[aggregate] events=28378 handoffs=1 bubbles=7 proposals_pending=0
+
+--- scripts/ingest-session-transcripts.py ---
+[ingest-session-transcripts] scanned 14b32e71-e98c-4be1-819e-5288e4bfd93c.jsonl: +25 new entries (offset 14059197\u219214941922)
+[ingest-session-transcripts] scanned 303 JSONL file(s), found 25 new assistant turns
+[ingest-session-transcripts] wrote session-transcript-summary.json (364 buckets, 14883835284 total tokens, 309 sessions) [write-content-changed]
+
+--- scripts/aggregate-token-usage.py ---
+[aggregate-token] real_events=365 estimated_events=16359 manual_entries=0
+[aggregate-token] all-time: real=14883937284 estimated=19123730 manual=0
+[aggregate-token] snapshot write=True (write-content-changed) -> .claude\state\telemetry\aggregates\token-usage-snapshot.json
+[aggregate-token] cursor   write=True (write-content-changed) -> .claude\state\telemetry\aggregates\.token-usage-cursor.json
+
+--- scripts/aggregate-test-health.py ---
+[aggregate-test-health] OK status=green timestamp=2026-06-09T01:30:54Z write=False (skip-idempotent-grace-content-unchanged-923917s)
+
+--- scripts/aggregate-security-health.py ---
