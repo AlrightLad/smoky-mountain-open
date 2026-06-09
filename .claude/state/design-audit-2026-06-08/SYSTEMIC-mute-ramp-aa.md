@@ -1,6 +1,28 @@
-# Next design-system batch item — secondary-text ramp fails WCAG AA app-wide
+# Secondary-text ramp WCAG AA — default theme FIXED (v8.23.98); follow-up remains
 
-**Status:** documented finding + proposed fix (NOT yet implemented) · **Severity:** medium (ADA/WCAG, ship-blocking under Legal charter) · **Type:** app-wide palette re-tune → Founder-visibility warranted (P7/AMD-028)
+**Status:** DEFAULT-theme core SHIPPED v8.23.98 (`--cb-mute` #7A766B→#656259 4.63:1, `--cb-mute-1`
+#6B6862→#5F5C50 5.09:1 — verified contrast-check.mjs + vision across More/Members/Home/etc.).
+Remaining = (a) the 5 unlock themes' `--cb-mute`, (b) the `--cb-mute-soft` faintest-tier decision +
+per-consumer reclassification. · **Severity:** medium (ADA/WCAG) · **Type:** app-wide palette
+
+## REMAINING follow-up (each needs per-theme vision verification → a focused ship)
+1. **5 unlock-theme `--cb-mute` darkening** — computed AA-safe values (verified ≥4.6 on each theme's
+   canvas via contrast-check method), pending a per-theme visual pass (switch theme, re-capture):
+   | theme | mute now | → AA-safe |
+   |---|---|---|
+   | twilight_links | #74798A (2.80) | **#545763** (4.65) |
+   | linen_draft | #8A8974 (2.65) | **#626152** (4.68) |
+   | champion_sunday | #8A7264 (3.03) | **#69574C** (4.62) |
+   | bourbon_room | #8C6B4A (3.02) | **#695037** (4.65) |
+   | course_record | #7A8078 (2.86) | **#5A5F59** (4.61) |
+2. **`--cb-mute-soft` (#928E80, 2.49)** — the faintest tier. Darkening it to AA collapses it into mute
+   (tier-vs-AA conflict below). DECISION needed: keep mute-soft decorative-only and **reclassify its 28+
+   essential-text consumers** (calendar metas/eyebrows/empty-bodies, settings-nav links, admin-nav,
+   onboarding counter/detail/link, chip-composer) to `--cb-mute`/`--cb-mute-1` (now AA-safe) — OR retune.
+
+---
+
+(original analysis below — note the default-theme mute/mute-1 portion is now resolved)
 
 ## The finding
 v8.23.96 fixed the 3 audit-sampled WCAG AA failures (feed composer, settings desc, awards labels). But the

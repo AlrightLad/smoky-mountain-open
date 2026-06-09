@@ -21,6 +21,7 @@ const T = {
   chalk: '#F4EFE4', canvas: '#E7E0CD', paper: '#FCFAF5',
   ink: '#14130F', charcoal: '#4A4740', inkLink: '#5A4318', inkFaint: '#5F5C50',
   mute: '#7A766B', mute1: '#6B6862', muteSoft: '#928E80',
+  muteV98: '#656259', mute1V98: '#5F5C50', // v8.23.98 darkened default-theme secondary text
   brass: '#B4893E', brassDeep: '#8C6A2E',
 };
 const AA = 4.5; // normal text floor
@@ -44,8 +45,12 @@ const PAIRS = [
   ['settings .set-row__desc (FIX -> ink-faint/paper desktop)', T.inkFaint, T.paper, true],
   ['awards tier label (FIX -> ink-link/chalk worst-case)', T.inkLink, T.chalk, true],
   ['awards tier label (FIX -> ink-link/paper)', T.inkLink, T.paper, true],
+  // --- v8.23.98 shipped: darkened default-theme secondary text (must PASS on canvas) ---
+  ['SHIPPED --cb-mute v98 on canvas', T.muteV98, T.canvas, true],
+  ['SHIPPED --cb-mute v98 on chalk', T.muteV98, T.chalk, true],
+  ['SHIPPED --cb-mute-1 v98 on canvas', T.mute1V98, T.canvas, true],
   // --- guardrail reference table (lightest AA-safe token per ground) ---
-  ['ref: mute-1 on canvas (FAILS — do not use for text on canvas)', T.mute1, T.canvas, false],
+  ['ref: OLD mute on canvas (pre-v98 — FAILED)', T.mute, T.canvas, false],
   ['ref: ink-faint on chalk', T.inkFaint, T.chalk, true],
 ];
 

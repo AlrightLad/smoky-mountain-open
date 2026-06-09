@@ -63,14 +63,17 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --cb-ink-2: #2D2B24;
   --cb-charcoal: #4A4740;
   --cb-ink-link: #5A4318;       /* deep brass for link colors on chalk */
-  /* WCAG AA guardrail (verified 2026-06-08, scripts/visual-audit/contrast-check.mjs).
+  /* WCAG AA guardrail (verified 2026-06-08/v8.23.98, scripts/visual-audit/contrast-check.mjs).
      Normal-text floor is 4.5:1. The page ground is --cb-canvas #E7E0CD (darker than
-     chalk), so tokens must clear AA on CANVAS to be safe everywhere:
-       mute-soft 2.49 · mute 3.44 · mute-1 4.22  → all FAIL on canvas (text-unsafe)
-       ink-faint 5.09 · charcoal 7.03            → AA-safe on canvas
-     For muted body/label TEXT on the page ground, use --cb-ink-faint (not mute/mute-1). */
-  --cb-mute: #7A766B;           /* 3.44:1 on canvas / 3.95 on chalk — FAILS AA; large/decorative only, not body text */
-  --cb-mute-1: #6B6862;         /* body-secondary on chalk/paper (4.84/5.32); FAILS on canvas (4.22) — use ink-faint there */
+     chalk), so secondary-text tokens were darkened to clear AA on CANVAS (the worst case):
+       mute  #656259 = 4.63 on canvas (was #7A766B 3.44 — FAILED) → AA-safe, default secondary text
+       mute-1 #5F5C50 = 5.09 on canvas (was #6B6862 4.22 — FAILED) → AA-safe, body-secondary
+       mute-soft 2.49 → STILL faint: decorative/non-essential ONLY, never essential text
+       mute-2 / mute-3 → decorative / disabled / hairline only (non-text)
+     5 unlock themes' --cb-mute also fail AA and have computed AA-safe values pending a
+     verified per-theme follow-up (see .claude/state/design-audit-2026-06-08/SYSTEMIC-mute-ramp-aa.md). */
+  --cb-mute: #656259;           /* 4.63:1 on canvas — AA-safe default secondary text (darkened from #7A766B v8.23.98) */
+  --cb-mute-1: #5F5C50;         /* 5.09:1 on canvas — AA-safe body-secondary (darkened from #6B6862 v8.23.98) */
   --cb-mute-2: #A8A395;         /* default mute (was #8A8478 — v8.14.0 lighter sage-tinted) — decorative only */
   --cb-mute-3: #C9C5BD;         /* light mute, disabled states / hairline-on-chalk-3 */
 
@@ -387,7 +390,7 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --cb-green-2: #3D5C48;
   --cb-ink: #14130F;
   --cb-charcoal: #4A4740;
-  --cb-mute: #7A766B;
+  --cb-mute: #656259;           /* v8.23.98 — AA-safe (4.63:1 on canvas), darkened from #7A766B */
   --cb-brass: #B4893E;
   --bg-rgb: 244, 239, 228;
   --cream-rgb: 20, 19, 15;
