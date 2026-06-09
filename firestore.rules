@@ -602,8 +602,17 @@ service cloud.firestore {
       allow create: if amIActive()
                    && amILeagueMember(request.resource.data.leagueId)
                    && !isBannedFromLeague(request.resource.data.leagueId, uid());
+      // v8.24.x — FIX chronic prod error "[Sync] scrambleTeam write failed:
+      // Missing or insufficient permissions." (sync.js syncScrambleTeam, ~30
+      // occurrences across v8.23.x-v8.24.6 in the prod errors collection).
+      // Root cause: scrambleTeams docs store the roster in `members` (array of
+      // uids, set by addScrambleTeam — data.js), but this rule checked a
+      // non-existent `memberUids` field, so `uid() in []` was always false and
+      // every non-leadership team member was denied when the sync layer
+      // re-wrote their own team (and team rename in scramble.js was leadership-
+      // only). Corrected to read the real `members` field.
       allow update: if amIActive() && (
-        uid() in resource.data.get('memberUids', [])
+        uid() in resource.data.get('members', [])
         || amILeagueLeadership(resource.data.leagueId)
         || amIFounder()
       );

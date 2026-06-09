@@ -1706,13 +1706,18 @@ async function runAll() {
       }));
     });
 
-    await runTest('team member updates own team', async () => {
+    // v8.24.9 — these tests now seed the REAL doc shape the app writes:
+    // `members` (array of uids, per data.js addScrambleTeam), NOT `memberUids`.
+    // The prior tests seeded `memberUids` — the shape the OLD (buggy) rule
+    // expected — so they passed while prod denied every non-leadership team
+    // member ("[Sync] scrambleTeam write failed: insufficient permissions").
+    await runTest('team member updates own team (members field — real app shape)', async () => {
       await withPlatformRole(USER_A, 'user');
       await withLeague(LEAGUE_A, {
         commissioner: COMM, memberUids: [USER_A, COMM], admins: [COMM],
       });
       await seedDoc('scrambleTeams/st1', {
-        leagueId: LEAGUE_A, name: 'Team A', memberUids: [USER_A],
+        leagueId: LEAGUE_A, name: 'Team A', members: [USER_A], captain: USER_A,
       });
       const db = authenticatedAs(USER_A);
       await assertSucceeds(db.collection('scrambleTeams').doc('st1').update({
@@ -1720,17 +1725,31 @@ async function runAll() {
       }));
     });
 
-    await runTest('non-team-member cannot update team', async () => {
+    await runTest('non-team-member cannot update team (members field)', async () => {
       await withPlatformRole(USER_C, 'user');
       await withLeague(LEAGUE_A, {
         commissioner: COMM, memberUids: [USER_A, USER_C, COMM], admins: [COMM],
       });
       await seedDoc('scrambleTeams/st1', {
-        leagueId: LEAGUE_A, name: 'Team A', memberUids: [USER_A],
+        leagueId: LEAGUE_A, name: 'Team A', members: [USER_A], captain: USER_A,
       });
       const db = authenticatedAs(USER_C);
       await assertFails(db.collection('scrambleTeams').doc('st1').update({
         name: 'Team Hijacked',
+      }));
+    });
+
+    await runTest('league leadership can update any scramble team', async () => {
+      await withPlatformRole(COMM, 'user');
+      await withLeague(LEAGUE_A, {
+        commissioner: COMM, memberUids: [USER_A, COMM], admins: [COMM],
+      });
+      await seedDoc('scrambleTeams/st1', {
+        leagueId: LEAGUE_A, name: 'Team A', members: [USER_A], captain: USER_A,
+      });
+      const db = authenticatedAs(COMM);
+      await assertSucceeds(db.collection('scrambleTeams').doc('st1').update({
+        name: 'Team Commish',
       }));
     });
   });
