@@ -887,6 +887,78 @@ async function runAll() {
   });
 
   // ─────────────────────────────────────────────────────────────────
+  // REACTIONS (v8.24.x) + BLOCK PHASE 2 (server-enforced member blocking)
+  // ─────────────────────────────────────────────────────────────────
+
+  await group('reactions + block Phase 2', async () => {
+    // Reactions: 'reactions' joins the rounds engagement allow-list, so a
+    // league member can attach a reaction to another member's round.
+    await runTest("league member can add 'reactions' to another member's round", async () => {
+      await withPlatformRole(USER_A, 'user');
+      await withPlatformRole(USER_C, 'user');
+      await withLeague(LEAGUE_A, { memberUids: [USER_A, USER_C], admins: [COMM], commissioner: COMM });
+      await seedDoc('rounds/r1', { player: USER_A, leagueId: LEAGUE_A, score: 80 });
+      const db = authenticatedAs(USER_C);
+      await assertSucceeds(db.collection('rounds').doc('r1').update({ reactions: { tee: [USER_C] } }));
+    });
+
+    // Baseline: a non-blocked league member can still like (engagement path
+    // intact after adding the block guard).
+    await runTest('non-blocked member can still like a round (engagement path intact)', async () => {
+      await withPlatformRole(USER_A, 'user');
+      await withPlatformRole(USER_C, 'user');
+      await withLeague(LEAGUE_A, { memberUids: [USER_A, USER_C], admins: [COMM], commissioner: COMM });
+      await seedDoc('rounds/r1', { player: USER_A, leagueId: LEAGUE_A, score: 80 });
+      const db = authenticatedAs(USER_C);
+      await assertSucceeds(db.collection('rounds').doc('r1').update({ likes: [USER_C] }));
+    });
+
+    // Block: a member the round owner has blocked cannot attach engagement
+    // (like / comment / reaction) to the owner's round.
+    await runTest('blocked member CANNOT react/like on the blocker\'s round', async () => {
+      await withPlatformRole(USER_A, 'user', { blockedUsers: [USER_C] });
+      await withPlatformRole(USER_C, 'user');
+      await withLeague(LEAGUE_A, { memberUids: [USER_A, USER_C], admins: [COMM], commissioner: COMM });
+      await seedDoc('rounds/r1', { player: USER_A, leagueId: LEAGUE_A, score: 80 });
+      const db = authenticatedAs(USER_C);
+      await assertFails(db.collection('rounds').doc('r1').update({ reactions: { tee: [USER_C] } }));
+      await assertFails(db.collection('rounds').doc('r1').update({ likes: [USER_C] }));
+    });
+
+    // The block is one-directional: the OWNER can still edit their own round
+    // (block guard only gates the member-engagement branch, not self-edit).
+    await runTest('round owner can still update own round despite blocking someone', async () => {
+      await withPlatformRole(USER_A, 'user', { blockedUsers: [USER_C] });
+      await withLeague(LEAGUE_A, { memberUids: [USER_A], admins: [COMM], commissioner: COMM });
+      await seedDoc('rounds/r1', { player: USER_A, leagueId: LEAGUE_A, score: 80 });
+      const db = authenticatedAs(USER_A);
+      await assertSucceeds(db.collection('rounds').doc('r1').update({ score: 79 }));
+    });
+
+    // Block: the blocked member cannot send the blocker a DM message.
+    await runTest('blocked member CANNOT send a DM message to the blocker', async () => {
+      await withPlatformRole(USER_A, 'user', { blockedUsers: [USER_C] });
+      await withPlatformRole(USER_C, 'user');
+      await seedDoc('dms/' + USER_C + '_' + USER_A, { participants: [USER_C, USER_A] });
+      const db = authenticatedAs(USER_C);
+      await assertFails(
+        db.collection('dms').doc(USER_C + '_' + USER_A).collection('messages').doc('m1').set({ text: 'hi', from: USER_C })
+      );
+    });
+
+    // Baseline: a non-blocked participant can still send a DM message.
+    await runTest('non-blocked participant can still send a DM message', async () => {
+      await withPlatformRole(USER_A, 'user', { blockedUsers: [USER_C] });
+      await withPlatformRole(USER_B, 'user');
+      await seedDoc('dms/' + USER_A + '_' + USER_B, { participants: [USER_A, USER_B] });
+      const db = authenticatedAs(USER_B);
+      await assertSucceeds(
+        db.collection('dms').doc(USER_A + '_' + USER_B).collection('messages').doc('m1').set({ text: 'hi', from: USER_B })
+      );
+    });
+  });
+
+  // ─────────────────────────────────────────────────────────────────
   // CHAT (league-scoped)
   // ─────────────────────────────────────────────────────────────────
 

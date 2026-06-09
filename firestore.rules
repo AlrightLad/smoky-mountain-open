@@ -159,6 +159,24 @@ service cloud.firestore {
       return uid() in get(/databases/$(database)/documents/dms/$(dmId)).data.participants;
     }
 
+    // v8.24.x (block Phase 2) — server-enforced member blocking. The
+    // blocker-side experience shipped in v8.23.25 (the block list lives on
+    // the blocker's own member doc, members/{uid}.blockedUsers). These
+    // helpers add the server-side half: a blocked member's writes that
+    // *target* the blocker are denied at write time, so a block is mutual
+    // non-contact — not just a client-side hide. See task-queue/founder/
+    // block-server-enforcement.md. Cost: one extra member-doc read per
+    // targeted write (repeated get() of the same path dedupes within a
+    // single evaluation, so the dm read below is not billed twice).
+    function isBlockedBy(ownerUid) {
+      return uid() in memberDoc(ownerUid).get('blockedUsers', []);
+    }
+    function dmPeer(dmId) {
+      return get(/databases/$(database)/documents/dms/$(dmId)).data.participants[0] == uid()
+        ? get(/databases/$(database)/documents/dms/$(dmId)).data.participants[1]
+        : get(/databases/$(database)/documents/dms/$(dmId)).data.participants[0];
+    }
+
     // ════════════════════════════════════════════════════════════════
     // COLLECTION RULES
     // ════════════════════════════════════════════════════════════════
@@ -299,13 +317,21 @@ service cloud.firestore {
       // diff().affectedKeys() pattern as Ship 5+2 (/teetimes) and Ship 5+3
       // (/chat). Fixes the silent-failure introduced by the v8.0 author-only
       // rules rewrite — fourth instance of the same architectural fix.
+      // v8.24.x — 'reactions' added to the engagement allow-list (rank-7
+      // Brass Tee-Tap reactions, same diff().affectedKeys() pattern). The
+      // block Phase-2 guard denies the engagement branch when the round
+      // owner has blocked the writer, so a blocked member cannot attach a
+      // like / comment / reaction to the blocker's round (server-enforced;
+      // task-queue/founder/block-server-enforcement.md). Author / leadership
+      // / founder branches are unaffected — moderation + self-edit stay open.
       allow update: if amIActive() && (
         resource.data.player == uid()
         || amILeagueLeadership(resource.data.leagueId)
         || amIFounder()
         || (amILeagueMember(resource.data.leagueId)
             && request.resource.data.diff(resource.data).affectedKeys()
-                  .hasOnly(['likes', 'comments', 'commentLikes']))
+                  .hasOnly(['likes', 'comments', 'commentLikes', 'reactions'])
+            && !isBlockedBy(resource.data.player))
       );
       allow delete: if amIActive()
                    && (resource.data.player == uid() || amIFounder());
@@ -331,7 +357,11 @@ service cloud.firestore {
                    && (dmId.matches(uid() + '_.*') || dmId.matches('.*_' + uid()));
         // v8.11.2 — create now reads parent dms/{dmId}.participants instead
         // of trusting dmId path regex. Read rule deferred to v8.12.x cleanup.
-        allow create: if amIActive() && isDMParticipant(dmId);
+        // v8.24.x (block Phase 2) — also deny when the DM peer has blocked
+        // the sender, so a blocked member cannot keep sending messages that
+        // pile up unseen (server-enforced mutual non-contact).
+        allow create: if amIActive() && isDMParticipant(dmId)
+                     && !isBlockedBy(dmPeer(dmId));
         allow update: if false;
         allow delete: if amIFounder();
       }
