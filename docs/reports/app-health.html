@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-10T20:28:02.130343Z",
+  "generated_at": "2026-06-10T20:34:48.272595Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 88.5,
   "overall_grade": "A-",
@@ -999,18 +999,13 @@
   "founder_attention": [],
   "agent_attention": [],
   "audit_trigger": {
-    "sha": "106bef08",
-    "subject": "fix(sync): detach ALL league listeners on sign-out + guard sign-out race (v8.24.31)",
-    "committed_at": "2026-06-10T16:27:29-04:00",
-    "trigger": "app-commit",
-    "is_app_commit": true,
-    "app_files_touched": [
-      "public/sw.js",
-      "src/core/firebase.js",
-      "src/core/sync.js",
-      "src/core/utils.js"
-    ],
-    "total_files_touched": 5
+    "sha": "e2b0dceb",
+    "subject": "test(smoke): S27 â€” marathon feature assertions, 27/27 green",
+    "committed_at": "2026-06-10T16:34:21-04:00",
+    "trigger": "substrate-commit",
+    "is_app_commit": false,
+    "app_files_touched": [],
+    "total_files_touched": 3
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
