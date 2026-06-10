@@ -116,6 +116,10 @@ picks up a version.
 
 ## Always-on cycle hygiene
 
+- **Dashboard ALWAYS current (Founder directive 2026-06-10):** run
+  `bash scripts/regen-all.sh` at every cycle close; the Founder reads the
+  dashboard/checklist as live state while clearing blockers asynchronously.
+  A blocked item never idles the loop — log it, work the adjacent items.
 - `git status --porcelain | wc -l` == 0 before reporting (grind-to-completion).
 - Decision log: `.claude/state/founder-decisions/<date>.ndjson` — approved →
   complete it; denied → log reason. Mark checklist items via
