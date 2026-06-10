@@ -822,10 +822,10 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-10T14:50:01.591131Z",
+  "generated_at": "2026-06-10T14:51:59.261056Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 68.3,
-  "overall_grade": "C+",
+  "overall_score": 88.5,
+  "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
     "sev2": 1,
@@ -838,9 +838,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 73.3,
+    "pre_deduction_score": 93.5,
     "deduction": 5,
-    "post_deduction_score": 68.3
+    "post_deduction_score": 88.5
   },
   "dimensions": {
     "A1_roadmap": {
@@ -851,9 +851,9 @@
       "weak_points": []
     },
     "A2_fiq": {
-      "score": 75,
-      "status": "yellow",
-      "label": "26 declared / 0 deployed (drift)",
+      "score": 100,
+      "status": "green",
+      "label": "26/26 deployed · 0 pending",
       "source": ".claude/state/aggregates/fiq-status.json",
       "weak_points": []
     },
@@ -861,27 +861,21 @@
       "score": 98,
       "status": "green",
       "label": "AgentShield grade A; honest score 98/100 · 0 CRITICAL · 1 HIGH · 0 MED",
-      "source": ".claude/state/security/baseline-20260521-184045/agentshield-post-cleanup.txt",
+      "source": ".claude\\state\\security\\baseline-20260521-184045\\agentshield-post-cleanup.txt",
       "weak_points": [
         {
           "what": "1 HIGH findings — at industry-grade this is technical debt, NOT 'acceptable'",
-          "where": ".claude/state/security/baseline-20260521-184045/agentshield-post-cleanup.txt",
+          "where": ".claude\\state\\security\\baseline-20260521-184045\\agentshield-post-cleanup.txt",
           "what_action": "Top 3: tighten Bash(curl *) allow rule to specific domains; add deny rules for sudo/ssh/chmod 777; replace `>/dev/null 2>&1` in hooks with audit log writes"
         }
       ]
     },
     "A4_uiux": {
-      "score": 0,
-      "status": "red",
-      "label": "Lighthouse BP 0/100 across 0 pages",
+      "score": 93,
+      "status": "green",
+      "label": "Lighthouse BP 93/100 across 6 pages",
       "source": ".claude/state/aggregates/lighthouse-scores.json",
-      "weak_points": [
-        {
-          "what": "Lighthouse Best-Practices = 0/100 across 0 pages (target: 90+)",
-          "where": ".claude/state/aggregates/lighthouse-scores.json",
-          "what_action": "Open .lighthouseci/*.html — top BP failures include image aspect ratios, console errors, deprecated APIs. Fix top 3 per page."
-        }
-      ]
+      "weak_points": []
     },
     "A5_code_quality": {
       "score": 82,
@@ -909,8 +903,18 @@
         "over_budget_count": 6,
         "files": [
           {
-            "file": "src/pages/rounds.js",
-            "lines": 927,
+            "file": "src/pages/courses.js",
+            "lines": 890,
+            "budget": 800
+          },
+          {
+            "file": "src/pages/feed.js",
+            "lines": 820,
+            "budget": 800
+          },
+          {
+            "file": "src/pages/members-detail.js",
+            "lines": 925,
             "budget": 800
           },
           {
@@ -924,18 +928,8 @@
             "budget": 800
           },
           {
-            "file": "src/pages/courses.js",
-            "lines": 890,
-            "budget": 800
-          },
-          {
-            "file": "src/pages/members-detail.js",
-            "lines": 925,
-            "budget": 800
-          },
-          {
-            "file": "src/pages/feed.js",
-            "lines": 820,
+            "file": "src/pages/rounds.js",
+            "lines": 927,
             "budget": 800
           }
         ]
@@ -962,30 +956,18 @@
       "weak_points": []
     },
     "A8_performance": {
-      "score": 0,
-      "status": "red",
-      "label": "Lighthouse Performance 0/100 across 0 pages",
+      "score": 83,
+      "status": "green",
+      "label": "Lighthouse Performance 83/100 across 6 pages",
       "source": ".claude/state/aggregates/lighthouse-scores.json",
-      "weak_points": [
-        {
-          "what": "Lighthouse Performance = 0/100 across 0 pages (target: 75+)",
-          "where": ".claude/state/aggregates/lighthouse-scores.json",
-          "what_action": "Open .lighthouseci/*.html — fix top performance failures per page"
-        }
-      ]
+      "weak_points": []
     },
     "A9_accessibility": {
-      "score": 0,
-      "status": "red",
-      "label": "Lighthouse Accessibility 0/100 across 0 pages",
+      "score": 95,
+      "status": "green",
+      "label": "Lighthouse Accessibility 95/100 across 6 pages",
       "source": ".claude/state/aggregates/lighthouse-scores.json",
-      "weak_points": [
-        {
-          "what": "Lighthouse Accessibility = 0/100 across 0 pages (target: 90+)",
-          "where": ".claude/state/aggregates/lighthouse-scores.json",
-          "what_action": "Open .lighthouseci/*.html — fix top accessibility failures per page"
-        }
-      ]
+      "weak_points": []
     },
     "A10_mobile_first": {
       "score": 100,
@@ -1004,61 +986,23 @@
     "A12_operational": {
       "score": 100,
       "status": "green",
-      "label": "pipeline=missing · 0 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=green · 1 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [],
       "details": {
-        "watcher_last_status": null,
-        "watcher_exit_reason": ""
+        "watcher_last_status": "PASS",
+        "watcher_exit_reason": "no-new-files"
       }
     }
   },
-  "attention_items": [
-    {
-      "what": "Lighthouse Best-Practices = 0/100 across 0 pages (target: 90+)",
-      "where": ".claude/state/aggregates/lighthouse-scores.json",
-      "what_action": "Open .lighthouseci/*.html — top BP failures include image aspect ratios, console errors, deprecated APIs. Fix top 3 per page.",
-      "dimension": "A4_uiux"
-    },
-    {
-      "what": "Lighthouse Performance = 0/100 across 0 pages (target: 75+)",
-      "where": ".claude/state/aggregates/lighthouse-scores.json",
-      "what_action": "Open .lighthouseci/*.html — fix top performance failures per page",
-      "dimension": "A8_performance"
-    },
-    {
-      "what": "Lighthouse Accessibility = 0/100 across 0 pages (target: 90+)",
-      "where": ".claude/state/aggregates/lighthouse-scores.json",
-      "what_action": "Open .lighthouseci/*.html — fix top accessibility failures per page",
-      "dimension": "A9_accessibility"
-    }
-  ],
+  "attention_items": [],
   "founder_attention": [],
-  "agent_attention": [
-    {
-      "what": "Lighthouse Best-Practices = 0/100 across 0 pages (target: 90+)",
-      "where": ".claude/state/aggregates/lighthouse-scores.json",
-      "what_action": "Open .lighthouseci/*.html — top BP failures include image aspect ratios, console errors, deprecated APIs. Fix top 3 per page.",
-      "dimension": "A4_uiux"
-    },
-    {
-      "what": "Lighthouse Performance = 0/100 across 0 pages (target: 75+)",
-      "where": ".claude/state/aggregates/lighthouse-scores.json",
-      "what_action": "Open .lighthouseci/*.html — fix top performance failures per page",
-      "dimension": "A8_performance"
-    },
-    {
-      "what": "Lighthouse Accessibility = 0/100 across 0 pages (target: 90+)",
-      "where": ".claude/state/aggregates/lighthouse-scores.json",
-      "what_action": "Open .lighthouseci/*.html — fix top accessibility failures per page",
-      "dimension": "A9_accessibility"
-    }
-  ],
+  "agent_attention": [],
   "audit_trigger": {
-    "sha": "6b7f422",
-    "subject": "chore(cycle): heartbeat 2026-06-10T14:49:31Z",
-    "committed_at": "2026-06-10T14:49:31Z",
-    "trigger": "substrate-commit",
+    "sha": "4c5e9376",
+    "subject": "cron(routine): post-watcher-commit drift sweep (2026-06-10T14:51:44.8921022Z)",
+    "committed_at": "2026-06-10T10:51:48-04:00",
+    "trigger": "cron",
     "is_app_commit": false,
     "app_files_touched": [],
     "total_files_touched": 2
