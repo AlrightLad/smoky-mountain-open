@@ -647,22 +647,11 @@ function deleteMyAccount() {
 // The legacy light/dark toggle in Settings was swapped for a placeholder
 // note; the full picker ships in 0d-ii.
 
-function showClubhouseWelcomeToast() {
-  try {
-    if (localStorage.getItem('pb_clubhouse_welcomed')) return;
-  } catch(e) { return; }
-  setTimeout(function() {
-    var t = document.createElement('div');
-    t.className = 'toast toast--welcome show';
-    t.innerHTML = '<div class="wt-kicker">Welcome back</div><div class="wt-title">The Clubhouse is open.</div><div class="wt-body">We\'ve refreshed the look. Your rounds and ParCoins are safe.</div>';
-    document.body.appendChild(t);
-    setTimeout(function() {
-      t.classList.remove('show');
-      setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t); }, 400);
-    }, 5000);
-    try { localStorage.setItem('pb_clubhouse_welcomed', '1'); } catch(e) {}
-  }, 1500);
-}
+// v8.24.36 — the one-time "Clubhouse welcome" toast was removed. It was the
+// v8.3 "we've refreshed the look" migration notice; months later it read as
+// nonsense to brand-new members ("Welcome back"?) and its bottom-anchored
+// card overlapped the chat composer. pb_clubhouse_welcomed stays listed as
+// an allowed localStorage key (existing devices carry it).
 
 // ========== AUTH STATE ==========
 if (firebaseAvailable && auth) {
@@ -678,7 +667,6 @@ if (firebaseAvailable && auth) {
         }
         // Apply theme preference from Firestore profile (migrates legacy .appearance if present)
         if (typeof reconcileThemeFromProfile === "function") reconcileThemeFromProfile(currentProfile);
-        showClubhouseWelcomeToast();
         enterApp();
         // Start real-time profile listener — keeps currentProfile in sync across devices/sessions
         if (window._memberProfileUnsub) window._memberProfileUnsub();

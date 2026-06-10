@@ -905,10 +905,6 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
    the low-contrast light-on-brass the base toast inherits. Lifted clear of the
    bottom-nav so it never butts against it. Full brass hairline border (not a
    side-stripe). This surface is every member's first impression at the cutover. */
-.toast--welcome{background:var(--cb-felt);color:var(--cb-chalk);bottom:calc(104px + env(safe-area-inset-bottom));width:340px;max-width:calc(100vw - 32px);padding:16px 20px 17px;text-align:left;border:1px solid rgba(var(--cb-brass-rgb),.5);border-radius:var(--r-4);box-shadow:var(--shadow-lg);letter-spacing:0;font:inherit}
-.toast--welcome .wt-kicker{font-family:var(--font-ui);font-size:10px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
-.toast--welcome .wt-title{font-family:var(--font-display);font-size:17px;font-weight:700;line-height:1.15;color:var(--cb-chalk);margin-bottom:4px}
-.toast--welcome .wt-body{font-family:var(--font-ui);font-size:12px;line-height:1.45;color:var(--cb-chalk);opacity:.82}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    SEARCH RESULTS

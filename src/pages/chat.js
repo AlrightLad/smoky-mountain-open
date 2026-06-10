@@ -115,87 +115,123 @@ var calRangeMode = false;
 
 // Extracted to src/pages/chat-calendar.js per W1.A5. Originally lines 116-469 of this file.
 
+// v8.24.36 — relative timestamps for the chat feed. Within today show the
+// time alone; yesterday and older days carry just enough date to orient.
+function chatRelTime(d) {
+  var now = new Date();
+  var hr = d.getHours() % 12 || 12;
+  var ampm = d.getHours() >= 12 ? "PM" : "AM";
+  var time = hr + ":" + String(d.getMinutes()).padStart(2, "0") + " " + ampm;
+  var startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  var startOfThat = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  var dayDiff = Math.round((startOfToday - startOfThat) / 86400000);
+  if (dayDiff <= 0) return time;
+  if (dayDiff === 1) return "Yesterday · " + time;
+  var mn = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  if (d.getFullYear() === now.getFullYear()) return mn[d.getMonth()] + " " + d.getDate() + " · " + time;
+  return mn[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
+}
+
+// v8.24.36 — author-group stacking. Consecutive messages from one member
+// within 5 minutes share a single card and header (avatar + name + time),
+// like any modern group chat, instead of repeating the full header per
+// message. The feed stays newest-first BETWEEN groups (Founder's chat-order
+// decision); WITHIN a group messages read top-down in the order they were
+// said. Every per-message feature (kudos, comments, delete) survives on its
+// own message line. The old per-message isSystem branch was dead code — the
+// snapshot listener filters system/Caddy messages before render.
+var CHAT_GROUP_WINDOW_MS = 5 * 60 * 1000;
+
 function renderChatMessages(messages) {
   if (!messages.length) return '<div class="card chat-empty-card"><div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28" style="color:var(--muted)"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div><div class="empty-text">No messages yet. Start the trash talk.</div></div></div>';
-  
-  var ch = '';
+
+  // Fold the newest-first list into author groups. messages[i] is NEWER than
+  // messages[i+1], so a group extends while the next (older) message is by
+  // the same author and within the window of the group's oldest message.
+  var groups = [];
   messages.forEach(function(msg) {
-    var m = PB.getPlayer(msg.authorId);
+    var t = (msg.createdAt && msg.createdAt.toDate) ? msg.createdAt.toDate().getTime() : null;
+    var last = groups[groups.length - 1];
+    if (last && last.authorId === msg.authorId && t !== null && last.oldestT !== null
+        && (last.oldestT - t) < CHAT_GROUP_WINDOW_MS) {
+      last.msgs.push(msg);
+      last.oldestT = t;
+    } else {
+      groups.push({ authorId: msg.authorId, authorName: msg.authorName || msg.user || "Member", msgs: [msg], newestT: t, oldestT: t });
+    }
+  });
+
+  var ch = '';
+  groups.forEach(function(g) {
+    var m = PB.getPlayer(g.authorId);
     var mLvl = m ? PB.calcLevelFromXP(PB.getPlayerXPForDisplay(m.id)) : null;
-    var likes = msg.likes || [];
-    var likeCount = likes.length;
-    var iLiked = currentUser && likes.indexOf(currentUser.uid) !== -1;
-    var comments = msg.comments || [];
     var isCommissioner = isFounderRole(currentProfile);
-    var isMine = currentUser && msg.authorId === currentUser.uid;
-    
-    ch += '<div class="card" style="margin-bottom:6px"><div style="padding:10px 14px">';
-    // Header
-    var isSystem = msg.authorId === "system";
-    ch += '<div style="display:flex;gap:10px">';
-    ch += (isSystem ? '<div style="width:32px;height:32px;min-width:32px;border-radius:50%;background:rgba(var(--birdie-rgb),.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:16px">⛳</span></div>' : renderAvatar(m, 32, true));
-    ch += '<div style="flex:1"><div class="chat-author"' + (isSystem ? ' style="color:var(--birdie)"' : '') + '>' + escHtml((msg.system ? "The Caddy" : msg.authorName || msg.user || "Member")) + (mLvl && !isSystem ? ' <span style="font-size:8px;color:var(--gold);font-weight:600">LV' + mLvl.level + '</span>' : '') + '</div>';
-    ch += '<div class="chat-text">' + escHtml(msg.text) + '</div>';
-    if (msg.createdAt && msg.createdAt.toDate) {
-      var _d = msg.createdAt.toDate();
-      var _mn = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-      var _hr = _d.getHours(), _ampm = _hr >= 12 ? "PM" : "AM";
-      _hr = _hr % 12 || 12;
-      var _min = String(_d.getMinutes()).padStart(2,"0");
-      ch += '<div class="chat-time">' + _mn[_d.getMonth()] + ' ' + _d.getDate() + ', ' + _d.getFullYear() + ' · ' + _hr + ':' + _min + ' ' + _ampm + '</div>';
-    }
+
+    ch += '<div class="card" style="margin-bottom:8px"><div style="padding:10px 14px">';
+    // Group header — once per author run
+    ch += '<div style="display:flex;gap:10px;align-items:center;margin-bottom:2px">';
+    ch += renderAvatar(m, 32, true);
+    ch += '<div style="flex:1;min-width:0"><div class="chat-author">' + escHtml(g.authorName)
+        + (mLvl ? ' <span style="font-size:8px;color:var(--gold);font-weight:600">LV' + mLvl.level + '</span>' : '') + '</div>';
+    if (g.newestT !== null) ch += '<div class="chat-time" style="margin-top:1px">' + chatRelTime(new Date(g.newestT)) + '</div>';
     ch += '</div></div>';
-    
-    // Like + Comment + Reply bar
-    ch += '<div style="display:flex;gap:14px;margin-top:8px;padding-top:6px;border-top:1px solid var(--border)">';
-    ch += '<span style="font-size:11px;cursor:pointer;color:' + (iLiked ? 'var(--gold)' : 'var(--muted)') + ';padding:4px 0;display:flex;align-items:center;gap:3px" onclick="event.stopPropagation();toggleLike(\'' + msg._docId + '\')"><svg viewBox="0 0 16 16" width="12" height="12" fill="' + (iLiked ? 'var(--gold)' : 'none') + '" stroke="currentColor" stroke-width="1.5"><path d="M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4a3.5 3.5 0 015.5 3c0 3.5-5.5 7-5.5 7z"/></svg>' + (likeCount ? ' ' + likeCount : '') + '</span>';
-    ch += '<span style="font-size:11px;cursor:pointer;color:var(--muted);padding:4px 0;display:flex;align-items:center;gap:3px" onclick="event.stopPropagation();showCommentInput(\'' + msg._docId + '\')"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 10a1.5 1.5 0 01-1.5 1.5H5L2 14V3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5z"/></svg>' + (comments.length ? ' ' + comments.length : '') + '</span>';
-    if (isCommissioner || isMine) {
-      ch += '<span id="del-' + msg._docId + '" style="font-size:11px;cursor:pointer;color:var(--muted2);margin-left:auto;padding:4px 0;display:flex;align-items:center" onclick="event.stopPropagation();confirmDelete(this,\'' + msg._docId + '\')"><svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4l8 8M12 4l-8 8"/></svg></span>';
-    }
-    ch += '</div>';
-    
-    // Comments
-    if (comments.length) {
-      ch += '<div style="margin-top:6px;padding-top:4px">';
-      var commentLikes = msg.commentLikes || {};
-      comments.forEach(function(c, ci) {
-        var canDeleteComment = (currentUser && c.uid === currentUser.uid) || isCommissioner;
-        var cLikes = commentLikes[String(ci)] || [];
-        var cILiked = currentUser && cLikes.indexOf(currentUser.uid) !== -1;
-        var cAt = c.at ? new Date(c.at) : null;
-        var cTimeStr = "";
-        if (cAt) {
-          var _cmn = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-          var _chr = cAt.getHours(), _camp = _chr >= 12 ? "PM" : "AM";
-          _chr = _chr % 12 || 12;
-          cTimeStr = _cmn[cAt.getMonth()] + " " + cAt.getDate() + " · " + _chr + ":" + String(cAt.getMinutes()).padStart(2,"0") + " " + _camp;
-        }
-        ch += '<div style="padding:4px 0;font-size:11px">';
-        ch += '<div style="display:flex;gap:6px;align-items:flex-start">';
-        ch += '<span style="color:var(--gold);font-weight:600;flex-shrink:0">' + escHtml(c.name||"Anon") + '</span>';
-        ch += '<span style="color:var(--cream);flex:1">' + escHtml(c.text) + '</span>';
+
+    // Message lines — oldest first within the group so the run reads top-down
+    for (var gi = g.msgs.length - 1; gi >= 0; gi--) {
+      var msg = g.msgs[gi];
+      var likes = msg.likes || [];
+      var iLiked = currentUser && likes.indexOf(currentUser.uid) !== -1;
+      var comments = msg.comments || [];
+      var isMine = currentUser && msg.authorId === currentUser.uid;
+
+      ch += '<div style="padding:2px 0 2px 42px">';
+      ch += '<div style="display:flex;align-items:baseline;gap:10px">';
+      ch += '<div class="chat-text" style="flex:1;min-width:0">' + escHtml(msg.text) + '</div>';
+      // Slim inline actions — kudos / comment / delete, right-aligned per line
+      ch += '<div style="display:flex;gap:10px;flex-shrink:0;align-items:center">';
+      ch += '<span style="font-size:11px;cursor:pointer;color:' + (iLiked ? 'var(--gold)' : 'var(--muted)') + ';padding:6px 0;display:flex;align-items:center;gap:3px" onclick="event.stopPropagation();toggleLike(\'' + msg._docId + '\')"><svg viewBox="0 0 16 16" width="12" height="12" fill="' + (iLiked ? 'var(--gold)' : 'none') + '" stroke="currentColor" stroke-width="1.5"><path d="M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4a3.5 3.5 0 015.5 3c0 3.5-5.5 7-5.5 7z"/></svg>' + (likes.length ? ' ' + likes.length : '') + '</span>';
+      ch += '<span style="font-size:11px;cursor:pointer;color:var(--muted);padding:6px 0;display:flex;align-items:center;gap:3px" onclick="event.stopPropagation();showCommentInput(\'' + msg._docId + '\')"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 10a1.5 1.5 0 01-1.5 1.5H5L2 14V3.5A1.5 1.5 0 013.5 2h9A1.5 1.5 0 0114 3.5z"/></svg>' + (comments.length ? ' ' + comments.length : '') + '</span>';
+      if (isCommissioner || isMine) {
+        ch += '<span id="del-' + msg._docId + '" style="font-size:11px;cursor:pointer;color:var(--muted2);padding:6px 0;display:flex;align-items:center" onclick="event.stopPropagation();confirmDelete(this,\'' + msg._docId + '\')"><svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4l8 8M12 4l-8 8"/></svg></span>';
+      }
+      ch += '</div></div>';
+
+      // Comments under their message line
+      if (comments.length) {
+        ch += '<div style="margin-top:4px">';
+        var commentLikes = msg.commentLikes || {};
+        comments.forEach(function(c, ci) {
+          var canDeleteComment = (currentUser && c.uid === currentUser.uid) || isCommissioner;
+          var cLikes = commentLikes[String(ci)] || [];
+          var cILiked = currentUser && cLikes.indexOf(currentUser.uid) !== -1;
+          var cTimeStr = c.at ? chatRelTime(new Date(c.at)) : "";
+          ch += '<div style="padding:4px 0;font-size:11px">';
+          ch += '<div style="display:flex;gap:6px;align-items:flex-start">';
+          ch += '<span style="color:var(--gold);font-weight:600;flex-shrink:0">' + escHtml(c.name || "Anon") + '</span>';
+          ch += '<span style="color:var(--cream);flex:1">' + escHtml(c.text) + '</span>';
+          ch += '</div>';
+          ch += '<div style="display:flex;gap:12px;margin-top:3px;padding:2px 0">';
+          if (cTimeStr) ch += '<span style="font-size:9px;color:var(--muted2)">' + cTimeStr + '</span>';
+          ch += '<span style="font-size:9px;cursor:pointer;padding:2px 4px;color:' + (cILiked ? 'var(--gold)' : 'var(--muted2)') + ';display:flex;align-items:center;gap:2px" onclick="event.stopPropagation();toggleCommentLike(\'' + msg._docId + '\',' + ci + ')"><svg viewBox="0 0 16 16" width="9" height="9" fill="' + (cILiked ? 'var(--gold)' : 'none') + '" stroke="currentColor" stroke-width="1.5"><path d="M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4a3.5 3.5 0 015.5 3c0 3.5-5.5 7-5.5 7z"/></svg>' + (cLikes.length ? ' ' + cLikes.length : '') + '</span>';
+          ch += '<span style="font-size:9px;cursor:pointer;padding:2px 4px;color:var(--muted2);display:flex;align-items:center;gap:2px" onclick="event.stopPropagation();replyToComment(\'' + msg._docId + '\',\'' + escHtml((c.name || "Anon").replace(/'/g, "\\'")) + '\')"><svg viewBox="0 0 16 16" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 8L2 11V5.5A1.5 1.5 0 013.5 4h9A1.5 1.5 0 0114 5.5v4a1.5 1.5 0 01-1.5 1.5H7z"/></svg> Reply</span>';
+          if (canDeleteComment) {
+            ch += '<span style="color:var(--muted2);cursor:pointer;font-size:9px" onclick="event.stopPropagation();confirmDeleteComment(this,\'' + msg._docId + '\',' + ci + ')"><svg viewBox="0 0 16 16" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4l8 8M12 4l-8 8"/></svg></span>';
+          }
+          ch += '</div>';
+          ch += '</div>';
+        });
         ch += '</div>';
-        // Comment actions: timestamp, like, reply, delete
-        ch += '<div style="display:flex;gap:12px;margin-top:3px;padding:2px 0">';
-        if (cTimeStr) ch += '<span style="font-size:9px;color:var(--muted2)">' + cTimeStr + '</span>';
-        ch += '<span style="font-size:9px;cursor:pointer;padding:2px 4px;color:' + (cILiked ? 'var(--gold)' : 'var(--muted2)') + ';display:flex;align-items:center;gap:2px" onclick="event.stopPropagation();toggleCommentLike(\'' + msg._docId + '\',' + ci + ')"><svg viewBox="0 0 16 16" width="9" height="9" fill="' + (cILiked ? 'var(--gold)' : 'none') + '" stroke="currentColor" stroke-width="1.5"><path d="M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4a3.5 3.5 0 015.5 3c0 3.5-5.5 7-5.5 7z"/></svg>' + (cLikes.length ? ' ' + cLikes.length : '') + '</span>';
-        ch += '<span style="font-size:9px;cursor:pointer;padding:2px 4px;color:var(--muted2);display:flex;align-items:center;gap:2px" onclick="event.stopPropagation();replyToComment(\'' + msg._docId + '\',\'' + escHtml((c.name||"Anon").replace(/'/g,"\\'")) + '\')"><svg viewBox="0 0 16 16" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 8L2 11V5.5A1.5 1.5 0 013.5 4h9A1.5 1.5 0 0114 5.5v4a1.5 1.5 0 01-1.5 1.5H7z"/></svg> Reply</span>';
-        if (canDeleteComment) {
-          ch += '<span style="color:var(--muted2);cursor:pointer;font-size:9px" onclick="event.stopPropagation();confirmDeleteComment(this,\'' + msg._docId + '\',' + ci + ')"><svg viewBox="0 0 16 16" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4l8 8M12 4l-8 8"/></svg></span>';
-        }
-        ch += '</div>';
-        ch += '</div>';
-      });
+      }
+
+      // Comment input area (hidden by default)
+      ch += '<div id="comment-' + msg._docId + '" style="display:none;margin-top:6px;gap:6px">';
+      ch += '<input type="text" class="ff-input" style="flex:1;padding:6px 10px;font-size:11px" id="commentText-' + msg._docId + '" placeholder="Add a comment..." onkeydown="if(event.key===\'Enter\')submitComment(\'' + msg._docId + '\')">';
+      ch += '<button class="btn-sm green" style="font-size:10px;padding:6px 10px" onclick="submitComment(\'' + msg._docId + '\')">Post</button>';
+      ch += '</div>';
+
       ch += '</div>';
     }
-    
-    // Comment input area (hidden by default)
-    ch += '<div id="comment-' + msg._docId + '" style="display:none;margin-top:6px;gap:6px">';
-    ch += '<input type="text" class="ff-input" style="flex:1;padding:6px 10px;font-size:11px" id="commentText-' + msg._docId + '" placeholder="Add a comment..." onkeydown="if(event.key===\'Enter\')submitComment(\'' + msg._docId + '\')">';
-    ch += '<button class="btn-sm green" style="font-size:10px;padding:6px 10px" onclick="submitComment(\'' + msg._docId + '\')">Post</button>';
-    ch += '</div>';
-    
+
     ch += '</div></div>';
   });
   return ch;
