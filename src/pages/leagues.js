@@ -344,10 +344,24 @@ function renderLeagueDetail(lid) {
     dh += '<div class="league-stat"><div class="league-stat__label">Access</div><div class="league-stat__value league-stat__value--sm">' + access + '</div></div>';
     dh += '</div></div>';
 
-    // ── Invite code ──
-    dh += '<div class="league-section"><div class="league-section__head"><div><div class="league-section__eyebrow">INVITE</div><div class="league-section__title">Invite code</div></div></div>';
-    dh += '<div class="league-invite"><div class="league-invite__code">' + escHtml(l.inviteCode || "—") + '</div>';
-    dh += '<div class="league-invite__hint">Share this code with friends to invite them.</div></div></div>';
+    // ── Invite a friend ── (v8.24.19 — Founder P0: the raw league code was
+    // BLASTED to every member here; on the founding league that code joins
+    // people as FOUNDING members. Removed. Members now generate a PERSONAL
+    // invite link from their own quota, targeted at THIS league. The raw
+    // league code lives only in the commissioner settings section below.)
+    var _liLeft = pbInvitesLeft(currentProfile);
+    var _liLeftLabel = (_liLeft === Infinity) ? "Unlimited invites" : (_liLeft + " invite" + (_liLeft === 1 ? "" : "s") + " remaining");
+    dh += '<div class="league-section"><div class="league-section__head"><div><div class="league-section__eyebrow">INVITE</div><div class="league-section__title">Invite a friend</div></div>';
+    dh += '<div class="league-section__meta">' + _liLeftLabel + '</div></div>';
+    dh += '<div class="league-invite">';
+    if (_liLeft > 0) {
+      dh += '<button class="league-btn league-btn--brass" onclick="leagueGenerateInviteLink(\'' + lid + '\')">Generate invite link</button>';
+      dh += '<div id="leagueInviteGen"></div>';
+      dh += '<div class="league-invite__hint">Creates a personal link that brings your friend straight into this league. Codes expire in 7 days.</div>';
+    } else {
+      dh += '<div class="league-invite__hint">You\'ve used all your invites — ask the Commissioner for more.</div>';
+    }
+    dh += '</div></div>';
 
     // ── Commissioner / Admin sections ──
     if (isComm || isAdmin) {
@@ -362,7 +376,7 @@ function renderLeagueDetail(lid) {
         dh += '<div class="league-section" id="leagueSettings"><div class="league-section__head"><div><div class="league-section__eyebrow">ADMIN</div><div class="league-section__title">League settings</div></div></div>';
         dh += '<div class="league-toggle"><span class="league-toggle__label">Visibility</span><button class="league-btn league-btn--ghost league-btn--sm" onclick="toggleLeagueVisibility(\'' + lid + '\')">' + access + '</button></div>';
         dh += '<div class="league-toggle"><span class="league-toggle__label">Require approval to join</span><button class="league-btn league-btn--ghost league-btn--sm" onclick="toggleLeagueApproval(\'' + lid + '\')">' + (l.requireApproval ? "On" : "Off") + '</button></div>';
-        dh += '<div class="league-toggle"><span class="league-toggle__label">Invite code</span><button class="league-btn league-btn--ghost league-btn--sm" onclick="regenerateInviteCode(\'' + lid + '\')">Regenerate</button></div>';
+        dh += '<div class="league-toggle"><span class="league-toggle__label">League code <span style="font-family:var(--font-mono);letter-spacing:1px;color:var(--cb-brass)">' + escHtml(l.inviteCode || "—") + '</span></span><button class="league-btn league-btn--ghost league-btn--sm" onclick="regenerateInviteCode(\'' + lid + '\')">Regenerate</button></div>';
         dh += '</div>';
 
         // ── Custom trophies (commissioner-composed, league-scoped) ──
@@ -619,6 +633,36 @@ function toggleLeagueApproval(lid) {
       Router.toast("Approval " + (newVal ? "required" : "not required"));
       Router.go("leagues", { id: lid });
     });
+  });
+}
+
+// v8.24.19 — personal invite link from the league page. Spends one of the
+// member's own invites (pbInvitesLeft, floor 25) and targets THIS league via
+// the createInviteDoc override, so the friend lands in the right league with
+// plain member status — never the founding code.
+function leagueGenerateInviteLink(lid) {
+  if (!db || !currentUser || !currentProfile) { Router.toast("Not ready, try refreshing"); return; }
+  if (pbInvitesLeft(currentProfile) <= 0) { Router.toast("No invites remaining — ask the Commissioner for more"); return; }
+  var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; var code = "PB-";
+  for (var i = 0; i < 8; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+  var link = "https://alrightlad.github.io/smoky-mountain-open/?invite=" + code;
+  var el = document.getElementById("leagueInviteGen");
+  if (el) el.innerHTML = '<div class="league-invite__hint">Generating…</div>';
+  db.collection("invites").doc(code).set(createInviteDoc(code, lid)).then(function() {
+    currentProfile.invitesUsed = (currentProfile.invitesUsed || 0) + 1;
+    db.collection("members").doc(currentProfile.docId || currentUser.uid).update({ invitesUsed: firebase.firestore.FieldValue.increment(1) }).catch(function() {});
+    if (el) {
+      el.innerHTML = '<div class="league-invite__code" style="margin-top:10px">' + code + '</div>'
+        + '<input type="text" readonly value="' + link + '" onclick="this.select()" style="width:100%;margin-top:8px;font-size:10px;padding:8px;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--cream);text-align:center;font-family:var(--font-mono)">';
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(link).then(function() { Router.toast("Invite link copied — send it to your friend"); }).catch(function() { Router.toast("Invite created — tap the link to copy it"); });
+    } else {
+      Router.toast("Invite created — tap the link to copy it");
+    }
+  }).catch(function(err) {
+    if (typeof pbWarn === "function") pbWarn("[league] invite failed:", err && err.message);
+    if (el) el.innerHTML = '<div class="league-invite__hint" style="color:var(--red)">Couldn\'t create the invite — try again.</div>';
   });
 }
 

@@ -50,7 +50,7 @@ Router.register("invite", function() {
 
 var INVITE_EXPIRY_DAYS = 7;
 
-function createInviteDoc(code) {
+function createInviteDoc(code, leagueIdOverride) {
   var expiresAt = new Date();
   expiresAt.setDate(expiresAt.getDate() + INVITE_EXPIRY_DAYS);
   // P2 fix (iter 16, 2026-05-14, Founder directive — "invite link auto-apply"):
@@ -60,7 +60,7 @@ function createInviteDoc(code) {
   // league instead. Fix: persist the inviter's active league on the invite
   // document so validateInvite can return it + client can set the new
   // member's leagues[] + activeLeague correctly.
-  var inviterLeague = (currentProfile && currentProfile.activeLeague) || "the-parbaughs";
+  var inviterLeague = leagueIdOverride || (currentProfile && currentProfile.activeLeague) || "the-parbaughs";
   return {
     code: code,
     createdBy: currentUser.uid,
