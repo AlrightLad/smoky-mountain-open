@@ -171,17 +171,17 @@
         _qsOverlay.style.cssText = 'position:fixed;inset:0;z-index:9000;background:rgba(15,61,46,0.45);backdrop-filter:blur(4px);display:flex;align-items:flex-start;justify-content:center;padding-top:14vh';
 
         var panel = document.createElement('div');
-        panel.style.cssText = 'width:100%;max-width:560px;margin:0 16px;background:var(--cb-chalk);border:1px solid var(--cb-line);border-radius:14px;box-shadow:0 24px 64px rgba(0,0,0,0.35);overflow:hidden;font-family:var(--font-ui)';
+        panel.style.cssText = 'width:100%;max-width:560px;margin:0 16px;background:var(--cb-chalk);border:1px solid var(--border-default);border-radius:14px;box-shadow:0 24px 64px rgba(0,0,0,0.35);overflow:hidden;font-family:var(--font-ui)';
 
         panel.innerHTML = '<div style="display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--cb-chalk-3)">' +
             '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="var(--cb-mute)" stroke-width="1.8" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>' +
             '<input id="qsInput" type="text" placeholder="Search pages, members, courses…" aria-label="Quick search" style="flex:1;border:none;outline:none;background:transparent;font-family:var(--font-ui);font-size:15px;color:var(--cb-ink)">' +
-            '<kbd style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;color:var(--cb-mute);background:var(--cb-chalk-2);padding:3px 7px;border-radius:4px;border:1px solid var(--cb-line)">ESC</kbd>' +
+            '<kbd style="font-family:var(--font-mono);font-size:10px;letter-spacing:1px;color:var(--cb-mute);background:var(--cb-chalk-2);padding:3px 7px;border-radius:4px;border:1px solid var(--border-default)">ESC</kbd>' +
             '</div>' +
             '<div id="qsResults" style="max-height:50vh;overflow-y:auto"></div>' +
             '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;border-top:1px solid var(--cb-chalk-3);font-family:var(--font-mono);font-size:9.5px;letter-spacing:1px;color:var(--cb-mute);text-transform:uppercase">' +
-            '<span><kbd style="background:var(--cb-chalk-2);padding:1px 6px;border-radius:3px;border:1px solid var(--cb-line);color:var(--cb-ink)">↑↓</kbd> navigate · <kbd style="background:var(--cb-chalk-2);padding:1px 6px;border-radius:3px;border:1px solid var(--cb-line);color:var(--cb-ink)">↵</kbd> open</span>' +
-            '<span><kbd style="background:var(--cb-chalk-2);padding:1px 6px;border-radius:3px;border:1px solid var(--cb-line);color:var(--cb-ink)">⌘K</kbd> open anywhere</span>' +
+            '<span><kbd style="background:var(--cb-chalk-2);padding:1px 6px;border-radius:3px;border:1px solid var(--border-default);color:var(--cb-ink)">↑↓</kbd> navigate · <kbd style="background:var(--cb-chalk-2);padding:1px 6px;border-radius:3px;border:1px solid var(--border-default);color:var(--cb-ink)">↵</kbd> open</span>' +
+            '<span><kbd style="background:var(--cb-chalk-2);padding:1px 6px;border-radius:3px;border:1px solid var(--border-default);color:var(--cb-ink)">⌘K</kbd> open anywhere</span>' +
             '</div>';
 
         _qsOverlay.appendChild(panel);

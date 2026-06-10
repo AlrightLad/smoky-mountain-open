@@ -1,7 +1,7 @@
 // ========== INVITE SYSTEM PAGE ==========
 Router.register("invite", function() {
   var h = '<div class="sh"><h2>Invites</h2><button class="back" onclick="Router.go(\'settings\')">← Back</button></div>';
-  var remaining = currentProfile ? (isFounderRole(currentProfile) ? "∞" : ((currentProfile.maxInvites||3) - (currentProfile.invitesUsed||0))) : 0;
+  var _left = pbInvitesLeft(currentProfile); var remaining = (_left === Infinity) ? "∞" : _left;
   h += '<div class="form-section"><div style="text-align:center;margin-bottom:16px"><div style="font-size:12px;color:var(--muted)">Generate an invite code for a new member</div>';
   h += '<div style="margin-top:6px;font-size:11px;color:var(--gold)">Remaining: ' + remaining + '</div></div>';
   h += '<button class="btn full green" onclick="generateInvite()">Generate Invite Code</button>';
@@ -11,8 +11,15 @@ Router.register("invite", function() {
   document.querySelector('[data-page="invite"]').innerHTML = h;
 
   if (db && currentUser) {
-    leagueQuery("invites").where("createdBy","==",currentUser.uid).get().then(function(snap) {
-      var invites = []; snap.forEach(function(doc){invites.push(doc.data())});
+    // v8.24.14 — single-field createdBy query (auto-indexed), league-filtered
+    // client-side. The prior leagueQuery+createdBy compound silently EXCLUDED
+    // every legacy invite written without leagueId (the Members-page generator
+    // omitted it until this ship), so members saw "None yet" over real codes.
+    db.collection("invites").where("createdBy","==",currentUser.uid).get().then(function(snap) {
+      var invites = []; snap.forEach(function(doc){
+        var d = doc.data();
+        if (!d.leagueId || d.leagueId === getActiveLeague()) invites.push(d);
+      });
       var ih = '<div class="sec-head"><span class="sec-title">Your invites</span></div>';
       if (!invites.length) ih += '<div style="font-size:11px;color:var(--muted)">None yet</div>';
       invites.forEach(function(inv) {
@@ -32,6 +39,11 @@ Router.register("invite", function() {
         ih += '</div></div></div>';
       });
       document.getElementById("myInvites").innerHTML = ih;
+    }).catch(function(err) {
+      // v8.24.14 — was an unhandled rejection leaving the spinner forever.
+      if (typeof pbWarn === 'function') pbWarn('[invite] list failed:', err && err.message);
+      var el = document.getElementById('myInvites');
+      if (el) el.innerHTML = '<div style="font-size:11px;color:var(--muted)">Couldn&#39;t load your codes — pull to refresh or try again shortly.</div>';
     });
   }
 });
@@ -70,7 +82,7 @@ function isInviteExpired(invite) {
 function generateInvite() {
   if (!db || !currentUser || !currentProfile) { Router.toast("Not ready, try refreshing"); return; }
   var isComm = isFounderRole(currentProfile);
-  if (!isComm && (currentProfile.invitesUsed||0) >= (currentProfile.maxInvites||3)) { Router.toast("No invites remaining"); return; }
+  if (pbInvitesLeft(currentProfile) <= 0) { Router.toast("No invites remaining — ask the Commissioner for more"); return; }
   var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; var code = "PB-";
   for (var i=0;i<8;i++) code += chars.charAt(Math.floor(Math.random()*chars.length));
   var memberDocId = currentProfile.docId || currentUser.uid;

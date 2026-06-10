@@ -499,8 +499,9 @@ function _handleSpectatorEmission(snap) {
     }
   }
 
-  // FIX 3 — console.info for visibility without DevTools verbose toggle.
-  console.info("[Spectator] emission", {
+  // FIX 3 (v8.24.14) — was an UNCONDITIONAL console.info on every Firestore
+  // emission (console spam in every member session). Now PB_DEBUG-gated pbLog.
+  if (typeof pbLog === "function") pbLog("[Spectator] emission", {
     roundId: state.roundId,
     otherUid: state.otherUid,
     status: doc.status,

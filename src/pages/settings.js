@@ -197,7 +197,7 @@ Router.register("settings", function(params) {
   // MANAGEMENT — Invites + Commissioner tools (conditional)
   // ──────────────────────────────────────────────────────────────────────────
   var mgmt = "";
-  var _canInvite = currentProfile && (isFounderRole(currentProfile) || (currentProfile.invitesUsed || 0) < (currentProfile.maxInvites || 3));
+  var _canInvite = currentProfile && pbInvitesLeft(currentProfile) > 0; // v8.24.14 — 25-invite floor via pbMaxInvites; entry no longer vanishes
   var _isFounder = isFounderRole(currentProfile);
   if (_canInvite) {
     mgmt += '<div style="margin-bottom:' + (_isFounder ? '10px' : '0') + '"><button class="set-btn" onclick="Router.go(\'invite\')">Manage invite codes</button></div>';

@@ -63,6 +63,7 @@ Router.register("more", function() {
   // ── Community ──
   var _myLeagueCount = currentProfile && currentProfile.leagues ? currentProfile.leagues.length : 1;
   h += section("Community", [
+    {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--gold)" stroke-width="1.5"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>', label:"Invite a Friend", sub:"Bring someone into the club", page:"invite", accent:true},
     {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--gold)" stroke-width="1.5"><path d="M4 15l8-12 8 12"/><path d="M12 3v12"/></svg>', label:"My Leagues", sub:_myLeagueCount + " league" + (_myLeagueCount !== 1 ? "s" : "") + " \u00b7 Create or join", page:"leagues", accent:true},
     {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>', label:"Find Players", sub:"Search by name, handicap, location", page:"findplayers"},
     {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 20h5v-2a3 3 0 00-4-4H6a3 3 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>', label:"Members", sub:PB.getPlayers().length + " Parbaughs", page:"members"},

@@ -287,7 +287,7 @@ function endRangeSession() {
     h += '<div style="padding:16px 16px 0">';
     h += '<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">Drills worked</div>';
     drillNames.forEach(function(n) {
-      h += '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border2)">';
+      h += '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border-default)">';
       h += '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="var(--birdie)" stroke-width="2"><path d="M3 8l3 3 7-7"/></svg>';
       h += '<span style="font-size:12px;color:var(--cream)">' + escHtml(n) + '</span></div>';
     });

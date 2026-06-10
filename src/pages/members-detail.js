@@ -177,7 +177,12 @@ function renderMemberDetailWithData(p) {
   if (rivData.nemesis) {
     var nem = rivData.nemesis;
     var nemName = nem.opp.name || nem.opp.username || "a rival";
-    var nemLabel = isOwnProfile ? "Your Nemesis" : "Top Rival";
+    // v8.24.14 — Founder: "why does it say I have a nemesis when I am 4-0
+    // against all my opponents." A nemesis is someone who has YOUR number;
+    // when you lead the series the label tells the truth instead.
+    var nemLabel = isOwnProfile
+      ? (nem.trailing ? "Your Nemesis" : nem.leading ? "Your Top Rivalry" : "Dead Even Rivalry")
+      : "Top Rival";
     var recStr = nem.wins + "–" + nem.losses + (nem.ties ? "–" + nem.ties + "T" : "");
     var caddyLine = isOwnProfile
       ? (typeof rivalryCaddyLine === "function" ? rivalryCaddyLine(nem, nemName) : nemName + ": " + recStr)

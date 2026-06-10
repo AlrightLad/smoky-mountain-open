@@ -124,7 +124,7 @@ function renderCourseDetail(courseId) {
         // Community-safe binary, matching every other surface: under or even reads quiet
         // green, over stays neutral. Never alarm-red on a member's leaderboard line.
         var diffColor = diff <= 0 ? 'var(--birdie)' : 'var(--muted)';
-        lh += '<div style="display:flex;align-items:center;gap:10px;padding:8px 16px;border-bottom:1px solid var(--border2)">';
+        lh += '<div style="display:flex;align-items:center;gap:10px;padding:8px 16px;border-bottom:1px solid var(--border-default)">';
         lh += '<div style="width:22px;height:22px;border-radius:50%;background:' + medal + '18;border:1.5px solid ' + medal + ';display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:' + medal + ';flex-shrink:0">' + (idx+1) + '</div>';
         lh += '<div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(e.name) + '</div>';
         lh += '<div style="font-size:9px;color:var(--muted)">' + (e.date || '') + '</div></div>';

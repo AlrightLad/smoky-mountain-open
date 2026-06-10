@@ -24,13 +24,16 @@ function _renderHQHomeBanded(ctx) {
 // _renderHQHomeBanded. No call sites remained; only inline comment refs.
 // Removed alongside other home.js dead code cleanup per backlog item B.40.
 
-// Empty-column placeholder. Visible during Ship 1b-i so the grid architecture is
-// inspectable before column components arrive in Ships 1b-ii and 1b-iii.
+// Quiet-state card for the HQ lead column (no round live). v8.24.14 — replaced
+// the Ship-1b-i debug scaffolding (dashed box reading "v8.5.x · state: ACTIVE")
+// that was still member-reachable. Now a designed, honest quiet state in the
+// Clubhouse voice with the obvious next action.
 function _renderHQPlaceholder(label, state) {
-  var stateLabel = (state || "idle").toUpperCase();
-  return '<div style="height:400px;background:var(--cb-chalk-2);border-radius:var(--r-3);border:1px dashed var(--cb-chalk-3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-family:var(--font-mono);color:var(--cb-mute);text-transform:uppercase">' +
-    '<div style="font-size:10px;letter-spacing:2.5px">' + escHtml(label) + '</div>' +
-    '<div style="font-size:9px;letter-spacing:2px;opacity:0.7">v8.5.x · state: ' + stateLabel + '</div>' +
+  return '<div style="height:400px;background:var(--cb-paper);border-radius:var(--r-3);border:1px solid var(--cb-mute-3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:0 28px">' +
+    '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="var(--cb-brass)" stroke-width="1.4" aria-hidden="true"><circle cx="12" cy="5" r="2.4"/><path d="M12 7.4V13M9.5 13.5h5M5 21c1.8-3.4 4.4-5 7-5s5.2 1.6 7 5"/></svg>' +
+    '<div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2.5px;color:var(--cb-brass);text-transform:uppercase">The course is quiet</div>' +
+    '<div style="font-family:var(--font-display);font-size:19px;font-weight:600;color:var(--cb-ink);line-height:1.3">No round on the tee sheet right now</div>' +
+    '<div style="font-size:12px;color:var(--cb-mute);line-height:1.5">When a member tees off, their live round takes this spot — score by score, as it happens.</div>' +
     '</div>';
 }
 
@@ -158,7 +161,10 @@ function _hqNemesisLine() {
     : "Dead even with " + nm + ", " + n.wins + "–" + n.losses;
   var uid = String(currentUser.uid).replace(/'/g, "\\'");
   var oid = String(n.id).replace(/'/g, "\\'");
-  return '<div class="hq-nemesis"><span class="hq-nemesis__tag">Nemesis</span>'
+  // v8.24.14 — tag tells the truth about the series: "Nemesis" only when the
+  // viewer is TRAILING; leading shows "Rivalry" (you own them, they don't own you).
+  var nemTag = n.trailing ? "Nemesis" : n.leading ? "Rivalry" : "Dead Even";
+  return '<div class="hq-nemesis"><span class="hq-nemesis__tag">' + nemTag + '</span>'
     + '<span class="hq-nemesis__txt">' + escHtml(verb) + '. '
     + '<span class="hq-nemesis__link" role="button" tabindex="0" onclick="showRivalryDetail(\'' + uid + '\',\'' + oid + '\')" onkeydown="if(event.key===\'Enter\'){showRivalryDetail(\'' + uid + '\',\'' + oid + '\')}">See the tape →</span></span></div>';
 }

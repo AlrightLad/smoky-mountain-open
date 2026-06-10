@@ -425,7 +425,7 @@ function renderInviteMemberButton() {
   if (!currentProfile) return '<button class="btn full outline" disabled>Sign in to invite members</button>';
   
   var isComm = isFounderRole(currentProfile);
-  var invitesLeft = isComm ? 999 : ((currentProfile.maxInvites||3) - (currentProfile.invitesUsed||0));
+  var invitesLeft = pbInvitesLeft(currentProfile); if (invitesLeft === Infinity) invitesLeft = 999;
   var h = '';
   
   if (invitesLeft > 0 || isComm) {
@@ -437,7 +437,7 @@ function renderInviteMemberButton() {
   } else {
     h += '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center">';
     h += '<div style="font-size:13px;font-weight:600;color:var(--cream);margin-bottom:4px">No Invites Remaining</div>';
-    h += '<div style="font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:12px">You\'ve used all ' + (currentProfile.maxInvites||3) + ' invites. Ask the Commissioner for more, or have them send an invite on your behalf.</div>';
+    h += '<div style="font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:12px">You\'ve used all your invites. Ask the Commissioner for more, or have them send an invite on your behalf.</div>';
     h += '<button class="btn full outline" onclick="requestInviteFromCommissioner()">Ask Commissioner for Invite</button>';
     h += '</div>';
   }
@@ -463,7 +463,7 @@ function requestInviteFromCommissioner() {
 function promptAddMember() {
   if (!currentProfile) { Router.toast("Sign in first"); return; }
   var isComm = isFounderRole(currentProfile);
-  var invitesLeft = isComm ? 999 : ((currentProfile.maxInvites||3) - (currentProfile.invitesUsed||0));
+  var invitesLeft = pbInvitesLeft(currentProfile); if (invitesLeft === Infinity) invitesLeft = 999;
   
   if (invitesLeft <= 0 && !isComm) {
     Router.toast("No invites remaining");
@@ -474,7 +474,7 @@ function promptAddMember() {
 
 function renderAddMemberForm() {
   var isComm = isFounderRole(currentProfile);
-  var invitesLeft = isComm ? "∞" : ((currentProfile.maxInvites||3) - (currentProfile.invitesUsed||0));
+  var _l = pbInvitesLeft(currentProfile); var invitesLeft = (_l === Infinity) ? "∞" : _l;
   
   var h = '<div class="sh"><h2>Invite Member</h2><button class="back" onclick="Router.back(\'members\')">← Back</button></div>';
   
@@ -517,7 +517,7 @@ var _lastGeneratedInvite = null; // Survives page re-renders
 function generateInviteFromMembers() {
   if (!db || !currentUser || !currentProfile) { Router.toast("Not ready, try refreshing"); return; }
   var isComm = isFounderRole(currentProfile);
-  if (!isComm && (currentProfile.invitesUsed||0) >= (currentProfile.maxInvites||3)) { Router.toast("No invites remaining"); return; }
+  if (pbInvitesLeft(currentProfile) <= 0) { Router.toast("No invites remaining"); return; }
   
   var chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; var code = "PB-";
   for (var i=0;i<8;i++) code += chars.charAt(Math.floor(Math.random()*chars.length));
@@ -528,7 +528,10 @@ function generateInviteFromMembers() {
   var resultEl = document.getElementById("memberInviteResult");
   if (resultEl) resultEl.innerHTML = '<div style="text-align:center;padding:12px;font-size:11px;color:var(--muted)">Generating...</div>';
   
-  db.collection("invites").doc(code).set({ code:code, createdBy:currentUser.uid, createdByName:currentProfile.name||currentProfile.username, usedBy:null, status:"active", createdAt:fsTimestamp() })
+  // v8.24.14 — write the CANONICAL invite shape (createInviteDoc: leagueId so the
+  // new member lands in the right league, expiresAt for the 7-day window). The
+  // old inline shape here omitted both — invites misrouted + never expired.
+  db.collection("invites").doc(code).set(createInviteDoc(code))
     .then(function() {
       // Store invite so it survives page re-renders from the profile snapshot listener
       _lastGeneratedInvite = { code: code, link: inviteLink };

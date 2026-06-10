@@ -4,7 +4,7 @@
    ================================================ */
 
 // ── App version — single source of truth ──
-var APP_VERSION = "8.24.13";
+var APP_VERSION = "8.24.14";
 
 // ══════════════════════════════════════════════════════════════════════════
 // LEAGUE ISOLATION — Nuclear approach. Makes leaking PHYSICALLY IMPOSSIBLE.
@@ -111,6 +111,27 @@ function isBannedRole(member) { return platformRoleOf(member) === "banned"; }
 // member doc). Server-enforced blocking (denying the blocked user's writes)
 // is a documented follow-up. The blocker side is what App Store 1.2 requires:
 // the ability to stop seeing and being contacted by an abusive user.
+// ── Invite quota (v8.24.14) ───────────────────────────────────────────
+// Founder directive 2026-06-10: "users need to be able to invite friends and
+// currently that option is unavailable." Members who exhausted the original
+// 3-invite cap lost every invite entry point (Settings hid the button; the
+// Members page showed a dead end). Invites are the league's growth engine —
+// every member gets a 25-invite floor regardless of the legacy quota stored
+// on their doc. Admin can still grant MORE via the existing quota tool;
+// abuse control is moderation (suspend/ban), not invite scarcity.
+var PB_INVITE_FLOOR = 25;
+function pbMaxInvites(profile) {
+  if (!profile) return 0;
+  if (typeof isFounderRole === "function" && isFounderRole(profile)) return Infinity;
+  return Math.max(profile.maxInvites || 0, PB_INVITE_FLOOR);
+}
+function pbInvitesLeft(profile) {
+  if (!profile) return 0;
+  var max = pbMaxInvites(profile);
+  if (max === Infinity) return Infinity;
+  return Math.max(0, max - (profile.invitesUsed || 0));
+}
+
 function pbBlockedUids() {
   return (typeof currentProfile !== "undefined" && currentProfile && Array.isArray(currentProfile.blockedUsers)) ? currentProfile.blockedUsers : [];
 }

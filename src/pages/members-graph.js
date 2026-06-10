@@ -102,15 +102,15 @@ function buildHandicapGraph(rounds, pid) {
   for (var g = 0; g <= gridSteps; g++) {
     var gy = padT + (chartH / gridSteps) * g;
     var val = maxH - (range / gridSteps) * g;
-    svg += '<line x1="' + padL + '" y1="' + gy + '" x2="' + (svgW - padR) + '" y2="' + gy + '" stroke="rgba(255,255,255,.06)" stroke-width=".5" stroke-dasharray="3,3"/>';
-    svg += '<text x="' + (padL - 5) + '" y="' + (gy + 3) + '" text-anchor="end" fill="rgba(255,255,255,.25)" font-size="7.5" font-weight="500">' + val.toFixed(0) + '</text>';
+    svg += '<line x1="' + padL + '" y1="' + gy + '" x2="' + (svgW - padR) + '" y2="' + gy + '" stroke="rgba(var(--cb-ink-rgb),.08)" stroke-width=".5" stroke-dasharray="3,3"/>';
+    svg += '<text x="' + (padL - 5) + '" y="' + (gy + 3) + '" text-anchor="end" fill="rgba(var(--cb-ink-rgb),.45)" font-size="7.5" font-weight="500">' + val.toFixed(0) + '</text>';
   }
 
   // Month labels + round count
   graphData.forEach(function(pt, i) {
     var x = padL + (chartW / (graphData.length - 1 || 1)) * i;
     var isActive = pt.hcap !== null;
-    svg += '<text x="' + x + '" y="' + (svgH - 16) + '" text-anchor="middle" fill="' + (isActive ? 'rgba(255,255,255,.35)' : 'rgba(255,255,255,.12)') + '" font-size="7" font-weight="500">' + pt.label + '</text>';
+    svg += '<text x="' + x + '" y="' + (svgH - 16) + '" text-anchor="middle" fill="' + (isActive ? 'rgba(var(--cb-ink-rgb),.55)' : 'rgba(var(--cb-ink-rgb),.22)') + '" font-size="7" font-weight="500">' + pt.label + '</text>';
     if (pt.roundCount > 0) {
       svg += '<text x="' + x + '" y="' + (svgH - 6) + '" text-anchor="middle" fill="rgba(var(--gold-rgb),.4)" font-size="6" font-weight="500">' + pt.roundCount + ' rd' + (pt.roundCount !== 1 ? 's' : '') + '</text>';
     }
@@ -151,7 +151,7 @@ function buildHandicapGraph(rounds, pid) {
     }
     svg += '<circle cx="' + pt.x + '" cy="' + pt.y + '" r="' + dotR + '" fill="' + dotColor + '" stroke="var(--bg)" stroke-width="1.5"/>';
     // Value label above dot
-    svg += '<text x="' + pt.x + '" y="' + (pt.y - 8) + '" text-anchor="middle" fill="' + (pt.isLast ? 'var(--gold)' : 'rgba(255,255,255,.5)') + '" font-size="' + (pt.isLast ? '8' : '7') + '" font-weight="' + (pt.isLast ? '700' : '500') + '">' + pt.hcap.toFixed(1) + '</text>';
+    svg += '<text x="' + pt.x + '" y="' + (pt.y - 8) + '" text-anchor="middle" fill="' + (pt.isLast ? 'var(--gold)' : 'rgba(var(--cb-ink-rgb),.6)') + '" font-size="' + (pt.isLast ? '8' : '7') + '" font-weight="' + (pt.isLast ? '700' : '500') + '">' + pt.hcap.toFixed(1) + '</text>';
   });
 
   svg += '</svg>';

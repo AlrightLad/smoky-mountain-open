@@ -176,7 +176,9 @@ function _renderMobileNemesis() {
     : "Dead even with " + nm + ", " + n.wins + "–" + n.losses;
   var uid = String(currentUser.uid).replace(/'/g, "\\'");
   var oid = String(n.id).replace(/'/g, "\\'");
-  return '<div class="hm-nemesis" role="button" tabindex="0" aria-label="' + escHtml("Nemesis: " + verb) + '" onclick="showRivalryDetail(\'' + uid + '\',\'' + oid + '\')" onkeydown="if(event.key===\'Enter\'){showRivalryDetail(\'' + uid + '\',\'' + oid + '\')}"><span class="hm-nemesis__tag">Nemesis</span><span class="hm-nemesis__txt">' + escHtml(verb) + ' &rarr;</span></div>';
+  // v8.24.14 — tag tells the truth: "Nemesis" only when trailing the series.
+  var nemTag = n.trailing ? "Nemesis" : n.leading ? "Rivalry" : "Dead Even";
+  return '<div class="hm-nemesis" role="button" tabindex="0" aria-label="' + escHtml(nemTag + ": " + verb) + '" onclick="showRivalryDetail(\'' + uid + '\',\'' + oid + '\')" onkeydown="if(event.key===\'Enter\'){showRivalryDetail(\'' + uid + '\',\'' + oid + '\')}"><span class="hm-nemesis__tag">' + nemTag + '</span><span class="hm-nemesis__txt">' + escHtml(verb) + ' &rarr;</span></div>';
 }
 
 // v8.4.1 mobile-editorial layout — preserved unchanged below HQ_BREAKPOINT.
