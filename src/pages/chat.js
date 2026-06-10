@@ -512,9 +512,14 @@ function deleteComment(docId, commentIndex) {
   });
 }
 
-function deleteChat(docId) {
+function deleteChat(docId, _confirmed) {
   if (!db) return;
-  if (!confirm("Delete this post?")) return;
+  // v8.24.15 — branded pbConfirm re-entry (was a native confirm()).
+  if (!_confirmed) {
+    pbConfirm({ title: "Delete this post?", message: "It comes off the board for everyone.", confirmLabel: "Delete", danger: true })
+      .then(function(ok) { if (ok) deleteChat(docId, true); });
+    return;
+  }
   db.collection("chat").doc(docId).delete().then(function() { Router.toast("Deleted"); });
 }
 

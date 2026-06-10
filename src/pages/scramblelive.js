@@ -133,7 +133,7 @@ function renderScrambleLiveScoring() {
   h += '</div>';
   
   // Quit option
-  h += '<div style="text-align:center;padding:0 16px 20px"><span style="font-size:10px;color:var(--muted2);cursor:pointer" onclick="if(confirm(\'Quit this round?\')){ scrambleLiveState.active=false; Router.go(\'rounds\'); }">Quit round</span></div>';
+  h += '<div style="text-align:center;padding:0 16px 20px"><span style="font-size:10px;color:var(--muted2);cursor:pointer" onclick="quitScrambleLive()">Quit round</span></div>';
   
   document.querySelector('[data-page="scramble-live"]').innerHTML = h;
 }
@@ -143,13 +143,24 @@ function setScrambleScore(hole, score) {
   Router.go("scramble-live");
 }
 
-function finishScrambleLive() {
+// v8.24.15 — branded quit confirm (was an inline native confirm()).
+function quitScrambleLive() {
+  pbConfirm({ title: "Quit this round?", message: "Scores so far won't be saved.", confirmLabel: "Quit", danger: true })
+    .then(function(ok) { if (ok) { scrambleLiveState.active = false; Router.go("rounds"); } });
+}
+
+function finishScrambleLive(_confirmed) {
   var s = scrambleLiveState;
   var total = 0, played = 0;
   s.scores.forEach(function(sc) { if (sc !== "") { total += parseInt(sc); played++; } });
   
   if (played < 9) { Router.toast("Score at least 9 holes"); return; }
-  if (!confirm("Finish scramble round? Total: " + total + " (" + played + " holes)")) return;
+  // v8.24.15 — branded pbConfirm re-entry (was a native confirm()).
+  if (!_confirmed) {
+    pbConfirm({ title: "Finish scramble round?", message: "Total: " + total + " through " + played + " holes.", confirmLabel: "Finish", danger: false })
+      .then(function(ok) { if (ok) finishScrambleLive(true); });
+    return;
+  }
   
   // Log the match for the team
   var match = {

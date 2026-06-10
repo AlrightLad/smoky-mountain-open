@@ -4,7 +4,7 @@
    ================================================ */
 
 // ── App version — single source of truth ──
-var APP_VERSION = "8.24.14";
+var APP_VERSION = "8.24.15";
 
 // ══════════════════════════════════════════════════════════════════════════
 // LEAGUE ISOLATION — Nuclear approach. Makes leaking PHYSICALLY IMPOSSIBLE.
@@ -130,6 +130,42 @@ function pbInvitesLeft(profile) {
   var max = pbMaxInvites(profile);
   if (max === Infinity) return Infinity;
   return Math.max(0, max - (profile.invitesUsed || 0));
+}
+
+// ── pbConfirm (v8.24.15) — branded in-app confirm replacing native confirm() ──
+// Native browser dialogs broke the Clubhouse design system at exactly the
+// moments that matter (delete/finish/discard). Promise<boolean>; Esc/backdrop
+// cancel; danger:true renders the confirm action in claret. Pattern extracted
+// from the aces.js inline-confirm (the one good confirm in the app).
+function pbConfirm(opts) {
+  opts = opts || {};
+  return new Promise(function(resolve) {
+    var prev = document.getElementById("pbConfirmOverlay");
+    if (prev) prev.remove();
+    var ov = document.createElement("div");
+    ov.id = "pbConfirmOverlay";
+    ov.setAttribute("role", "dialog");
+    ov.setAttribute("aria-modal", "true");
+    ov.setAttribute("aria-label", opts.title || "Confirm");
+    ov.style.cssText = "position:fixed;inset:0;z-index:10000;background:var(--scrim, rgba(20,19,15,.42));display:flex;align-items:center;justify-content:center;padding:24px";
+    var danger = !!opts.danger;
+    ov.innerHTML = '<div style="background:var(--cb-paper);border:1px solid var(--cb-mute-3);border-radius:14px;max-width:340px;width:100%;padding:20px 18px;box-shadow:var(--el-4, 0 12px 32px rgba(0,0,0,.18))">'
+      + '<div style="font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--cb-ink);margin-bottom:6px">' + escHtml(opts.title || "You sure?") + '</div>'
+      + (opts.message ? '<div style="font-size:12px;color:var(--cb-mute);line-height:1.5;margin-bottom:14px">' + escHtml(opts.message) + '</div>' : '<div style="margin-bottom:10px"></div>')
+      + '<div style="display:flex;gap:8px">'
+      + '<button type="button" id="pbConfirmNo" style="flex:1;min-height:44px;background:transparent;border:1px solid var(--cb-mute-3);border-radius:10px;font-weight:600;font-size:13px;color:var(--cb-ink);cursor:pointer">' + escHtml(opts.cancelLabel || "Not yet") + '</button>'
+      + '<button type="button" id="pbConfirmYes" style="flex:1;min-height:44px;background:' + (danger ? "var(--cb-claret)" : "var(--cb-felt)") + ';border:none;border-radius:10px;font-weight:700;font-size:13px;color:var(--cb-chalk);cursor:pointer">' + escHtml(opts.confirmLabel || "Confirm") + '</button>'
+      + '</div></div>';
+    function close(val) { ov.remove(); document.removeEventListener("keydown", onKey); resolve(val); }
+    function onKey(e) { if (e.key === "Escape") close(false); }
+    ov.addEventListener("click", function(e) { if (e.target === ov) close(false); });
+    document.addEventListener("keydown", onKey);
+    document.body.appendChild(ov);
+    document.getElementById("pbConfirmNo").onclick = function() { close(false); };
+    var yesBtn = document.getElementById("pbConfirmYes");
+    yesBtn.onclick = function() { close(true); };
+    yesBtn.focus();
+  });
 }
 
 function pbBlockedUids() {

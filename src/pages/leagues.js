@@ -466,9 +466,14 @@ function _leagueTrophyRow(d) {
     '</div>' +
   '</div>';
 }
-function _leagueArchiveTrophy(id) {
+function _leagueArchiveTrophy(id, _confirmed) {
   if (typeof archiveTrophyDef !== "function") return;
-  if (!confirm("Archive this trophy? It stops appearing for members but is not deleted.")) return;
+  // v8.24.15 — branded pbConfirm re-entry (was a native confirm()).
+  if (!_confirmed) {
+    pbConfirm({ title: "Archive this trophy?", message: "It stops appearing for members but is not deleted.", confirmLabel: "Archive", danger: false })
+      .then(function(ok) { if (ok) _leagueArchiveTrophy(id, true); });
+    return;
+  }
   archiveTrophyDef(id, "league", function(ok, err) {
     if (ok) { Router.toast("Trophy archived"); _loadLeagueTrophies(); }
     else Router.toast(err || "Couldn't archive the trophy.");

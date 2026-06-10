@@ -252,8 +252,13 @@ function rsvpTeeTime(teeId, response) {
   });
 }
 
-function cancelTeeTime(teeId) {
-  if (!confirm("Cancel this tee time?")) return;
+function cancelTeeTime(teeId, _confirmed) {
+  // v8.24.15 — branded pbConfirm re-entry (was a native confirm()).
+  if (!_confirmed) {
+    pbConfirm({ title: "Cancel this tee time?", message: "Members who RSVP'd will see it disappear from the sheet.", confirmLabel: "Cancel it", danger: false })
+      .then(function(ok) { if (ok) cancelTeeTime(teeId, true); });
+    return;
+  }
   var tee = liveTeeTimes.find(function(t){return t._id===teeId});
   db.collection("teetimes").doc(teeId).update({status:"cancelled", cancelledAt: localDateStr()}).then(function() {
     Router.toast("Cancelled");
@@ -285,9 +290,14 @@ function cancelTeeTime(teeId) {
   });
 }
 
-function deleteTeeTime(teeId) {
+function deleteTeeTime(teeId, _confirmed) {
   if (!isFounderRole(currentProfile)) { Router.toast("Commissioner only"); return; }
-  if (!confirm("Permanently delete this tee time? This cannot be undone.")) return;
+  // v8.24.15 — branded pbConfirm re-entry (was a native confirm()).
+  if (!_confirmed) {
+    pbConfirm({ title: "Delete this tee time?", message: "Permanent — this cannot be undone.", confirmLabel: "Delete", danger: true })
+      .then(function(ok) { if (ok) deleteTeeTime(teeId, true); });
+    return;
+  }
   db.collection("teetimes").doc(teeId).delete().then(function() {
     Router.toast("Deleted");
   }).catch(function() { Router.toast("Failed to delete"); });

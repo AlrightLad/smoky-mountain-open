@@ -316,7 +316,7 @@ function renderTripLB(trip, tripPlayers) {
   return h;
 }
 
-function closeEvent(tripId) {
+function closeEvent(tripId, _confirmed) {
   var isCommish = isFounderRole(currentProfile) || (currentProfile && (currentProfile.username === "thecommissioner" || currentProfile.username === "TheCommissioner"));
   if (!isCommish) { Router.toast("Only the commissioner can close events"); return; }
   var trip = PB.getTrip(tripId);
@@ -348,7 +348,12 @@ function closeEvent(tripId) {
     return { pid: p.id, name: p.name || p.username, points: PB.getTripPoints(tripId, p.id), place: i + 1 };
   });
   
-  if (!confirm("Close " + trip.name + " and crown " + winner.name + " as champion with " + winnerPts + " points?")) return;
+  // v8.24.15 — branded pbConfirm re-entry (was a native confirm()).
+  if (!_confirmed) {
+    pbConfirm({ title: "Close " + trip.name + "?", message: "Crowns " + winner.name + " champion with " + winnerPts + " points. The books close on this one.", confirmLabel: "Crown the champion", danger: false })
+      .then(function(ok) { if (ok) closeEvent(tripId, true); });
+    return;
+  }
   
   // Update trip doc
   trip.status = "closed";

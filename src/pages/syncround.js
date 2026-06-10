@@ -230,8 +230,13 @@ function updateSyncScore(roundId, holeIndex, value) {
   }).catch(function(e) { pbWarn("[Sync] Score update failed:", e.message); });
 }
 
-function finishSyncRound(roundId) {
-  if (!confirm("Finish this round? Scores will be saved to each player's history.")) return;
+function finishSyncRound(roundId, _confirmed) {
+  // v8.24.15 — branded pbConfirm re-entry (was a native confirm()).
+  if (!_confirmed) {
+    pbConfirm({ title: "Finish this round?", message: "Scores post to each player's history.", confirmLabel: "Finish round", danger: false })
+      .then(function(ok) { if (ok) finishSyncRound(roundId, true); });
+    return;
+  }
   if (!db) return;
   
   db.collection("syncrounds").doc(roundId).get().then(function(doc) {
@@ -304,8 +309,13 @@ function finishSyncRound(roundId) {
   });
 }
 
-function discardSyncRound(roundId) {
-  if (!confirm("Discard this Parbaugh Round? No scores will be saved.")) return;
+function discardSyncRound(roundId, _confirmed) {
+  // v8.24.15 — branded pbConfirm re-entry (was a native confirm()).
+  if (!_confirmed) {
+    pbConfirm({ title: "Discard this round?", message: "No scores will be saved. Gone for good.", confirmLabel: "Discard", danger: true })
+      .then(function(ok) { if (ok) discardSyncRound(roundId, true); });
+    return;
+  }
   if (!db) return;
   db.collection("syncrounds").doc(roundId).update({ status: "discarded", completedAt: fsTimestamp() }).then(function() {
     if (syncRoundListener) { syncRoundListener(); syncRoundListener = null; }
