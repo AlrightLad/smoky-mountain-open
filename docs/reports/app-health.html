@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-10T03:41:44.593018Z",
+  "generated_at": "2026-06-10T03:45:20.860909Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 88.5,
   "overall_grade": "A-",
@@ -999,13 +999,13 @@
   "founder_attention": [],
   "agent_attention": [],
   "audit_trigger": {
-    "sha": "900ee7af",
-    "subject": "docs(skill): cycle-open scans ALL CI failures incl. scheduled runs",
-    "committed_at": "2026-06-09T23:41:20-04:00",
+    "sha": "d0fa5dd8",
+    "subject": "docs(research): verified market + business strategy (21-agent workflow)",
+    "committed_at": "2026-06-09T23:44:44-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 1
+    "total_files_touched": 2
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
