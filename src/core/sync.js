@@ -264,7 +264,11 @@ function syncTripsFromFirestore() {
     });
     PB.save();
     if (Router.getPage() === "scorecard") Router.go("scorecard", Router.getParams(), true);
-  }).catch(function(e) { pbWarn("[Sync] Trip sync failed:", e.message); });
+  }).catch(function(e) {
+    // v8.24.31 — a read denied because the user signed out mid-flight is
+    // expected, not actionable; only log while a user is actually signed in.
+    if (typeof currentUser !== "undefined" && currentUser) pbWarn("[Sync] Trip sync failed:", e.message);
+  });
 
   // Also pull FIR/GIR data from tripscores collection
   leagueQuery("tripscores").get().then(function(snap) {
@@ -293,6 +297,20 @@ function syncScrambleTeam(team) {
 
 // ---- Rounds: Firestore is source of truth ----
 var _roundsListener = null;
+// v8.24.31 — sign-out cleanup. After auth.signOut() the server revokes every
+// league-scoped snapshot listener; any left attached fires its error callback
+// with permission-denied (the v8.24.30 prod spam at 19:27-20:01Z, userId null,
+// pages home/playnow, was exactly this). Detach everything we own here; the
+// auth handler's sign-out branch calls it.
+function stopLeagueDataSync() {
+  if (_roundsListener) { _roundsListener(); _roundsListener = null; }
+  if (typeof window !== "undefined") {
+    if (window._teeTimeUnsub) { window._teeTimeUnsub(); window._teeTimeUnsub = null; }
+    if (window._rangeUnsub) { window._rangeUnsub(); window._rangeUnsub = null; }
+    if (window._memberProfileUnsub) { window._memberProfileUnsub(); window._memberProfileUnsub = null; }
+  }
+}
+if (typeof window !== "undefined") window.stopLeagueDataSync = stopLeagueDataSync;
 function loadRoundsFromFirestore() {
   if (!db) return;
   leagueQuery("rounds").orderBy("date", "desc").limit(500).get().then(function(snap) {
@@ -361,7 +379,9 @@ function syncScrambleTeamsFromFirestore() {
       if (!remoteIds[t.id]) { syncScrambleTeam(t); }
     });
     if (merged > 0) pbLog("[Sync] Merged", merged, "scramble teams from Firestore");
-  }).catch(function(err) { pbWarn("[Sync] scrambleTeams read failed:", err.message); });
+  }).catch(function(err) {
+    if (typeof currentUser !== "undefined" && currentUser) pbWarn("[Sync] scrambleTeams read failed:", err.message);
+  });
 }
 
 // Trip score sync — pushes individual scores to Firestore for live viewing.

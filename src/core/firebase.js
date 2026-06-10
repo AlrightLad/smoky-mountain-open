@@ -709,6 +709,10 @@ if (firebaseAvailable && auth) {
       // Firestore-write gate skips naturally — _clearLiveStateLocally is the
       // explicit no-write path used inside detachLiveRoundsListener.
       if (typeof detachLiveRoundsListener === "function") detachLiveRoundsListener();
+      // v8.24.31 — detach ALL league-scoped listeners (rounds/teetimes/range/
+      // profile); leaving them attached caused permission-denied spam after
+      // sign-out as the server revoked each one.
+      if (typeof stopLeagueDataSync === "function") stopLeagueDataSync();
       exitApp();
     }
   });
