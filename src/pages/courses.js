@@ -36,9 +36,11 @@ Router.register("courses", function(params) {
   var h = '<div class="sh"><h2>Course directory</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'records\')">← Back</button><button class="btn-sm green" onclick="promptAddCourse()">+ Add</button></div></div>';
 
   // Toggle: All Courses / Our Courses
-  h += '<div style="display:flex;justify-content:center;padding:0 16px 10px"><div style="display:flex;background:var(--bg2);border-radius:20px;border:1px solid var(--border);overflow:hidden">';
-  h += '<button onclick="window._courseViewMode=undefined;Router.go(\'courses\',{},true)" style="padding:7px 16px;font-size:11px;font-weight:600;border:none;cursor:pointer;background:' + (!showOurs ? 'var(--gold)' : 'transparent') + ';color:' + (!showOurs ? 'var(--bg)' : 'var(--muted)') + ';border-radius:20px">All Courses</button>';
-  h += '<button onclick="window._courseViewMode=\'ours\';Router.go(\'courses\',{},true)" style="padding:7px 16px;font-size:11px;font-weight:600;border:none;cursor:pointer;background:' + (showOurs ? 'var(--gold)' : 'transparent') + ';color:' + (showOurs ? 'var(--bg)' : 'var(--muted)') + ';border-radius:20px">Our Courses</button>';
+  // v8.24.26 — replaced the inline gold-pill one-off with the canonical
+  // .chip-scope segmented control (same pattern as the Feed's scope toggle).
+  h += '<div style="display:flex;justify-content:center;padding:0 16px 10px"><div class="chip-scope" role="group" aria-label="Course directory scope">';
+  h += '<button class="chip-scope__seg" type="button" aria-pressed="' + (!showOurs ? 'true' : 'false') + '" onclick="window._courseViewMode=undefined;Router.go(\'courses\',{},true)">All Courses</button>';
+  h += '<button class="chip-scope__seg" type="button" aria-pressed="' + (showOurs ? 'true' : 'false') + '" onclick="window._courseViewMode=\'ours\';Router.go(\'courses\',{},true)">Our Courses</button>';
   h += '</div></div>';
 
   // Search filter

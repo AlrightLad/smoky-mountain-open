@@ -65,7 +65,9 @@ Router.register("bugreport", function() {
   h += '</div>';
 
   // Submit
-  h += '<button type="submit" id="brSubmitBtn" style="width:100%;padding:14px;background:var(--gold);color:var(--bg);border:none;border-radius:8px;font-weight:600;font-size:14px;cursor:pointer;min-height:48px">Send to the Commissioner</button>';
+  // v8.24.26 — was a fully inline raw-gold one-off bypassing the button
+  // vocabulary (no hover/active states). Now the standard brass button.
+  h += '<button type="submit" id="brSubmitBtn" class="league-btn league-btn--brass" style="width:100%;min-height:48px">Send to the Commissioner</button>';
 
   h += '</form>';
   h += '</div></div></div>';
