@@ -141,15 +141,10 @@ function purchaseStatus(key, cost) {
       id: genId(), text: myName + " is now a HOLE SPONSOR at " + course + " for " + PB.getCurrentSeason().label + "! Their name appears on scorecards.",
       authorId: "system", authorName: "The Caddy", createdAt: fsTimestamp()
     })).catch(function(){});
-  } else if (key === "nameTournament") {
-    var name = prompt("What do you want to name the next event?");
-    if (!name || !name.trim()) { Router.toast("Cancelled"); return; }
-    db.collection("members").doc(currentUser.uid).set({ namedTournament: name.trim() }, { merge: true });
-    Router.toast("The next event will be named: " + name.trim());
-    db.collection("chat").add(leagueDoc("chat", {
-      id: genId(), text: myName + " spent 1,000 ParCoins to NAME THE NEXT TOURNAMENT: \"" + escHtml(name.trim()) + "\"",
-      authorId: "system", authorName: "The Caddy", createdAt: fsTimestamp()
-    })).catch(function(){});
   }
+  // v8.24.33 — the "nameTournament" purchase branch removed entirely (Founder
+  // removed the item from status purchases in v8.24.20; the handler had become
+  // unreachable dead code, flagged by the marathon LEGAL pass — it also used a
+  // native prompt(), the last one in the purchase flows).
   Router.go("richlist", {}, true);
 }
