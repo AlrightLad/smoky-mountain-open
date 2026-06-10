@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-10T15:30:35.130009Z",
+  "generated_at": "2026-06-10T15:32:41.319629Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 87.2,
   "overall_grade": "A-",
@@ -986,24 +986,24 @@
     "A12_operational": {
       "score": 75,
       "status": "yellow",
-      "label": "pipeline=yellow · 3 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=yellow · 4 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "3 of last 10 cron watcher runs hit skip-dirty",
+          "what": "4 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
       ],
       "details": {
         "watcher_last_status": "PASS",
-        "watcher_exit_reason": "skip-dirty"
+        "watcher_exit_reason": "skip-dirty-post-commit"
       }
     }
   },
   "attention_items": [
     {
-      "what": "3 of last 10 cron watcher runs hit skip-dirty",
+      "what": "4 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
@@ -1012,25 +1012,20 @@
   "founder_attention": [],
   "agent_attention": [
     {
-      "what": "3 of last 10 cron watcher runs hit skip-dirty",
+      "what": "4 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "8f3d17c8",
-    "subject": "fix(sync): defer league-scoped listeners until onboarding completes (v8.24.21)",
-    "committed_at": "2026-06-10T11:30:07-04:00",
-    "trigger": "app-commit",
-    "is_app_commit": true,
-    "app_files_touched": [
-      "public/sw.js",
-      "src/core/firebase.js",
-      "src/core/utils.js",
-      "src/pages/onboarding.js"
-    ],
-    "total_files_touched": 8
+    "sha": "e64a2938",
+    "subject": "chore: remove leaked intro capture PNG from repo + gitignore /intro-*.png (fleet evidence is local-only)",
+    "committed_at": "2026-06-10T11:32:16-04:00",
+    "trigger": "substrate-commit",
+    "is_app_commit": false,
+    "app_files_touched": [],
+    "total_files_touched": 4
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
