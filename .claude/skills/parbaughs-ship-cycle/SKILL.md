@@ -14,7 +14,13 @@ commands that WORK on this workstation and the gotchas that cost cycles.
 
 ```bash
 npm run errors:prod            # prod Firestore `errors` triage (50 newest, grouped)
+curl -s "https://api.github.com/repos/AlrightLad/smoky-mountain-open/actions/runs?status=failure&per_page=5"   # ANY failing CI runs (all events)
 ```
+- Check failures across ALL trigger events, not just your own pushes —
+  `schedule` runs execute the workflow file from MAIN, so a frozen/stale
+  main can fail daily for weeks while push runs stay green (this exact
+  miss sent the Founder 8+ days of failure emails, 2026-05-31→06-09).
+  Founder directive: see breakage and repair it WITHOUT being told.
 - Recurring message at the LATEST appVersion = live bug → fix it FIRST
   (Sentry/Firebase errors take priority over polish).
 - Messages pinned to old versions / `v?` = stale, already fixed.
