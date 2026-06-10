@@ -11,10 +11,10 @@ Router.register("findplayers", function() {
 
   // Filters
   h += '<div style="padding:4px 16px 8px;display:flex;gap:6px;flex-wrap:wrap">';
-  h += '<button class="btn-sm outline fp-filter active" data-filter="all" onclick="setPlayerFilter(\'all\',this)" style="font-size:9px">All</button>';
-  h += '<button class="btn-sm outline fp-filter" data-filter="beginner" onclick="setPlayerFilter(\'beginner\',this)" style="font-size:9px">Beginner (25+)</button>';
-  h += '<button class="btn-sm outline fp-filter" data-filter="intermediate" onclick="setPlayerFilter(\'intermediate\',this)" style="font-size:9px">Intermediate (15-25)</button>';
-  h += '<button class="btn-sm outline fp-filter" data-filter="advanced" onclick="setPlayerFilter(\'advanced\',this)" style="font-size:9px">Advanced (&lt;15)</button>';
+  h += '<button class="btn-sm outline fp-filter active" data-filter="all" onclick="setPlayerFilter(\'all\',this)">All</button>';
+  h += '<button class="btn-sm outline fp-filter" data-filter="beginner" onclick="setPlayerFilter(\'beginner\',this)">Beginner (25+)</button>';
+  h += '<button class="btn-sm outline fp-filter" data-filter="intermediate" onclick="setPlayerFilter(\'intermediate\',this)">Intermediate (15-25)</button>';
+  h += '<button class="btn-sm outline fp-filter" data-filter="advanced" onclick="setPlayerFilter(\'advanced\',this)">Advanced (&lt;15)</button>';
   h += '</div>';
 
   h += '<div id="fp-results"></div>';
