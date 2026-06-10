@@ -10,9 +10,12 @@ permissions:
   pages: write
   id-token: write
 
+# v8.24.21 — cancel-in-progress: rapid consecutive pushes (ship + regen
+# commits minutes apart) used to FAIL the superseded older run and email the
+# Founder; cancelling it is silent and the newest commit always wins.
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -41,5 +44,17 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      # v8.24.21 — permanent fix for the intermittent Pages 401 ("Failed to
+      # create deployment ... Requires authentication", e.g. run 27287229396 on
+      # c7f6204b): a known transient GitHub-side OIDC flake in deploy-pages.
+      # First attempt tolerates failure; a 30s-later second attempt converts
+      # the flake into a success instead of a Founder failure email.
       - id: deployment
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+      - name: Wait before retry
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 30
+      - id: deployment_retry
+        if: steps.deployment.outcome == 'failure'
         uses: actions/deploy-pages@v4
