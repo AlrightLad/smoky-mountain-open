@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Parbaughs — Shared from the Clubhouse</title>
+<meta name="description" content="A read-only look inside a Parbaughs league.">
+<style>
+  /* Self-contained Clubhouse-flavored styles — this page ships without the
+     app bundle so a guest with just the link loads almost nothing. */
+  :root {
+    --canvas:#e8e2d2; --paper:#faf7ef; --ink:#14130f; --mute:#6f6a5b;
+    --felt:#1d3a2a; --brass:#b58a3a; --claret:#8e3a3a; --hairline:#d8d2c0;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--canvas); color:var(--ink); font:15px/1.5 -apple-system, "Segoe UI", Roboto, Inter, sans-serif; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:24px 16px 48px; }
+  .wrap { width:100%; max-width:560px; }
+  .masthead { text-align:center; padding:18px 0 22px; }
+  .eyebrow { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--brass); margin-bottom:8px; }
+  h1 { font-family:Georgia, "Times New Roman", serif; font-size:30px; line-height:1.15; font-weight:700; }
+  .meta { font-size:12px; color:var(--mute); margin-top:6px; }
+  .card { background:var(--paper); border:1px solid var(--hairline); border-radius:14px; padding:6px 0; margin-top:14px; box-shadow:0 8px 24px rgba(20,19,15,.07); }
+  .row { display:flex; align-items:center; gap:14px; padding:12px 18px; border-bottom:1px solid var(--hairline); }
+  .row:last-child { border-bottom:none; }
+  .rank { font-family:Georgia, serif; font-size:15px; font-weight:700; color:var(--mute); min-width:28px; }
+  .rank.r1 { color:var(--brass); } .rank.r2 { color:#8c8674; } .rank.r3 { color:var(--claret); }
+  .name { flex:1; font-weight:600; }
+  .value { font-family:Georgia, serif; font-size:17px; font-weight:700; color:var(--felt); }
+  .cta { display:block; text-align:center; background:var(--felt); color:#f1ead3; text-decoration:none; font-weight:700; border-radius:12px; padding:15px 18px; margin-top:22px; }
+  .cta small { display:block; font-weight:400; font-size:11px; opacity:.8; margin-top:3px; }
+  .foot { text-align:center; font-size:10px; letter-spacing:1.6px; text-transform:uppercase; color:var(--mute); margin-top:26px; }
+  .state { text-align:center; padding:60px 20px; color:var(--mute); }
+  .state h2 { font-family:Georgia, serif; color:var(--ink); font-size:20px; margin-bottom:8px; }
+</style>
+</head>
+<body>
+<div class="wrap" id="app">
+  <div class="state"><h2>Opening the clubhouse doors&hellip;</h2><div>One moment.</div></div>
+</div>
+<script>
+(function() {
+  "use strict";
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function(c) {
+      return { "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[c];
+    });
+  }
+  var qs = new URLSearchParams(location.search);
+  var id = (qs.get("id") || "").replace(/[^A-Za-z0-9_-]/g, "").slice(0, 64);
+  var app = document.getElementById("app");
+  // Staging host reads the staging project; everything else reads prod.
+  var project = location.hostname.indexOf("staging") !== -1 ? "parbaughs-staging" : "parbaughs";
+  var appUrl = "https://alrightlad.github.io/smoky-mountain-open/";
+
+  function fail(title, body) {
+    app.innerHTML = '<div class="state"><h2>' + esc(title) + '</h2><div>' + esc(body) + '</div></div>'
+      + '<a class="cta" href="' + appUrl + '">Visit the Parbaughs Clubhouse</a>';
+  }
+  if (!id) { fail("That link is missing its key", "Ask your friend to share it again."); }
+  else {
+    fetch("https://firestore.googleapis.com/v1/projects/" + project + "/databases/(default)/documents/shares/" + encodeURIComponent(id))
+      .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function(doc) {
+        var f = doc.fields || {};
+        function sv(k) { return f[k] && f[k].stringValue || ""; }
+        var rows = (f.rows && f.rows.arrayValue && f.rows.arrayValue.values) || [];
+        var h = '<div class="masthead">'
+          + '<div class="eyebrow">' + esc(sv("leagueName") || "Parbaughs") + ' &middot; shared from the clubhouse</div>'
+          + '<h1>' + esc(sv("title")) + '</h1>'
+          + (sv("meta") ? '<div class="meta">' + esc(sv("meta")) + '</div>' : '')
+          + '</div><div class="card">';
+        rows.forEach(function(r, i) {
+          var m = (r.mapValue && r.mapValue.fields) || {};
+          function mv(k) { var v = m[k]; if (!v) return ""; return v.stringValue !== undefined ? v.stringValue : (v.integerValue !== undefined ? v.integerValue : (v.doubleValue !== undefined ? v.doubleValue : "")); }
+          var rank = mv("rank") || (i + 1);
+          h += '<div class="row"><div class="rank r' + esc(rank) + '">' + esc(rank) + '</div>'
+            + '<div class="name">' + esc(mv("name")) + '</div>'
+            + '<div class="value">' + esc(mv("value")) + '</div></div>';
+        });
+        h += '</div>'
+          + '<a class="cta" href="' + appUrl + '">This league runs on Parbaughs<small>Solo golf tracking, leagues, wagers, and the Clubhouse &mdash; invite-only</small></a>'
+          + '<div class="foot">Parbaughs &middot; est. 2026</div>';
+        app.innerHTML = h;
+        document.title = sv("title") ? sv("title") + " — Parbaughs" : document.title;
+      })
+      .catch(function() {
+        fail("This share has been taken down", "The member who shared it may have revoked the link.");
+      });
+  }
+})();
+</script>
+</body>
+</html>

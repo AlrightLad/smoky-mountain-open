@@ -2071,6 +2071,80 @@ async function runAll() {
   });
 
   // ─────────────────────────────────────────────────────────────────
+  // SHARES (v8.24.43 — public share pages). Seeds the REAL doc shape the
+  // app writes (pbCreateShareLink): type/title/leagueName/rows/meta/
+  // createdBy/createdAt/appVersion.
+  // ─────────────────────────────────────────────────────────────────
+
+  function shareDoc(overrides) {
+    return Object.assign({
+      type: 'leaderboard',
+      title: 'Summer 2026 — The board so far',
+      leagueName: 'The Parbaughs',
+      rows: [{ rank: 1, name: 'Mr Parbaugh', value: '355 pts' }],
+      meta: 'Jun 1 - Aug 31',
+      createdBy: USER_A,
+      createdAt: new Date(),
+      appVersion: '8.24.43',
+    }, overrides || {});
+  }
+
+  await runTest('shares: unauthenticated GET by id succeeds (the share link)', async () => {
+    await seedDoc('shares/pub1', shareDoc());
+    await assertSucceeds(unauthenticated().collection('shares').doc('pub1').get());
+  });
+
+  await runTest('shares: unauthenticated LIST is blocked (no enumeration)', async () => {
+    await seedDoc('shares/pub2', shareDoc());
+    await assertFails(unauthenticated().collection('shares').limit(5).get());
+  });
+
+  await runTest('shares: active member creates with the real shape', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await assertSucceeds(authenticatedAs(USER_A).collection('shares').doc('c1').set(shareDoc()));
+  });
+
+  await runTest('shares: unauthenticated create is blocked', async () => {
+    await assertFails(unauthenticated().collection('shares').doc('c2').set(shareDoc()));
+  });
+
+  await runTest('shares: createdBy must be the caller', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await assertFails(authenticatedAs(USER_A).collection('shares').doc('c3').set(shareDoc({ createdBy: USER_B })));
+  });
+
+  await runTest('shares: type outside whitelist is blocked', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await assertFails(authenticatedAs(USER_A).collection('shares').doc('c4').set(shareDoc({ type: 'profile' })));
+  });
+
+  await runTest('shares: unexpected keys are blocked', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await assertFails(authenticatedAs(USER_A).collection('shares').doc('c5').set(shareDoc({ email: 'x@y.z' })));
+  });
+
+  await runTest('shares: rows capped at 30', async () => {
+    await withPlatformRole(USER_A, 'user');
+    var rows = [];
+    for (var i = 0; i < 31; i++) rows.push({ rank: i, name: 'n' + i, value: 'v' });
+    await assertFails(authenticatedAs(USER_A).collection('shares').doc('c6').set(shareDoc({ rows: rows })));
+  });
+
+  await runTest('shares: immutable — creator cannot update', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await seedDoc('shares/u1', shareDoc());
+    await assertFails(authenticatedAs(USER_A).collection('shares').doc('u1').update({ title: 'edited' }));
+  });
+
+  await runTest('shares: creator can revoke (delete); stranger cannot', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await withPlatformRole(USER_B, 'user');
+    await seedDoc('shares/d1', shareDoc());
+    await assertFails(authenticatedAs(USER_B).collection('shares').doc('d1').delete());
+    await assertSucceeds(authenticatedAs(USER_A).collection('shares').doc('d1').delete());
+  });
+
+  // ─────────────────────────────────────────────────────────────────
   // WRAP UP
   // ─────────────────────────────────────────────────────────────────
 

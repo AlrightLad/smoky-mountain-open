@@ -4,7 +4,7 @@
    ================================================ */
 
 // ── App version — single source of truth ──
-var APP_VERSION = "8.24.42";
+var APP_VERSION = "8.24.43";
 
 // ══════════════════════════════════════════════════════════════════════════
 // LEAGUE ISOLATION — Nuclear approach. Makes leaking PHYSICALLY IMPOSSIBLE.
@@ -215,6 +215,35 @@ function pbPrompt(opts) {
     document.getElementById("pbPromptYes").onclick = submit;
     var inp = document.getElementById("pbPromptInput");
     inp.focus(); if (opts.value) inp.select();
+  });
+}
+
+// ── pbCreateShareLink (v8.24.43, growth #1) — public share pages ────────
+// Writes a frozen, member-authored snapshot to the publicly-gettable
+// `shares` collection (unguessable id; rules cap shape + sizes; display
+// names only, never uids) and resolves the share URL. The snapshot is the
+// no-account artifact a guest can open — the acquisition surface.
+function pbCreateShareLink(snapshot) {
+  if (!db || typeof currentUser === "undefined" || !currentUser) {
+    return Promise.reject(new Error("not-signed-in"));
+  }
+  var bytes = new Uint8Array(16);
+  (window.crypto || window.msCrypto).getRandomValues(bytes);
+  var id = Array.prototype.map.call(bytes, function(b) { return ("0" + b.toString(36)).slice(-2); }).join("").substring(0, 24);
+  var doc = {
+    type: snapshot.type,
+    title: String(snapshot.title || "").substring(0, 120),
+    leagueName: String(snapshot.leagueName || window._activeLeagueName || "Parbaughs").substring(0, 80),
+    rows: (snapshot.rows || []).slice(0, 30),
+    createdBy: currentUser.uid,
+    createdAt: fsTimestamp(),
+    appVersion: APP_VERSION
+  };
+  if (snapshot.meta) doc.meta = String(snapshot.meta).substring(0, 300);
+  return db.collection("shares").doc(id).set(doc).then(function() {
+    // Resolve against the canonical public host so a link cut on staging or
+    // localhost still opens for a guest with no access to either.
+    return "https://alrightlad.github.io/smoky-mountain-open/share.html?id=" + id;
   });
 }
 

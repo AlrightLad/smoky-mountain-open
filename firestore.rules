@@ -767,6 +767,32 @@ service cloud.firestore {
       allow write: if amIActive() && amILeagueMember(resource.data.leagueId);
     }
 
+    // ── shares (v8.24.43, growth #1: public share pages) ────────────────
+    // Frozen, member-authored snapshots behind unguessable ids. The ONLY
+    // publicly readable collection: a guest holding a share link reads that
+    // one doc; list/query stays blocked (read = get; no list rule), so the
+    // collection cannot be enumerated. Creates are member-only with a strict
+    // shape: type whitelist, string caps, a rows array capped at 30 entries.
+    // Snapshots carry display names only — never uids/emails. Immutable
+    // (no update); creator or founder can revoke (delete).
+    match /shares/{shareId} {
+      allow get: if true;
+      allow list: if false;
+      allow create: if amIActive()
+                   && request.resource.data.createdBy == uid()
+                   && request.resource.data.type in ['leaderboard', 'recap', 'round']
+                   && request.resource.data.title is string
+                   && request.resource.data.title.size() <= 120
+                   && request.resource.data.leagueName is string
+                   && request.resource.data.leagueName.size() <= 80
+                   && request.resource.data.rows is list
+                   && request.resource.data.rows.size() <= 30
+                   && request.resource.data.keys().hasOnly(['type', 'title', 'leagueName', 'rows', 'meta', 'createdBy', 'createdAt', 'appVersion'])
+                   && (!('meta' in request.resource.data) || (request.resource.data.meta is string && request.resource.data.meta.size() <= 300));
+      allow update: if false;
+      allow delete: if amIActive() && (resource.data.createdBy == uid() || amIFounder());
+    }
+
     // NO CATCH-ALL. Every collection must have explicit rules above.
   }
 }

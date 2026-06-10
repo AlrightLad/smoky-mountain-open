@@ -30,15 +30,27 @@ const OUT = path.resolve(__dirname, 'main-flows-v2');
     const page = await ctx.newPage();
     await auth.loginReal(page, DEV_URL);
     if (label === 'mobile') {
-      const r = await page.evaluate(async () => {
-        const out = {};
-        out.helper = typeof pbAutoCreateCourse === 'function';
-        // no-key path: API requires key (pre-deploy) -> null -> caller stubs
-        const apiResult = await pbAutoCreateCourse('Zzz Fake Course Xyz', 'PA');
-        out.apiNull = apiResult === null;
-        return out;
+      const url = await page.evaluate(async () => {
+        return await pbCreateShareLink({
+          type: 'leaderboard',
+          title: 'Summer 2026 — The board so far',
+          meta: 'Jun 1 to Aug 31 · shared in a smoke test',
+          rows: [
+            { rank: 1, name: 'smoketest', value: '355 pts' },
+            { rank: 2, name: 'Test Member', value: '120 pts' }
+          ]
+        });
       });
-      console.log('VERIFY:', JSON.stringify(r));
+      console.log('SHARE-URL:', url);
+      // open it as a logged-out guest against the LOCAL share.html + the id
+      const guest = await browser.newContext({ viewport: vp, deviceScaleFactor: 2 });
+      const gp = await guest.newPage();
+      const localUrl = DEV_URL.replace(/\/$/, '') + '/share.html?id=' + url.split('id=')[1];
+      await gp.goto(localUrl);
+      await gp.waitForTimeout(2500);
+      await gp.screenshot({ path: path.join(OUT, 'share-page-guest.png') });
+      console.log('captured guest share page');
+      await guest.close();
     }
     await ctx.close();
   }

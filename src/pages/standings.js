@@ -274,6 +274,12 @@ Router.register("standings", function(params) {
 
   // ── League trophies (custom catalog; real computed leaders fill in async) ──
   h += '<div class="std-section" id="stdLeagueTrophies" style="display:none">';
+  // v8.24.43 — public share entry point (growth #1). Members cut a frozen,
+  // read-only public page of the current board; guests need no account.
+  if (standings.length) {
+    h += '<div style="padding:0 16px 4px"><button class="btn-sm outline" style="width:100%;min-height:44px" onclick="shareStandingsBoard()"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" style="vertical-align:-2px;margin-right:6px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>Share the board</button></div>';
+  }
+
   h += '<div class="std-section__head"><span class="std-section__title">League trophies</span><span class="std-section__meta">Live leaders</span></div>';
   h += '<div class="std-trophies" id="stdLeagueTrophyGrid"></div>';
   h += '</div>';
@@ -436,5 +442,38 @@ function appendStdLeagueTrophies() {
       html += '</div>';
     });
     if (html) { g.innerHTML = html; s.style.display = ""; }
+  });
+}
+
+
+// v8.24.43 — build the frozen snapshot for the public share page. Display
+// names + points only; the share link is copied to the clipboard.
+function shareStandingsBoard() {
+  var year = new Date().getFullYear();
+  var season = PB.getSeasonStandings(year);
+  var standings = (season.standings || []).slice(0, 30);
+  if (!standings.length) { Router.toast("Nothing on the board yet"); return; }
+  var rows = standings.map(function(st, i) {
+    return { rank: i + 1, name: PB.getDisplayName(st) || st.name || st.username || "Member", value: (st.points || 0) + " pts" };
+  });
+  var title = (season.seasonLabel || ("Season " + year)) + " — The board so far";
+  Router.toast("Cutting a share link...");
+  pbCreateShareLink({
+    type: "leaderboard",
+    title: title,
+    meta: season.seasonStart && season.seasonEnd ? season.seasonStart + " to " + season.seasonEnd : "",
+    rows: rows
+  }).then(function(url) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(function() {
+        Router.toast("Public link copied — anyone can view, no account needed");
+      }).catch(function() {
+        pbPrompt({ title: "Your public link", message: "Copy it from here.", value: url, confirmLabel: "Done" });
+      });
+    } else {
+      pbPrompt({ title: "Your public link", message: "Copy it from here.", value: url, confirmLabel: "Done" });
+    }
+  }).catch(function() {
+    Router.toast("Could not create the link — try again");
   });
 }
