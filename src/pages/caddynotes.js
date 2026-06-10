@@ -181,7 +181,7 @@ Router.register("caddynotes", function() {
     "Wager Matches: 6 types including Nassau and Beat Their Score",
     "Bounty Board: coin bounties on scores and birdies",
     "Trash Talk: Spotlight of Shame, Victory Lap, Demand a Rematch",
-    "Rich List, Power-Ups, Sponsor a Hole, Name a Tournament",
+    "Rich List, Power-Ups, Sponsor a Hole",
     "3 formal seasons per year (Spring, Summer, Fall) with awards",
     "Trophy Room: 50+ achievements, XP levels, titles",
     "8 premium themes with background textures and blend modes",

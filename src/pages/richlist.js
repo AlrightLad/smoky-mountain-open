@@ -1,7 +1,7 @@
 /* ================================================
    PAGE: RICH LIST + POWER-UPS + STATUS SPENDING
    Top coin holders, Gold Member badge, Sponsor a Hole,
-   Name a Tournament, Double XP, Handicap Shield
+   Double XP, Handicap Shield
    ================================================ */
 
 // ── Gold Member auto-badge: checked on profile render ──
@@ -23,10 +23,13 @@ Router.register("richlist", function() {
   h += _renderPowerUp("Handicap Shield", 100, "Exclude your next bad round from handicap calculation (visible to all)", "hcapShield");
   h += '</div>';
 
-  // Status purchases
+  // Status purchases — v8.24.20 Founder edits: "Name a Tournament" REMOVED
+  // ("can be removed from the status purchase items"); "Sponsor a Hole" stays
+  // but is LEAGUE-based, not home-course-based ("should only be league based").
+  // Full shop/cosmetics redo is queued (task #32) — these are the immediate
+  // Founder-directed corrections.
   h += '<div class="section"><div class="sec-head"><span class="sec-title">Status</span></div>';
-  h += _renderStatusPurchase("Sponsor a Hole", 500, "Your name appears on scorecards at your home course for the season", "sponsorHole");
-  h += _renderStatusPurchase("Name a Tournament", 1000, "Name the next league event after yourself or a custom title", "nameTournament");
+  h += _renderStatusPurchase("Sponsor a Hole", 500, "Your name appears on a hole at your league's events this season", "sponsorHole");
   h += '</div>';
 
   h += renderPageFooter();
