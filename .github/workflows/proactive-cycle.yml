@@ -81,4 +81,11 @@ jobs:
           git config user.email "orchestration@parbaughs.local"
           git add .claude/state/ docs/agents/SESSION_JOURNAL.md
           git diff --staged --quiet || git commit -m "chore(cycle): proactive proposal queue $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          git push
+          # v8.24.17 — rebase+retry push: a bare `git push` loses the race against
+          # concurrent pushes (agent ships + cron regen commits race this runner
+          # constantly; the 2026-06-10 Ship Cycle failure was exactly that).
+          for i in 1 2 3; do
+            git push && break
+            git pull --rebase origin main || { git rebase --abort 2>/dev/null; git pull --rebase -X ours origin main; }
+            [ "$i" = "3" ] && exit 1
+          done
