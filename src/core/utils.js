@@ -4,7 +4,7 @@
    ================================================ */
 
 // ── App version — single source of truth ──
-var APP_VERSION = "8.24.21";
+var APP_VERSION = "8.24.22";
 
 // ══════════════════════════════════════════════════════════════════════════
 // LEAGUE ISOLATION — Nuclear approach. Makes leaking PHYSICALLY IMPOSSIBLE.
@@ -60,7 +60,19 @@ function sendVerificationEmail() {
 function requireVerified(actionName) {
   if (!currentUser) { Router.toast("Sign in required"); return false; }
   if (currentUser.emailVerified) return true;
-  Router.toast("Verify your email to " + (actionName || "do this") + ", check Settings");
+  // v8.24.22 — was a vanishing toast pointing at Settings (a dead end at the
+  // exact moment the member wants to act). Now a recovery card: explains the
+  // gate and offers Resend inline via the pbConfirm atom.
+  if (typeof pbConfirm === "function") {
+    pbConfirm({
+      title: "Verify your email first",
+      message: "To " + (actionName || "do this") + " you need a verified email — it keeps wagers and the shop honest. We can send the link again right now.",
+      confirmLabel: "Resend email",
+      cancelLabel: "Not now"
+    }).then(function(ok) { if (ok) sendVerificationEmail(); });
+  } else {
+    Router.toast("Verify your email to " + (actionName || "do this") + ", check Settings");
+  }
   return false;
 }
 
