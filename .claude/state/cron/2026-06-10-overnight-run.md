@@ -184,6 +184,49 @@ gating regen, disciplined non-action). Fluff: none.** Ship closes.
 
 ---
 
+## POST-RUN OBSERVATION (appended after commit — P9 record fidelity)
+
+At journal-write / regen time the working tree was clean (only `app-health.html`,
+zero untracked) and there was **no concurrent activity**. Two events occurred
+**after** my triage commit; recording them so the git log reads truthfully:
+
+1. **My triage commit landed intact.**
+   `4730f062 Overnight triage 2026-06-10 - 0 reports, 0 proposals, 0 FIQ entries
+   graded` — verified via `git show --stat` to contain **exactly** my 4 outputs
+   (this journal +189, `engineer.json`, `critic.json`, `docs/reports/app-health.html`).
+   Unlike 06-09 (where the auto-clean cron beat the explicit-pathspec commit to
+   empty), my commit succeeded **with content** on the first attempt.
+
+2. **AMD-019/020 post-commit auto-clean cron fired** (`60c950a7
+   cron(routine): post-commit dashboard regen`), triggered by my commit — swept
+   routine churn (`post-commit-hook.log`, telemetry cursors + transcript-summary,
+   `app-health.html` metadata). Expected machinery, working as designed.
+
+3. **A concurrent session landed a theme feature** (now HEAD):
+   `466c45db feat(theme): complete all 6 editorial palettes + legacy var bridge
+   (v8.24.11)` — addresses a Founder-reported "themes need to be working" gap
+   (each `[data-theme]` block overrode only 11 of ~31 live theme tokens). This is
+   **not this cron's work**; its `_commit-msg.txt` residue sits untracked in the
+   tree and I **deliberately left it untouched** (concurrent-session-owned —
+   same cron-sweeps-staged-work discipline applied to 06-09's Chase build).
+
+**Residual dirty tree (not swept by this cron — correct):**
+`.claude/state/dashboard-health/post-commit-hook.log` (M),
+`.claude/state/telemetry/aggregates/.session-transcript-cursor.json` (M),
+`.claude/state/_commit-msg.txt` (??). None are this cron's triage outputs — they
+are routine hook churn + the concurrent theme session's residue, which the next
+post-commit auto-clean cron / the owning session will absorb. My triage work is
+fully committed and intact in `4730f062`.
+
+**Founder-attention (new this cycle):** a concurrent session is actively shipping
+the **theme-completion feature (v8.24.11)**. Confirm it lands cleanly (version-sync
++ `CACHE_NAME` bump verified by its own commit) and that `_commit-msg.txt` gets
+cleaned up by its owning session.
+
+---
+
 *Autonomous overnight cron cycle. Local commit only — NOT pushed (Founder reviews
 local diff first). Pure clean heartbeat: both triage queues absent, regen-all PASS
-run 1, app-health A- (88.5) 0 attention items, no defect, no concurrent activity.*
+run 1, app-health A- (88.5) 0 attention items, no defect. No concurrent activity
+DURING the run; a concurrent theme-feature commit (v8.24.11) landed post-commit —
+see POST-RUN OBSERVATION above.*
