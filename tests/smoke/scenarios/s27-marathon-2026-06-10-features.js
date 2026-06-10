@@ -59,6 +59,23 @@ module.exports = {
           out.founderInfinite = pbInvitesLeft({ platformRole: 'founder', maxInvites: 3 }) === Infinity;
         }
 
+        // ── 7. pbPrompt (v8.24.34) — render, value pre-fill, Enter resolves
+        //       trimmed value; Escape resolves null + cleans up ──
+        out.promptFn = typeof pbPrompt === 'function';
+        if (out.promptFn) {
+          var pP = pbPrompt({ title: 'S27 prompt check', value: '  hello  ' });
+          var pOv = document.getElementById('pbPromptOverlay');
+          out.promptRendered = !!pOv;
+          var pIn = document.getElementById('pbPromptInput');
+          out.promptPrefilled = !!(pIn && pIn.value === '  hello  ');
+          document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+          pP.then(function(v) { out.promptEnterValue = v; });
+          // Escape path: open again, Escape must resolve null + remove overlay
+          var pP2 = pbPrompt({ title: 'S27 escape check' });
+          document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+          pP2.then(function(v) { out.promptEscapeValue = v; });
+        }
+
         // ── 5. toast delegation ──
         Router.toast('S27 delegation check');
         var stack = document.getElementById('pb-toast-stack');
@@ -75,6 +92,7 @@ module.exports = {
         // allow the Escape teardown + confetti canvas removal to settle
         setTimeout(function() {
           out.confirmCleaned = !document.getElementById('pbConfirmOverlay');
+          out.promptCleaned = !document.getElementById('pbPromptOverlay');
           resolve(out);
         }, 400);
       });
@@ -89,9 +107,13 @@ module.exports = {
     if (!r.invitesFn || !r.floorApplied || !r.founderInfinite) failures.push('pbInvitesLeft floor/founder wrong');
     if (!r.toastDelegated) failures.push('Router.toast did not land in pb-toast-stack');
     if (!r.themeFlips) failures.push('applyTheme did not flip the palette');
+    if (!r.promptFn || !r.promptRendered || !r.promptPrefilled) failures.push('pbPrompt missing/not rendering/not pre-filling');
+    if (r.promptEnterValue !== 'hello') failures.push('pbPrompt Enter did not resolve trimmed value: ' + JSON.stringify(r.promptEnterValue));
+    if (r.promptEscapeValue !== null) failures.push('pbPrompt Escape did not resolve null: ' + JSON.stringify(r.promptEscapeValue));
+    if (!r.promptCleaned) failures.push('pbPrompt overlay not cleaned up');
 
     if (failures.length) throw new Error(failures.join(' | '));
     await ctx.capture.screenshot('S27-marathon-features');
-    return { passed: true, details: '6/6 marathon feature checks green' };
+    return { passed: true, details: '7/7 marathon feature checks green' };
   }
 };
