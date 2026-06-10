@@ -649,6 +649,34 @@ input.s:disabled,
 .pf-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px}
 @media (max-width:560px){.pf-portrait{gap:14px}}
 
+/* Profile structural pass (task #29) — members-detail.js was the heaviest
+   legacy page: inline-styled section heads, a 3x-duplicated chart empty, and
+   per-badge inline chip styles. These pf-scoped recipes give the page the
+   canonical Clubhouse rhythm without touching the global .sec-* / .stat-*
+   recipes other pages depend on. */
+/* Section head rhythm — mono brass eyebrow over a display-serif title
+   (rd-section language, scaled for collapsible profile sections). Declared
+   after the global .sec-title (line ~86) so pf-sec__title wins on the
+   shared element. */
+.pf-sec__head{cursor:pointer}
+.pf-sec__eyebrow{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:3px}
+.pf-sec__title{font-family:var(--font-display);font-style:italic;font-size:17px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--cream);line-height:1.25}
+/* In-section subhead (score differentials toggle, achievement categories) —
+   one mono recipe replacing the per-site inline styles. */
+.pf-subhead{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.pf-subhead--toggle{cursor:pointer;margin-bottom:6px}
+.pf-subhead--cat{width:100%;margin:6px 0 2px}
+/* Badge chip — one recipe (geometry + type), tone carries the color. */
+.pf-chip{display:inline-flex;align-items:center;font-family:var(--font-mono);font-size:var(--text-2xs);font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:3px 10px;border-radius:var(--radius-full);border:1px solid transparent;line-height:1.5}
+.pf-chip--gold{color:var(--gold);background:rgba(var(--gold-rgb),.1);border-color:rgba(var(--gold-rgb),.2)}
+.pf-chip--birdie{color:var(--birdie);background:rgba(var(--birdie-rgb),.08);border-color:rgba(var(--birdie-rgb),.15)}
+.pf-chip--cream{color:var(--cream);background:rgba(var(--cream-rgb),.06);border-color:rgba(var(--cream-rgb),.1)}
+.pf-chip--red{color:var(--red);background:rgba(var(--red-rgb),.08);border-color:rgba(var(--red-rgb),.15)}
+/* Designed empty state — quiet dashed frame, optional display headline. */
+.pf-empty{text-align:center;padding:22px 14px;margin:2px 0;border:1px dashed var(--border);border-radius:var(--radius)}
+.pf-empty__h{font-family:var(--font-display);font-style:italic;font-size:15px;color:var(--cream);margin-bottom:4px}
+.pf-empty__b{font-size:11px;color:var(--muted);line-height:1.5;max-width:44ch;margin:0 auto}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    STATS
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -656,6 +684,9 @@ input.s:disabled,
 .stat-box{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 6px;text-align:center}
 .stat-val{font-family:var(--font-display);font-size:var(--text-2xl);font-weight:700;color:var(--gold)}
 .stat-label{font-size:var(--text-2xs);color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:1px;font-weight:600}
+/* Secondary line inside a stat tile (e.g. 9-hole best under Best 18). */
+.stat-sub{font-size:9px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+.stat-box--link{cursor:pointer}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    CLUBS

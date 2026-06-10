@@ -22,10 +22,31 @@ function renderMemberDetailWithData(p) {
   var unique = PB.getUniqueCourses(pid);
   var clubLabels = {driver:"Driver",three_wood:"3 Wood",four_wood:"4 Wood",five_wood:"5 Wood",seven_wood:"7 Wood",nine_wood:"9 Wood",two_hybrid:"2 Hybrid",three_hybrid:"3 Hybrid",four_hybrid:"4 Hybrid",five_hybrid:"5 Hybrid",six_hybrid:"6 Hybrid",two_iron:"2 Iron",three_iron:"3 Iron",four_iron:"4 Iron",five_iron:"5 Iron",six_iron:"6 Iron",seven_iron:"7 Iron",eight_iron:"8 Iron",nine_iron:"9 Iron",pw:"PW",aw:"AW (48-50)",gw:"GW (50-52)",gap52:"52°",sw:"SW (54-56)",gap56:"56°",gap58:"58°",lw:"LW (60°)",gap64:"64°",putter:"Putter"};
 
+  // Canonical sec-head rhythm (task #29 structural pass): mono brass eyebrow
+  // over a display-serif title. Shared by the collapsible profSection heads
+  // and the static chart-section heads so every section on the page reads
+  // with one editorial voice (recipes in components.css, pf-sec__*).
+  function secHeadInner(eyebrow, title) {
+    return '<div>' + (eyebrow ? '<div class="pf-sec__eyebrow">' + eyebrow + '</div>' : '') + '<span class="sec-title pf-sec__title">' + title + '</span></div>';
+  }
+  function secHead(eyebrow, title) {
+    return '<div class="sec-head">' + secHeadInner(eyebrow, title) + '</div>';
+  }
+
+  // One designed empty pattern (task #29) — replaces the 3x-duplicated inline
+  // chart empty plus the per-section ad-hoc grey-text empties. Headline is
+  // optional; body-only keeps short empties quiet.
+  function pfEmpty(headline, body) {
+    var s = '<div class="pf-empty">';
+    if (headline) s += '<div class="pf-empty__h">' + headline + '</div>';
+    if (body) s += '<div class="pf-empty__b">' + body + '</div>';
+    return s + '</div>';
+  }
+
   // Helper for collapsible profile sections
-  function profSection(id, title, content, startOpen) {
+  function profSection(id, title, content, startOpen, eyebrow) {
     var chevronSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="color:var(--muted)"><path d="M9 18l6-6-6-6"/></svg>';
-    return '<div class="section"><div class="sec-head" onclick="toggleSection(\'ps-' + id + '\')" style="cursor:pointer"><span class="sec-title">' + title + '</span><span class="sec-link" id="ps-' + id + '-toggle" style="display:inline-flex;transition:transform .2s' + (startOpen ? ';transform:rotate(90deg)' : '') + '">' + chevronSvg + '</span></div><div id="ps-' + id + '"' + (startOpen ? '' : ' style="display:none"') + '>' + content + '</div></div>';
+    return '<div class="section"><div class="sec-head pf-sec__head" onclick="toggleSection(\'ps-' + id + '\')">' + secHeadInner(eyebrow, title) + '<span class="sec-link" id="ps-' + id + '-toggle" style="display:inline-flex;transition:transform .2s' + (startOpen ? ';transform:rotate(90deg)' : '') + '">' + chevronSvg + '</span></div><div id="ps-' + id + '"' + (startOpen ? '' : ' style="display:none"') + '>' + content + '</div></div>';
   }
 
   // Singularize a stat label when the count is exactly 1 (regular -s plurals).
@@ -63,7 +84,9 @@ function renderMemberDetailWithData(p) {
   // grid) — same self-wrapper pattern as .tr-wrap / .league-wrap.
   var h = '<div class="pf-page">';
   h += '<div class="pf-topbar">';
-  h += '<button class="back" onclick="Router.go(\'members\')" style="min-height:40px">← Members</button>';
+  // 44pt touch floor: .back already carries min-height:44px in components.css;
+  // the old inline min-height:40px silently overrode it below the floor.
+  h += '<button class="back" onclick="Router.go(\'members\')">← Members</button>';
   if (isOwnProfile) h += '<button class="btn-sm outline" onclick="Router.go(\'members\',{edit:\'' + pid + '\'})">Edit profile</button>';
   else if (currentUser && currentUser.uid !== pid) {
     var _isBlocked = typeof pbIsBlocked === "function" && pbIsBlocked(pid);
@@ -95,30 +118,33 @@ function renderMemberDetailWithData(p) {
   h += '</div>';
   h += '</div>';
 
-  // Display badges (max 3, player-selected)
+  // Display badges (max 3, player-selected). Each badge carries a tone; the
+  // chip recipe (.pf-chip / .pf-chip--{tone} in components.css) owns the
+  // geometry + type + per-tone colors that used to live as per-badge inline
+  // style triplets (task #29 structural pass).
   var allBadges = [];
-  if (p.founding || p.isFoundingFour) allBadges.push({id:"og",label:"THE ORIGINAL FOUR",color:"var(--gold)",bg:"rgba(var(--gold-rgb),.1)",border:"rgba(var(--gold-rgb),.2)"});
-  if (isBeta) allBadges.push({id:"beta",label:"BETA TESTER",color:"var(--birdie)",bg:"rgba(var(--birdie-rgb),.08)",border:"rgba(var(--birdie-rgb),.15)"});
+  if (p.founding || p.isFoundingFour) allBadges.push({id:"og",label:"THE ORIGINAL FOUR",tone:"gold"});
+  if (isBeta) allBadges.push({id:"beta",label:"BETA TESTER",tone:"birdie"});
   achievements.forEach(function(a) {
-    if (a.id === "champion") allBadges.push({id:"champion",label:"CHAMPION",color:"var(--gold)",bg:"rgba(var(--gold-rgb),.1)",border:"rgba(var(--gold-rgb),.2)"});
-    if (a.id === "sub80") allBadges.push({id:"sub80",label:"SUB-80 CLUB",color:"var(--birdie)",bg:"rgba(var(--birdie-rgb),.08)",border:"rgba(var(--birdie-rgb),.15)"});
-    if (a.id === "sub90") allBadges.push({id:"sub90",label:"SUB-90 CLUB",color:"var(--cream)",bg:"rgba(var(--cream-rgb),.06)",border:"rgba(var(--cream-rgb),.1)"});
-    if (a.id === "ace") allBadges.push({id:"ace",label:"ACE MAKER",color:"var(--gold)",bg:"rgba(var(--gold-rgb),.1)",border:"rgba(var(--gold-rgb),.2)"});
-    if (a.id === "centurion") allBadges.push({id:"centurion",label:"CENTURION",color:"var(--gold)",bg:"rgba(var(--gold-rgb),.1)",border:"rgba(var(--gold-rgb),.2)"});
-    if (a.id === "captain") allBadges.push({id:"captain",label:"CAPTAIN",color:"var(--cream)",bg:"rgba(var(--cream-rgb),.06)",border:"rgba(var(--cream-rgb),.1)"});
-    if (a.id === "roadwarrior") allBadges.push({id:"roadwarrior",label:"ROAD WARRIOR",color:"var(--birdie)",bg:"rgba(var(--birdie-rgb),.08)",border:"rgba(var(--birdie-rgb),.15)"});
-    if (a.id === "the_commish") allBadges.push({id:"the_commish",label:"COMMISSIONER",color:"var(--gold)",bg:"rgba(var(--gold-rgb),.1)",border:"rgba(var(--gold-rgb),.2)"});
-    if (a.id === "boss_wife") allBadges.push({id:"boss_wife",label:"THE BOSS'S WIFE",color:"var(--gold)",bg:"rgba(var(--gold-rgb),.1)",border:"rgba(var(--gold-rgb),.2)"});
-    if (a.id === "recruiter") allBadges.push({id:"recruiter",label:"RECRUITER",color:"var(--birdie)",bg:"rgba(var(--birdie-rgb),.08)",border:"rgba(var(--birdie-rgb),.15)"});
-    if (a.id === "ambassador") allBadges.push({id:"ambassador",label:"AMBASSADOR",color:"var(--gold)",bg:"rgba(var(--gold-rgb),.1)",border:"rgba(var(--gold-rgb),.2)"});
-    if (a.id === "beast_mode") allBadges.push({id:"beast_mode",label:"BEAST MODE",color:"var(--red)",bg:"rgba(var(--red-rgb),.08)",border:"rgba(var(--red-rgb),.15)"});
-    if (a.id === "birdie_king") allBadges.push({id:"birdie_king",label:"BIRDIE KING",color:"var(--birdie)",bg:"rgba(var(--birdie-rgb),.08)",border:"rgba(var(--birdie-rgb),.15)"});
-    if (a.id === "bogey_free") allBadges.push({id:"bogey_free",label:"BOGEY FREE",color:"var(--birdie)",bg:"rgba(var(--birdie-rgb),.08)",border:"rgba(var(--birdie-rgb),.15)"});
-    if (a.id === "grip_rip") allBadges.push({id:"grip_rip",label:"GRIP IT & RIP IT",color:"var(--cream)",bg:"rgba(var(--cream-rgb),.06)",border:"rgba(var(--cream-rgb),.1)"});
-    if (a.id === "hot_streak") allBadges.push({id:"hot_streak",label:"ON FIRE",color:"var(--red)",bg:"rgba(var(--red-rgb),.08)",border:"rgba(var(--red-rgb),.15)"});
+    if (a.id === "champion") allBadges.push({id:"champion",label:"CHAMPION",tone:"gold"});
+    if (a.id === "sub80") allBadges.push({id:"sub80",label:"SUB-80 CLUB",tone:"birdie"});
+    if (a.id === "sub90") allBadges.push({id:"sub90",label:"SUB-90 CLUB",tone:"cream"});
+    if (a.id === "ace") allBadges.push({id:"ace",label:"ACE MAKER",tone:"gold"});
+    if (a.id === "centurion") allBadges.push({id:"centurion",label:"CENTURION",tone:"gold"});
+    if (a.id === "captain") allBadges.push({id:"captain",label:"CAPTAIN",tone:"cream"});
+    if (a.id === "roadwarrior") allBadges.push({id:"roadwarrior",label:"ROAD WARRIOR",tone:"birdie"});
+    if (a.id === "the_commish") allBadges.push({id:"the_commish",label:"COMMISSIONER",tone:"gold"});
+    if (a.id === "boss_wife") allBadges.push({id:"boss_wife",label:"THE BOSS'S WIFE",tone:"gold"});
+    if (a.id === "recruiter") allBadges.push({id:"recruiter",label:"RECRUITER",tone:"birdie"});
+    if (a.id === "ambassador") allBadges.push({id:"ambassador",label:"AMBASSADOR",tone:"gold"});
+    if (a.id === "beast_mode") allBadges.push({id:"beast_mode",label:"BEAST MODE",tone:"red"});
+    if (a.id === "birdie_king") allBadges.push({id:"birdie_king",label:"BIRDIE KING",tone:"birdie"});
+    if (a.id === "bogey_free") allBadges.push({id:"bogey_free",label:"BOGEY FREE",tone:"birdie"});
+    if (a.id === "grip_rip") allBadges.push({id:"grip_rip",label:"GRIP IT & RIP IT",tone:"cream"});
+    if (a.id === "hot_streak") allBadges.push({id:"hot_streak",label:"ON FIRE",tone:"red"});
   });
   // Add level badge
-  if (lvl.level >= 10) allBadges.push({id:"lvl",label:"LEVEL " + lvl.level,color:"var(--gold)",bg:"rgba(var(--gold-rgb),.1)",border:"rgba(var(--gold-rgb),.2)"});
+  if (lvl.level >= 10) allBadges.push({id:"lvl",label:"LEVEL " + lvl.level,tone:"gold"});
 
   var displayBadges = p.displayBadges || allBadges.slice(0, 3).map(function(b){return b.id});
   var shownBadges = allBadges.filter(function(b){return displayBadges.indexOf(b.id) !== -1}).slice(0, 3);
@@ -127,7 +153,7 @@ function renderMemberDetailWithData(p) {
   if (shownBadges.length) {
     h += '<div class="pf-badges">';
     shownBadges.forEach(function(b) {
-      h += '<span style="font-size:8px;padding:3px 10px;background:' + b.bg + ';border:1px solid ' + b.border + ';border-radius:var(--radius-full);color:' + b.color + ';font-weight:700;letter-spacing:.5px">' + b.label + '</span>';
+      h += '<span class="pf-chip pf-chip--' + b.tone + '">' + b.label + '</span>';
     });
     h += '</div>';
   }
@@ -149,7 +175,10 @@ function renderMemberDetailWithData(p) {
   h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:4px">';
   h += '<div style="font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.3px">Lv. ' + lvl.level + ' · ' + lvl.name + '</div>';
   h += '<div style="font-size:10px;color:var(--muted)">' + lvl.xp.toLocaleString() + ' XP <span style="color:var(--muted2)">→ Trophies</span></div></div>';
-  h += '<div style="height:5px;background:var(--bg3);border-radius:3px;overflow:hidden"><div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,var(--gold2),var(--gold3));border-radius:3px;transition:width .4s"></div></div>';
+  // NOTE: the fill div's inline linear-gradient + width are load-bearing —
+  // tests/e2e/flows/04-ui-layout-regression.spec.js locates the profile XP
+  // fill by exactly that inline style. Radii tokenized only.
+  h += '<div style="height:5px;background:var(--bg3);border-radius:var(--radius-sm);overflow:hidden"><div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,var(--gold2),var(--gold3));border-radius:var(--radius-sm);transition:width .4s"></div></div>';
   h += '</div>';
 
   // ── PARCOIN WALLET ──
@@ -211,7 +240,9 @@ function renderMemberDetailWithData(p) {
   }
 
   // ── STAT GRID ──
-  h += '<div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">';
+  // Geometry lives entirely on .stats-grid / .stat-box tokens (components.css);
+  // the old inline grid-template-columns duplicated the class default.
+  h += '<div class="stats-grid">';
   h += statBox(hcap !== null ? hcap : "—", "Handicap");
   h += statBox(avg || "—", "Avg Score");
   var bestScore = best ? best.score : "—";
@@ -221,10 +252,10 @@ function renderMemberDetailWithData(p) {
   // only in the existing Best tile.
   var best9Score = best9 ? best9.score : null;
   var best9Suffix = best9Score !== null
-    ? '<div class="stat-sub" style="font-size:9px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.5px">9-hole · ' + best9Score + (best9 && best9.holesMode === "back9" ? " · B9" : " · F9") + '</div>'
+    ? '<div class="stat-sub">9-hole · ' + best9Score + (best9 && best9.holesMode === "back9" ? " · B9" : " · F9") + '</div>'
     : '';
   if (bestRoundId) {
-    h += '<div class="stat-box" style="cursor:pointer" onclick="Router.go(\'rounds\',{roundId:\'' + bestRoundId + '\'})"><div class="stat-val" data-count="' + bestScore + '" style="color:var(--birdie)">' + bestScore + '</div><div class="stat-label">Best 18 <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M3 9l6-6M5 3h4v4"/></svg></div>' + best9Suffix + '</div>';
+    h += '<div class="stat-box stat-box--link" onclick="Router.go(\'rounds\',{roundId:\'' + bestRoundId + '\'})"><div class="stat-val" data-count="' + bestScore + '" style="color:var(--birdie)">' + bestScore + '</div><div class="stat-label">Best 18 <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M3 9l6-6M5 3h4v4"/></svg></div>' + best9Suffix + '</div>';
   } else {
     h += '<div class="stat-box"><div class="stat-val"' + (bestScore !== "—" ? ' data-count="' + bestScore + '"' : '') + '>' + (bestScore !== "—" ? '0' : bestScore) + '</div><div class="stat-label">' + (best9Score !== null ? "Best 18" : "Best") + '</div>' + best9Suffix + '</div>';
   }
@@ -236,7 +267,7 @@ function renderMemberDetailWithData(p) {
   // Courses stat is clickable — drops to Our Courses view (best rounds per course).
   // Same pattern as M3 (standings Courses button).
   var coursesIsNum = !isNaN(parseFloat(unique)) && isFinite(unique) && unique !== "—";
-  h += '<div class="stat-box" style="cursor:pointer" onclick="window._courseViewMode=\'ours\';Router.go(\'courses\')"><div class="stat-val"' + (coursesIsNum ? ' data-count="' + unique + '"' : '') + '>' + (coursesIsNum ? '0' : unique) + '</div><div class="stat-label">' + (coursesIsNum ? plur(parseFloat(unique), "Course") : "Courses") + ' <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M3 9l6-6M5 3h4v4"/></svg></div></div>';
+  h += '<div class="stat-box stat-box--link" onclick="window._courseViewMode=\'ours\';Router.go(\'courses\')"><div class="stat-val"' + (coursesIsNum ? ' data-count="' + unique + '"' : '') + '>' + (coursesIsNum ? '0' : unique) + '</div><div class="stat-label">' + (coursesIsNum ? plur(parseFloat(unique), "Course") : "Courses") + ' <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M3 9l6-6M5 3h4v4"/></svg></div></div>';
   var ewIds = [pid]; if (p.claimedFrom) ewIds.push(p.claimedFrom);
   var eventWinsCount = PB.getTrips().filter(function(t){ return t.champion && ewIds.indexOf(t.champion) !== -1; }).length;
   var winsCount = eventWinsCount || p.wins || 0;
@@ -364,7 +395,7 @@ function renderMemberDetailWithData(p) {
   // Differentials table (collapsible)
   if (totalDiffs > 0) {
     var diffToggleId = "diffTable_" + pid;
-    hcapContent += '<div style="padding:8px 12px 4px"><div style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1px;margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center" onclick="var el=document.getElementById(\'' + diffToggleId + '\');el.style.display=el.style.display===\'none\'?\'block\':\'none\'">SCORE DIFFERENTIALS (' + hcapDetails.differentials.length + ')<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12" style="color:var(--muted)"><path d="M9 18l6-6-6-6"/></svg></div>';
+    hcapContent += '<div style="padding:8px 12px 4px"><div class="pf-subhead pf-subhead--toggle" onclick="var el=document.getElementById(\'' + diffToggleId + '\');el.style.display=el.style.display===\'none\'?\'block\':\'none\'">SCORE DIFFERENTIALS (' + hcapDetails.differentials.length + ')<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12" style="color:var(--muted)"><path d="M9 18l6-6-6-6"/></svg></div>';
     hcapContent += '<div id="' + diffToggleId + '" style="display:none">';
     // v8.13.4 — Schema simplification. getHandicapDetails (handicap.js:125-165)
     // returns differentials as flat objects {diff, round, date, course, score,
@@ -393,7 +424,7 @@ function renderMemberDetailWithData(p) {
     hcapContent += '<div style="padding:8px 12px 12px;border-top:1px solid var(--border)">';
     hcapContent += '<div style="display:flex;justify-content:space-between;align-items:center">';
     hcapContent += '<div style="font-size:11px;color:var(--muted)">' + escHtml(u.course || "9 holes") + ' · ' + uMode + ' · ' + u.score + '</div>';
-    hcapContent += '<span style="font-size:9px;font-weight:600;color:var(--gold);background:rgba(var(--gold-rgb),.1);padding:3px 8px;border-radius:10px;white-space:nowrap">Awaiting pairing</span>';
+    hcapContent += '<span style="font-size:9px;font-weight:600;color:var(--gold);background:rgba(var(--gold-rgb),.1);padding:3px 8px;border-radius:var(--radius-full);white-space:nowrap">Awaiting pairing</span>';
     hcapContent += '</div>';
     hcapContent += '<div style="font-size:9px;color:var(--muted2);margin-top:3px">Per WHS rules, two 9-hole rounds combine into one differential</div>';
     hcapContent += '</div>';
@@ -402,10 +433,10 @@ function renderMemberDetailWithData(p) {
   // Empty state
   if (!hasData) {
     var indivCount = rounds.filter(function(r){return r.format!=="scramble"&&r.format!=="scramble4"}).length;
-    hcapContent += '<div style="padding:16px 12px;font-size:12px;color:var(--muted);text-align:center">Log ' + Math.max(1, 3 - indivCount) + ' more individual round' + (3 - indivCount !== 1 ? 's' : '') + ' to start tracking your handicap</div>';
+    hcapContent += pfEmpty(null, 'Log ' + Math.max(1, 3 - indivCount) + ' more individual round' + (3 - indivCount !== 1 ? 's' : '') + ' to start tracking your handicap');
   }
   
-  h += profSection("hcap-" + pid, "Handicap tracker", hcapContent, hasData);
+  h += profSection("hcap-" + pid, "Handicap tracker", hcapContent, hasData, "WHS Index");
 
   // === LAST 3 ROUNDS (collapsible, open by default) ===
   var last3Content = '';
@@ -441,9 +472,9 @@ function renderMemberDetailWithData(p) {
       last3Content += '</div></div>';
     });
   } else {
-    last3Content = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No rounds logged yet</div>';
+    last3Content = pfEmpty(null, "No rounds logged yet");
   }
-  h += profSection("last3-" + pid, "Last 3 rounds", last3Content, true);
+  h += profSection("last3-" + pid, "Last 3 rounds", last3Content, true, "Recent play");
 
   // === COURSES PLAYED (collapsible, open by default) ===
   var coursesContent = '';
@@ -488,9 +519,9 @@ function renderMemberDetailWithData(p) {
       coursesContent += '<div class="club-row" style="flex-wrap:wrap;gap:2px"><span class="club-name">' + escHtml(c.name) + ' <span style="color:var(--muted);font-size:9px">(' + c.count + 'x)</span></span><span class="club-yd" style="display:flex;flex-direction:column;align-items:flex-end;gap:1px;font-size:11px">' + lines.join('') + '</span></div>';
     });
   } else {
-    coursesContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No courses played yet</div>';
+    coursesContent = pfEmpty(null, "No courses played yet");
   }
-  h += profSection("courses-" + pid, "Courses played", coursesContent, true);
+  h += profSection("courses-" + pid, "Courses played", coursesContent, true, "Course log");
 
   // === RECENT PARCOINS (async load) ===
   // Self-only: parcoin_transactions are private-to-owner per firestore.rules:372-377
@@ -498,7 +529,7 @@ function renderMemberDetailWithData(p) {
   // entirely for non-self profiles avoids both the empty placeholder and the
   // rules-denied query firing on every re-render. (v8.9.2)
   if (isOwnProfile) {
-    h += '<div class="section"><div class="sec-head"><span class="sec-title">Recent earnings</span></div>';
+    h += '<div class="section">' + secHead("ParCoins", "Recent earnings");
     h += '<div id="parcoin-history-' + pid + '"><div class="loading"><div class="spinner"></div>Loading...</div></div>';
     h += '</div>';
   }
@@ -517,8 +548,8 @@ function renderMemberDetailWithData(p) {
       if (p.bag && p.bag[k]) bagContent += '<div class="club-row"><span class="club-name">' + bagLabels[k] + '</span><span class="club-yd" style="max-width:200px;text-align:right">' + p.bag[k] + '</span></div>';
     });
   }
-  if (!bagContent) bagContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No equipment listed yet</div>';
-  h += profSection("bag-" + pid, "What\'s in the bag", bagContent, false);
+  if (!bagContent) bagContent = pfEmpty(null, "No equipment listed yet");
+  h += profSection("bag-" + pid, "What\'s in the bag", bagContent, false, "Equipment");
 
   // === CLUB DISTANCES (collapsible) ===
   var clubContent = '';
@@ -527,15 +558,15 @@ function renderMemberDetailWithData(p) {
       if (p.clubs[k]) clubContent += '<div class="club-row"><span class="club-name">' + clubLabels[k] + '</span><span class="club-yd">' + p.clubs[k] + ' yds</span></div>';
     });
   } else {
-    clubContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No distances logged yet</div>';
+    clubContent = pfEmpty(null, "No distances logged yet");
   }
-  h += profSection("clubs-" + pid, "Club distances", clubContent, false);
+  h += profSection("clubs-" + pid, "Club distances", clubContent, false, "Yardages");
 
   // === KNOWN FOR (collapsible) ===
   if (p.funnyFacts && p.funnyFacts.length) {
     var factsContent = '';
     p.funnyFacts.forEach(function(f) { factsContent += '<div class="fact-item">• ' + f + '</div>'; });
-    h += profSection("facts-" + pid, "Known for", factsContent, false);
+    h += profSection("facts-" + pid, "Known for", factsContent, false, "Clubhouse lore");
   }
   h += '</div>'; // close ptab-gear
 
@@ -551,7 +582,7 @@ function renderMemberDetailWithData(p) {
     var scoringRange = PB.getChartRange('scoring_trend', '30D');
     var scoringFiltered = PB.filterRoundsByRange(rounds, scoringRange);
     var trends = calcScoringTrends(scoringFiltered);
-    h += '<div class="section"><div class="sec-head"><span class="sec-title">Scoring Trend</span></div>';
+    h += '<div class="section">' + secHead("Form", "Scoring Trend");
     h += '<div class="card"><div style="padding:14px 16px">';
     h += _renderChartRangeToggle('scoring_trend', scoringRange, pid);
     h += '<div style="font-size:10px;color:var(--muted);margin-bottom:8px">Rolling 5-round average</div>';
@@ -559,7 +590,7 @@ function renderMemberDetailWithData(p) {
     if (trends && trends.rolling5.length >= 3) {
       h += svgLineChart(trends.rolling5, {width:310, height:120, color:'var(--gold)'});
     } else {
-      h += '<div style="padding:24px 8px;text-align:center;font-size:11px;color:var(--muted)">Not enough rounds in this range. Try a wider window.</div>';
+      h += pfEmpty("Not enough rounds in this range", "Try a wider window.");
     }
     h += '</div></div></div></div>';
 
@@ -569,7 +600,7 @@ function renderMemberDetailWithData(p) {
       var zoneData = [];
       [3,4,5].forEach(function(p) { if (zones[p]) zoneData.push({label:"Par "+p, value:zones[p].avg, color:zones[p].avg<=0.5?"var(--birdie)":zones[p].avg<=1.5?"var(--gold)":"var(--red)"}); });
       if (zoneData.length >= 2) {
-        h += '<div class="section"><div class="sec-head"><span class="sec-title">Scoring by Par Type</span></div>';
+        h += '<div class="section">' + secHead("Par 3 · 4 · 5", "Scoring by Par Type");
         h += '<div class="card"><div style="padding:14px 16px">';
         h += '<div style="font-size:10px;color:var(--muted);margin-bottom:8px">Average strokes over par</div>';
         h += svgBarChart(zoneData, {width:200, height:120, showLabels:true, showValues:true});
@@ -590,7 +621,7 @@ function renderMemberDetailWithData(p) {
         {label:"Short", value:sg.shortGame, color:sg.shortGame>=0?"var(--birdie)":"var(--red)"},
         {label:"Putting", value:sg.putting, color:sg.putting>=0?"var(--birdie)":"var(--red)"}
       ];
-      h += '<div class="section"><div class="sec-head"><span class="sec-title">Strokes Gained</span></div>';
+      h += '<div class="section">' + secHead("Vs baseline", "Strokes Gained");
       h += '<div class="card"><div style="padding:14px 16px">';
       h += '<div style="font-size:10px;color:var(--muted);margin-bottom:8px">Per round vs baseline (from ' + sg.rounds + ' rounds)</div>';
       h += svgBarChart(sgData, {width:280, height:130, showLabels:true, showValues:true});
@@ -607,14 +638,14 @@ function renderMemberDetailWithData(p) {
       var girFiltered = PB.filterRoundsByRange(rounds, girRange);
       var statTrGir = calcStatTrends(girFiltered);
       if (statTrGir || calcStatTrends(rounds)) {
-        h += '<div class="section"><div class="sec-head"><span class="sec-title">GIR % Trend</span></div>';
+        h += '<div class="section">' + secHead("Greens", "GIR % Trend");
         h += '<div class="card"><div style="padding:14px 16px">';
         h += _renderChartRangeToggle('gir_trend', girRange, pid);
         h += '<div class="chart-container" data-chart-id="gir_trend">';
         if (statTrGir && statTrGir.gir.length >= 3) {
           h += svgLineChart(statTrGir.gir, {width:310, height:100, color:'var(--gold)', yMin:0, yMax:100});
         } else {
-          h += '<div style="padding:24px 8px;text-align:center;font-size:11px;color:var(--muted)">Not enough rounds in this range. Try a wider window.</div>';
+          h += pfEmpty("Not enough rounds in this range", "Try a wider window.");
         }
         h += '</div></div></div></div>';
       }
@@ -624,14 +655,14 @@ function renderMemberDetailWithData(p) {
       var puttsFiltered = PB.filterRoundsByRange(rounds, puttsRange);
       var statTrPutts = calcStatTrends(puttsFiltered);
       if (statTrPutts || calcStatTrends(rounds)) {
-        h += '<div class="section"><div class="sec-head"><span class="sec-title">Putts Per Hole Trend</span></div>';
+        h += '<div class="section">' + secHead("Putting", "Putts Per Hole Trend");
         h += '<div class="card"><div style="padding:14px 16px">';
         h += _renderChartRangeToggle('putts_trend', puttsRange, pid);
         h += '<div class="chart-container" data-chart-id="putts_trend">';
         if (statTrPutts && statTrPutts.putts.length >= 3) {
           h += svgLineChart(statTrPutts.putts, {width:310, height:100, color:'var(--pink)'});
         } else {
-          h += '<div style="padding:24px 8px;text-align:center;font-size:11px;color:var(--muted)">Not enough rounds in this range. Try a wider window.</div>';
+          h += pfEmpty("Not enough rounds in this range", "Try a wider window.");
         }
         h += '</div></div></div></div>';
       }
@@ -644,14 +675,14 @@ function renderMemberDetailWithData(p) {
     if (topCourse && topCourse[1] >= 3) {
       var breakdown = calcCourseBreakdown(topCourse[0], rounds);
       if (breakdown && breakdown.holes.length >= 9) {
-        h += '<div class="section"><div class="sec-head"><span class="sec-title">Hole-by-Hole</span></div>';
+        h += '<div class="section">' + secHead("Most-played course", "Hole-by-Hole");
         h += '<div class="card"><div style="padding:16px">';
         h += renderHeatMap(breakdown, { linkRounds: isOwnProfile });
         h += '</div></div></div>';
       }
     }
   } else if (rounds.length < 3) {
-    h += '<div style="text-align:center;padding:24px 16px;font-size:12px;color:var(--muted)">Log 3+ rounds to unlock analytics dashboard</div>';
+    h += '<div class="section">' + pfEmpty("Analytics locked", "Log 3+ rounds to unlock analytics dashboard") + '</div>';
   }
 
   // === ACHIEVEMENTS (collapsible) ===
@@ -663,7 +694,7 @@ function renderMemberDetailWithData(p) {
     achievements.forEach(function(a) { if (!grouped[a.cat]) grouped[a.cat] = []; grouped[a.cat].push(a); });
     Object.keys(cats).forEach(function(cat) {
       if (!grouped[cat]) return;
-      achieveContent += '<div style="width:100%;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:6px;margin-bottom:2px">' + cats[cat] + '</div>';
+      achieveContent += '<div class="pf-subhead pf-subhead--cat">' + cats[cat] + '</div>';
       grouped[cat].forEach(function(a) {
         var _eStr = "";
         if (a.earnedAt) {
@@ -678,9 +709,9 @@ function renderMemberDetailWithData(p) {
     });
     achieveContent += '</div>';
   } else {
-    achieveContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No achievements yet, log rounds to unlock</div>';
+    achieveContent = pfEmpty("No achievements yet", "Log rounds to unlock.");
   }
-  h += profSection("achieve-" + pid, "Achievements (" + achievements.length + ")", achieveContent, false);
+  h += profSection("achieve-" + pid, "Achievements (" + achievements.length + ")", achieveContent, false, "Trophy case");
   var teams = PB.getScrambleTeams();
   // Match team membership by UID, claimedFrom seed ID, or username
   var pClaimedFrom = p.claimedFrom || null;
@@ -731,9 +762,9 @@ function renderMemberDetailWithData(p) {
       teamContent += '<div class="h2h-row" onclick="Router.go(\'scramble\',{id:\'' + t.id + '\'})" style="cursor:pointer"><div><div style="font-size:13px;font-weight:600">' + t.name + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">w/ ' + mates + '</div></div><div style="text-align:right">' + rightHTML + '</div></div>';
     });
   } else {
-    teamContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">Not on any teams yet</div>';
+    teamContent = pfEmpty(null, "Not on any teams yet");
   }
-  h += profSection("teams-" + pid, "Teams (" + playerTeams.length + ")", teamContent, false);
+  h += profSection("teams-" + pid, "Teams (" + playerTeams.length + ")", teamContent, false, "Scramble squads");
 
   // === ACCOLADES (collapsible) ===
   var accoladeContent = '';
@@ -768,9 +799,9 @@ function renderMemberDetailWithData(p) {
       accoladeContent += '<div class="club-row"><span class="club-name" style="color:var(--gold)">' + a.type + '</span><span class="club-yd" style="max-width:200px;text-align:right;font-weight:500">' + a.detail + '</span></div>';
     });
   } else {
-    accoladeContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No accolades yet</div>';
+    accoladeContent = pfEmpty(null, "No accolades yet");
   }
-  h += profSection("accolades-" + pid, "Accolades" + (accolades.length ? " (" + accolades.length + ")" : ""), accoladeContent, false);
+  h += profSection("accolades-" + pid, "Accolades" + (accolades.length ? " (" + accolades.length + ")" : ""), accoladeContent, false, "Honors");
   h += '</div>'; // close ptab-stats
 
   // ═══ TAB: SOCIAL (H2H, all rounds) ═══
@@ -802,9 +833,9 @@ function renderMemberDetailWithData(p) {
     h2hContent += '<div class="h2h-row" style="cursor:pointer" onclick="showRivalryDetail(\'' + pid + '\',\'' + opp.id + '\')"><div class="h2h-left">' + renderAvatar(opp, 28, false) + '<span class="h2h-name">' + renderUsername(opp, '', false) + '</span></div><span class="h2h-record" style="color:' + color + '">' + record + '</span></div>';
   });
   if (!h2hHasMatches) {
-    h2hContent = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No head-to-head matches yet. Play the same course on the same day as another member!</div>';
+    h2hContent = pfEmpty("No head-to-head matches yet", "Play the same course on the same day as another member!");
   }
-  h += profSection("h2h-" + pid, "Head to head", h2hContent, h2hHasMatches);
+  h += profSection("h2h-" + pid, "Head to head", h2hContent, h2hHasMatches, "Rivalries");
 
   // === ALL ROUNDS (collapsible) ===
   if (rounds.length > 3) {
@@ -814,7 +845,7 @@ function renderMemberDetailWithData(p) {
       allContent += '<div class="club-row" style="padding:10px 12px;cursor:pointer" onclick="Router.go(\'rounds\',{roundId:\'' + r.id + '\'})"><span class="club-name">' + escHtml(r.course) + ' · ' + r.date + fmtLabel + '</span><span class="club-yd">' + r.score + '</span></div>';
     });
     allContent += '</div>';
-    h += profSection("allrounds-" + pid, "All rounds (" + rounds.length + ")", allContent, false);
+    h += profSection("allrounds-" + pid, "All rounds (" + rounds.length + ")", allContent, false, "The ledger");
   }
   h += '</div>'; // close ptab-social
 
@@ -827,7 +858,7 @@ function renderMemberDetailWithData(p) {
   if (histEl) {
     loadTransactionHistory(pid, 30).then(function(txns) {
       if (!txns.length) {
-        histEl.innerHTML = '<div style="padding:12px;font-size:12px;color:var(--muted);text-align:center">No earnings yet, play a round to start earning!</div>';
+        histEl.innerHTML = pfEmpty("No earnings yet", "Play a round to start earning!");
         return;
       }
       // Collapse consecutive runs of the same earning into one digest row. A

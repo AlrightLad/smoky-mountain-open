@@ -822,21 +822,21 @@ function _rerenderTrendChart(chartId, pid) {
     if (trends && trends.rolling5.length >= 3) {
       html = svgLineChart(trends.rolling5, {width:310, height:120, color:'var(--gold)'});
     } else {
-      html = '<div style="padding:24px 8px;text-align:center;font-size:11px;color:var(--muted)">Not enough rounds in this range. Try a wider window.</div>';
+      html = '<div class="pf-empty"><div class="pf-empty__h">Not enough rounds in this range</div><div class="pf-empty__b">Widen the window and the trend draws itself.</div></div>';
     }
   } else if (chartId === 'gir_trend') {
     var statTr = calcStatTrends(filtered);
     if (statTr && statTr.gir.length >= 3) {
       html = svgLineChart(statTr.gir, {width:310, height:100, color:'var(--gold)', yMin:0, yMax:100});
     } else {
-      html = '<div style="padding:24px 8px;text-align:center;font-size:11px;color:var(--muted)">Not enough rounds in this range. Try a wider window.</div>';
+      html = '<div class="pf-empty"><div class="pf-empty__h">Not enough rounds in this range</div><div class="pf-empty__b">Widen the window and the trend draws itself.</div></div>';
     }
   } else if (chartId === 'putts_trend') {
     var statTrP = calcStatTrends(filtered);
     if (statTrP && statTrP.putts.length >= 3) {
       html = svgLineChart(statTrP.putts, {width:310, height:100, color:'var(--pink)'});
     } else {
-      html = '<div style="padding:24px 8px;text-align:center;font-size:11px;color:var(--muted)">Not enough rounds in this range. Try a wider window.</div>';
+      html = '<div class="pf-empty"><div class="pf-empty__h">Not enough rounds in this range</div><div class="pf-empty__b">Widen the window and the trend draws itself.</div></div>';
     }
   } else if (chartId === 'handicap_home') {
     // v8.14.5 — Home handicap trend chart rerender. Different data shape than
