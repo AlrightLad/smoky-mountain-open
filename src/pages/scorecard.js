@@ -180,7 +180,9 @@ function renderTripScorecard(trip, tripPlayers) {
 
   // FIR/GIR section (individual rounds only)
   if (!iS) {
-    h += '<div style="padding:12px 16px"><div style="font-size:11px;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Fairways & Greens</div>';
+    // v8.24.30 — canonical eyebrow treatment (was an inline gold uppercase label)
+    h += '<div style="padding:12px 16px"><div style="font-family:var(--font-mono);font-size:9px;font-weight:700;color:var(--cb-brass);text-transform:uppercase;letter-spacing:2px;margin-bottom:2px">Tee to green</div>';
+    h += '<div style="font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--cb-ink);margin-bottom:10px">Fairways & Greens</div>';
     tripPlayers.forEach(function(p) {
       var totals = PB.getFirGirTotals(tid, c.key, p.id);
       var fg = PB.getFirGir(tid, c.key, p.id);
@@ -298,15 +300,17 @@ function renderTripLB(trip, tripPlayers) {
   if (trip.status === "closed" && trip.champion) {
     var champPlayer = PB.getPlayer(trip.champion) || (typeof fbMemberCache !== "undefined" && fbMemberCache[trip.champion]);
     var champName = champPlayer ? (champPlayer.name || champPlayer.username) : "Champion";
-    h += '<div style="padding:16px;text-align:center;background:linear-gradient(180deg,rgba(var(--gold-rgb),.08),transparent);border:1px solid rgba(var(--gold-rgb),.15);border-radius:var(--radius);margin:0 16px 16px">';
-    h += '<div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Event Complete</div>';
-    h += '<div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--gold)">' + escHtml(champName) + '</div>';
-    h += '<div style="font-size:11px;color:var(--cream);margin-top:4px">Champion of ' + escHtml(trip.name) + '</div>';
+    // v8.24.30 — the event's biggest moment gets the felt celebration card
+    // (was a faint gold-tint wash that undersold a championship).
+    h += '<div style="padding:20px 16px;text-align:center;background:linear-gradient(150deg,var(--cb-green-2),var(--cb-felt));border:1px solid rgba(var(--cb-brass-rgb),.35);border-radius:14px;margin:0 16px 16px;box-shadow:var(--el-3, 0 8px 22px rgba(0,0,0,.16))">';
+    h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;color:var(--cb-brass-2);text-transform:uppercase;letter-spacing:2.5px;margin-bottom:6px">Event Complete</div>';
+    h += '<div style="font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--cb-chalk)">' + escHtml(champName) + '</div>';
+    h += '<div style="font-size:11px;color:var(--cb-brass-2);margin-top:4px;font-style:italic;font-family:var(--font-display)">Champion of ' + escHtml(trip.name) + '</div>';
     if (trip.finalStandings) {
-      h += '<div style="margin-top:10px;font-size:11px;color:var(--muted)">';
+      h += '<div style="margin-top:12px;font-size:11px">';
       trip.finalStandings.forEach(function(s, i) {
         var placeLabels = ["1st","2nd","3rd","4th","5th","6th"];
-        h += '<div style="padding:2px 0;color:' + (i === 0 ? 'var(--gold)' : 'var(--cream)') + '">' + (placeLabels[i]||"") + ' ' + escHtml(s.name) + ' – ' + s.points + ' pts</div>';
+        h += '<div style="padding:2px 0;color:' + (i === 0 ? 'var(--cb-brass-2)' : 'var(--cb-chalk)') + ';opacity:' + (i === 0 ? '1' : '.8') + '">' + (placeLabels[i]||"") + ' ' + escHtml(s.name) + ' – ' + s.points + ' pts</div>';
       });
       h += '</div>';
     }
