@@ -110,6 +110,17 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --cb-green-ink-rgb: 31 47 37;
   --cb-chalk-rgb: 244 239 228;
   --cb-brass-3-rgb: 224 187 96;
+  /* v8.24.11 theme-completion bridge — ink tuple is per-theme (see [data-theme] blocks). */
+  --cb-ink-rgb: 20, 19, 15;
+  --scrim: rgba(var(--cb-ink-rgb), 0.42);
+  /* Phantom-var fixes: each consumed in shipped code but never defined (silent
+     render failures — borderless Cmd-K panel, missing list separators, frozen
+     progress track, never-firing warn state, fallback-only pill radius). */
+  --border2: var(--border-default);
+  --cb-line: var(--border-default);
+  --cb-brass-faint: rgba(var(--gold-rgb), 0.18);
+  --cb-warn: var(--cb-copper);
+  --r-pill: var(--radius-pill);
 
   /* Clubhouse · semantic surface tokens (light mode default) */
   --surface-primary: var(--cb-chalk);
@@ -128,7 +139,7 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
 
   /* Clubhouse · border tokens */
   --border-subtle: var(--cb-chalk-3);
-  --border-default: rgba(20,19,15,0.12);
+  --border-default: rgba(var(--cb-ink-rgb), 0.12); /* was frozen rgba(20,19,15,.12); 201 consumers now re-theme */
   --border-strong: var(--cb-ink);
 
   /* Clubhouse · semantic accent tokens */
@@ -319,7 +330,7 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --alert-rgb: 142, 58, 58;
   --orange: var(--cb-copper);
   --orange-rgb: 160, 90, 58;
-  --border-rgb: 20, 19, 15;
+  --border-rgb: var(--cb-ink-rgb);
   --cal-event: var(--cb-slate);
   --cal-range: var(--cb-copper);
   --cal-tee: var(--cb-brass);
@@ -375,11 +386,44 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
    theme so rgba() overlays remain palette-accurate.
    ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Clubhouse — default. Matches :root fallback so explicit selection works.
-   v8.14.0 — palette migration: chalk-2/3, green, green-2 reconciled with new
-   :root values per CTO ruling Q-A. Other 5 [data-theme="..."] blocks below
-   left UNTOUCHED — out of Gate 8a scope. Multi-theme cleanup deferred to
-   post-Ship-4a per backlog. */
+/* ═══════════════════════════════════════════════════════════════════════════
+   EDITORIAL THEMES — six COMPLETE palettes (theme-completion ship)
+   Replaces base.css lines 383-488. Each block now overrides EVERY live
+   theme-dependent token (31 lines), not just the original 11 — closing the
+   mixed-palette bugs (frozen --cb-mute-2, frozen --cb-brass-rgb tints, etc.).
+
+   Provenance:
+   · 11 palette anchors per theme — verified, unchanged from base.css v8.24.x
+     (except --cb-mute: AA-safe values from the verified contrast table in
+     .claude/state/design-audit-2026-06-08/SYSTEMIC-mute-ramp-aa.md, >=4.6:1
+     on each theme's canvas; taste-adjacent — Founder staging review required).
+   · Derived ramp tokens — computed from the clubhouse :root ratios
+     (ink-2/-soft = ink+0.46/0.70 toward charcoal; mute-2/-3 = mute+0.56/0.84
+     toward chalk-3; mute-faint = avg(mute-2,mute-3); mute-1 = mute x0.94;
+     brass-2/-3/-deep/ink-link = brass x1.13/x1.30/x0.76/x0.50; green-3 =
+     green x(1.92,1.69,1.35); felt = green-2 x0.85; green-ink tuple = green
+     x0.65). Pending the per-theme vision pass (P2/V1) before prod.
+
+   Intentionally INHERITED from :root (constant across themes BY DESIGN):
+   semantic state accents --cb-moss / --cb-claret / --cb-copper / --cb-slate
+   (+ --cb-moss-rgb / --cb-claret-rgb) — birdie green and bogey claret must
+   stay recognizable on every palette. All --surface-* / --text-* / --accent-*
+   semantic tokens and legacy aliases re-resolve per theme via var() chains.
+
+   Intentionally OMITTED (dead tokens, zero consumers): --cb-green-ink,
+   --cb-mute-soft, --cb-brass-3-rgb, --cb-sand.
+
+   Tuple syntax is load-bearing: -rgb COMMA-separated tuples feed classic
+   rgba(var(--x), a); --cb-chalk-rgb + --cb-green-ink-rgb are SPACE-separated
+   for modern rgba(var(--x) / a) slash syntax (--el-* elevation). Keep both.
+
+   INVARIANT: data-theme lives on document.documentElement (theme.js:60).
+   If it ever moves to <body>, ~1,450 :root-aliased legacy refs silently
+   freeze at default values. Do not move the attachment point.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Clubhouse — default. Quiet confidence, tournament program. Mirrors :root
+   exactly so explicit selection works. */
 [data-theme="clubhouse"] {
   --cb-chalk: #F4EFE4;
   --cb-chalk-2: #EBE5D6;
@@ -388,16 +432,34 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --cb-paper: #FCFAF5;
   --cb-green: #2F4A3A;
   --cb-green-2: #3D5C48;
+  --cb-green-3: #5A7D4E;
+  --cb-felt: #0F3D2E;
   --cb-ink: #14130F;
+  --cb-ink-2: #2D2B24;
+  --cb-ink-soft: #3A372F;
   --cb-charcoal: #4A4740;
-  --cb-mute: #656259;           /* v8.23.98 — AA-safe (4.63:1 on canvas), darkened from #7A766B */
+  --cb-ink-link: #5A4318;
+  --cb-mute: #656259;           /* AA 4.63:1 on canvas (v8.23.98 verified) */
+  --cb-mute-1: #5F5C50;
+  --cb-ink-faint: #5F5C50;
+  --cb-mute-2: #A8A395;
+  --cb-mute-3: #C9C5BD;
+  --cb-mute-faint: #BAB6A8;
   --cb-brass: #B4893E;
+  --cb-brass-2: #C9A04A;
+  --cb-brass-3: #E0BB60;
+  --cb-brass-deep: #8C6A2E;
+  --cb-ink-rgb: 20, 19, 15;
+  --cb-brass-rgb: 180, 137, 62;
+  --cb-chalk-rgb: 244 239 228;
+  --cb-green-ink-rgb: 31 47 37;
   --bg-rgb: 244, 239, 228;
   --cream-rgb: 20, 19, 15;
   --gold-rgb: 180, 137, 62;
 }
 
-/* Twilight Links — dusk over coastal course, cool-leaning. */
+/* Twilight Links — dusk over coastal course, cool-leaning. Navy greens,
+   amber brass, chalk warmed slightly toward dune grass. */
 [data-theme="twilight_links"] {
   --cb-chalk: #ECE5D2;
   --cb-chalk-2: #DFD5BE;
@@ -406,16 +468,34 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --cb-paper: #F6F0E0;
   --cb-green: #1A2A3E;
   --cb-green-2: #0F1D2D;
+  --cb-green-3: #324753;
+  --cb-felt: #0D1926;
   --cb-ink: #0F1620;
+  --cb-ink-2: #232B38;
+  --cb-ink-soft: #2D3644;
   --cb-charcoal: #3A4454;
-  --cb-mute: #74798A;
+  --cb-ink-link: #624320;
+  --cb-mute: #545763;           /* AA 4.65:1 on canvas (was #74798A, 2.80 FAIL) */
+  --cb-mute-1: #4F525D;
+  --cb-ink-faint: #4F525D;
+  --cb-mute-2: #999389;
+  --cb-mute-3: #BBB29B;
+  --cb-mute-faint: #AAA392;
   --cb-brass: #C48540;
+  --cb-brass-2: #DD9648;
+  --cb-brass-3: #FFAD53;
+  --cb-brass-deep: #956531;
+  --cb-ink-rgb: 15, 22, 32;
+  --cb-brass-rgb: 196, 133, 64;
+  --cb-chalk-rgb: 236 229 210;
+  --cb-green-ink-rgb: 17 27 40;
   --bg-rgb: 236, 229, 210;
   --cream-rgb: 15, 22, 32;
   --gold-rgb: 196, 133, 64;
 }
 
-/* Linen Draft — bright outdoor daylight, reading chair. */
+/* Linen Draft — bright outdoor daylight, reading chair. Soft sage greens,
+   terracotta brass, the brightest chalk family. */
 [data-theme="linen_draft"] {
   --cb-chalk: #F8F3E6;
   --cb-chalk-2: #EDE4CE;
@@ -424,16 +504,34 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --cb-paper: #FDFAF1;
   --cb-green: #2B3A2E;
   --cb-green-2: #1D2A20;
+  --cb-green-3: #52623E;
+  --cb-felt: #19241B;
   --cb-ink: #2B3A2E;
+  --cb-ink-2: #3F4B3D;
+  --cb-ink-soft: #495545;
   --cb-charcoal: #56604F;
-  --cb-mute: #8A8974;
+  --cb-ink-link: #5C3A1D;
+  --cb-mute: #626152;           /* AA 4.68:1 on canvas (was #8A8974, 2.65 FAIL) */
+  --cb-mute-1: #5C5B4D;
+  --cb-ink-faint: #5C5B4D;
+  --cb-mute-2: #A69F89;
+  --cb-mute-3: #C8BDA4;
+  --cb-mute-faint: #B7AE97;
   --cb-brass: #B8743A;
+  --cb-brass-2: #D08342;
+  --cb-brass-3: #EF974B;
+  --cb-brass-deep: #8C582C;
+  --cb-ink-rgb: 43, 58, 46;
+  --cb-brass-rgb: 184, 116, 58;
+  --cb-chalk-rgb: 248 243 230;
+  --cb-green-ink-rgb: 28 37 29;
   --bg-rgb: 248, 243, 230;
   --cream-rgb: 43, 58, 46;
   --gold-rgb: 184, 116, 58;
 }
 
-/* Champion Sunday (unlock) — tournament-program burgundy. */
+/* Champion Sunday (unlock) — tournament-program burgundy, worn after a win.
+   Claret-deep "greens", trophy brass. */
 [data-theme="champion_sunday"] {
   --cb-chalk: #F1E8D6;
   --cb-chalk-2: #E6DAC1;
@@ -442,16 +540,34 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --cb-paper: #FAF4E6;
   --cb-green: #4A1D24;
   --cb-green-2: #341016;
+  --cb-green-3: #8E3130;
+  --cb-felt: #2C0E13;
   --cb-ink: #1E1412;
+  --cb-ink-2: #3A2B27;
+  --cb-ink-soft: #483732;
   --cb-charcoal: #5A463F;
-  --cb-mute: #8A7264;
+  --cb-ink-link: #63451E;
+  --cb-mute: #69574C;           /* AA 4.62:1 on canvas (was #8A7264, 3.03 FAIL) */
+  --cb-mute-1: #635247;
+  --cb-ink-faint: #635247;
+  --cb-mute-2: #A4947D;
+  --cb-mute-3: #C2B396;
+  --cb-mute-faint: #B3A48A;
   --cb-brass: #C68A3C;
+  --cb-brass-2: #E09C44;
+  --cb-brass-3: #FFB34E;
+  --cb-brass-deep: #96692E;
+  --cb-ink-rgb: 30, 20, 18;
+  --cb-brass-rgb: 198, 138, 60;
+  --cb-chalk-rgb: 241 232 214;
+  --cb-green-ink-rgb: 49 19 23;
   --bg-rgb: 241, 232, 214;
   --cream-rgb: 30, 20, 18;
   --gold-rgb: 198, 138, 60;
 }
 
-/* Bourbon Room (unlock) — lodge / whiskey bar. */
+/* Bourbon Room (unlock) — lodge / whiskey bar, tenure-earned. Saddle-brown
+   depths, oak chalk, copper-leaning brass. */
 [data-theme="bourbon_room"] {
   --cb-chalk: #F0E4CC;
   --cb-chalk-2: #E3D3B2;
@@ -460,16 +576,34 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --cb-paper: #FAF1DD;
   --cb-green: #3D2817;
   --cb-green-2: #281A0E;
+  --cb-green-3: #75441F;
+  --cb-felt: #22160C;
   --cb-ink: #2A1A0E;
+  --cb-ink-2: #402B18;
+  --cb-ink-soft: #4C331D;
   --cb-charcoal: #5A3E24;
-  --cb-mute: #8C6B4A;
+  --cb-ink-link: #5C3A1D;
+  --cb-mute: #695037;           /* AA 4.65:1 on canvas (was #8C6B4A, 3.02 FAIL) */
+  --cb-mute-1: #634B34;
+  --cb-ink-faint: #634B34;
+  --cb-mute-2: #9F8965;
+  --cb-mute-3: #BAA67C;
+  --cb-mute-faint: #AD9871;
   --cb-brass: #B8743A;
+  --cb-brass-2: #D08342;
+  --cb-brass-3: #EF974B;
+  --cb-brass-deep: #8C582C;
+  --cb-ink-rgb: 42, 26, 14;
+  --cb-brass-rgb: 184, 116, 58;
+  --cb-chalk-rgb: 240 228 204;
+  --cb-green-ink-rgb: 40 26 15;
   --bg-rgb: 240, 228, 204;
   --cream-rgb: 42, 26, 14;
   --gold-rgb: 184, 116, 58;
 }
 
-/* Course Record (unlock, rarest) — ledger paper, silver-brass. */
+/* Course Record (unlock, rarest) — ledger paper, silver-brass. Deep bottle
+   green, archival inks, the whole accent family desaturated to silver. */
 [data-theme="course_record"] {
   --cb-chalk: #F6F1E3;
   --cb-chalk-2: #E9E0C8;
@@ -478,10 +612,27 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --cb-paper: #FCF9EF;
   --cb-green: #0C2A22;
   --cb-green-2: #071C17;
+  --cb-green-3: #17472E;
+  --cb-felt: #061814;
   --cb-ink: #0C1612;
+  --cb-ink-2: #232E28;
+  --cb-ink-soft: #2F3A34;
   --cb-charcoal: #3E4A42;
-  --cb-mute: #7A8078;
+  --cb-ink-link: #454339;
+  --cb-mute: #5A5F59;           /* AA 4.61:1 on canvas (was #7A8078, 2.86 FAIL) */
+  --cb-mute-1: #555954;
+  --cb-ink-faint: #555954;
+  --cb-mute-2: #9A9785;
+  --cb-mute-3: #BBB39B;
+  --cb-mute-faint: #ABA590;
   --cb-brass: #8A8572;
+  --cb-brass-2: #9C9681;
+  --cb-brass-3: #B3AD94;
+  --cb-brass-deep: #696557;
+  --cb-ink-rgb: 12, 22, 18;
+  --cb-brass-rgb: 138, 133, 114;
+  --cb-chalk-rgb: 246 241 227;
+  --cb-green-ink-rgb: 8 27 22;
   --bg-rgb: 246, 241, 227;
   --cream-rgb: 12, 22, 18;
   --gold-rgb: 138, 133, 114;

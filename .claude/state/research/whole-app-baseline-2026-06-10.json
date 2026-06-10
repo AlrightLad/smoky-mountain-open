@@ -1,0 +1,515 @@
+{
+  "summary": "Whole-app baseline critique: every surface group scored on the 8-dim rubric with concrete gap lists",
+  "agentCount": 4,
+  "logs": [
+    "Baseline: app score 6, 30 backlog items, 5 dead-page candidates"
+  ],
+  "result": {
+    "ledger": {
+      "appScore": 6,
+      "scoreTable": [
+        {
+          "page": "standings (T1)",
+          "score": 5,
+          "note": "Unreachable from mobile nav (not in more.js, no bottom-nav tab) while the onboarding tour literally points new members at it; .std-empty clone."
+        },
+        {
+          "page": "members-detail (T1)",
+          "score": 5,
+          "note": "Heaviest legacy-token page in the app (55 var(--gold*) vs 7 cb); back button overridden to 40px below the 44pt floor (members-detail.js:66); chart empty-state duplicated inline 3x."
+        },
+        {
+          "page": "chat (T1)",
+          "score": 5.5,
+          "note": "The 'group chat' heart of the product is invisible on desktop/tablet — sole nav entry is more.js:58; native confirm() for post delete (chat.js:517); inline btn-sm overrides."
+        },
+        {
+          "page": "rounds (T1)",
+          "score": 6,
+          "note": "Legacy era: fully inline 'Loading…' div (rounds.js:212), back button outside .sh (rounds.js:181), 19 legacy Router.toast calls."
+        },
+        {
+          "page": "feed (T1)",
+          "score": 6.5,
+          "note": "Solid surface but absent from the mobile More menu — desktop sidebar is its only persistent nav anchor; .feed-empty private clone."
+        },
+        {
+          "page": "members (T1)",
+          "score": 6.5,
+          "note": "Functional and hosts the good 'profile' redirect fix, but 29 legacy toasts and the 'Not enough rounds' inline empty div duplicated 3x (members.js:813-827)."
+        },
+        {
+          "page": "home (T1)",
+          "score": 7.5,
+          "note": "Clubhouse-redesigned (0 gold tokens; home-hq 64 cb, home-rail-newuser 74 cb) but the mobile 'new' state strips nemesis, tee times, and league pulse — empty solo app at the exact moment community matters most (home.js:189,213-225)."
+        },
+        {
+          "page": "more (T2)",
+          "score": 5,
+          "note": "The mobile IA hub omits Standings, Feed, Records, Trophy Room, Aces, Awards, Season Recap, and Party Games; router.js tab-match arrays have drifted from its actual contents."
+        },
+        {
+          "page": "activity (T2)",
+          "score": 5,
+          "note": "The bottom-nav tab labeled 'Play' opens a page titled 'Range' with no path to start a round — the new member's #1 taught task dead-ends (index.html:302 vs activity.js:11)."
+        },
+        {
+          "page": "playnow (T2)",
+          "score": 5.5,
+          "note": "Legacy tokens 21 gold/1 cb; reachable only from home cards (home-live.js:144, home-rail-newuser.js), never from the Play tab that names it."
+        },
+        {
+          "page": "wagers (T2)",
+          "score": 5.5,
+          "note": "Legacy 21 gold/2 cb; navigating More→Wagers lights no bottom tab (router.js:95 omits it); gold-era CTAs."
+        },
+        {
+          "page": "scorecard (T2)",
+          "score": 5.5,
+          "note": "Legacy 16 gold/0 cb; native browser confirm() mid-round (scorecard.js:351)."
+        },
+        {
+          "page": "courses (T2)",
+          "score": 6,
+          "note": "Legacy 18 gold/1 cb; fully inline segmented gold-pill toggle (courses.js:40-41) despite .chip-scope existing; 'Course directory' capitalization drift."
+        },
+        {
+          "page": "courses-detail (T2)",
+          "score": 6,
+          "note": "7x .sec-head usage is canonical, but ad-hoc inline empty state (courses-detail.js:352) and 10px inline btn-sm overrides."
+        },
+        {
+          "page": "teetimes (T2)",
+          "score": 6.5,
+          "note": "Functional, but two native confirm() calls (teetimes.js:256,290) break the design system at commitment moments."
+        },
+        {
+          "page": "dms (T2)",
+          "score": 7,
+          "note": "No structural findings; '← Home' via Router.go instead of Router.back (dms.js:8) and 'Loading...' vocab drift."
+        },
+        {
+          "page": "calendar (T2)",
+          "score": 7.5,
+          "note": "Fully class-driven Clubhouse page, but private .cal-sec-head/.cal-empty clones and a bare 'Loading' string (calendar.js:74)."
+        },
+        {
+          "page": "shop (T2)",
+          "score": 7.5,
+          "note": "Clubhouse editorial voice ('Make your shelf yours.') is the copy north star, but .shop-sec-head clone x3 and verify-gate denial is a vanishing toast."
+        },
+        {
+          "page": "settings (T2)",
+          "score": 8,
+          "note": "Clean Clubhouse page (0 gold/17 cb) — the standard the legacy tail should migrate to; natural home for a 'Replay welcome tour' row."
+        },
+        {
+          "page": "records (T3)",
+          "score": 4,
+          "note": "Registered, styled, tab-highlighted — and zero mobile inbound links (only desktop-only home-hq.js:435 and keyboard-only Cmd-K). Functionally dead for the all-mobile member base."
+        },
+        {
+          "page": "onboarding (T3)",
+          "score": 4.5,
+          "note": "Editable username writes raw (no lowercase/uniqueness — can break the member's own login), 'Skip' on screen 1 permanently completes, and save failure is silently swallowed (onboarding.js:162,217-228,108-115,252-255)."
+        },
+        {
+          "page": "invite (T3)",
+          "score": 5.5,
+          "note": "Renders expired codes as 'ACTIVE' (invite.js:18-23; isInviteExpired never consulted) — the next member's first experience is a rejection error."
+        },
+        {
+          "page": "scramble (T3)",
+          "score": 6,
+          "note": "5x legacy sec-heads, header gap drifted to 6px (scramble.js:215), '+ New team' label drift."
+        },
+        {
+          "page": "scramble-live (T3)",
+          "score": 6,
+          "note": "Two native confirm() calls (scramblelive.js:136,152) and an ad-hoc inline empty state."
+        },
+        {
+          "page": "syncround (T3)",
+          "score": 6,
+          "note": "Two native confirm() calls (syncround.js:234,308) in a member-facing flow."
+        },
+        {
+          "page": "bounties (T3)",
+          "score": 6,
+          "note": "Legacy 19 gold/2 cb; empty-state CTA block duplicated inline identically with challenges.js."
+        },
+        {
+          "page": "trophyroom (T3)",
+          "score": 6,
+          "note": "Buried: mobile inbound only via own-profile (members-detail.js:148) and admin.js; .tr-sec-head italic clone x6 and .tr-empty."
+        },
+        {
+          "page": "awards (T3)",
+          "score": 6,
+          "note": "Exactly one inbound link in the entire app (standings.js:377) — and standings itself is mobile-unreachable."
+        },
+        {
+          "page": "seasonrecap (T3)",
+          "score": 6,
+          "note": "Exactly one inbound link (standings.js:378), behind the same mobile-unreachable parent."
+        },
+        {
+          "page": "range — rangelive.js (T3)",
+          "score": 6,
+          "note": "Route naming inverted: 'range' is the live session while 'range-detail' is the hub; confuses every future deep link."
+        },
+        {
+          "page": "range-detail — range.js (T3)",
+          "score": 6,
+          "note": "The actual range hub lives at a '-detail' route name; pairs with the rangelive inversion."
+        },
+        {
+          "page": "drills (T3)",
+          "score": 6,
+          "note": "Ad-hoc inline empty state (drills.js:37) and 9px inline btn-sm font override (drills.js:57)."
+        },
+        {
+          "page": "findplayers (T3)",
+          "score": 6,
+          "note": "9px inline btn-sm overrides (findplayers.js:14-17) shrink controls toward the touch-target floor."
+        },
+        {
+          "page": "richlist (T3)",
+          "score": 6.5,
+          "note": "Inline empty state (richlist.js:48); 'Rich List' Title Case vs sentence-case convention drift."
+        },
+        {
+          "page": "aces (T3)",
+          "score": 6.5,
+          "note": "Buried behind trophyroom/records paths, but home of the GOOD custom inline delete-confirm pattern (aces.js:122-124) worth extracting app-wide."
+        },
+        {
+          "page": "challenges (T3)",
+          "score": 6.5,
+          "note": "Duplicated inline empty-CTA block (challenges.js:44) and minimal '+ New' label drift."
+        },
+        {
+          "page": "leagues (T3)",
+          "score": 6.5,
+          "note": "Clubhouse tokens (0/16) but back buttons float above the masthead with inline margins (leagues.js:182,248,300), 29 legacy toasts, native confirm at :471."
+        },
+        {
+          "page": "round (T3)",
+          "score": 6.5,
+          "note": "No critique findings; legacy-era styling, dispatch host for spectator HUD."
+        },
+        {
+          "page": "roundhistory (T3)",
+          "score": 6.5,
+          "note": "No critique findings."
+        },
+        {
+          "page": "trips (T3)",
+          "score": 6.5,
+          "note": "No critique findings; one of the few inbound sources to playnow."
+        },
+        {
+          "page": "tournament (T3)",
+          "score": 6.5,
+          "note": "No critique findings."
+        },
+        {
+          "page": "trophycreate (T3)",
+          "score": 6.5,
+          "note": "No critique findings."
+        },
+        {
+          "page": "partygames (T4)",
+          "score": 3,
+          "note": "Fully orphaned on mobile: registered, styled, tab-highlighted, but only inbound is keyboard-only Cmd-K (quick-search.js:52) — the entire phone-based user base can never reach it."
+        },
+        {
+          "page": "merch (T4)",
+          "score": 3.5,
+          "note": "Static 6-item 'Coming soon' placeholder (merch.js:11-18); only inbound is keyboard-only Cmd-K (quick-search.js:60); claimed by tab-match router.js:95 but absent from more.js."
+        },
+        {
+          "page": "rules (T4)",
+          "score": 6,
+          "note": "Pure legacy: 19 gold/0 cb tokens, 5x old sec-heads."
+        },
+        {
+          "page": "bugreport (T4)",
+          "score": 6,
+          "note": "Submit button is fully inline-styled raw gold (bugreport.js:68), bypassing hover/active/touch-target rules."
+        },
+        {
+          "page": "faq (T4)",
+          "score": 7,
+          "note": "No critique findings; candidate home for the 'Replay welcome tour' entry."
+        },
+        {
+          "page": "admin (T4)",
+          "score": 7,
+          "note": "Clubhouse tokens (0/23) but 6 native confirm() calls and 26 legacy toasts — acceptable last-priority since audience is Founder-only."
+        },
+        {
+          "page": "caddynotes (T4)",
+          "score": 7.5,
+          "note": "Maintained every ship per operating principle; no critique findings."
+        },
+        {
+          "page": "profile-edit (ghost)",
+          "score": 1,
+          "note": "Never registered — container (index.html:266) + tab-match entry (router.js:95) exist, so navigation would unhide an empty container and render a blank page."
+        }
+      ],
+      "backlog": [
+        {
+          "rank": 1,
+          "title": "Add the missing sections to the mobile More menu — Standings, Feed, Records, Trophy Room, Aces, Awards, Season Recap, Party Games",
+          "where": "src/pages/more.js:38-68 (existing section() renderer at more.js:17-35)",
+          "fix": "Add a 'Competition' entry for Standings + Feed and a new 'History & Trophies' section (Trophy Room, Records, Aces, Awards, Season Recap) plus Party Games under Competition. One-line items in the existing renderer; instantly un-orphans 8 surfaces for the all-mobile member base.",
+          "severity": "critical",
+          "effort": "low"
+        },
+        {
+          "rank": 2,
+          "title": "Restore the More tree on desktop/tablet — Chat, Wagers, Bounties, Leagues, and 8 more surfaces have zero visible entry point at >=720px",
+          "where": "index.html:183-193 (#rrSidebar lists only 7 routes); components.css:2640/:2778 hide #bottomNav",
+          "fix": "Add a 'Club' section to the sidebar (Chat, Tee Times, Wagers/Challenges, Leagues) or at minimum a 'More' sidebar item routing to the existing more page. Same element serves the Band A drawer, so one fix covers 720-959px too.",
+          "severity": "critical",
+          "effort": "low"
+        },
+        {
+          "rank": 3,
+          "title": "Fix the 'Play' tab dead-end — it opens a page titled 'Range' with no way to start a round",
+          "where": "index.html:302 (tab 'Play' → route 'activity') vs src/pages/activity.js:1-17; onboarding.js:30-31 teaches 'Play button' for live scoring",
+          "fix": "Short term: add a 'Start a round' primary CTA at the top of the activity page and/or relabel the tab 'Range'. Align the onboarding tour copy in the same pass.",
+          "severity": "critical",
+          "effort": "low"
+        },
+        {
+          "rank": 4,
+          "title": "Onboarding can silently corrupt a permanent username — no lowercase, no uniqueness check",
+          "where": "src/pages/onboarding.js:162,217-228 vs firebase.js:231-232 (login queries lowercase) and members-edit.js:53 ('permanent')",
+          "fix": "Lowercase + uniqueness-check before write, or render the field read-only to match the permanent contract. A member who 'fixes' capitalization breaks their own username login.",
+          "severity": "critical",
+          "effort": "low"
+        },
+        {
+          "rank": 5,
+          "title": "Router.back() double-pops the nav stack — back buttons skip a level and double-render",
+          "where": "src/core/router.js:180-194 (flags reset synchronously before async popstate fires; handler at router.js:13-26 pops again)",
+          "fix": "Add a one-shot _suppressNextPopstate flag set in back() and consumed at the top of the popstate handler; P5 diagnostic first, then E2E flow test (Home→Members→Detail→back→back lands on Members then Home).",
+          "severity": "high",
+          "effort": "low"
+        },
+        {
+          "rank": 6,
+          "title": "Restore community content to the mobile home 'new' state — first impression is an empty solo app",
+          "where": "src/pages/home.js:189 (nemesis gated), 213-216 (tee times hidden), 223-225 (league pulse hidden) vs desktop State 3 (home-rail-newuser.js:162-171,280-286)",
+          "fix": "Reuse the desktop State 3 modules on mobile when state==='new': league pulse (others' rounds), open tee times with JOIN framing, member spotlight. The data exists; it is suppressed exactly when social proof matters most.",
+          "severity": "high",
+          "effort": "medium"
+        },
+        {
+          "rank": 7,
+          "title": "Replace 19 native confirm() calls with a shared in-app pbConfirm card",
+          "where": "chat.js:517, teetimes.js:256/290, partygames.js:160/169, range.js:183, scramblelive.js:136/152, syncround.js:234/308, scorecard.js:351, leagues.js:471, admin.js (6x)",
+          "fix": "Extract the existing aces.js:122-124 inline confirm pattern into pbConfirm(message, onYes) in src/core/ and replace call sites, member-facing pages first, admin last. OS confirm chrome is the single most jarring off-brand moment.",
+          "severity": "high",
+          "effort": "medium"
+        },
+        {
+          "rank": 8,
+          "title": "Surface onboarding save failures instead of silently swallowing them",
+          "where": "src/pages/onboarding.js:252-255 (.catch navigates home with no toast/retry; onboardingComplete never persists, flow re-runs next session)",
+          "fix": "Show 'Couldn't save your profile — retry' and keep the member on the form. Never silently swallow the write.",
+          "severity": "high",
+          "effort": "low"
+        },
+        {
+          "rank": 9,
+          "title": "Make Router.toast delegate to PB.toast — upgrades all 341 call sites at once",
+          "where": "src/core/router.js:106-110 (legacy single-message 2.2s toast) vs PB.toast in router-sidebar.js (severity-aware, stacked)",
+          "fix": "Internal delegation, zero page edits; then deprecate the #toast element. The deferred 'Ship 11+' migration is now the cheapest unification in the backlog.",
+          "severity": "medium",
+          "effort": "low"
+        },
+        {
+          "rank": 10,
+          "title": "Show expired invite codes as EXPIRED, not ACTIVE",
+          "where": "src/pages/invite.js:18-23 (renders inv.status verbatim; isInviteExpired at :54-58 never consulted in list)",
+          "fix": "Compute isInviteExpired(inv) at render, label rows 'EXPIRED' in mute color, and show the expiry date per row. Prevents the next member arriving on a dead link.",
+          "severity": "high",
+          "effort": "low"
+        },
+        {
+          "rank": 11,
+          "title": "Make 'Skip for now' non-destructive and add a replay-tour entry",
+          "where": "src/pages/onboarding.js:91-93,108-115 (skip on screen 1 writes onboardingComplete:true forever; zero replay path in src/)",
+          "fix": "Skip should jump to the profile-setup step instead of exiting; add 'Replay the welcome tour' row in Settings or FAQ.",
+          "severity": "medium",
+          "effort": "low"
+        },
+        {
+          "rank": 12,
+          "title": "Alias legacy --gold/--muted/--bg tokens to Clubhouse equivalents, then burn down the top-5 legacy pages",
+          "where": "src/styles/base.css token definitions; worst offenders: members-detail.js (55 uses), wagers.js (21), playnow.js (21), bounties.js (19), rules.js (19), courses.js (18), scorecard.js (16)",
+          "fix": "Remap the aliases first so all legacy pages converge visually in one CSS change, then create a per-page migration ledger and burn down inline uses highest-traffic-first. This is the single biggest 'two different apps' fix.",
+          "severity": "high",
+          "effort": "medium"
+        },
+        {
+          "rank": 13,
+          "title": "Unify primary CTA buttons on the brass vocabulary; replace raw inline-styled one-offs first",
+          "where": "components.css:107-122 (.btn gold), :2344-2349 (.league-btn--brass), :2485-2492 (.adm-btn); raw inline: bugreport.js:68, home-rail-newuser.js:293, admin.js:553, courses.js:40-41",
+          "fix": "Adopt league-btn--brass as the primary vocabulary with --full/--sm/--danger modifiers; replace the 6+ inline buttons first since they bypass hover/active/touch-target rules entirely.",
+          "severity": "high",
+          "effort": "medium"
+        },
+        {
+          "rank": 14,
+          "title": "Consolidate empty states — the most-seen component in a 20-member app",
+          "where": "Canonical .empty (components.css:422-424); clones .feed-empty/.cal-empty/.tr-empty/.league-empty/.std-empty/.adm-empty/.rsf-empty; inline: drills.js:37, richlist.js:48, partygames.js:79, scramblelive.js:59, courses-detail.js:352",
+          "fix": "One .empty block with an optional CTA slot (bounties.js:43 + challenges.js:44 already duplicate an identical inline CTA). Convert inline one-offs first, then alias the 7 clones in CSS.",
+          "severity": "high",
+          "effort": "medium"
+        },
+        {
+          "rank": 15,
+          "title": "Fix the verify-email wall: banner claims DMs are locked (they aren't) and real gates dead-end in a vanishing toast",
+          "where": "home-rail-newuser.js:292 (banner copy) vs zero gate in dms.js; real gates bounties.js:158, shop.js:324, wagers.js:252; denial via utils.js:60-65 toast",
+          "fix": "Align banner copy with the actual three gates; replace the toast with a bottom-sheet containing a Resend Verification button (sendVerificationEmail already exists).",
+          "severity": "medium",
+          "effort": "low"
+        },
+        {
+          "rank": 16,
+          "title": "Surface the Caddy welcome roast — the community's hello happens off-screen",
+          "where": "firebase.js:410-437 (roast posted to chat at registration) vs more.js:58 (chat buried), home.js:223 (pulse hidden for new)",
+          "fix": "After onboarding completes, show a one-time home card — 'The league already knows you're here — see your welcome in the Clubhouse Chat →' — deep-linking to chat.",
+          "severity": "medium",
+          "effort": "low"
+        },
+        {
+          "rank": 17,
+          "title": "Rebuild the bottom-tab match arrays from a single shared route→tab map",
+          "where": "src/core/router.js:90-96 — tab 5 claims profile-edit (ghost), records, aces, merch but omits shop, richlist, wagers, bounties, leagues, findplayers, chat, drills, caddynotes, faq, bugreport",
+          "fix": "Derive the five match arrays from one route→tab map sourced from the actual nav trees so More-menu edits can't drift again; delete ghost entries.",
+          "severity": "medium",
+          "effort": "low"
+        },
+        {
+          "rank": 18,
+          "title": "Consolidate the four section-header systems plus inline HQ headers",
+          "where": ".sec-head (components.css:85-86, 16 files) vs .cal-sec-head (css:1074), .tr-sec-head (css:1237), .shop-sec-head (css:3908); inline: home-band.js:18, home-charts.js:106, home-hq.js:498",
+          "fix": "One .sec-head with two sanctioned variants (uppercase-mono eyebrow, serif display); alias the clones in CSS, then migrate the inline HQ headers to the class.",
+          "severity": "medium",
+          "effort": "medium"
+        },
+        {
+          "rank": 19,
+          "title": "Capitalization copy pass — one convention for page titles and '+' action labels",
+          "where": "aces.js:16 'Ace wall' vs bounties.js:10 'Bounty Board' vs courses.js:36 'Course directory'; '+ Log ace' vs '+ Post Bounty' vs '+ New team' vs '+ New'",
+          "fix": "Adopt sentence case (matches the Clubhouse editorial voice in shop.js) and sweep all .sh h2 strings and '+ ' button labels in one pass. Pure string edits, zero regression risk, visible everywhere.",
+          "severity": "medium",
+          "effort": "low"
+        },
+        {
+          "rank": 20,
+          "title": "Add PWA install guidance — iPhone Safari members never see the push opt-in",
+          "where": "onboarding.js:182 (push toggle gated on 'Notification' in window — false in iOS Safari tabs); zero beforeinstallprompt / Add-to-Home-Screen matches in src/",
+          "fix": "Add an install step to onboarding (iOS share-sheet instructions; beforeinstallprompt capture on Android) or a first-home-visit prompt. Without it, iPhone members silently miss DM/tee-time alerts indefinitely.",
+          "severity": "medium",
+          "effort": "medium"
+        },
+        {
+          "rank": 21,
+          "title": "Normalize loading states — one component, one ellipsis",
+          "where": "'Loading...' (dms.js:146, invite.js:9, partygames.js:45, richlist.js:18, members-detail.js:497, admin.js:47-59) vs 'Loading…' (leagues.js, rounds.js:212) vs bare 'Loading' (calendar.js:74)",
+          "fix": "One .loading component (spinner + real ellipsis character) and lean on the existing skel-card (components.css:1301) for content surfaces.",
+          "severity": "low",
+          "effort": "low"
+        },
+        {
+          "rank": 22,
+          "title": "Delete the inline btn-sm size overrides — same button renders 9px/10px/11px",
+          "where": "9px: findplayers.js:14-17, drills.js:57, members-detail.js:71; 10px: chat.js:196, home-band.js:119, chat-calendar.js, courses-detail.js:57-62; 11px+padding: courses.js:156/158, members-edit.js:125",
+          "fix": "Accept the 11px base (components.css:117) or add one .btn-sm--xs modifier; delete the inline overrides, which also shrink buttons toward the 44pt touch floor.",
+          "severity": "medium",
+          "effort": "low"
+        },
+        {
+          "rank": 23,
+          "title": "Standardize back buttons; fix the 40px touch-target violation",
+          "where": "members-detail.js:66 (min-height:40px override below the 44pt floor); leagues.js:182/248/300 (floating back, no .sh); rounds.js:181 (back outside .sh); mixed Router.back vs Router.go semantics (dms.js:8)",
+          "fix": "Back always lives in the .sh header row; remove the 40px override; give leagues detail views a header row; document Router.back as the default.",
+          "severity": "medium",
+          "effort": "low"
+        },
+        {
+          "rank": 24,
+          "title": "Give quick search a visible trigger — currently keyboard-only and undiscoverable",
+          "where": "quick-search.js:233-248 (Cmd/Ctrl-K and '/' only); window.PB.quickSearch.open has zero callers in src/",
+          "fix": "Wire a Search button into the sidebar top (index.html:177-180) and HQ masthead; one-line handler PB.quickSearch.open(). Also fix its catalog drift ('profile' at line 35).",
+          "severity": "medium",
+          "effort": "low"
+        },
+        {
+          "rank": 25,
+          "title": "Delete the profile-edit ghost route",
+          "where": "index.html:266 (container) + router.js:95 (match token); no Router.register('profile-edit') anywhere — navigation renders a blank page",
+          "fix": "Delete both, or register a redirect to members {edit: uid} mirroring the members.js:16 'profile' pattern that fixed this exact bug class before.",
+          "severity": "low",
+          "effort": "low"
+        },
+        {
+          "rank": 26,
+          "title": "Decide partygames and merch: relink or retire",
+          "where": "partygames.js:15 + merch.js:4 — both reachable only via keyboard-only Cmd-K (quick-search.js:52,60); merch is a static 'Coming soon' list",
+          "fix": "Party Games: add to more.js Competition (natural fit as mid-round side bets) or retire. Merch: retire or fold a teaser row into shop until the product is real. Either way, remove dead tab-match tokens.",
+          "severity": "medium",
+          "effort": "low"
+        },
+        {
+          "rank": 27,
+          "title": "Add .sh-actions class for the copy-pasted header flex cluster",
+          "where": "'<div style=\"display:flex;gap:8px\">' in aces.js:16, bounties.js:10, challenges.js:21, courses.js:36, scramble.js:15, teetimes.js:41, wagers.js:34; drifted to 6px in scramble.js:215; variant in dms.js:178",
+          "fix": ".sh-actions{display:flex;gap:8px} next to .sh in components.css:90; replace the 9 inline copies and kill the 6px drift.",
+          "severity": "low",
+          "effort": "low"
+        },
+        {
+          "rank": 28,
+          "title": "Extract chartEmptyMsg helper — identical inline div duplicated 6x across two files",
+          "where": "members.js:813/820/827 and members-detail.js:557/612/629 ('Not enough rounds in this range…' with identical inline style); members.js:837 sibling",
+          "fix": "One shared helper (or reuse .empty) for the analytics empty states so copy and style have a single source.",
+          "severity": "low",
+          "effort": "low"
+        },
+        {
+          "rank": 29,
+          "title": "Fix the Band A drawer's permanently disabled Notifications button",
+          "where": "index.html:196 (aria-disabled, tabindex=-1, swallowed onclick); focus-trap special-cases skipping it (router-sidebar.js:108-110)",
+          "fix": "Wire it to the existing toggleNotifPanel() (panel proven at all bands per index.html:228) or extend the desktop display:none rule to 720-959px.",
+          "severity": "low",
+          "effort": "low"
+        },
+        {
+          "rank": 30,
+          "title": "Wayfinding naming cleanup: range/range-detail route inversion and Home-vs-Today label split",
+          "where": "rangelive.js:1 registers 'range' (live session) while range.js:35 registers 'range-detail' (the hub); sidebar 'Today' (index.html:183) vs bottom-nav 'Home' (index.html:301)",
+          "fix": "Rename the routes during the next refactor sweep (with redirect shims) and pick one name for home across both nav surfaces.",
+          "severity": "low",
+          "effort": "medium"
+        }
+      ],
+      "deadPages": [
+        "profile-edit — GHOST ROUTE, delete. Container exists (index.html:266) and router.js:95 includes it in the tab-match array, but Router.register('profile-edit') is never called anywhere in src/ and nothing navigates to it; landing there would unhide an empty container (blank chrome-only page). The real edit flow is Router.go('members',{edit:uid}). Same bug class the 'profile' route already had and fixed via redirect (members.js:12-28).",
+        "partygames — ORPHANED ON MOBILE, relink or retire. Registered (partygames.js:15), container (index.html:286), tab-highlight (router.js:94), width-capped (base.css:657) — but the only inbound navigation in the entire app is keyboard-only Cmd-K quick search (quick-search.js:52). All 20 members are phone users; none can reach it. Verified: no other Router.go('partygames') call sites.",
+        "merch — STATIC PLACEHOLDER + ORPHANED, retire or fold into shop. Page is a hardcoded 6-item 'Coming soon' list (merch.js:11-18) in legacy inline styles; only inbound is keyboard-only Cmd-K (quick-search.js:60); claimed by tab-match router.js:95 but absent from more.js. Verified by grep: zero touch-reachable links.",
+        "records — FUNCTIONALLY DEAD ON MOBILE, relink (not remove). Real content, but inbound links are desktop-HQ-only (home-hq.js:435, gated by _isHQViewport) and Cmd-K (quick-search.js:46). The mobile More menu omits it while router.js:95 claims it for tab highlight. Fix is rank-1 backlog item, not deletion.",
+        "NOT dead (verified during audit): social.js has no Router.register but is a live module — renderSocialActions() is rendered into every member profile via members-detail.js:141. spectator.js is likewise a non-routed module hosted by round.js dispatch. Neither is removal-eligible."
+      ],
+      "baselineSummary": "Parbaughs today is two apps stitched together: a genuinely strong Clubhouse-era core (home/HQ, settings, leagues, calendar, shop) that approaches the Linear/Stripe bar, and a long legacy tail (members-detail, wagers, playnow, scorecard, courses, rules) still speaking the old gold-on-dark language — a member crossing from Home into Wagers visibly changes products. Honest weighted standing is 6.0/10 against the 9.5 P7 bar: competent, alive, feature-deep, but incoherent at the seams. Systemic problem 1 is rotted information architecture: Standings, Feed, Records, Trophy Room, and Party Games are unreachable or near-unreachable on mobile (the entire member base), while the desktop sidebar amputates the whole More tree including Chat — the product's stated heart. Systemic problem 2 is pattern multiplication: two token eras, four section-header systems, eight empty-state implementations, three button vocabularies, 19 native confirm() calls, and two toast systems mean every shared pattern exists in 2-7 competing forms. Systemic problem 3 is a first-run experience that undermines the community thesis: the Play tab dead-ends at an empty Range page, the mobile new-member home strips all social proof, onboarding can corrupt a permanent username and silently lose saves, and the Caddy's welcome roast happens in a chat the new member is never routed to. Genuine strength 1: the Clubhouse design language itself — where applied (home-rail-newuser, home-hq, shop's editorial voice) it is distinctive and already beats peer golf apps. Genuine strength 2: the feature substance is real — live scoring, spectator HUD, ParCoin economy, scramble, nemesis, wagers — nothing is vapor; the problems are routing and skin, not product. Genuine strength 3: the consolidation seams already exist in the codebase (canonical .empty and .sec-head, PB.toast, the aces.js confirm pattern), so most of the top-30 backlog is aliasing and rewiring rather than invention. The fastest score movers are navigation one-liners — the More-menu additions, the sidebar Club section, and the Play-tab fix would lift the worst Tier-1 scores a full point in a day. The yardstick going forward: no page below 7, zero orphaned routes, one vocabulary per pattern.\""
+    },
+    "groupScores": []
+  }
+}
