@@ -822,9 +822,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-10T14:55:08.988829Z",
+  "generated_at": "2026-06-10T14:56:50.520989Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 88.5,
+  "overall_score": 87.8,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -838,9 +838,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 93.5,
+    "pre_deduction_score": 92.8,
     "deduction": 5,
-    "post_deduction_score": 88.5
+    "post_deduction_score": 87.8
   },
   "dimensions": {
     "A1_roadmap": {
@@ -984,14 +984,14 @@
       "weak_points": []
     },
     "A12_operational": {
-      "score": 100,
+      "score": 85,
       "status": "green",
-      "label": "pipeline=green · 1 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=yellow · 2 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [],
       "details": {
         "watcher_last_status": "PASS",
-        "watcher_exit_reason": "no-new-files"
+        "watcher_exit_reason": "skip-dirty"
       }
     }
   },
@@ -999,10 +999,10 @@
   "founder_attention": [],
   "agent_attention": [],
   "audit_trigger": {
-    "sha": "02116cdf",
-    "subject": "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)",
-    "committed_at": "2026-06-10T10:53:07-04:00",
-    "trigger": "cron",
+    "sha": "4325451b",
+    "subject": "chore(governance): log founding-code rotation + dashboard regen (v8.24.19 close)",
+    "committed_at": "2026-06-10T10:55:36-04:00",
+    "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
     "total_files_touched": 2
