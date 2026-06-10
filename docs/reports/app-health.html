@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-10T15:36:31.729277Z",
+  "generated_at": "2026-06-10T15:39:56.407186Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 88.0,
   "overall_grade": "A-",
@@ -1005,13 +1005,17 @@
   "founder_attention": [],
   "agent_attention": [],
   "audit_trigger": {
-    "sha": "26a63c87",
-    "subject": "fix(ci): permanent Pages-deploy fix â€” retry transient 401 + cancel superseded runs",
-    "committed_at": "2026-06-10T11:36:02-04:00",
-    "trigger": "substrate-commit",
-    "is_app_commit": false,
-    "app_files_touched": [],
-    "total_files_touched": 1
+    "sha": "56616688",
+    "subject": "feat(ui): verify-email gate becomes a recovery card with inline Resend (v8.24.22)",
+    "committed_at": "2026-06-10T11:39:28-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "public/sw.js",
+      "src/core/utils.js",
+      "src/pages/caddynotes.js"
+    ],
+    "total_files_touched": 4
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
