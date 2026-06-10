@@ -29,8 +29,13 @@ const OUT = path.resolve(__dirname, 'main-flows-v2');
     const ctx = await browser.newContext({ viewport: vp, deviceScaleFactor: 2 });
     const page = await ctx.newPage();
     await auth.loginReal(page, DEV_URL);
-    for (const pg of PAGES) {
-      await page.evaluate((x) => Router.go(x), pg);
+    const NAVS = [
+      ['courses-detail', "var cs = PB.getCourses(); if (cs && cs.length) Router.go('courses', {id: cs[0].id}); else Router.go('courses');"],
+      ['members-detail', "var pid = (currentProfile && (currentProfile.claimedFrom || currentProfile.id)) || (currentUser && currentUser.uid); Router.go('members', {id: pid});"],
+      ['unknownroute', "Router.go('notifications');"]
+    ];
+    for (const [pg, code] of NAVS) {
+      await page.evaluate((c) => eval(c), code);
       await page.waitForTimeout(1800);
       await page.screenshot({ path: path.join(OUT, `audit-${pg}-${label}.png`) });
       console.log('captured', pg, label);

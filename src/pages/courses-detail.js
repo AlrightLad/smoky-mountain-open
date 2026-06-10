@@ -24,7 +24,7 @@ function renderCourseDetail(courseId) {
   h += '<div class="section"><div class="c-detail-info">' + c.loc + ' · Rating: ' + c.rating + ' · Slope: ' + c.slope + ' · Par: ' + c.par + '</div>';
   if (c.tee || c.yards) {
     h += '<div style="font-size:11px;color:var(--muted);margin-top:4px">';
-    if (c.tee) h += c.tee + ' Tees';
+    if (c.tee) h += c.tee + (/tees$/i.test(c.tee) ? '' : ' Tees'); // v8.24.41 — same suffix guard as the tee cards (was 'White Tees Tees')
     if (c.tee && c.yards) h += ' · ';
     if (c.yards) h += c.yards.toLocaleString() + ' yards';
     h += '</div>';

@@ -30,6 +30,16 @@ var Router = (function() {
   }
 
   function go(page, params, replaceState) {
+    // v8.24.41 — unknown-route fallback. A typo'd deep link or a retired
+    // page name used to hide every page container and strand the member on
+    // a blank void (no header, no empty state, no way out). Land on home
+    // instead. Checked against the DOM container (not the pages registry)
+    // because the render below requires the container to exist.
+    if (!document.querySelector('#mainApp [data-page="' + page + '"]')) {
+      console.warn("[Router] unknown page '" + page + "' — falling back to home");
+      page = "home";
+      params = {};
+    }
     var prev = current.page;
     var prevParams = current.params;
     current = { page: page, params: params || {} };
