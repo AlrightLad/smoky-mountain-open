@@ -519,7 +519,26 @@ function submitAddCourse() {
     slope: document.getElementById("ac-slope").value || "113",
     par: document.getElementById("ac-par").value || "72"
   });
-  if (c) { Router.toast(name + " added!"); Router.go("courses", { id: c.id }); }
+  // v8.24.10 — FIX dead-end: PB.addCourse is in-memory only ("courses are
+  // Firestore-authoritative"), and this path never called syncCourse, so a
+  // manually added course EVAPORATED on reload. Persist it with the same
+  // provenance stamp the community-scorecard flow uses, so it renders the
+  // UNVERIFIED badge and enters the existing verify lifecycle.
+  if (c) {
+    if (!c.communityData) {
+      c.communityData = {
+        status: "community_added",
+        contributorId: (typeof currentUser !== "undefined" && currentUser) ? currentUser.uid : "",
+        contributorName: (typeof currentProfile !== "undefined" && currentProfile) ? (currentProfile.name || currentProfile.username || "") : "",
+        contributedAt: (typeof fsTimestamp === "function") ? fsTimestamp() : null,
+        source: "member-charted",
+        verifications: []
+      };
+    }
+    if (typeof syncCourse === "function") syncCourse(c);
+    Router.toast(name + " added!");
+    Router.go("courses", { id: c.id });
+  }
 }
 
 function showTeeScorecard(courseId, teeIdx) {
@@ -731,7 +750,13 @@ function showScorecardEditor(courseId) {
   var c = PB.getCourse(courseId);
   if (!c) return;
   var cd = c.communityData || {};
-  var existingPars = cd.holePars || c.holes || [];
+  // v8.24.10 — FIX pre-fill: c.holes items are OBJECTS ({par, yardage,
+  // handicap} per _extractTeeData), so feeding them straight into the
+  // integer comparisons below made every select silently fall back to the
+  // first option (par 3) for API-sourced courses. Normalize to par ints.
+  var existingPars = (cd.holePars || c.holes || []).map(function(hp) {
+    return (hp && typeof hp === "object") ? hp.par : hp;
+  });
   // Pre-fill from API or existing community data
   var numHoles = 18;
 
@@ -801,11 +826,34 @@ function submitScorecardData(courseId) {
     verifications: []
   };
 
+  // v8.24.10 — FIX dead-end: this only wrote communityData.holePars, a field
+  // live scoring NEVER reads (playnow.js resolves pars from allTees[].holes
+  // then c.holes), so contributed pars never reached the in-round hole grid.
+  // Write the consumed shape too — but ONLY when the course lacks API tee
+  // data: API allTees carry yardage + handicap this editor doesn't collect,
+  // and overwriting them with par-only entries would destroy richer data.
+  var updates = { communityData: communityData, par: parTotal };
+  var holeObjs = pars.map(function(p) { return { par: p }; });
+  if (!c.allTees || !c.allTees.length) {
+    updates.holes = holeObjs;
+    updates.allTees = [{ name: teeName, rating: rating, slope: slope, par: parTotal, yards: c.yards || 0, holes: holeObjs }];
+    updates.tee = teeName;
+    updates.rating = rating;
+    updates.slope = slope;
+  }
+
   // Update the course doc
-  db.collection("courses").doc(courseId).update({ communityData: communityData, par: parTotal }).then(function() {
+  db.collection("courses").doc(courseId).update(updates).then(function() {
     // Also update local cache
     c.communityData = communityData;
     c.par = parTotal;
+    if (updates.holes) {
+      c.holes = updates.holes;
+      c.allTees = updates.allTees;
+      c.tee = updates.tee;
+      c.rating = updates.rating;
+      c.slope = updates.slope;
+    }
 
     // Award ParCoins for first contribution
     if (isFirstContribution) {
