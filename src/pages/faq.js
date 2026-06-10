@@ -69,9 +69,13 @@ Router.register("faq", function() {
 
 // ========== FEATURE REQUEST ==========
 function openFeatureRequest() {
-  var name = currentProfile ? (currentProfile.name || currentProfile.username) : "Member";
-  var feature = prompt("Describe the feature you'd like to see:");
+  // v8.24.34 — branded pbPrompt (was a native prompt()).
+  pbPrompt({ title: "Request a feature", message: "Describe what you'd like to see — it goes straight to the Commissioner.", confirmLabel: "Send" })
+    .then(function(feature) { if (feature !== null && feature) _submitFeatureRequest(feature); });
+}
+function _submitFeatureRequest(feature) {
   if (!feature || !feature.trim()) return;
+  var name = currentProfile ? (currentProfile.name || currentProfile.username) : "Member";
   
   if (db && currentUser) {
     // Save to Firestore

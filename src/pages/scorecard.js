@@ -465,13 +465,15 @@ function uploadTripPhotoFirestore(tripId) {
     var reader = new FileReader();
     reader.onload = function(e) {
       compressPhoto(e.target.result, PHOTO_MAX_KB, 800, function(compressed) {
-        var caption = prompt("Caption (optional):", "") || "";
-        savePhoto("trip", tripId, compressed, caption).then(function(ok) {
+        // v8.24.34 — branded pbPrompt (was a native prompt()).
+        pbPrompt({ title: "Add a caption", message: "Optional.", confirmLabel: "Upload", cancelLabel: "Skip" }).then(function(caption) {
+        savePhoto("trip", tripId, compressed, caption === null ? "" : caption).then(function(ok) {
           if (ok) Router.toast("Photo uploaded to cloud!");
           else Router.toast("Saved locally");
           // Also save locally as backup
           PB.addTripPhoto(tripId, compressed);
           Router.go("scorecard", { tripId: tripId });
+        });
         });
       });
     };
@@ -482,8 +484,14 @@ function uploadTripPhotoFirestore(tripId) {
 
 function uploadTripPhoto(tripId) { uploadTripPhotoFirestore(tripId); }
 
-function addTripPhotoUrl(tripId) {
-  var url = prompt("Paste image URL:");
+function addTripPhotoUrl(tripId, _url) {
+  // v8.24.34 — branded pbPrompt (was a native prompt()).
+  if (_url === undefined) {
+    pbPrompt({ title: "Add photo by URL", placeholder: "Paste the image URL", confirmLabel: "Add" })
+      .then(function(u) { if (u !== null && u) addTripPhotoUrl(tripId, u); });
+    return;
+  }
+  var url = _url;
   if (!url) return;
   savePhoto("trip", tripId, url, "").then(function() {
     Router.toast("Photo added!");

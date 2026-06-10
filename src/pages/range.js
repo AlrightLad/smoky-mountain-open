@@ -253,10 +253,21 @@ function toggleDrillInfo(drillId) {
   el.style.display = el.style.display === "none" ? "block" : "none";
 }
 
-function addCustomDrill() {
-  var name = prompt("Drill name:");
+function addCustomDrill(_name, _desc) {
+  // v8.24.34 — branded pbPrompt chain (was two native prompt()s).
+  if (_name === undefined) {
+    pbPrompt({ title: "Name the drill", placeholder: "e.g. Gate putting, 3-footers", confirmLabel: "Next" })
+      .then(function(n) { if (n !== null && n) addCustomDrill(n, undefined); });
+    return;
+  }
+  if (_desc === undefined) {
+    pbPrompt({ title: "Short description", message: "Optional.", confirmLabel: "Add drill", cancelLabel: "Skip" })
+      .then(function(d) { addCustomDrill(_name, d === null ? "" : d); });
+    return;
+  }
+  var name = _name;
   if (!name || !name.trim()) return;
-  var desc = prompt("Short description (optional):", "");
+  var desc = _desc;
   var drill = {id: "custom_" + Date.now(), name: name.trim(), cat: "custom", desc: desc || ""};
   customDrills.push(drill);
   saveCustomDrillsToFirestore();

@@ -4,7 +4,7 @@
    ================================================ */
 
 // ── App version — single source of truth ──
-var APP_VERSION = "8.24.33";
+var APP_VERSION = "8.24.34";
 
 // ══════════════════════════════════════════════════════════════════════════
 // LEAGUE ISOLATION — Nuclear approach. Makes leaking PHYSICALLY IMPOSSIBLE.
@@ -177,6 +177,44 @@ function pbConfirm(opts) {
     var yesBtn = document.getElementById("pbConfirmYes");
     yesBtn.onclick = function() { close(true); };
     yesBtn.focus();
+  });
+}
+
+// ── pbPrompt (v8.24.34) — branded text-input dialog replacing native prompt() ──
+// Sibling of pbConfirm. Promise<string|null>: resolves the trimmed value on
+// confirm, null on cancel/Escape/backdrop. Enter submits.
+function pbPrompt(opts) {
+  opts = opts || {};
+  return new Promise(function(resolve) {
+    var prev = document.getElementById("pbPromptOverlay");
+    if (prev) prev.remove();
+    var ov = document.createElement("div");
+    ov.id = "pbPromptOverlay";
+    ov.setAttribute("role", "dialog");
+    ov.setAttribute("aria-modal", "true");
+    ov.setAttribute("aria-label", opts.title || "Input");
+    ov.style.cssText = "position:fixed;inset:0;z-index:10000;background:var(--scrim, rgba(20,19,15,.42));display:flex;align-items:center;justify-content:center;padding:24px";
+    ov.innerHTML = '<div style="background:var(--cb-paper);border:1px solid var(--cb-mute-3);border-radius:14px;max-width:340px;width:100%;padding:20px 18px;box-shadow:var(--el-4, 0 12px 32px rgba(0,0,0,.18))">'
+      + '<div style="font-family:var(--font-display);font-size:17px;font-weight:700;color:var(--cb-ink);margin-bottom:6px">' + escHtml(opts.title || "One thing first") + '</div>'
+      + (opts.message ? '<div style="font-size:12px;color:var(--cb-mute);line-height:1.5;margin-bottom:12px">' + escHtml(opts.message) + '</div>' : '')
+      + '<input id="pbPromptInput" type="text" class="ff-input" style="width:100%;min-height:44px;margin-bottom:12px" placeholder="' + escHtml(opts.placeholder || "") + '" value="' + escHtml(opts.value || "") + '">'
+      + '<div style="display:flex;gap:8px">'
+      + '<button type="button" id="pbPromptNo" style="flex:1;min-height:44px;background:transparent;border:1px solid var(--cb-mute-3);border-radius:10px;font-weight:600;font-size:13px;color:var(--cb-ink);cursor:pointer">' + escHtml(opts.cancelLabel || "Cancel") + '</button>'
+      + '<button type="button" id="pbPromptYes" style="flex:1;min-height:44px;background:var(--cb-felt);border:none;border-radius:10px;font-weight:700;font-size:13px;color:var(--cb-chalk);cursor:pointer">' + escHtml(opts.confirmLabel || "Save") + '</button>'
+      + '</div></div>';
+    function close(val) { ov.remove(); document.removeEventListener("keydown", onKey); resolve(val); }
+    function submit() { var el = document.getElementById("pbPromptInput"); close(el ? el.value.trim() : null); }
+    function onKey(e) {
+      if (e.key === "Escape") close(null);
+      else if (e.key === "Enter") { e.preventDefault(); submit(); }
+    }
+    ov.addEventListener("click", function(e) { if (e.target === ov) close(null); });
+    document.addEventListener("keydown", onKey);
+    document.body.appendChild(ov);
+    document.getElementById("pbPromptNo").onclick = function() { close(null); };
+    document.getElementById("pbPromptYes").onclick = submit;
+    var inp = document.getElementById("pbPromptInput");
+    inp.focus(); if (opts.value) inp.select();
   });
 }
 

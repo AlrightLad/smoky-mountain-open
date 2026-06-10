@@ -323,10 +323,21 @@ function refreshClubCal() {
     eventsEl.innerHTML = '';
   }
 }
-function createEventFromCal(startDate, endDate) {
-  var name = prompt("Event name:");
+function createEventFromCal(startDate, endDate, _name, _loc) {
+  // v8.24.34 — branded pbPrompt chain (was two native prompt()s).
+  if (_name === undefined) {
+    pbPrompt({ title: "Name the event", placeholder: "e.g. Saturday Skins", confirmLabel: "Next" })
+      .then(function(n) { if (n !== null && n) createEventFromCal(startDate, endDate, n, undefined); });
+    return;
+  }
+  if (_loc === undefined) {
+    pbPrompt({ title: "Where at?", message: "Optional.", confirmLabel: "Create", cancelLabel: "Skip" })
+      .then(function(l) { createEventFromCal(startDate, endDate, _name, l === null ? "" : l); });
+    return;
+  }
+  var name = _name;
   if (!name || !name.trim()) return;
-  var location = prompt("Location (optional):", "");
+  var location = _loc;
   
   var eventData = {
     id: genId(),

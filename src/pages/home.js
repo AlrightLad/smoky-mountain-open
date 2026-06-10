@@ -768,12 +768,18 @@ function showRivalryDetail(p1id, p2id) {
 // Backup export — used by scorecard.js and settings.js.
 function doCopy() {
   var code = PB.exportBackup();
-  navigator.clipboard.writeText(code).then(function() { Router.toast("Backup copied!"); }).catch(function() { prompt("Copy this code:", code); });
+  navigator.clipboard.writeText(code).then(function() { Router.toast("Backup copied!"); }).catch(function() { pbPrompt({ title: "Copy this code", message: "Clipboard was blocked — select and copy it manually.", value: code, confirmLabel: "Done" }); });
 }
 
 // Backup import — used by scorecard.js and settings.js.
-function doRestore() {
-  var code = prompt("Paste backup code:");
+function doRestore(_code) {
+  // v8.24.34 — branded pbPrompt (was a native prompt()).
+  if (_code === undefined) {
+    pbPrompt({ title: "Restore from backup", placeholder: "Paste your backup code", confirmLabel: "Restore" })
+      .then(function(c) { if (c !== null && c) doRestore(c); });
+    return;
+  }
+  var code = _code;
   if (code && PB.importBackup(code)) { Router.toast("Restored!"); Router.go("home"); }
   else if (code) Router.toast("Invalid code");
 }

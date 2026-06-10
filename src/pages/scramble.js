@@ -168,7 +168,7 @@ function submitCreateTeam() {
   if (team) { syncScrambleTeam(team); Router.toast("Team created!"); Router.go("scramble", { id: team.id }); }
 }
 
-function renameScrambleTeam(teamId) {
+function renameScrambleTeam(teamId, _newName) {
   var teams = PB.getScrambleTeams();
   var team = teams.find(function(t) { return t.id === teamId; });
   if (!team) return;
@@ -177,7 +177,13 @@ function renameScrambleTeam(teamId) {
     Router.toast("Only the team captain can rename this team");
     return;
   }
-  var newName = prompt("Rename team:", team.name);
+  // v8.24.34 — branded pbPrompt (was a native prompt()).
+  if (_newName === undefined) {
+    pbPrompt({ title: "Rename team", value: team.name, confirmLabel: "Rename" })
+      .then(function(n) { if (n !== null) renameScrambleTeam(teamId, n); });
+    return;
+  }
+  var newName = _newName;
   if (!newName || !newName.trim() || newName.trim() === team.name) return;
   newName = newName.trim();
   // Check for duplicate team names

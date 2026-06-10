@@ -409,12 +409,23 @@ function adjustInvites(memberId, currentMax, delta) {
 
 // ========== MODERATION ACTIONS ==========
 
-function promptSuspend(memberId, memberName) {
-  var days = prompt("Suspend " + memberName + " for how many days?", "7");
+function promptSuspend(memberId, memberName, _days, _reason) {
+  // v8.24.34 — branded pbPrompt chain (was two native prompt()s).
+  if (_days === undefined) {
+    pbPrompt({ title: "Suspend " + memberName + "?", message: "For how many days?", value: "7", confirmLabel: "Next" })
+      .then(function(d) { if (d !== null) promptSuspend(memberId, memberName, d, undefined); });
+    return;
+  }
+  if (_reason === undefined) {
+    pbPrompt({ title: "Reason for suspension", message: "Visible to the member.", confirmLabel: "Suspend" })
+      .then(function(r) { if (r !== null) promptSuspend(memberId, memberName, _days, r); });
+    return;
+  }
+  var days = _days;
   if (!days) return;
   days = parseInt(days);
   if (isNaN(days) || days < 1) { Router.toast("Enter a valid number of days"); return; }
-  var reason = prompt("Reason for suspension (visible to member):", "");
+  var reason = _reason;
   suspendMember(memberId, days, reason);
 }
 
@@ -466,7 +477,7 @@ function unsuspendMember(memberId, _confirmed) {
   });
 }
 
-function removeMemberAdmin(memberId, _confirmed) {
+function removeMemberAdmin(memberId, _confirmed, _reason) {
   if (!db) return;
   var member = PB.getPlayer(memberId);
   var name = member ? member.name : memberId;
@@ -476,7 +487,12 @@ function removeMemberAdmin(memberId, _confirmed) {
       .then(function(ok) { if (ok) removeMemberAdmin(memberId, true); });
     return;
   }
-  var reason = prompt("Reason (optional):", "");
+  if (_reason === undefined) {
+    pbPrompt({ title: "Reason", message: "Optional — kept in the moderation log.", confirmLabel: "Remove", cancelLabel: "Skip" })
+      .then(function(r) { removeMemberAdmin(memberId, true, r === null ? "" : r); });
+    return;
+  }
+  var reason = _reason;
 
   db.collection("members").doc(memberId).update({
     role: "removed",

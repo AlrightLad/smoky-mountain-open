@@ -683,8 +683,14 @@ function regenerateInviteCode(lid) {
   });
 }
 
-function confirmDeleteLeague(lid, leagueName) {
-  var typed = prompt("Type the league name to confirm deletion: \"" + leagueName + "\"");
+function confirmDeleteLeague(lid, leagueName, _typed) {
+  // v8.24.34 — branded pbPrompt (was a native prompt()).
+  if (_typed === undefined) {
+    pbPrompt({ title: "Delete " + leagueName + "?", message: "Type the league name exactly to confirm. This cannot be undone.", placeholder: leagueName, confirmLabel: "Delete league" })
+      .then(function(t) { if (t !== null) confirmDeleteLeague(lid, leagueName, t); });
+    return;
+  }
+  var typed = _typed;
   if (typed !== leagueName) { Router.toast("Names don't match, deletion cancelled"); return; }
   if (!db || !currentUser) return;
   // Remove league from all members

@@ -297,8 +297,14 @@ function importDirApiCourse(idx) {
   Router.go("courses");
 }
 
-function quickAddCourseFromDir(name) {
-  var state = prompt("State (e.g. VA, PA, NC):", "");
+function quickAddCourseFromDir(name, _state) {
+  // v8.24.34 — branded pbPrompt (was a native prompt()).
+  if (_state === undefined) {
+    pbPrompt({ title: "Which state?", placeholder: "e.g. VA, PA, NC", confirmLabel: "Add course" })
+      .then(function(st) { if (st !== null) quickAddCourseFromDir(name, st); });
+    return;
+  }
+  var state = _state;
   if (state === null) return;
   state = (state||"").trim().toUpperCase().substring(0, 2);
   var id = name.toLowerCase().replace(/[^a-z0-9]/g, "").substring(0, 20) + Date.now().toString(36).slice(-4);

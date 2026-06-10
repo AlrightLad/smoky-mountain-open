@@ -662,8 +662,14 @@ function pnSelectTee(courseId, teeName) {
   renderPnTeeSelector(courseId);
 }
 
-function quickAddCourse(name) {
-  var state = prompt("State (e.g. VA, PA, NC):", "");
+function quickAddCourse(name, _state) {
+  // v8.24.34 — branded pbPrompt (was a native prompt()).
+  if (_state === undefined) {
+    pbPrompt({ title: "Which state?", placeholder: "e.g. VA, PA, NC", confirmLabel: "Add course" })
+      .then(function(st) { if (st !== null) quickAddCourse(name, st); });
+    return;
+  }
+  var state = _state;
   if (!state) state = "";
   state = state.trim().toUpperCase().substring(0, 2);
   
