@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-10T15:39:56.407186Z",
+  "generated_at": "2026-06-10T15:44:53.869380Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 88.0,
   "overall_grade": "A-",
@@ -924,7 +924,7 @@
           },
           {
             "file": "src/pages/playnow-scoring.js",
-            "lines": 845,
+            "lines": 870,
             "budget": 800
           },
           {
@@ -1005,17 +1005,23 @@
   "founder_attention": [],
   "agent_attention": [],
   "audit_trigger": {
-    "sha": "56616688",
-    "subject": "feat(ui): verify-email gate becomes a recovery card with inline Resend (v8.24.22)",
-    "committed_at": "2026-06-10T11:39:28-04:00",
+    "sha": "a9f79583",
+    "subject": "feat(ui): fleet integration 1 â€” confetti celebrations + More tab polish + Trophy Room renovation (v8.24.23)",
+    "committed_at": "2026-06-10T11:44:26-04:00",
     "trigger": "app-commit",
     "is_app_commit": true,
     "app_files_touched": [
       "public/sw.js",
+      "src/core/confetti.js",
       "src/core/utils.js",
-      "src/pages/caddynotes.js"
+      "src/pages/caddynotes.js",
+      "src/pages/leagues.js",
+      "src/pages/more.js",
+      "src/pages/playnow-scoring.js",
+      "src/pages/trophyroom.js",
+      "src/styles/components.css"
     ],
-    "total_files_touched": 4
+    "total_files_touched": 13
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
