@@ -95,6 +95,13 @@
       '<line id="pbi-tee" x1="176" y1="360" x2="176" y2="351" stroke="var(--cb-chalk)" stroke-width="2.5" stroke-linecap="round"/>' +
       // ball (sits on tee; launched by JS)
       '<circle id="pbi-ball" cx="176" cy="347" r="4.5" fill="var(--cb-chalk)"/>' +
+      // downswing smear arc (research cue: arc-shaped motion wedge on the
+      // club during the fast 54-65% window) + impact divot tuft
+      '<path id="pbi-smear" d="M 150 180 A 95 95 0 0 1 185 345" fill="none" stroke="rgba(var(--cb-brass-rgb),.35)" stroke-width="7" stroke-linecap="round" opacity="0"/>' +
+      '<g id="pbi-divot" opacity="0">' +
+        '<line x1="170" y1="358" x2="160" y2="354" stroke="var(--cb-green-3)" stroke-width="2.5" stroke-linecap="round"/>' +
+        '<line x1="173" y1="357" x2="166" y2="351" stroke="var(--cb-green-3)" stroke-width="2" stroke-linecap="round"/>' +
+      '</g>' +
       // impact burst (hidden until impact)
       '<g id="pbi-burst" opacity="0">' +
         '<line x1="176" y1="347" x2="164" y2="338" stroke="var(--cb-brass-2)" stroke-width="2" stroke-linecap="round"/>' +
@@ -177,6 +184,12 @@
     // impact burst + freeze punctuation
     var burst = document.getElementById("pbi-burst");
     if (burst) burst.setAttribute("opacity", (t >= 0.65 && t <= 0.74) ? String(1 - (t - 0.65) / 0.09) : "0");
+    // downswing smear: visible only through the fast window, fading at impact
+    var smear = document.getElementById("pbi-smear");
+    if (smear) smear.setAttribute("opacity", (t >= 0.56 && t <= 0.67) ? String(0.9 * (1 - Math.abs((t - 0.61) / 0.06))) : "0");
+    // divot tuft: kicks at impact, settles through the follow-through
+    var divot = document.getElementById("pbi-divot");
+    if (divot) divot.setAttribute("opacity", (t >= 0.655 && t <= 0.85) ? String(1 - (t - 0.655) / 0.2) : "0");
     // ball flight: launches at impact (65%), exaggerated 30° cartoon arc to
     // the target (screen left), brass trail via stroke-dash ghosting
     var ball = document.getElementById("pbi-ball");
