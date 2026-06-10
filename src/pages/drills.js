@@ -34,7 +34,7 @@ function filterDrills(cat) {
   var difficultyColors = {path:"var(--gold)",extension:"var(--blue)",short:"var(--birdie)",general:"var(--cream)",custom:"var(--pink)"};
 
   if (!filtered.length) {
-    el.innerHTML = '<div style="text-align:center;padding:32px;font-size:12px;color:var(--muted)">No drills in this category.</div>';
+    el.innerHTML = '<div class="pf-empty"><div class="pf-empty__h">Nothing filed under this one</div><div class="pf-empty__b">Try another category — or add your own drill below.</div></div>';
     return;
   }
 
@@ -54,7 +54,7 @@ function filterDrills(cat) {
     h += '<div style="font-size:14px;font-weight:700;color:var(--cream)">' + escHtml(d.name) + '</div>';
     h += '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + escHtml(d.desc) + '</div>';
     h += '</div>';
-    h += '<button class="btn-sm outline" style="font-size:9px;flex-shrink:0" onclick="toggleDrillExpand(\'' + d.id + '\')">Details</button>';
+    h += '<button class="btn-sm outline" style="flex-shrink:0" onclick="toggleDrillExpand(\'' + d.id + '\')">Details</button>';
     h += '</div>';
     // Expandable how-to
     h += '<div id="drill-detail-' + d.id + '" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">';
