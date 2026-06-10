@@ -42,7 +42,7 @@ Router.register("dms", function() {
     
     if (!filtered.length) {
       var el = document.getElementById("dmMemberList");
-      if (el) el.innerHTML = '<div style="text-align:center;padding:32px 16px"><div style="margin-bottom:12px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5" opacity=".6"><path d="M38 28a3 3 0 01-3 3H15l-7 7V11a3 3 0 013-3h24a3 3 0 013 3z"/></svg></div><div style="font-size:16px;font-weight:700;color:var(--cream)">No Conversations Yet</div><div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5">Once more members join, you can message them here. Invite friends to grow the crew!</div></div>';
+      if (el) el.innerHTML = '<div style="text-align:center;padding:32px 16px"><div style="margin-bottom:12px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5" opacity=".6"><path d="M38 28a3 3 0 01-3 3H15l-7 7V11a3 3 0 013-3h24a3 3 0 013 3z"/></svg></div><div style="font-family:var(--font-display);font-size:18px;color:var(--gold)">No Conversations Yet</div><div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5">Once more members join, you can message them here. Invite friends to grow the crew!</div></div>';
       return;
     }
     

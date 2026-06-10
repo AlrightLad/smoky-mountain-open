@@ -6,6 +6,16 @@ var tripCreateState = { members: [], courses: [] };
 Router.register("trips", function(params) {
   if (params.create) { renderTripCreate(); return; }
   var trips = PB.getTrips();
+  // v8.24.37 — league visibility. A trip carrying a leagueId shows only in
+  // that league; a trip WITHOUT one is founding-league legacy (the seeded SMO
+  // shape pre-dates leagues) and belongs to the-parbaughs. Without this,
+  // members of every other league saw a fabricated "Upcoming" card for a
+  // club event they were never part of (the Firestore doc is closed and
+  // league-scoped; only the local seed leaked).
+  var _activeLg = getActiveLeague();
+  trips = trips.filter(function(t) {
+    return t.leagueId ? t.leagueId === _activeLg : _activeLg === "the-parbaughs";
+  });
   var today = localDateStr();
 
   // Split trips into active/upcoming vs past
@@ -53,7 +63,7 @@ Router.register("trips", function(params) {
   } else {
     h += '<div style="text-align:center;padding:32px 16px">';
     h += '<div style="margin-bottom:12px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5" opacity=".6"><path d="M6 9l18-7 18 7v22l-18 7-18-7V9z"/><path d="M6 9l18 7 18-7"/><path d="M24 16v22"/></svg></div>';
-    h += '<div style="font-size:16px;font-weight:700;color:var(--cream)">No Upcoming Events</div>';
+    h += '<div style="font-family:var(--font-display);font-size:18px;color:var(--gold)">No Upcoming Events</div>';
     h += '<div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-width:280px;margin-left:auto;margin-right:auto">Plan a golf trip, tournament, or hangout. Set dates, invite the crew, and track scores together.</div>';
     h += '<button class="btn full green" style="margin-top:16px;max-width:280px;margin-left:auto;margin-right:auto" onclick="Router.go(\'trips\',{create:true})">+ New Event</button>';
     h += '</div>';
