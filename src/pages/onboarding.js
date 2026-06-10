@@ -106,7 +106,15 @@ function advanceOnboarding() {
 }
 
 function skipOnboarding() {
-  // Mark onboarding as complete
+  // v8.24.16 — Ralph-review fix: Skip used to permanently complete the whole
+  // tour from screen 1, silently skipping PROFILE SETUP (name + username).
+  // Now Skip fast-forwards to the profile step — the one screen that matters —
+  // and only completes from there. (Settings -> About can replay the tour.)
+  // Any index >= steps.length renders profile setup (renderOnboardingStep:60),
+  // so 99 is robust to intro-screen count changes.
+  if (!currentProfile || !currentProfile.onboardingComplete) {
+    if (_onboardingStep < 99) { _onboardingStep = 99; renderOnboardingStep(); return; }
+  }
   if (db && currentUser) {
     db.collection("members").doc(currentUser.uid).set({ onboardingComplete: true }, { merge: true }).catch(function(){});
   }

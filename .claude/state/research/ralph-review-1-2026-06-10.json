@@ -1,0 +1,254 @@
+{
+  "summary": "Section-by-section Ralph review: verify today's ships landed truthfully, re-score vs baseline, produce the next ranked fix queue",
+  "agentCount": 1,
+  "logs": [
+    "Ralph review: score 6.8, 4 ship issues, 25 queued"
+  ],
+  "result": {
+    "queue": {
+      "appScoreNow": 6.8,
+      "scoreSentence": "The Ralph loop genuinely fixed the rotted IA and first-run integrity (More menu, sidebar Club section, Play hub, username/invite/save-failure hardening — verified in code, lifting 6.0 to roughly 6.8), but systemic problem #2 from the baseline — pattern multiplication — is untouched: members-detail still carries 55 legacy gold tokens, 24 native confirm() dialogs remain, two toast systems coexist (now 402 legacy call sites, up from 341), so a member crossing from Home into Wagers still visibly changes products.",
+      "shipIssues": [
+        {
+          "where": "C:\\Users\\Zach\\smoky-mountain-open\\src\\core\\utils.js:135-169 (working tree, uncommitted; APP_VERSION still 8.24.14)",
+          "problem": "In-flight ship left half-done: a pbConfirm helper marked v8.24.15 sits uncommitted in the tree with ZERO call sites migrated — dead code, dirty tree, violates the always-green/tree-clean guardrail and grind-to-completion memory.",
+          "fix": "Finish the ship: migrate member-facing confirm() call sites to pbConfirm, bump APP_VERSION + package.json + sw.js CACHE_NAME to 8.24.15, lint, commit. Do this before any new queue work.",
+          "severity": "P1"
+        },
+        {
+          "where": "C:\\Users\\Zach\\smoky-mountain-open\\src\\pages\\home-rail-newuser.js:292",
+          "problem": "Verify-email banner still claims DMs are locked ('unlock wagers, bounties, DMs, and the shop') but dms.js has no verify gate — baseline item #15 carried over unfixed; a visible value that doesn't trace to truth (P9-adjacent).",
+          "fix": "Drop 'DMs' from the banner copy so it lists only the three real gates (wagers, bounties, shop), or add the gate if it was intended.",
+          "severity": "P2"
+        },
+        {
+          "where": "C:\\Users\\Zach\\smoky-mountain-open\\src\\core\\router.js:98 + index.html:281",
+          "problem": "v8.24.13 commit claims 'tab-match arrays synced' but ghost tokens remain: profile-edit (never registered — navigating there renders a blank chrome-only page) and merch (still touch-unreachable) are both still in the tab-match array, and the profile-edit container still exists.",
+          "fix": "Delete the profile-edit container + match token (or register a redirect to members {edit: uid} mirroring the members.js 'profile' pattern); decide merch (fold teaser into shop or remove the token).",
+          "severity": "P2"
+        },
+        {
+          "where": "C:\\Users\\Zach\\smoky-mountain-open\\src\\pages\\onboarding.js:111",
+          "problem": "'Skip for now' on screen 1 still permanently writes onboardingComplete:true — mitigated by the new Settings replay-tour row but the skip path still exits the entire flow instead of jumping to profile setup.",
+          "fix": "Make Skip jump to the profile-setup step instead of completing; keep the Settings replay row as backstop.",
+          "severity": "P3"
+        }
+      ],
+      "queue": [
+        {
+          "batch": "A — Finish the Confirm Ship (in-flight, ship first)",
+          "rank": 1,
+          "title": "Commit the stranded pbConfirm helper as a complete v8.24.15 ship",
+          "where": "src/core/utils.js:135-169 (uncommitted); package.json + src/core/utils.js APP_VERSION + public/sw.js CACHE_NAME",
+          "fix": "The helper is authored but orphaned in the working tree. Version-bump all three sync points, lint, commit with the call-site migration below — never leave the tree dirty.",
+          "effort": "low"
+        },
+        {
+          "batch": "A — Finish the Confirm Ship (in-flight, ship first)",
+          "rank": 2,
+          "title": "Migrate all 18 member-facing + core native confirm() calls to pbConfirm",
+          "where": "chat.js:517, teetimes.js:256/290, partygames.js:160/169, range.js:183, scorecard.js:351, scramblelive.js:136/152, syncround.js:234/308, leagues.js:471, core/firebase.js:480 (sign-out), core/sync-attestation.js:178/246/264/328",
+          "fix": "Replace each `if (!confirm(...)) return;` with the async pbConfirm({title, message, danger}) pattern. OS confirm chrome is the single most jarring off-brand moment, and these fire at the highest-stakes taps (finish round, discard scores, attest).",
+          "effort": "medium"
+        },
+        {
+          "batch": "A — Finish the Confirm Ship (in-flight, ship first)",
+          "rank": 3,
+          "title": "Migrate the 8 admin/diagnostic confirm() calls (audience: Founder-only, so last in batch)",
+          "where": "admin.js:195/440/462/482/620/684, admin-diagnostic.js:293",
+          "fix": "Same pbConfirm swap; ships the app to 0 native dialogs so the done-criterion is a clean grep.",
+          "effort": "low"
+        },
+        {
+          "batch": "B — One Visual Language (legacy token burndown)",
+          "rank": 4,
+          "title": "Alias legacy --gold/--muted/--bg tokens to Clubhouse equivalents in one CSS change",
+          "where": "src/styles/base.css token definitions",
+          "fix": "Remap the legacy aliases to cb-token values so every legacy page converges visually at once — the single biggest 'two different apps' fix in the backlog, one file, instantly visible on 7+ pages.",
+          "effort": "low"
+        },
+        {
+          "batch": "B — One Visual Language (legacy token burndown)",
+          "rank": 5,
+          "title": "Burn down members-detail.js — heaviest legacy page in the app (55 gold vs 7 cb)",
+          "where": "src/pages/members-detail.js (verified still 55 var(--gold*) uses today)",
+          "fix": "Replace inline gold-era tokens with cb tokens; every member taps profiles daily, making this the highest-traffic legacy surface.",
+          "effort": "medium"
+        },
+        {
+          "batch": "B — One Visual Language (legacy token burndown)",
+          "rank": 6,
+          "title": "Burn down wagers.js + playnow.js (21 gold each)",
+          "where": "src/pages/wagers.js, src/pages/playnow.js (counts unchanged from baseline)",
+          "fix": "Same token migration; playnow is the live-scoring heart and wagers is a marquee community surface — both still speak the old language.",
+          "effort": "medium"
+        },
+        {
+          "batch": "B — One Visual Language (legacy token burndown)",
+          "rank": 7,
+          "title": "Burn down the remaining legacy tail: bounties (19), rules (19), courses (18), scorecard (16)",
+          "where": "src/pages/bounties.js, rules.js, courses.js, scorecard.js",
+          "fix": "Token migration completes the 'no page below 7' yardstick; courses.js also gets its inline gold-pill toggle replaced with the existing .chip-scope.",
+          "effort": "medium"
+        },
+        {
+          "batch": "B — One Visual Language (legacy token burndown)",
+          "rank": 8,
+          "title": "Replace the raw inline-styled one-off CTAs with the brass button vocabulary",
+          "where": "bugreport.js:68 (verified: still fully inline raw-gold submit), home-rail-newuser.js:293, admin.js:553, courses.js:40-41",
+          "fix": "Adopt league-btn--brass (--full/--sm/--danger modifiers) for primary CTAs; the inline one-offs bypass hover/active/touch-target rules entirely.",
+          "effort": "low"
+        },
+        {
+          "batch": "C — One Messaging System (toasts, banners, loading)",
+          "rank": 9,
+          "title": "Make Router.toast delegate to PB.toast — upgrades all 402 call sites at once",
+          "where": "src/core/router.js:110-118 (legacy single-message 2.2s toast, verified still standalone) vs PB.toast in router-sidebar.js",
+          "fix": "Internal delegation, zero page edits — the cheapest unification in the backlog; then deprecate the #toast element.",
+          "effort": "low"
+        },
+        {
+          "batch": "C — One Messaging System (toasts, banners, loading)",
+          "rank": 10,
+          "title": "Fix the verify-email banner lie: DMs are not gated",
+          "where": "src/pages/home-rail-newuser.js:292 (verified copy still lists DMs)",
+          "fix": "Align banner copy with the three real gates (wagers, bounties, shop). One-string honesty fix on the first surface every unverified member sees.",
+          "effort": "low"
+        },
+        {
+          "batch": "C — One Messaging System (toasts, banners, loading)",
+          "rank": 11,
+          "title": "Replace the vanishing-toast verify-gate denial with a bottom-sheet + Resend Verification button",
+          "where": "src/core/utils.js:60-65 (denial toast); gates at bounties.js:158, shop.js:324, wagers.js:252; sendVerificationEmail already exists",
+          "fix": "Bottom-sheet explains the gate and offers resend inline — converts a dead-end into a recovery path using existing primitives.",
+          "effort": "low"
+        },
+        {
+          "batch": "C — One Messaging System (toasts, banners, loading)",
+          "rank": 12,
+          "title": "Normalize the 16 loading-state variants to one component and one ellipsis",
+          "where": "'Loading...' (dms.js:146, invite.js:9, partygames.js:45, richlist.js:18, members-detail.js:497, admin.js) vs 'Loading…' (leagues.js, rounds.js:212) vs bare 'Loading' (calendar.js:74)",
+          "fix": "One .loading component (spinner + real ellipsis); lean on the existing skel-card for content surfaces.",
+          "effort": "low"
+        },
+        {
+          "batch": "D — One Component Per Pattern (CSS consolidation)",
+          "rank": 13,
+          "title": "Consolidate the 8 empty-state implementations into one .empty with a CTA slot",
+          "where": "Canonical .empty (components.css:422) vs clones .feed-empty/.cal-empty/.tr-empty/.league-empty/.std-empty/.adm-empty/.rsf-empty (verified: 25 clone references still in components.css); inline: drills.js:37, richlist.js:48, partygames.js:79, scramblelive.js:59, courses-detail.js:352",
+          "fix": "Convert the inline one-offs first, then alias the 7 clones in CSS. The most-seen component in a 20-member app; v8.24.9 warmed the copy but never consolidated the component.",
+          "effort": "medium"
+        },
+        {
+          "batch": "D — One Component Per Pattern (CSS consolidation)",
+          "rank": 14,
+          "title": "Consolidate the four section-header systems plus inline HQ headers",
+          "where": ".sec-head (16 files) vs .cal-sec-head (css:1074), .tr-sec-head (css:1237), .shop-sec-head (css:3908); inline: home-band.js:18, home-charts.js:106, home-hq.js:498",
+          "fix": "One .sec-head with two sanctioned variants (uppercase-mono eyebrow, serif display); alias the clones, migrate the inline HQ headers.",
+          "effort": "medium"
+        },
+        {
+          "batch": "D — One Component Per Pattern (CSS consolidation)",
+          "rank": 15,
+          "title": "Delete the inline btn-sm size overrides — same button renders 9px/10px/11px",
+          "where": "9px: findplayers.js:14-17 (verified still present), drills.js:57, members-detail.js:71; 10px: chat.js:196, home-band.js:119, courses-detail.js:57-62; 11px+padding: courses.js:156/158, members-edit.js:125",
+          "fix": "Accept the 11px base or add one .btn-sm--xs modifier; the overrides also shrink controls toward the 44pt touch floor.",
+          "effort": "low"
+        },
+        {
+          "batch": "D — One Component Per Pattern (CSS consolidation)",
+          "rank": 16,
+          "title": "Add .sh-actions for the 9 copy-pasted header flex clusters",
+          "where": "'<div style=\"display:flex;gap:8px\">' in aces.js:16, bounties.js:10, challenges.js:21, courses.js:36, scramble.js:15, teetimes.js:41, wagers.js:34; drifted to 6px in scramble.js:215 (verified: class not yet in components.css)",
+          "fix": ".sh-actions{display:flex;gap:8px} next to .sh; replace the 9 inline copies and kill the 6px drift.",
+          "effort": "low"
+        },
+        {
+          "batch": "D — One Component Per Pattern (CSS consolidation)",
+          "rank": 17,
+          "title": "Extract chartEmptyMsg helper — identical inline div duplicated 6x across two files",
+          "where": "members.js:813/820/827 + members-detail.js:557/612/629 (verified: 6 'Not enough rounds' duplicates remain)",
+          "fix": "One shared helper (or reuse the consolidated .empty) so analytics empty-state copy and style have a single source.",
+          "effort": "low"
+        },
+        {
+          "batch": "E — Navigation Truth (router + wayfinding)",
+          "rank": 18,
+          "title": "Fix Router.back() double-pop — back buttons skip a level and double-render",
+          "where": "src/core/router.js:180-194 (verified: no _suppressNextPopstate flag exists yet)",
+          "fix": "One-shot _suppressNextPopstate flag set in back(), consumed at the top of the popstate handler; P5 diagnostic first, then E2E flow test (Home→Members→Detail→back→back lands Members then Home).",
+          "effort": "low"
+        },
+        {
+          "batch": "E — Navigation Truth (router + wayfinding)",
+          "rank": 19,
+          "title": "Standardize back buttons; fix the 40px touch-target violation",
+          "where": "members-detail.js:66 (verified: min-height:40px still below the 44pt floor); leagues.js:182/248/300 (floating back, no .sh); rounds.js:181; dms.js:8 (Router.go vs Router.back)",
+          "fix": "Back always lives in the .sh header row; remove the 40px override; give leagues detail views a header row; document Router.back as default.",
+          "effort": "low"
+        },
+        {
+          "batch": "E — Navigation Truth (router + wayfinding)",
+          "rank": 20,
+          "title": "Delete the profile-edit ghost route and decide merch",
+          "where": "index.html:281 + router.js:98 (both verified still present); merch.js touch-unreachable (absent from more.js)",
+          "fix": "Register a redirect to members {edit: uid} mirroring the members.js 'profile' pattern (or delete both); fold a merch teaser row into shop or remove its tab-match token.",
+          "effort": "low"
+        },
+        {
+          "batch": "E — Navigation Truth (router + wayfinding)",
+          "rank": 21,
+          "title": "Rebuild the bottom-tab match arrays from a single shared route→tab map",
+          "where": "src/core/router.js:91-98 — v8.24.13 synced the contents but the five arrays are still hand-maintained and already carry ghost tokens",
+          "fix": "Derive the match arrays from one route→tab map sourced from the actual nav trees so More-menu edits can't drift again.",
+          "effort": "low"
+        },
+        {
+          "batch": "E — Navigation Truth (router + wayfinding)",
+          "rank": 22,
+          "title": "Give quick search a visible trigger — currently keyboard-only",
+          "where": "quick-search.js:233-248 (Cmd/Ctrl-K only); verified: window.PB.quickSearch.open still has zero callers in src/ or index.html",
+          "fix": "Search button in the sidebar top + HQ masthead with a one-line PB.quickSearch.open() handler; fix the catalog's stale 'profile' entry in the same pass.",
+          "effort": "low"
+        },
+        {
+          "batch": "E — Navigation Truth (router + wayfinding)",
+          "rank": 23,
+          "title": "Fix the Band A drawer's permanently disabled Notifications button",
+          "where": "index.html:211 (verified: still aria-disabled, tabindex=-1, swallowed onclick); focus-trap special-cases it (router-sidebar.js:108-110)",
+          "fix": "Wire it to the existing toggleNotifPanel() or extend the desktop display:none rule to 720-959px — a visibly broken control either works or disappears.",
+          "effort": "low"
+        },
+        {
+          "batch": "F — First-Impression Coherence (copy + new-member home)",
+          "rank": 24,
+          "title": "Restore community content to the mobile home 'new' state — first impression is still an empty solo app",
+          "where": "src/pages/home.js _renderMobileHome (verified: nemesis, tee times, and league pulse all still gated on ctx.state !== 'new') vs desktop State 3 modules (home-rail-newuser.js:162-171,280-286)",
+          "fix": "Reuse the existing desktop State 3 modules on mobile when state==='new' (league pulse, open tee times with JOIN framing). Not a new feature — un-suppressing existing rendered content at the exact moment social proof matters most.",
+          "effort": "medium"
+        },
+        {
+          "batch": "F — First-Impression Coherence (copy + new-member home)",
+          "rank": 25,
+          "title": "Capitalization + copy pass: one convention for page titles and '+' action labels",
+          "where": "aces.js:16 'Ace wall' vs bounties.js:10 'Bounty Board' vs courses.js:36 'Course directory'; '+ Log ace' vs '+ Post Bounty' vs '+ New team'",
+          "fix": "Adopt sentence case (matches the shop.js Clubhouse editorial voice) and sweep all .sh h2 strings and '+ ' labels in one pass — pure string edits, zero regression risk, visible everywhere.",
+          "effort": "low"
+        }
+      ],
+      "doneCriteria": [
+        "Working tree clean and all in-flight work committed: git status returns 0 lines, APP_VERSION == package.json version == sw.js CACHE_NAME, one Caddy Notes line per ship.",
+        "Zero native dialogs: grep for 'confirm(' and 'alert(' across src/ returns only the pbConfirm implementation — 0 native call sites (currently 24).",
+        "One token era: grep 'var(--gold' across src/pages/ returns 0 inline uses on the seven offender pages (members-detail, wagers, playnow, bounties, rules, courses, scorecard — currently 169 combined), with legacy aliases mapped to Clubhouse tokens in base.css.",
+        "One pattern per component: Router.toast delegates to PB.toast (legacy #toast primitive removed or delegating); one .empty component with 0 inline ad-hoc empty divs and clone classes aliased; one .sec-head system; 0 inline btn-sm font-size overrides; .sh-actions replaces the 9 inline header flex clusters.",
+        "Navigation truth: 0 ghost routes (every router.js tab-match token resolves to a registered route; profile-edit gone), every registered member-facing route has at least one touch-reachable inbound link on mobile, Router.back double-pop fixed with a green E2E flow test (Home→Members→Detail→back→back), and no touch target below 44pt (members-detail 40px override removed).",
+        "Honest copy everywhere: verify-email banner lists only real gates; loading states use one component and one ellipsis; page titles and '+' labels follow one sentence-case convention.",
+        "Re-run the same 8-dim whole-app rubric audit that produced the 6.0 baseline: no page scores below 7.0 and the weighted appScore reaches at least 7.5, with the score table written to .claude/state/research/ for diffability.",
+        "Full quality gate green: npm run lint 0 errors, full Playwright E2E zero-fail/zero-flaky at all 3 viewports (desktop + iPhone + Pixel), App Health >= A-, AgentShield scan clean, changes live on prod per the per-feature-loop-to-prod memory.",
+        "Founder exit packet delivered: before/after screenshots of the five worst baseline pages (partygames, merch, records, onboarding, standings) plus the re-scored table, surfaced for Founder visual sign-off — the loop exits to the Founder only after this packet exists, since per AMD-028 agent self-rating caps at 9.4 and unpausing features is a Founder decision."
+      ]
+    },
+    "shipChecks": [],
+    "groupScores": []
+  }
+}

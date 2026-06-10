@@ -13,6 +13,15 @@ Router.register("members", function(params) {
 // unregistered, so navigating to /profile rendered a blank chrome-only
 // page. Redirects to /members?id=<viewer-uid> so the renderer writes to
 // the canonical members container (avoids two-container ambiguity).
+// v8.24.16 — Ralph-review fix: "profile-edit" was a GHOST route (container +
+// tab-match token existed but no Router.register), rendering a blank page.
+// Redirect to the canonical members edit form for the signed-in member.
+Router.register("profile-edit", function() {
+  var uid = (typeof currentUser !== "undefined" && currentUser) ? currentUser.uid : null;
+  if (uid) Router.go("members", { edit: uid });
+  else Router.go("members");
+});
+
 Router.register("profile", function(params) {
   var uid = null;
   if (typeof currentUser !== "undefined" && currentUser && currentUser.uid) {
