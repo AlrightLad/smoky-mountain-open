@@ -356,7 +356,11 @@ function computeCourseLegend(courseName) {
   var arr = Object.keys(counts).map(function(k) { return counts[k]; });
   if (!arr.length) return null;
   arr.sort(function(a, b) { return b.count - a.count || (b.last > a.last ? 1 : (b.last < a.last ? -1 : 0)); });
-  if (arr[0].count < 2) return null;
+  // v8.24.9 — crown the leader with >=1 round (was >=2). In a low-volume friend
+  // league most courses have only single rounds, so the >=2 gate hid the feature
+  // on nearly every course (Founder: "I don't see the final product"). arr is
+  // already non-empty here; the render frames a single round honestly as the
+  // early regular rather than fabricating a streak (P9).
   var runnerUp = arr[1] || null;
   return { legend: arr[0], runnerUp: runnerUp, runnerUpGap: runnerUp ? (arr[0].count - runnerUp.count) : null };
 }

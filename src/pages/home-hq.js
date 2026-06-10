@@ -142,7 +142,15 @@ function _renderEditorialGreetingHero(ctx) {
 function _hqNemesisLine() {
   if (typeof computeRivalries !== "function" || typeof currentUser === "undefined" || !currentUser) return "";
   var riv = computeRivalries(currentUser.uid);
-  if (!riv.nemesis) return "";
+  if (!riv.nemesis) {
+    // v8.24.9 — no shared-round rivalry yet (common in a low-volume friend
+    // league). Rather than vanish on the front door — the rank-1 community hook —
+    // the Caddy frames it as an invitation, matching the profile card's empty
+    // copy. Honest: makes no claim about a rivalry that doesn't exist (P9). The
+    // hero hook never renders empty now.
+    return '<div class="hq-nemesis"><span class="hq-nemesis__tag">Nemesis</span>'
+      + '<span class="hq-nemesis__txt">No rival yet — play the same course, same day as another Parbaugh and the Caddy starts keeping the tape.</span></div>';
+  }
   var n = riv.nemesis;
   var nm = n.opp.name || n.opp.username || "a rival";
   var verb = n.leading ? "You own " + nm + ", " + n.wins + "–" + n.losses
@@ -389,7 +397,7 @@ function _renderStatsSnapshotQuartet(ctx) {
   // ellipsis truncation on common Golf-suffix patterns.
   var bestCaption;
   if (!ctx.bestRoundId) {
-    bestCaption = "NO ROUNDS YET";
+    bestCaption = "LOG YOUR FIRST";
   } else {
     var br = (ctx.myRounds || []).find(function(r){ return r.id === ctx.bestRoundId; });
     if (br && br.course) {
@@ -493,7 +501,14 @@ function _renderSeasonLadderTop10(ctx, opts) {
   h += '</div>';
 
   if (!standings.length) {
-    h += '<div style="padding:28px 0;font-family:var(--font-mono);font-size:11px;letter-spacing:1.5px;color:var(--cb-mute);text-align:center;text-transform:uppercase">No rounds this season yet</div>';
+    // v8.24.9 — designed empty state (was a bare uppercase line that read as
+    // broken). On-brand felt-paper card + Caddy invitation so a quiet pre-season
+    // looks inhabited, not empty (P10: legitimate empty state).
+    h += '<div style="margin:6px 0 2px;padding:22px 18px;text-align:center;background:var(--cb-paper);border:1px solid var(--cb-mute-3);border-radius:12px">';
+    h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:6px">A Blank Scorecard</div>';
+    h += '<div style="font-family:var(--font-display);font-size:17px;font-weight:600;color:var(--cb-ink);line-height:1.25;margin-bottom:5px">The season hasn\'t teed off</div>';
+    h += '<div style="font-size:12px;color:var(--cb-mute);line-height:1.5">First round logged sets the standings — be the name everyone else has to chase.</div>';
+    h += '</div>';
     h += '</div>';
     return h;
   }

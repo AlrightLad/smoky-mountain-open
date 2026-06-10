@@ -163,7 +163,12 @@ function _buildHomeContext() {
 function _renderMobileNemesis() {
   if (typeof computeRivalries !== "function" || typeof currentUser === "undefined" || !currentUser) return "";
   var riv = computeRivalries(currentUser.uid);
-  if (!riv.nemesis) return "";
+  if (!riv.nemesis) {
+    // v8.24.9 — no rivalry yet: show a warm, non-interactive invitation chip
+    // instead of vanishing (matches the HQ hero + profile empty copy). cursor
+    // default since there's no tape to open yet. Honest — no fabricated rivalry.
+    return '<div class="hm-nemesis" style="cursor:default"><span class="hm-nemesis__tag">Nemesis</span><span class="hm-nemesis__txt">No rival yet — play alongside another Parbaugh to start one.</span></div>';
+  }
   var n = riv.nemesis;
   var nm = n.opp.name || n.opp.username || "a rival";
   var verb = n.leading ? "You own " + nm + ", " + n.wins + "–" + n.losses

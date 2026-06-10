@@ -96,12 +96,13 @@ function renderCourseDetail(courseId) {
   if (_cl && _cl.legend) {
     var _lg = _cl.legend;
     var _lgP = PB.getPlayer(_lg.id);
+    var _clRoundWord = _lg.count === 1 ? " round" : " rounds";
     var _clSub = (_cl.runnerUp && _cl.runnerUpGap > 0)
       ? escHtml(_cl.runnerUp.name) + " needs " + _cl.runnerUpGap + " more to take it"
-      : "The most-played regular here";
+      : (_lg.count === 1 ? "First on the board here — play to claim it" : "The most-played regular here");
     h += '<div class="course-legend" onclick="Router.go(\'members\',{id:\'' + String(_lg.id).replace(/'/g, "\\'") + '\'})" role="button" tabindex="0" onkeydown="if(event.key===\'Enter\'){Router.go(\'members\',{id:\'' + String(_lg.id).replace(/'/g, "\\'") + '\'})}">';
     h += '<div class="course-legend__crown"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 20h14M6.5 20c-1.2-5-2-8-1-12 2.2 2 4 2 5-1 1 3 2.8 3 5 1 1 4 .2 7-1 12"/></svg></div>';
-    h += '<div class="course-legend__main"><div class="course-legend__label">Course Legend</div><div class="course-legend__name">' + escHtml(_lg.name) + '</div><div class="course-legend__sub">' + _lg.count + ' rounds in 90 days · ' + _clSub + '</div></div>';
+    h += '<div class="course-legend__main"><div class="course-legend__label">Course Legend</div><div class="course-legend__name">' + escHtml(_lg.name) + '</div><div class="course-legend__sub">' + _lg.count + _clRoundWord + ' in 90 days · ' + _clSub + '</div></div>';
     h += renderAvatar(_lgP, 40, false);
     h += '</div>';
   }
