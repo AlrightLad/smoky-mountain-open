@@ -69,7 +69,13 @@ var PB = (function() {
       miniWinners: mini,
       bonusWinners: bonus,
       rounds: [],
-      scrambleTeams: [{id:"smo_scramble",name:"The Parbaughs",members:["zach","kayvan","kiyan","nick"],captain:"zach",size:4,matches:[]}],
+      // v8.24.35 — the legacy SMO scramble team is Firestore-authoritative
+      // (scrambleTeams/smo_scramble) and merges in via the boot league pull.
+      // The old hardcoded seed put it in EVERY fresh local state — including
+      // members of other leagues — and the boot push then re-sent it against
+      // a server doc whose roster the booting user isn't on, so rules denied
+      // it: the chronic "[Sync] scrambleTeam write failed" prod error.
+      scrambleTeams: [],
       records: { longestDrive: null, holeInOnes: [] },
       version: 3
     };

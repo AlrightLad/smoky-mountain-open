@@ -290,8 +290,12 @@ function syncScrambleTeam(team) {
   var d = JSON.parse(JSON.stringify(team));
   d.updatedAt = fsTimestamp();
   // v8 rules require leagueId on scrambleTeams writes. leagueDoc() mutates
-  // d in place to add the active league id.
+  // d in place to add the active league id. v8.24.35 — a team that already
+  // carries a leagueId keeps it: restamping with the CURRENTLY active league
+  // would silently move a team between leagues on re-push.
+  var teamLeague = d.leagueId;
   leagueDoc("scrambleTeams", d);
+  if (teamLeague) d.leagueId = teamLeague;
   db.collection("scrambleTeams").doc(team.id).set(d, {merge: true}).catch(function(err) { pbWarn("[Sync] scrambleTeam write failed:", err.message); });
 }
 
@@ -374,9 +378,19 @@ function syncScrambleTeamsFromFirestore() {
         merged++;
       }
     });
-    // Push any local teams that aren't in Firestore yet
+    // Push any local teams that aren't in Firestore yet.
+    // v8.24.35 — only teams THIS member belongs to. Rosters hold legacy
+    // profile ids on pre-v8 teams and auth uids on new ones, so check both
+    // id spaces plus captain. The old unconditional push re-sent teams the
+    // booting user isn't on (rules deny those writes by design).
+    var myPid = (typeof currentProfile !== "undefined" && currentProfile) ? (currentProfile.claimedFrom || currentProfile.id) : null;
+    var myUid = (typeof currentUser !== "undefined" && currentUser) ? currentUser.uid : null;
     local.forEach(function(t) {
-      if (!remoteIds[t.id]) { syncScrambleTeam(t); }
+      if (remoteIds[t.id]) return;
+      var roster = t.members || [];
+      var mine = (myPid && (roster.indexOf(myPid) !== -1 || t.captain === myPid))
+              || (myUid && (roster.indexOf(myUid) !== -1 || t.captain === myUid));
+      if (mine) syncScrambleTeam(t);
     });
     if (merged > 0) pbLog("[Sync] Merged", merged, "scramble teams from Firestore");
   }).catch(function(err) {
