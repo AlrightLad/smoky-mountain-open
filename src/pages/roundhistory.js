@@ -76,7 +76,13 @@ Router.register("roundhistory", function(params) {
   // Hole heat map (per-course, >=3 hole-by-hole rounds) per CLUBHOUSE_SPEC-HQ-3r
   var hmCourse = _rhCourse || (mostPlayed !== "—" ? mostPlayed : "");
   if (hmCourse && typeof renderHeatMap === "function") {
-    var hmEligible = allRounds.filter(function(r){ return r.course === hmCourse && r.holeScores && r.holePars && r.holeScores.length >= 9; });
+    // v8.24.39 — eligibility mirrors calcCourseBreakdown's par resolution
+    // (round holePars OR course hole data). The old gate required per-round
+    // holePars, so rounds logged without them showed dot strips in the list
+    // below while the heat-map counter claimed "0 of 3" — contradictory.
+    var hmCourseObj = PB.getCourses().find(function(c){ return c.name === hmCourse; });
+    var hmCourseHasPars = !!(hmCourseObj && hmCourseObj.holes && hmCourseObj.holes.length >= 9);
+    var hmEligible = allRounds.filter(function(r){ return r.course === hmCourse && r.holeScores && r.holeScores.length >= 9 && ((r.holePars && r.holePars.length >= 9) || hmCourseHasPars); });
     h += '<div style="padding:16px;border-bottom:1px solid var(--border)">';
     if (hmEligible.length >= 3) {
       var hmBd = calcCourseBreakdown(hmCourse, allRounds);
@@ -158,16 +164,24 @@ Router.register("roundhistory", function(params) {
 
       // Mini hole visualization (colored dots)
       if (r.holeScores && r.holeScores.length >= 9) {
-        var pars = r.holePars || [];
+        // v8.24.39 — resolve pars the truthful way (round, then course); a
+        // hole with no known par renders the neutral no-data dot instead of
+        // a false par-4 color (a 4 on a par 5 is a birdie, not a par).
+        var pars = (r.holePars && r.holePars.length) ? r.holePars : null;
+        if (!pars && r.course) {
+          var _dotCourse = PB.getCourses().find(function(c){ return c.name === r.course; });
+          if (_dotCourse && _dotCourse.holes && _dotCourse.holes.length >= 9) pars = _dotCourse.holes.map(function(hh){ return hh.par || 0; });
+        }
+        pars = pars || [];
         h += '<div style="display:flex;gap:2px;margin-top:6px">';
         var numHoles = Math.min(r.holeScores.length, is9 ? 9 : 18);
         var startHole = is9 && r.holesMode === "back9" ? 9 : 0;
         for (var hi = startHole; hi < startHole + numHoles; hi++) {
           var hs = parseInt(r.holeScores[hi]);
-          var hp = pars[hi] || 4;
+          var hp = pars[hi] || 0;
           // STATIC scoring colors — never change per theme (universal golf convention)
           var dotColor = "#444"; // no data
-          if (hs > 0) {
+          if (hs > 0 && hp > 0) {
             var diff = hs - hp;
             if (diff <= -2) dotColor = "#FFD700";      // eagle+ (gold)
             else if (diff === -1) dotColor = "#4CAF50"; // birdie (green)

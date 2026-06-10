@@ -23,7 +23,7 @@ const DEV_URL = 'http://localhost:5173/smoky-mountain-open/';
 const OUT = path.resolve(__dirname, 'main-flows-v2');
 
 (async () => {
-  const PAGES = ['activity', 'members', 'leagues', 'findplayers'];
+  const PAGES = ['roundhistory'];
   const browser = await chromium.launch();
   for (const [label, vp] of [['mobile', { width: 390, height: 844 }], ['desktop', { width: 1440, height: 900 }]]) {
     const ctx = await browser.newContext({ viewport: vp, deviceScaleFactor: 2 });
