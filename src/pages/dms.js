@@ -143,7 +143,7 @@ Router.register("dm-thread", function(params) {
   // Render immediately with loading state — don't wait for anything async
   var threadEl = document.querySelector('[data-page="dm-thread"]');
   threadEl.innerHTML = '<div class="dm-page-wrap"><div class="sh" id="dmThreadHeader" style="flex-shrink:0"><h2 style="font-size:16px">Message</h2><button class="back" onclick="Router.go(\'dms\')">← Back</button></div>' +
-    '<div id="dmMessages" class="dm-messages"><div class="loading"><div class="spinner"></div>Loading...</div></div>' +
+    '<div id="dmMessages" class="dm-messages"><div class="loading"><div class="spinner"></div>Loading…</div></div>' +
     '<div class="dm-input-area"><input type="text" id="dmInput" placeholder="Message..." onkeydown="if(event.key===\'Enter\')sendDM()"><button onclick="sendDM()">Send</button></div></div>';
   
   // Start message listener immediately

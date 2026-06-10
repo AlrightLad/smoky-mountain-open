@@ -42,7 +42,7 @@ Router.register("partygames", function() {
   }
   
   // Active games from Firestore
-  h += '<div id="activeGames"><div class="loading"><div class="spinner"></div>Loading...</div></div>';
+  h += '<div id="activeGames"><div class="loading"><div class="spinner"></div>Loading…</div></div>';
   
   // Game catalog — only show if in a round
   if (inRound) {

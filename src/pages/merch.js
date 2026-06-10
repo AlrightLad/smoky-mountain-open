@@ -2,6 +2,12 @@
    PAGE: MERCH
    ================================================ */
 Router.register("merch", function() {
+  // v8.24.25 — merch was a static 6-item placeholder, touch-unreachable, a
+  // ghost in the tab-match array. Until a real merch program exists it
+  // redirects to the Shop (the storefront members can actually use).
+  Router.go("shop");
+  return;
+
   var h = '<div class="sh"><h2>Merch</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
 
   h += '<div style="text-align:center;padding:20px 16px"><div style="width:60px;height:60px;border-radius:14px;margin:0 auto 12px;overflow:hidden"><img alt="" src="watermark.jpg" style="width:100%;height:100%;object-fit:cover"></div>';

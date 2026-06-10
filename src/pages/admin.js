@@ -44,19 +44,19 @@ Router.register("admin", function() {
   // legacy IDs so the data-loading handlers below bind unchanged.
   var savedApiKey = localStorage.getItem("golfcourse_api_key") || "";
   var bodies = {
-    reports: '<div id="adminReports"><div class="adm-empty">Loading...</div></div>',
-    members: '<div id="adminMemberList"><div class="adm-empty">Loading...</div></div>',
+    reports: '<div id="adminReports"><div class="adm-empty">Loading…</div></div>',
+    members: '<div id="adminMemberList"><div class="adm-empty">Loading…</div></div>',
     trophies:
       '<button class="adm-btn adm-btn--brass adm-btn--full" onclick="Router.go(\'trophycreate\',{from:\'admin\',scope:\'platform\'})">+ New trophy</button>' +
-      '<div id="adminTrophyCatalog" style="margin-top:14px"><div class="adm-empty">Loading...</div></div>',
-    invites: '<div id="adminInviteList"><div class="adm-empty">Loading...</div></div>',
+      '<div id="adminTrophyCatalog" style="margin-top:14px"><div class="adm-empty">Loading…</div></div>',
+    invites: '<div id="adminInviteList"><div class="adm-empty">Loading…</div></div>',
     generate:
       '<div class="ff"><label class="ff-label" for="bulkCount">How many codes?</label>' +
       '<select id="bulkCount" class="ff-input"><option value="3">3</option><option value="5" selected>5</option><option value="10">10</option></select></div>' +
       '<button class="adm-btn adm-btn--brass adm-btn--full" onclick="bulkGenerateInvites()">Generate invites</button>' +
       '<div id="bulkResult"></div>',
-    requests: '<div id="adminFeatureRequests"><div class="adm-empty">Loading...</div></div>',
-    errors: '<div id="adminErrorLog"><div class="adm-empty">Loading...</div></div>',
+    requests: '<div id="adminFeatureRequests"><div class="adm-empty">Loading…</div></div>',
+    errors: '<div id="adminErrorLog"><div class="adm-empty">Loading…</div></div>',
     courses:
       '<button class="adm-btn" onclick="loadAdminCourses()">Load course list</button>' +
       '<div id="adminCourseList" style="margin-top:14px"></div>',

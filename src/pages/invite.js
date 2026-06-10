@@ -6,7 +6,7 @@ Router.register("invite", function() {
   h += '<div style="margin-top:6px;font-size:11px;color:var(--gold)">Remaining: ' + remaining + '</div></div>';
   h += '<button class="btn full green" onclick="generateInvite()">Generate Invite Code</button>';
   h += '<div id="generatedInvite"></div>';
-  h += '<div id="myInvites" style="margin-top:16px"><div class="loading"><div class="spinner"></div>Loading...</div></div>';
+  h += '<div id="myInvites" style="margin-top:16px"><div class="loading"><div class="spinner"></div>Loading…</div></div>';
   h += '</div>';
   document.querySelector('[data-page="invite"]').innerHTML = h;
 

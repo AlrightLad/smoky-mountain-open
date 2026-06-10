@@ -530,7 +530,7 @@ function renderMemberDetailWithData(p) {
   // rules-denied query firing on every re-render. (v8.9.2)
   if (isOwnProfile) {
     h += '<div class="section">' + secHead("ParCoins", "Recent earnings");
-    h += '<div id="parcoin-history-' + pid + '"><div class="loading"><div class="spinner"></div>Loading...</div></div>';
+    h += '<div id="parcoin-history-' + pid + '"><div class="loading"><div class="spinner"></div>Loading…</div></div>';
     h += '</div>';
   }
 

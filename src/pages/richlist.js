@@ -15,7 +15,7 @@ Router.register("richlist", function() {
   var h = '<div class="sh"><h2>Rich List</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
 
   h += '<div style="text-align:center;padding:16px;font-size:11px;color:var(--muted)">Top 10 ParCoin holders · Lifetime earned</div>';
-  h += '<div id="rich-list-content"><div class="loading"><div class="spinner"></div>Loading...</div></div>';
+  h += '<div id="rich-list-content"><div class="loading"><div class="spinner"></div>Loading…</div></div>';
 
   // Power-ups section
   h += '<div class="section" style="margin-top:8px"><div class="sec-head"><span class="sec-title">Power-Ups</span></div>';

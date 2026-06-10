@@ -95,7 +95,7 @@ var Router = (function() {
       // v8.24.13 — baseline IA fix: every page whose entry point is the More
       // menu now lights the More tab (wagers/bounties/leagues/chat/shop/etc.
       // previously lit nothing, so the bottom nav looked broken there).
-      { match: ["more","members","profile","profile-edit","records","aces","scramble","challenges","trophyroom","rules","merch","wagers","bounties","leagues","findplayers","drills","chat","shop","richlist","faq","caddynotes","caddynotes-archive","bugreport"] }
+      { match: ["more","members","profile","profile-edit","records","aces","scramble","challenges","trophyroom","rules","wagers","bounties","leagues","findplayers","drills","chat","shop","richlist","faq","caddynotes","caddynotes-archive","bugreport"] }
     ];
     var buttons = nav.querySelectorAll("button");
     tabs.forEach(function(t, i) {

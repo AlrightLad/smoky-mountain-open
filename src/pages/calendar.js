@@ -71,7 +71,7 @@ Router.register("calendar", function() {
   // ── Scheduling chat ──
   h += '<section class="cal-chat" aria-label="Scheduling chat">';
   h += '<div class="cal-sec-head"><h2 class="cal-sec-title">Scheduling</h2><div class="cal-sec-sub">Coordinate tee times and trips with the league.</div></div>';
-  h += '<div id="calChatFeed" class="cal-chat__feed"><div class="cal-chat__loading">Loading</div></div>';
+  h += '<div id="calChatFeed" class="cal-chat__feed"><div class="cal-chat__loading">Loading…</div></div>';
   h += '<div class="cal-chat__composer">';
   h += '<input class="cal-chat__input" id="calChatInput" placeholder="Discuss scheduling..." aria-label="Scheduling message" onkeydown="if(event.key===\'Enter\')sendCalChat()">';
   h += '<button type="button" class="cal-chat__send" aria-label="Send scheduling message" title="Send" onclick="sendCalChat()"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>';

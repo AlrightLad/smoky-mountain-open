@@ -344,7 +344,7 @@ function toggleFeedComments(roundId) {
   if (!el) return;
   if (el.style.display !== "none") { el.style.display = "none"; return; }
   el.style.display = "block";
-  el.innerHTML = '<div style="text-align:center;padding:8px;font-size:10px;color:var(--muted)">Loading...</div>';
+  el.innerHTML = '<div style="text-align:center;padding:8px;font-size:10px;color:var(--muted)">Loading…</div>';
   db.collection("rounds").doc(roundId).get().then(function(doc) {
     if (!doc.exists) { el.innerHTML = ""; return; }
     var comments = doc.data().comments || [];
