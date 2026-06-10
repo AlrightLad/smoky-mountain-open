@@ -1,0 +1,67 @@
+// DRAFT — rounds block for the multi-league leagueIds[] model (F9: 4-slot cap).
+// NOT deployed; gated on Founder sign-off of multi-league-architecture-decision.
+// On approval this block replaces the rounds block in firestore.rules; the
+// helpers below it join the helper section. Emulator tests draft alongside in
+// tests/firestore-rules/ (added in the same approval ship, seeded with the
+// REAL doc shape per feedback_tests_seed_real_shape).
+//
+// Design notes:
+// - Dual-read window: rules accept BOTH the legacy scalar leagueId and the new
+//   leagueIds[] during migration (reads gate on either).
+// - F9: Firestore rules cannot loop; per-league membership validation is
+//   UNROLLED to 4 slots (list size capped at 4), keeping total doc accesses
+//   under the 10-call rules limit (4x leagueDoc get + member doc ≈ 6).
+// - Engagement branch (likes/comments/commentLikes/reactions + block guard)
+//   carries over unchanged except membership accepts any published league.
+
+    // ─── helper: is uid a member of ANY league this round is published to ──
+    // (4-slot unrolled per F9 — leagueIds is validated size()<=4 on write)
+    function memberOfAnyRoundLeague(data) {
+      return (data.leagueIds.size() > 0 && isLeagueMember(data.leagueIds[0], uid()))
+          || (data.leagueIds.size() > 1 && isLeagueMember(data.leagueIds[1], uid()))
+          || (data.leagueIds.size() > 2 && isLeagueMember(data.leagueIds[2], uid()))
+          || (data.leagueIds.size() > 3 && isLeagueMember(data.leagueIds[3], uid()));
+    }
+    function roundLeagueList(data) {
+      // dual-read shim: prefer leagueIds[], fall back to [leagueId]
+      return data.get('leagueIds', data.leagueId != null ? [data.leagueId] : []);
+    }
+
+    match /rounds/{roundId} {
+      allow read: if amIReadable();
+      // create: author-only; every published league must be one the author
+      // belongs to and is not banned from; cap 4 (F9). Solo rounds (empty
+      // leagueIds) are allowed — rounds are personal-first.
+      allow create: if amIActive()
+                   && request.resource.data.player == uid()
+                   && request.resource.data.get('leagueIds', []).size() <= 4
+                   && (request.resource.data.get('leagueIds', []).size() == 0
+                       || memberOfAnyRoundLeague(request.resource.data))
+                   // banned-league guard, unrolled to match (deny if ANY slot bans the author)
+                   && !(request.resource.data.get('leagueIds', []).size() > 0 && isBannedFromLeague(request.resource.data.leagueIds[0], uid()))
+                   && !(request.resource.data.get('leagueIds', []).size() > 1 && isBannedFromLeague(request.resource.data.leagueIds[1], uid()))
+                   && !(request.resource.data.get('leagueIds', []).size() > 2 && isBannedFromLeague(request.resource.data.leagueIds[2], uid()))
+                   && !(request.resource.data.get('leagueIds', []).size() > 3 && isBannedFromLeague(request.resource.data.leagueIds[3], uid()));
+      allow update: if amIActive() && (
+        resource.data.player == uid()
+        // leadership of ANY published league retains moderation authority
+        || (roundLeagueList(resource.data).size() > 0 && amILeagueLeadership(roundLeagueList(resource.data)[0]))
+        || (roundLeagueList(resource.data).size() > 1 && amILeagueLeadership(roundLeagueList(resource.data)[1]))
+        || amIFounder()
+        // engagement branch: member of ANY published league; block guard holds
+        || (memberOfAnyRoundLeague(resource.data)
+            && request.resource.data.diff(resource.data).affectedKeys()
+                  .hasOnly(['likes', 'comments', 'commentLikes', 'reactions'])
+            && !isBlockedBy(resource.data.player))
+      );
+      allow delete: if amIActive()
+                   && (resource.data.player == uid() || amIFounder());
+    }
+
+// OPEN QUESTIONS for the approval ship (flagged, not blockers):
+// 1. Leadership moderation is unrolled to 2 slots above (leadership of league
+//    3/4 of a quad-published round can't moderate) — acceptable v1 trade to
+//    stay under the doc-access limit; founder can always moderate.
+// 2. The author may NOT edit leagueIds after create in v1 (no retroactive
+//    re-publishing — anti-sandbag). Enforce by adding leagueIds to a
+//    hasOnly-exclusion on the author branch in the approval ship.
