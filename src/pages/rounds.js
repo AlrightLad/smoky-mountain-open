@@ -872,15 +872,29 @@ function quickAddCourseForRound(name, _state) {
   var state = _state;
   if (!state) state = "";
   state = state.trim().toUpperCase().substring(0, 2);
-  var id = name.toLowerCase().replace(/[^a-z0-9]/g, "").substring(0, 20) + Date.now().toString(36).slice(-4);
-  PB.addCourse({id:id,name:name,loc:(state||"Unknown"),region:state||"US",rating:72.0,slope:113,par:72,photo:"",reviews:[],quickAdd:true});
-  if (db) db.collection("courses").doc(id).set({id:id,name:name,loc:(state||"Unknown"),region:state||"US",rating:72.0,slope:113,par:72,quickAdd:true,createdAt:fsTimestamp()}).catch(function(){});
-  document.getElementById("rf-course").value = name;
-  var ri = document.getElementById("rf-rating"); if (ri) ri.value = "72";
-  var si = document.getElementById("rf-slope"); if (si) si.value = "113";
-  document.getElementById("search-round-course").innerHTML = "";
-  renderLogHoleGrid();
-  Router.toast("Added " + name);
+  // v8.24.42 — auto-create: real GolfCourseAPI data first (zero-guessing
+  // rule); the guessed-72s stub only when the API has no match.
+  Router.toast("Looking up " + name + "...");
+  pbAutoCreateCourse(name, state).then(function(apiCourse) {
+    if (apiCourse) {
+      document.getElementById("rf-course").value = apiCourse.name;
+      var ri0 = document.getElementById("rf-rating"); if (ri0) ri0.value = String(apiCourse.rating || 72);
+      var si0 = document.getElementById("rf-slope"); if (si0) si0.value = String(apiCourse.slope || 113);
+      document.getElementById("search-round-course").innerHTML = "";
+      renderLogHoleGrid();
+      Router.toast("Added " + apiCourse.name + " with real course data");
+      return;
+    }
+    var id = name.toLowerCase().replace(/[^a-z0-9]/g, "").substring(0, 20) + Date.now().toString(36).slice(-4);
+    PB.addCourse({id:id,name:name,loc:(state||"Unknown"),region:state||"US",rating:72.0,slope:113,par:72,photo:"",reviews:[],quickAdd:true});
+    if (db) db.collection("courses").doc(id).set({id:id,name:name,loc:(state||"Unknown"),region:state||"US",rating:72.0,slope:113,par:72,quickAdd:true,createdAt:fsTimestamp()}).catch(function(){});
+    document.getElementById("rf-course").value = name;
+    var ri = document.getElementById("rf-rating"); if (ri) ri.value = "72";
+    var si = document.getElementById("rf-slope"); if (si) si.value = "113";
+    document.getElementById("search-round-course").innerHTML = "";
+    renderLogHoleGrid();
+    Router.toast("Added " + name + " (provisional pars)");
+  });
 }
 
 function showRoundCommentary(round) {

@@ -187,8 +187,15 @@ async function main() {
   console.log('  scenarios:' + scenarios.length);
   console.log('');
 
-  // Probe dev server first.
-  var ok = await probeDevServer(DEV_URL);
+  // Probe dev server first. v8.24.42 — retry up to 4x with 2s gaps; the
+  // single-shot probe flaked when vite was mid-(re)start or while the OS
+  // settled a just-released port, failing whole suite runs with the server
+  // genuinely up.
+  var ok = false;
+  for (var probeTry = 0; probeTry < 4 && !ok; probeTry++) {
+    if (probeTry > 0) await new Promise(function(r) { setTimeout(r, 2000); });
+    ok = await probeDevServer(DEV_URL);
+  }
   if (!ok) {
     console.error('ERROR: dev server not reachable at ' + DEV_URL);
     console.error('  Start it in another terminal:  npm run dev');

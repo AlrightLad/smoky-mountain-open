@@ -275,15 +275,35 @@ function _extractTeeData(c) {
   return { rating: w.course_rating || 0, slope: w.slope_rating || 0, par: w.par_total || 0, tee: w.tee_name || "", yards: w.total_yards || 0, holes: holes, allTees: allTees };
 }
 
-function importDirApiCourse(idx) {
-  var cacheKeys = Object.keys(_gcSearchCache).filter(function(k){return k.indexOf("dir_")===0});
-  var lastResults = cacheKeys.length ? _gcSearchCache[cacheKeys[cacheKeys.length - 1]] : [];
-  var filtered = lastResults.filter(function(c) {
-    var name = c.course_name || c.club_name || c.name || c.courseName || "";
-    return !PB.getCourseByName(name);
-  });
-  var c = filtered[idx];
-  if (!c) return;
+// ── Course auto-create (v8.24.42, #26) ──────────────────────────────────
+// Try GolfCourseAPI before accepting a guessed-pars stub (the zero-guessing
+// rule: real rating/slope/par/tees or honestly provisional, never fake 72s).
+// Works with a personal key today; once the gated searchCourses deploy lands
+// the server-held key covers every member (the key param becomes optional).
+function pbAutoCreateCourse(name, state) {
+  var apiKey = localStorage.getItem("golfcourse_api_key");
+  var url = "https://us-central1-parbaughs.cloudfunctions.net/searchCourses?q=" + encodeURIComponent(name) + (apiKey ? "&key=" + encodeURIComponent(apiKey) : "");
+  return fetch(url)
+    .then(function(res) { if (!res.ok) throw new Error(res.status); return res.json(); })
+    .then(function(data) {
+      var courses = Array.isArray(data) ? data : (data.courses || data.results || data.data || data.items || []);
+      if (!courses.length) return null;
+      var nLower = name.toLowerCase();
+      var best = courses.find(function(c) {
+        var cn = (c.course_name || c.club_name || c.name || c.courseName || "").toLowerCase();
+        var cs = ((c.location && typeof c.location === "object" ? c.location.state : c.state) || c.province || c.region || "").toUpperCase();
+        var nameHit = cn.indexOf(nLower) !== -1 || nLower.indexOf(cn) !== -1;
+        return cn && nameHit && (!state || !cs || cs === state);
+      });
+      if (!best) return null;
+      return pbImportApiCourse(best);
+    })
+    .catch(function() { return null; });
+}
+
+// Build + persist a course doc from a GolfCourseAPI result. Shared by the
+// directory import button and the auto-create path.
+function pbImportApiCourse(c) {
   var name = c.course_name || c.club_name || c.name || c.courseName || "Unknown";
   var city = (c.location && typeof c.location === "object" ? c.location.city : c.city) || "";
   var st = (c.location && typeof c.location === "object" ? c.location.state : c.state) || c.province || c.region || "";
@@ -293,7 +313,21 @@ function importDirApiCourse(idx) {
   var lng = (c.location && c.location.longitude) || 0;
   var course = PB.addCourse({ name: name, loc: loc, region: st || "US", rating: td.rating || 72, slope: td.slope || 113, par: td.par || 72, tee: td.tee, yards: td.yards, holes: td.holes, allTees: td.allTees, lat: lat, lng: lng, source: "golfcourseapi" });
   if (db && course) db.collection("courses").doc(course.id).set({id:course.id,name:name,loc:loc,region:st||"US",rating:td.rating||72,slope:td.slope||113,par:td.par||72,tee:td.tee,yards:td.yards,holes:td.holes,allTees:td.allTees,lat:lat,lng:lng,source:"golfcourseapi",createdAt:fsTimestamp()}).catch(function(){});
-  Router.toast(name + " imported");
+  return course;
+}
+
+function importDirApiCourse(idx) {
+  var cacheKeys = Object.keys(_gcSearchCache).filter(function(k){return k.indexOf("dir_")===0});
+  var lastResults = cacheKeys.length ? _gcSearchCache[cacheKeys[cacheKeys.length - 1]] : [];
+  var filtered = lastResults.filter(function(c) {
+    var name = c.course_name || c.club_name || c.name || c.courseName || "";
+    return !PB.getCourseByName(name);
+  });
+  var c = filtered[idx];
+  if (!c) return;
+  // v8.24.42 — doc building extracted to pbImportApiCourse (shared with auto-create)
+  var course = pbImportApiCourse(c);
+  Router.toast((course ? course.name : "Course") + " imported");
   Router.go("courses");
 }
 
@@ -307,11 +341,17 @@ function quickAddCourseFromDir(name, _state) {
   var state = _state;
   if (state === null) return;
   state = (state||"").trim().toUpperCase().substring(0, 2);
-  var id = name.toLowerCase().replace(/[^a-z0-9]/g, "").substring(0, 20) + Date.now().toString(36).slice(-4);
-  var course = PB.addCourse({id:id,name:name,loc:(state||"Unknown"),region:state||"US",rating:72.0,slope:113,par:72,photo:"",reviews:[],quickAdd:true});
-  if (db && course) db.collection("courses").doc(course.id).set({id:course.id,name:name,loc:(state||"Unknown"),region:state||"US",rating:72.0,slope:113,par:72,quickAdd:true,createdAt:fsTimestamp()}).catch(function(){});
-  Router.toast(name + " added");
-  Router.go("courses");
+  // v8.24.42 — auto-create: real GolfCourseAPI data first, stub only when
+  // the API has no match (and then honestly marked provisional).
+  Router.toast("Looking up " + name + "...");
+  pbAutoCreateCourse(name, state).then(function(apiCourse) {
+    if (apiCourse) { Router.toast(apiCourse.name + " added with real course data"); Router.go("courses"); return; }
+    var id = name.toLowerCase().replace(/[^a-z0-9]/g, "").substring(0, 20) + Date.now().toString(36).slice(-4);
+    var course = PB.addCourse({id:id,name:name,loc:(state||"Unknown"),region:state||"US",rating:72.0,slope:113,par:72,photo:"",reviews:[],quickAdd:true});
+    if (db && course) db.collection("courses").doc(course.id).set({id:course.id,name:name,loc:(state||"Unknown"),region:state||"US",rating:72.0,slope:113,par:72,quickAdd:true,createdAt:fsTimestamp()}).catch(function(){});
+    Router.toast(name + " added (provisional pars — update rating/slope when known)");
+    Router.go("courses");
+  });
 }
 
 // ========== UNIFIED COURSE SEARCH WITH API ==========

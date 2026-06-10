@@ -673,32 +673,42 @@ function quickAddCourse(name, _state) {
   if (!state) state = "";
   state = state.trim().toUpperCase().substring(0, 2);
   
-  var id = name.toLowerCase().replace(/[^a-z0-9]/g, "").substring(0, 20) + Date.now().toString(36).slice(-4);
-  var course = {
-    id: id,
-    name: name,
-    loc: (state ? state : "Unknown"),
-    region: state || "US",
-    rating: 72.0,
-    slope: 113,
-    par: 72,
-    photo: "",
-    reviews: [],
-    addedBy: currentUser ? currentUser.uid : "local",
-    quickAdd: true
-  };
-  
-  PB.addCourse(course);
-  if (db) {
-    db.collection("courses").doc(id).set(Object.assign({}, course, {createdAt: fsTimestamp()})).catch(function(){});
-  }
-  
-  // Auto-select the new course
-  document.getElementById("pn-course").value = name;
-  document.getElementById("pn-rating").value = "72";
-  document.getElementById("pn-slope").value = "113";
-  document.getElementById("search-pn-course").innerHTML = "";
-  Router.toast("Added " + name + "! Rating/slope can be updated later.");
+  // v8.24.42 — auto-create: real GolfCourseAPI data first (zero-guessing
+  // rule); the guessed-72s stub only when the API has no match.
+  Router.toast("Looking up " + name + "...");
+  pbAutoCreateCourse(name, state).then(function(apiCourse) {
+    if (apiCourse) {
+      document.getElementById("pn-course").value = apiCourse.name;
+      document.getElementById("pn-rating").value = String(apiCourse.rating || 72);
+      document.getElementById("pn-slope").value = String(apiCourse.slope || 113);
+      document.getElementById("search-pn-course").innerHTML = "";
+      Router.toast("Added " + apiCourse.name + " with real course data");
+      return;
+    }
+    var id = name.toLowerCase().replace(/[^a-z0-9]/g, "").substring(0, 20) + Date.now().toString(36).slice(-4);
+    var course = {
+      id: id,
+      name: name,
+      loc: (state ? state : "Unknown"),
+      region: state || "US",
+      rating: 72.0,
+      slope: 113,
+      par: 72,
+      photo: "",
+      reviews: [],
+      addedBy: currentUser ? currentUser.uid : "local",
+      quickAdd: true
+    };
+    PB.addCourse(course);
+    if (db) {
+      db.collection("courses").doc(id).set(Object.assign({}, course, {createdAt: fsTimestamp()})).catch(function(){});
+    }
+    document.getElementById("pn-course").value = name;
+    document.getElementById("pn-rating").value = "72";
+    document.getElementById("pn-slope").value = "113";
+    document.getElementById("search-pn-course").innerHTML = "";
+    Router.toast("Added " + name + " (provisional pars — update rating/slope when known)");
+  });
 }
 
 function startLiveRound() {

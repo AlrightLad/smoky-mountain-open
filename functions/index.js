@@ -164,7 +164,15 @@ exports.searchCourses = functions.https.onRequest((req, res) => {
     res.status(400).json({ error: 'Invalid input', detail: parsed.error.issues[0].message });
     return;
   }
-  const { q: query, key: apiKey } = parsed.data;
+  // v8.24.42 — server-held key fallback (course auto-create). A member
+  // device without a personal key can still search; the platform key lives
+  // in the function's env (GOLFCOURSE_API_KEY), never in the bundle.
+  const { q: query, key: clientKey } = parsed.data;
+  const apiKey = clientKey || process.env.GOLFCOURSE_API_KEY;
+  if (!apiKey) {
+    res.status(503).json({ error: 'Course search not configured' });
+    return;
+  }
 
   const url = `https://api.golfcourseapi.com/v1/search?search_query=${encodeURIComponent(query)}`;
   https.get(url, { headers: { 'Authorization': 'Key ' + apiKey } }, (apiRes) => {

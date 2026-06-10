@@ -69,7 +69,10 @@ const joinLeagueRequestSchema = z.object({
 // GET /searchCourses?q=...&key=...
 const searchCoursesQuerySchema = z.object({
   q: courseQuerySchema,
-  key: apiKeySchema,
+  // v8.24.42 — key is optional: the handler falls back to the server-held
+  // GOLFCOURSE_API_KEY env var so members don't need personal API keys
+  // (course auto-create). Code-only until the gated deploy (AMD-018 gate 1).
+  key: apiKeySchema.optional(),
 });
 
 module.exports = {
