@@ -112,35 +112,42 @@ Router.register("settings", function(params) {
   // DISPLAY — Appearance (theme preview) + Sunlight Mode
   // ──────────────────────────────────────────────────────────────────────────
   var disp = "";
+  // v8.24.12 — Theme picker (Ship 0d-ii arrives). Swatch hexes are data — a
+  // literal preview of each theme's palette, permitted like Visual Reference
+  // hole-dots. MUST stay in sync with the base.css [data-theme] blocks.
   var _activeThemeId = (typeof getCurrentTheme === "function") ? getCurrentTheme() : "clubhouse";
-  var _activeThemeName = (typeof THEMES !== "undefined" && THEMES[_activeThemeId]) ? THEMES[_activeThemeId].name : "Clubhouse";
-  disp += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Current theme</div><div class="set-row__desc">The full theme picker arrives in an upcoming update. Six editorial themes: three ready, three to earn.</div></div><div class="set-row__value">' + escHtml(_activeThemeName) + '</div></div>';
-  // Theme preview swatches — palette hex values are data (a literal preview of
-  // each theme's surface + accent), permitted like Visual Reference hole-dots.
-  var _themePreviews = [
-    { name: "Clubhouse",       primary: "#f3ede1", accent: "#c89a4b", ready: true },
-    { name: "Twilight Links",  primary: "#1f2a35", accent: "#d4a857", ready: true },
-    { name: "Linen Draft",     primary: "#ebe3d1", accent: "#8b7158", ready: true },
-    { name: "Champion Sunday", primary: "#5b1f1f", accent: "#e0c071", ready: false },
-    { name: "Bourbon Room",    primary: "#3d2a1f", accent: "#c89a4b", ready: false },
-    { name: "Course Record",   primary: "#f5f0e3", accent: "#1a4032", ready: false }
-  ];
-  disp += '<div class="set-swatches">';
-  _themePreviews.forEach(function(t) {
-    var isActive = (t.name === _activeThemeName);
-    var opacity = t.ready ? '1' : '0.5';
-    disp += '<div class="set-swatch' + (isActive ? ' set-swatch--active' : '') + '" title="' + escHtml(t.name) + (isActive ? ' (current)' : (t.ready ? ' (ready)' : ' (locked)')) + '" style="opacity:' + opacity + '">';
-    disp += '<div class="set-swatch__chip">';
-    disp += '<div style="position:absolute;inset:0;background:' + t.primary + '"></div>';
-    disp += '<div style="position:absolute;bottom:4px;left:6px;width:14px;height:14px;border-radius:50%;background:' + t.accent + '"></div>';
-    if (!t.ready) {
-      disp += '<div style="position:absolute;top:3px;right:3px"><svg viewBox="0 0 12 12" width="10" height="10" fill="' + t.accent + '"><path d="M3 5V3a3 3 0 116 0v2h.5a.5.5 0 01.5.5v5a.5.5 0 01-.5.5h-7a.5.5 0 01-.5-.5v-5a.5.5 0 01.5-.5H3zm1 0h4V3a2 2 0 10-4 0v2z"/></svg></div>';
+  var _unlockedThemes = (typeof currentProfile !== "undefined" && currentProfile && Array.isArray(currentProfile.unlockedThemes)) ? currentProfile.unlockedThemes : [];
+  var _themes = (typeof getAvailableThemes === "function") ? getAvailableThemes(_unlockedThemes) : [];
+  disp += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Theme</div><div class="set-row__desc">Six editorial themes. Three ready today, three to earn. Your pick follows you to any device you sign into.</div></div></div>';
+  disp += '<div class="theme-picker" role="radiogroup" aria-label="Theme">';
+  _themes.forEach(function(t) {
+    var sw = _THEME_SWATCHES[t.id] || _THEME_SWATCHES.clubhouse;
+    var isActive = (t.id === _activeThemeId);
+    var descCopy = _THEME_DESCS[t.id] || "";
+    if (t.locked) {
+      disp += '<button type="button" class="theme-row theme-row--locked" role="radio" aria-checked="false" aria-disabled="true" data-theme-id="' + t.id + '" onclick="settingsThemeLockedHint(\'' + t.id + '\')">';
+    } else {
+      disp += '<button type="button" class="theme-row' + (isActive ? '' : '') + '" role="radio" aria-checked="' + (isActive ? 'true' : 'false') + '" data-theme-id="' + t.id + '" onclick="settingsPickTheme(\'' + t.id + '\')">';
     }
-    disp += '</div>';
-    disp += '<div class="set-swatch__name">' + escHtml(t.name.split(" ")[0]) + '</div>';
-    disp += '</div>';
+    disp += '<span class="theme-row__chip" aria-hidden="true" style="background:' + sw.canvas + '">';
+    disp += '<span class="theme-row__band" style="background:' + sw.green + '"></span>';
+    disp += '<span class="theme-row__dot" style="background:' + sw.brass + '"></span>';
+    disp += '</span>';
+    disp += '<span class="theme-row__main"><span class="theme-row__name">' + escHtml(t.name) + '</span><span class="theme-row__desc">' + escHtml(descCopy) + '</span></span>';
+    if (t.locked) {
+      disp += '<span class="theme-row__check"><svg viewBox="0 0 12 12" width="14" height="14" fill="var(--cb-mute)" aria-hidden="true"><path d="M3 5V3a3 3 0 116 0v2h.5a.5.5 0 01.5.5v5a.5.5 0 01-.5.5h-7a.5.5 0 01-.5-.5v-5a.5.5 0 01.5-.5H3zm1 0h4V3a2 2 0 10-4 0v2z"/></svg></span>';
+    } else {
+      disp += '<span class="theme-row__check"' + (isActive ? '' : ' style="visibility:hidden"') + '><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 4"/></svg></span>';
+    }
+    disp += '</button>';
   });
   disp += '</div>';
+  // P10 — explicit state while Sunlight borrows data-theme.
+  var _sunOnNow = false;
+  try { _sunOnNow = localStorage.getItem('pb_sunlight') === '1'; } catch (e) {}
+  if (_sunOnNow) {
+    disp += '<div class="set-row__desc" style="margin-top:6px">Sunlight mode is on — your theme is saved and shows the moment you switch Sunlight off.</div>';
+  }
   // Sunlight Mode toggle (W1.S1 / CLUBHOUSE_SPEC §6.2)
   var _sunlightActive = false;
   try { _sunlightActive = localStorage.getItem('pb_sunlight') === '1'; } catch (e) {}
@@ -480,6 +487,66 @@ function clearLocation() {
   });
 }
 
+
+// ── Theme picker (v8.24.12, Ship 0d-ii) ────────────────────────────────────
+// Swatch hexes are data — literal previews of each theme's palette, permitted
+// like Visual Reference hole-dots. MUST mirror base.css [data-theme] blocks.
+var _THEME_SWATCHES = {
+  clubhouse:       { canvas: "#E7E0CD", green: "#2F4A3A", brass: "#B4893E" },
+  twilight_links:  { canvas: "#DACFB6", green: "#1A2A3E", brass: "#C48540" },
+  linen_draft:     { canvas: "#E8DEC5", green: "#2B3A2E", brass: "#B8743A" },
+  champion_sunday: { canvas: "#E0D3B7", green: "#4A1D24", brass: "#C68A3C" },
+  bourbon_room:    { canvas: "#DCCAA4", green: "#3D2817", brass: "#B8743A" },
+  course_record:   { canvas: "#E3D8BD", green: "#0C2A22", brass: "#8A8572" }
+};
+var _THEME_DESCS = {
+  clubhouse:       "The house default. Quiet confidence, tournament program.",
+  twilight_links:  "Dusk over the coastal course. Cool air, warm brass.",
+  linen_draft:     "Bright morning light, reading chair by the window.",
+  champion_sunday: "Burgundy worn after a win.",
+  bourbon_room:    "The lodge after the round. Earned with tenure.",
+  course_record:   "Ledger paper and silver brass. The rarest."
+};
+var _THEME_TOASTS = {
+  clubhouse:       "Back to the Clubhouse. Never a bad call.",
+  twilight_links:  "Twilight Links. Last group out, lights coming on.",
+  linen_draft:     "Linen Draft. Crisp as a morning tee time.",
+  champion_sunday: "Champion Sunday. You earned the burgundy.",
+  bourbon_room:    "Bourbon Room. Pull up a chair by the fire.",
+  course_record:   "Course Record. The rarest page in the ledger."
+};
+var _THEME_LOCK_HINTS = {
+  bourbon_room:    "Bourbon Room pours for members with tenure. Keep showing up — it unlocks with time in the league.",
+  champion_sunday: "Champion Sunday is worn after a win. Take down an event and it's yours.",
+  course_record:   "Course Record opens for record-setters. Go put your name in the book."
+};
+
+function settingsPickTheme(id) {
+  // Defensive: locked rows route to the hint even if tapped via stale DOM.
+  var row = document.querySelector('.theme-row[data-theme-id="' + id + '"]');
+  if (row && row.classList.contains('theme-row--locked')) { settingsThemeLockedHint(id); return; }
+  var current = (typeof getCurrentTheme === "function") ? getCurrentTheme() : "clubhouse";
+  if (id === current) return;
+  // applyTheme runs synchronously inside saveThemeChoice — the whole app
+  // re-themes on tap; only the Firestore cross-device write is async.
+  saveThemeChoice(id).then(function() {
+    Router.toast(_THEME_TOASTS[id] || ("Theme set — " + id));
+  }).catch(function() {
+    Router.toast("Theme set on this device — couldn't reach the clubhouse to save it everywhere. It'll sync next time you're online.");
+  });
+  // In-place radio + check update (no Router.go re-render — avoids the
+  // resize-flash class of bug).
+  document.querySelectorAll('.theme-row[role="radio"]').forEach(function(el) {
+    var active = el.getAttribute('data-theme-id') === id && !el.classList.contains('theme-row--locked');
+    el.setAttribute('aria-checked', active ? 'true' : 'false');
+    var check = el.querySelector('.theme-row__check');
+    if (check && !el.classList.contains('theme-row--locked')) check.style.visibility = active ? 'visible' : 'hidden';
+  });
+}
+
+function settingsThemeLockedHint(id) {
+  Router.toast(_THEME_LOCK_HINTS[id] || "This one is earned, not picked. Keep teeing it up.");
+}
 
 // Sunlight Mode toggle (W1.S1 / CLUBHOUSE_SPEC §6.2) — manual setting
 // for high-contrast outdoor / glare-readable use. Applies via

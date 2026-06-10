@@ -2434,12 +2434,26 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 .set-coins__num { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--cb-brass); font-variant-numeric: tabular-nums; }
 .set-coins__lbl { font-family: var(--font-mono); font-size: 9px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--cb-mute); }
 
-/* Theme preview swatches (Display section) */
-.set-swatches { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-.set-swatch { display: flex; flex-direction: column; align-items: center; gap: 5px; }
-.set-swatch__chip { position: relative; width: 48px; height: 32px; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--cb-chalk-3); }
-.set-swatch--active .set-swatch__chip { border: 2px solid var(--cb-brass); }
-.set-swatch__name { font-family: var(--font-mono); font-size: 8px; font-weight: 600; letter-spacing: .5px; text-transform: uppercase; color: var(--cb-mute); text-align: center; max-width: 48px; line-height: 1.2; }
+/* Theme picker (v8.24.12 — replaced the preview-only .set-swatch grid).
+   Radiogroup of full-width rows: palette chip + name/desc + check/lock.
+   56px min-height clears the 44pt touch floor. */
+.theme-picker { display: flex; flex-direction: column; gap: var(--sp-2); margin-top: var(--sp-3); }
+.theme-row { display: flex; align-items: center; gap: var(--sp-3); width: 100%; min-height: 56px;
+  padding: var(--sp-2) var(--sp-3); background: var(--surface-raised); border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg); text-align: left; cursor: pointer;
+  transition: border-color var(--dur-quick) var(--ease-standard); }
+.theme-row[aria-checked="true"] { border-color: var(--cb-brass); box-shadow: 0 0 0 1px var(--cb-brass); }
+.theme-row__chip { position: relative; width: 40px; height: 40px; border-radius: var(--radius-md); overflow: hidden;
+  border: 1px solid var(--border-default); flex-shrink: 0; }
+.theme-row__band { position: absolute; left: 0; right: 0; bottom: 0; height: 14px; }
+.theme-row__dot { position: absolute; top: 5px; right: 5px; width: 10px; height: 10px; border-radius: 50%; }
+.theme-row__main { flex: 1; min-width: 0; }
+.theme-row__name { display: block; font-weight: 600; font-size: var(--text-md); color: var(--text-primary); }
+.theme-row__desc { display: block; font-size: var(--text-sm); color: var(--cb-mute); margin-top: 2px; }
+.theme-row__check { margin-left: auto; color: var(--cb-brass); flex-shrink: 0; }
+.theme-row--locked { cursor: pointer; }
+.theme-row--locked .theme-row__chip { filter: saturate(.55); }
+.theme-row--locked .theme-row__name { color: var(--cb-mute); }
 
 /* ═══════════════════════════════════════════════════════════════════════════
    ADMIN (3i) — editorial utility scaffold. Masthead + sticky section-nav rail

@@ -57,11 +57,24 @@ function applyTheme(themeId) {
     _logWarn("[Theme] Unknown theme: " + themeId + " — falling back to " + DEFAULT_THEME_ID);
     themeId = DEFAULT_THEME_ID;
   }
-  document.documentElement.setAttribute("data-theme", themeId);
+  var html = document.documentElement;
+  // v8.24.12 — Sunlight coexistence: while Sunlight mode holds data-theme
+  // ("sunlight" is a contrast overlay, not a palette), the chosen palette is
+  // stashed in data-palette-theme (settings.js toggleSunlightMode). Writing
+  // data-theme here would silently kill Sunlight while pb_sunlight=1 persists;
+  // park the palette instead — it applies the moment Sunlight switches off.
+  if (html.getAttribute("data-theme") === "sunlight") {
+    html.setAttribute("data-palette-theme", themeId);
+  } else {
+    html.setAttribute("data-theme", themeId);
+  }
   try { localStorage.setItem("pb_theme", themeId); } catch (e) { /* quota or private mode */ }
 }
 
 function getCurrentTheme() {
+  // Palette attr wins while Sunlight mode is borrowing data-theme.
+  var palette = document.documentElement.getAttribute("data-palette-theme");
+  if (palette && THEMES[palette]) return palette;
   var attr = document.documentElement.getAttribute("data-theme");
   return (attr && THEMES[attr]) ? attr : DEFAULT_THEME_ID;
 }
