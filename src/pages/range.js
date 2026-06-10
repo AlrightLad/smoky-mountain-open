@@ -179,8 +179,13 @@ function _clearRangeState() {
   rangeSessionPrivate = false;
 }
 
-function abandonRangeSession() {
-  if (!confirm("End session without saving?")) return;
+function abandonRangeSession(_confirmed) {
+  // v8.24.17 — branded pbConfirm re-entry (was a native confirm()).
+  if (!_confirmed) {
+    pbConfirm({ title: "End session without saving?", message: "This range session won't count.", confirmLabel: "End it", danger: true })
+      .then(function(ok) { if (ok) abandonRangeSession(true); });
+    return;
+  }
   _clearRangeState();
   rangeActiveView = "range";
   Router.go("activity");

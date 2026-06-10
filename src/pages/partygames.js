@@ -154,19 +154,29 @@ function startPartyGame(gameType) {
   });
 }
 
-function deletePartyGame(gameId) {
+function deletePartyGame(gameId, _confirmed) {
   if (!db) return;
   var isComm = isFounderRole(currentProfile);
-  if (!confirm("Delete this game?")) return;
+  // v8.24.17 — branded pbConfirm re-entry (was a native confirm()).
+  if (!_confirmed) {
+    pbConfirm({ title: "Delete this game?", message: "It comes off the board for everyone.", confirmLabel: "Delete", danger: true })
+      .then(function(ok) { if (ok) deletePartyGame(gameId, true); });
+    return;
+  }
   db.collection("partygames").doc(gameId).delete().then(function() {
     Router.toast("Game deleted");
     Router.go("partygames");
   }).catch(function() { Router.toast("Could not delete"); });
 }
 
-function declarePartyWinner(gameId, winnerId, winnerName) {
+function declarePartyWinner(gameId, winnerId, winnerName, _confirmed) {
   if (!db) return;
-  if (!confirm(winnerName + " wins?")) return;
+  // v8.24.17 — branded pbConfirm re-entry (was a native confirm()).
+  if (!_confirmed) {
+    pbConfirm({ title: winnerName + " wins?", message: "Locks the result in the books.", confirmLabel: "Crown them", danger: false })
+      .then(function(ok) { if (ok) declarePartyWinner(gameId, winnerId, winnerName, true); });
+    return;
+  }
   db.collection("partygames").doc(gameId).update({
     status: "completed",
     winner: winnerId,

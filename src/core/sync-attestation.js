@@ -169,13 +169,18 @@ function assignScorekeeper(tripId, courseKey, uid) {
   Router.go("scorecard", { tripId: tripId });
 }
 
-function finishTripRound(tripId, courseKey) {
+function finishTripRound(tripId, courseKey, _confirmed) {
   var trip = PB.getTrip(tripId);
   if (!trip) return;
   var course = trip.courses.find(function(c) { return c.key === courseKey; });
   if (!course) return;
   
-  if (!confirm("End scoring for " + course.n + " and start attestation?")) return;
+  // v8.24.17 — branded pbConfirm re-entry (was a native confirm()).
+  if (!_confirmed) {
+    pbConfirm({ title: "End scoring for " + course.n + "?", message: "Starts attestation — players sign off on their cards.", confirmLabel: "End scoring", danger: false })
+      .then(function(ok) { if (ok) finishTripRound(tripId, courseKey, true); });
+    return;
+  }
   
   // Mark course as finished (locks scores for non-Commissioner)
   course.finished = true;
@@ -238,12 +243,17 @@ function finishTripRound(tripId, courseKey) {
   });
 }
 
-function unlockTripRound(tripId, courseKey) {
+function unlockTripRound(tripId, courseKey, _confirmed) {
   var trip = PB.getTrip(tripId);
   if (!trip) return;
   var course = trip.courses.find(function(c) { return c.key === courseKey; });
   if (!course) return;
-  if (!confirm("Unlock " + course.n + " for score editing? This will reset attestation status.")) return;
+  // v8.24.17 — branded pbConfirm re-entry (was a native confirm()).
+  if (!_confirmed) {
+    pbConfirm({ title: "Unlock " + course.n + "?", message: "Reopens score editing and resets attestation.", confirmLabel: "Unlock", danger: false })
+      .then(function(ok) { if (ok) unlockTripRound(tripId, courseKey, true); });
+    return;
+  }
   
   course.finished = false;
   PB.save();
@@ -257,11 +267,16 @@ function unlockTripRound(tripId, courseKey) {
   Router.go("scorecard", { tripId: tripId });
 }
 
-function attestMyScore(tripId, courseKey) {
+function attestMyScore(tripId, courseKey, _confirmed) {
   if (!db || !currentUser) { Router.toast("Sign in required"); return; }
   var docId = tripId + "_" + courseKey;
   
-  if (!confirm("I attest that the scores on this scorecard are accurate and complete.")) return;
+  // v8.24.17 — branded pbConfirm re-entry (was a native confirm()).
+  if (!_confirmed) {
+    pbConfirm({ title: "Attest your scorecard?", message: "You're signing that these scores are accurate and complete.", confirmLabel: "I attest", danger: false })
+      .then(function(ok) { if (ok) attestMyScore(tripId, courseKey, true); });
+    return;
+  }
   
   // Find matching attestation key — may be stored under UID, claimedFrom, or seed ID
   var myUid = currentUser.uid;
@@ -323,9 +338,14 @@ function attestMyScore(tripId, courseKey) {
   }).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't attest your score.")); });
 }
 
-function overrideAttestation(tripId, courseKey) {
+function overrideAttestation(tripId, courseKey, _confirmed) {
   if (!isFounderRole(currentProfile)) return;
-  if (!confirm("Override attestation and post results now? Some players haven't attested yet.")) return;
+  // v8.24.17 — branded pbConfirm re-entry (was a native confirm()).
+  if (!_confirmed) {
+    pbConfirm({ title: "Override attestation?", message: "Posts results now even though some players haven't signed off.", confirmLabel: "Override", danger: true })
+      .then(function(ok) { if (ok) overrideAttestation(tripId, courseKey, true); });
+    return;
+  }
   
   var docId = tripId + "_" + courseKey;
   db.collection("attestations").doc(docId).get().then(function(doc) {

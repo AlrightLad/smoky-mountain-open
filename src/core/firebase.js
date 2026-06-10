@@ -476,8 +476,13 @@ function doForgot() {
   });
 }
 
-function doLogout() {
-  if (!confirm("Sign out of Parbaughs?")) return;
+function doLogout(_confirmed) {
+  // v8.24.17 — branded pbConfirm re-entry (was a native confirm()).
+  if (!_confirmed) {
+    pbConfirm({ title: "Sign out of Parbaughs?", message: "The clubhouse will be here when you get back.", confirmLabel: "Sign out", danger: false })
+      .then(function(ok) { if (ok) doLogout(true); });
+    return;
+  }
   auth.signOut();
 }
 

@@ -286,11 +286,16 @@ function runDataRecoveryScan() {
   });
 }
 
-function runDataRecoveryFix() {
+function runDataRecoveryFix(_confirmed) {
   if (!db || !isFounderRole(currentProfile)) return;
   var el = document.getElementById("recoveryResult");
   if (!el) return;
-  if (!confirm("This will tag all untagged docs with leagueId:'the-parbaughs' and fix member profiles. Proceed?")) return;
+  // v8.24.17 — branded pbConfirm re-entry (was a native confirm()).
+  if (!_confirmed) {
+    pbConfirm({ title: "Run data recovery?", message: "Tags all untagged docs with the founding league and fixes member profiles.", confirmLabel: "Run it", danger: true })
+      .then(function(ok) { if (ok) runDataRecoveryFix(true); });
+    return;
+  }
   el.innerHTML = '<div class="loading"><div class="spinner"></div>Fixing data...</div>';
 
   var fixPromises = [];

@@ -190,9 +190,14 @@ function adminTrophyRow(d) {
   '</div>';
 }
 
-function adminArchiveTrophy(id, scope) {
+function adminArchiveTrophy(id, scope, _confirmed) {
   if (typeof archiveTrophyDef !== "function") return;
-  if (!confirm("Archive this trophy? It stops appearing for members but is not deleted.")) return;
+  // v8.24.17 — branded pbConfirm re-entry (was a native confirm()).
+  if (!_confirmed) {
+    pbConfirm({ title: "Archive this trophy?", message: "It stops appearing for members but is not deleted.", confirmLabel: "Archive", danger: false })
+      .then(function(ok) { if (ok) adminArchiveTrophy(id, scope, true); });
+    return;
+  }
   archiveTrophyDef(id, scope, function(ok, err) {
     if (ok) { Router.toast("Trophy archived"); loadAdminTrophyCatalog(); }
     else Router.toast(err || "Failed to archive");
@@ -436,8 +441,14 @@ function suspendMember(memberId, days, reason) {
   }).catch(function() { Router.toast("Failed to suspend"); });
 }
 
-function unsuspendMember(memberId) {
-  if (!db || !confirm("Unsuspend this member?")) return;
+function unsuspendMember(memberId, _confirmed) {
+  if (!db) return;
+  // v8.24.17 — branded pbConfirm re-entry (was a native confirm()).
+  if (!_confirmed) {
+    pbConfirm({ title: "Unsuspend this member?", message: "Restores full access immediately.", confirmLabel: "Unsuspend", danger: false })
+      .then(function(ok) { if (ok) unsuspendMember(memberId, true); });
+    return;
+  }
   db.collection("members").doc(memberId).update({
     role: "member",
     suspendedAt: null,
@@ -455,11 +466,16 @@ function unsuspendMember(memberId) {
   });
 }
 
-function removeMemberAdmin(memberId) {
+function removeMemberAdmin(memberId, _confirmed) {
   if (!db) return;
   var member = PB.getPlayer(memberId);
   var name = member ? member.name : memberId;
-  if (!confirm("Remove " + name + " from the Parbaughs? This will revoke their access.")) return;
+  // v8.24.17 — branded pbConfirm re-entry (was a native confirm()).
+  if (!_confirmed) {
+    pbConfirm({ title: "Remove " + name + "?", message: "Revokes their access to the Parbaughs.", confirmLabel: "Remove", danger: true })
+      .then(function(ok) { if (ok) removeMemberAdmin(memberId, true); });
+    return;
+  }
   var reason = prompt("Reason (optional):", "");
 
   db.collection("members").doc(memberId).update({
@@ -478,8 +494,14 @@ function removeMemberAdmin(memberId) {
   }).catch(function() { Router.toast("Failed to remove"); });
 }
 
-function reinstateMember(memberId) {
-  if (!db || !confirm("Reinstate this member?")) return;
+function reinstateMember(memberId, _confirmed) {
+  if (!db) return;
+  // v8.24.17 — branded pbConfirm re-entry (was a native confirm()).
+  if (!_confirmed) {
+    pbConfirm({ title: "Reinstate this member?", message: "Restores their membership.", confirmLabel: "Reinstate", danger: false })
+      .then(function(ok) { if (ok) reinstateMember(memberId, true); });
+    return;
+  }
   db.collection("members").doc(memberId).update({
     role: "member",
     removedAt: null,
@@ -616,8 +638,14 @@ function loadAdminInviteList() {
   }).catch(function() { el.innerHTML = renderLoadError("invites", "loadAdminInviteList()"); });
 }
 
-function revokeInviteAdmin(code) {
-  if (!db || !confirm("Revoke invite " + code + "?")) return;
+function revokeInviteAdmin(code, _confirmed) {
+  if (!db) return;
+  // v8.24.17 — branded pbConfirm re-entry (was a native confirm()).
+  if (!_confirmed) {
+    pbConfirm({ title: "Revoke invite " + code + "?", message: "The code stops working immediately.", confirmLabel: "Revoke", danger: true })
+      .then(function(ok) { if (ok) revokeInviteAdmin(code, true); });
+    return;
+  }
   db.collection("invites").doc(code).update({ status: "revoked" }).then(function() {
     Router.toast("Invite revoked");
     loadAdminInviteList();
@@ -680,8 +708,14 @@ function loadAdminCourses() {
   });
 }
 
-function adminDeleteCourse(fsId, name) {
-  if (!db || !confirm('Remove "' + name + '" from the course directory? This cannot be undone.')) return;
+function adminDeleteCourse(fsId, name, _confirmed) {
+  if (!db) return;
+  // v8.24.17 — branded pbConfirm re-entry (was a native confirm()).
+  if (!_confirmed) {
+    pbConfirm({ title: 'Remove "' + name + '"?', message: "Comes off the course directory. This cannot be undone.", confirmLabel: "Remove", danger: true })
+      .then(function(ok) { if (ok) adminDeleteCourse(fsId, name, true); });
+    return;
+  }
   PB.deleteCourse(fsId);
   db.collection("courses").doc(fsId).delete().then(function() {
     Router.toast('"' + name + '" removed');
