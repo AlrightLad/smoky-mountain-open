@@ -106,12 +106,18 @@ var Router = (function() {
     });
   }
 
-  // LEGACY mobile toast primitive — single #toast element, single message,
-  // fixed 2.2s timing. Coexists with PB.toast (richer, severity-aware, stacked)
-  // from v8.7.0 / Ship 3a. Migration to PB.toast deferred to Ship 11+ when the
-  // auth surface refactors and existing call sites can be retargeted safely.
+  // v8.24.18 — Router.toast now DELEGATES to PB.toast (the richer, stacked,
+  // severity-aware system from Ship 3a). One change upgrades all ~400 legacy
+  // call sites at once: consistent styling, 4s readable duration, aria-live
+  // stacking instead of the single overwriting #toast element. Falls back to
+  // the legacy element only if PB.toast isn't loaded yet (early boot).
   function toast(msg) {
+    if (typeof PB !== "undefined" && PB && typeof PB.toast === "function") {
+      PB.toast({ type: "info", message: String(msg) });
+      return;
+    }
     var el = document.getElementById("toast");
+    if (!el) return;
     el.textContent = msg;
     el.classList.add("show");
     setTimeout(function() { el.classList.remove("show"); }, 2200);
