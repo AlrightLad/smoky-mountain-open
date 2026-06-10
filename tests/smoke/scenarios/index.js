@@ -39,5 +39,8 @@ module.exports = [
   // v8.22.0 (Ship 5+7) — automated E2E replacing the manual 4-step
   // walkthrough. B.44 timestamp + edit + delete + non-author rejection.
   require('./s26-rounds-ship-5-7-e2e.js'),
+  // v8.24.31 — 2026-06-10 marathon feature assertions (pbConfirm/confetti/
+  // tee-intro-dark/invite-floor/toast-delegation/theme-flip).
+  require('./s27-marathon-2026-06-10-features.js'),
   require('./s11-logout-cleanup.js')
 ];
