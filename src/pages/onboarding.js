@@ -119,6 +119,7 @@ function skipOnboarding() {
     db.collection("members").doc(currentUser.uid).set({ onboardingComplete: true }, { merge: true }).catch(function(){});
   }
   if (currentProfile) currentProfile.onboardingComplete = true;
+  if (typeof startLeagueDataSync === "function") startLeagueDataSync();
   Router.go("home");
 }
 
@@ -267,6 +268,9 @@ function submitOnboardingProfile() {
   if (db && currentUser) {
     db.collection("members").doc(currentUser.uid).set(updates, { merge: true }).then(function() {
       if (currentProfile) Object.assign(currentProfile, updates);
+      // v8.24.21 — league-scoped syncs were deferred during onboarding
+      // (membership not ready -> rules denials); start them now.
+      if (typeof startLeagueDataSync === "function") startLeagueDataSync();
       Router.toast("Profile saved! Welcome to " + (window._activeLeagueName || "Parbaughs") + ".");
       Router.go("home");
     }).catch(function(err) {

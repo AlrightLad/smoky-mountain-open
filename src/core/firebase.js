@@ -719,6 +719,22 @@ if (firebaseAvailable && auth) {
   enterApp();
 }
 
+// v8.24.21 — league-scoped data sync, separated from enterApp so it can be
+// DEFERRED for brand-new members. Mid-onboarding the member isn't in the
+// league doc's memberUids yet, so every league-scoped read (trips,
+// scrambleTeams, rounds) is rules-denied — the prod error spam at 13:50Z
+// 2026-06-10 (page=onboarding) was exactly this. Self-healed before; now it
+// simply doesn't fire until onboarding completes (onboarding.js calls
+// startLeagueDataSync() after the profile saves).
+function startLeagueDataSync() {
+  syncScrambleTeamsFromFirestore();
+  syncTripsFromFirestore();
+  loadActiveLeagueName();
+  loadRoundsFromFirestore();
+  startRoundsListener(); // real-time listener keeps rounds in sync across devices
+}
+if (typeof window !== "undefined") window.startLeagueDataSync = startLeagueDataSync;
+
 function enterApp() {
   document.getElementById("authScreen").classList.add("hidden");
   document.getElementById("mainApp").classList.remove("hidden");
@@ -727,11 +743,8 @@ function enterApp() {
   initSync();
   preloadMemberPhotos();
   syncCoursesFromFirestore();
-  syncScrambleTeamsFromFirestore();
-  syncTripsFromFirestore();
-  loadActiveLeagueName();
-  loadRoundsFromFirestore();
-  startRoundsListener(); // real-time listener keeps rounds in sync across devices
+  var _midOnboarding = currentProfile && !currentProfile.onboardingComplete;
+  if (!_midOnboarding) startLeagueDataSync();
   loadCustomDrillsFromFirestore();
   // loadLiveState lives in the deferred page bundle (playnow.js, not CORE), so a
   // fast auth callback (returning member, persisted session, cold cache) can run
