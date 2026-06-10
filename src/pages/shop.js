@@ -121,7 +121,9 @@ Router.register("shop", function() {
   var h = '<button type="button" class="roster-skip" onclick="var el=document.getElementById(\'shopCosmetics\');if(el){el.focus();el.scrollIntoView();}">Skip to cosmetics</button>';
   h += '<div class="shop-wrap">';
   h += '<div class="roster-masthead">';
-  h += '<div class="roster-eyebrow">THE SHOP · THE PARBAUGHS</div>';
+  // v8.24.40 — ParCoin is a platform wallet, not a league ledger; name the
+  // platform, not the founding league (wrong label for every other league).
+  h += '<div class="roster-eyebrow">THE SHOP · PARBAUGHS</div>';
   h += '<h1 class="roster-headline">What you\'ve got.</h1>';
   h += '</div>';
 
