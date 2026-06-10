@@ -1,7 +1,16 @@
 {
     "schema_version":  1,
-    "updated_at":  "2026-05-30T17:12:14Z",
+    "updated_at":  "2026-06-10T02:44:05Z",
     "items":  {
+                  "legal-entity-clarification":  {
+                                                     "status":  "verified-closed",
+                                                     "marked_at":  "2026-06-10T02:44:04Z",
+                                                     "verify_command":  "Test-Path .claude/state/legal/entity-decision.md",
+                                                     "verify_expected":  "True",
+                                                     "verified_at":  "2026-06-10T02:44:04Z",
+                                                     "verify_output_excerpt":  "True",
+                                                     "verification_status":  "verified-closed"
+                                                 },
                   "firestore-agent-access":  {
                                                  "status":  "verified-closed",
                                                  "marked_at":  "2026-05-22T19:54:45Z",
@@ -29,6 +38,15 @@
                                             "verify_output_excerpt":  "PASS",
                                             "verification_status":  "verified-closed"
                                         },
+                  "production-cutover-269":  {
+                                                 "status":  "verified-closed",
+                                                 "marked_at":  "2026-06-10T02:44:05Z",
+                                                 "verify_command":  "Test-Path .claude/state/founder-decisions/production-cutover-DONE.md",
+                                                 "verify_expected":  "True",
+                                                 "verified_at":  "2026-06-10T02:44:05Z",
+                                                 "verify_output_excerpt":  "True",
+                                                 "verification_status":  "verified-closed"
+                                             },
                   "staging-deploy-token":  {
                                                "status":  "verified-closed",
                                                "marked_at":  "2026-05-22T19:29:57Z",
@@ -38,6 +56,24 @@
                                                "verify_output_excerpt":  "PASS",
                                                "verification_status":  "verified-closed"
                                            },
+                  "block-server-enforcement":  {
+                                                   "status":  "verified-closed",
+                                                   "marked_at":  "2026-06-10T02:44:03Z",
+                                                   "verify_command":  null,
+                                                   "verify_expected":  null,
+                                                   "verified_at":  null,
+                                                   "verify_output_excerpt":  null,
+                                                   "verification_status":  "trust-only-no-verify"
+                                               },
+                  "chat-reading-order-taste-call":  {
+                                                        "status":  "verified-closed",
+                                                        "marked_at":  "2026-06-10T02:44:04Z",
+                                                        "verify_command":  "Test-Path .claude/state/design/chat-reading-order-decision.md",
+                                                        "verify_expected":  "True",
+                                                        "verified_at":  "2026-06-10T02:44:04Z",
+                                                        "verify_output_excerpt":  "True",
+                                                        "verification_status":  "verified-closed"
+                                                    },
                   "sentry-signup":  {
                                         "status":  "verified-closed",
                                         "marked_at":  "2026-05-22T17:26:05Z",
