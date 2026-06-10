@@ -60,7 +60,7 @@ var DEFERRED_PAGES = [
   'faq.js', 'caddynotes-archive.js', 'caddynotes.js', 'bugreport.js', 'trophyroom.js', 'trophycreate.js', 'partygames.js',
   // crisis-banner.js was here briefly — moved to src/core/ since it must
   // load on every page (Firestore listener + overlay rendering).
-  'syncround.js', 'scramblelive.js', 'seasonrecap.js', 'awards.js',
+  'syncround.js', 'scramblelive.js', 'seasonrecap.js', 'wrapped.js', 'awards.js',
   'round.js', 'spectator.js', 'spectator-stream.js', 'shop.js', 'wagers.js', 'social.js', 'bounties.js', 'richlist.js', 'roundhistory.js', 'leagues.js', 'findplayers.js', 'drills.js'
 ];
 

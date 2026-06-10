@@ -30,27 +30,18 @@ const OUT = path.resolve(__dirname, 'main-flows-v2');
     const page = await ctx.newPage();
     await auth.loginReal(page, DEV_URL);
     if (label === 'mobile') {
-      const url = await page.evaluate(async () => {
-        return await pbCreateShareLink({
-          type: 'leaderboard',
-          title: 'Summer 2026 — The board so far',
-          meta: 'Jun 1 to Aug 31 · shared in a smoke test',
-          rows: [
-            { rank: 1, name: 'smoketest', value: '355 pts' },
-            { rank: 2, name: 'Test Member', value: '120 pts' }
-          ]
-        });
-      });
-      console.log('SHARE-URL:', url);
-      // open it as a logged-out guest against the LOCAL share.html + the id
-      const guest = await browser.newContext({ viewport: vp, deviceScaleFactor: 2 });
-      const gp = await guest.newPage();
-      const localUrl = DEV_URL.replace(/\/$/, '') + '/share.html?id=' + url.split('id=')[1];
-      await gp.goto(localUrl);
-      await gp.waitForTimeout(2500);
-      await gp.screenshot({ path: path.join(OUT, 'share-page-guest.png') });
-      console.log('captured guest share page');
-      await guest.close();
+      await page.evaluate(() => Router.go('wrapped'));
+      await page.waitForTimeout(1500);
+      await page.screenshot({ path: path.join(OUT, 'wrapped-slide1.png') });
+      for (let i = 2; i <= 4; i++) {
+        await page.mouse.click(300, 500);
+        await page.waitForTimeout(700);
+        await page.screenshot({ path: path.join(OUT, 'wrapped-slide' + i + '.png') });
+      }
+      // jump to finale
+      for (let i = 0; i < 4; i++) { await page.mouse.click(300, 500); await page.waitForTimeout(400); }
+      await page.screenshot({ path: path.join(OUT, 'wrapped-finale.png') });
+      console.log('captured wrapped slides');
     }
     await ctx.close();
   }
