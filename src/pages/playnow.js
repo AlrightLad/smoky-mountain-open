@@ -367,13 +367,22 @@ Router.register("playnow", function(params) {
   renderPlaySetup();
 });
 
+// ── Setup-surface presentation helpers (structural pass, task #29) ────────
+// One check glyph for every selectable well (was 3x-duplicated inline, with
+// a hardcoded white stroke — now the chalk token on the brass fill), and one
+// keyboard-activation attribute string so tappable divs stay reachable
+// without N copies of the onkeydown handler.
+var PN_CHECK_SVG = '<svg viewBox="0 0 10 10" width="8" height="8" fill="none" stroke="var(--cb-chalk)" stroke-width="2" aria-hidden="true"><path d="M2 5l2 2 4-4"/></svg>';
+var PN_KEY_ACTIVATE = ' role="button" tabindex="0" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();this.click()}"';
+
 function renderPlaySetup() {
   var h = '<div class="sh"><h2>Play now</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
 
   // Single hierarchy: the .sh "Play now" title is the only heading. This is a
   // quiet supporting line, not a second gold display heading competing with it,
-  // and it stays left-aligned to match the form labels below.
-  h += '<div style="padding:0 2px 16px"><div style="font-size:12px;color:var(--muted);letter-spacing:.2px;line-height:1.5">Score hole by hole as you play, or <span style="color:var(--gold);cursor:pointer;text-decoration:underline;text-underline-offset:2px" onclick="Router.go(\'scramble-live\')">start a Scramble round →</span></div></div>';
+  // and it stays left-aligned to match the form labels below. The Scramble
+  // link pads to a 44pt hit area via the recipe's negative-margin trick.
+  h += '<div class="pn-supporting">Score hole by hole as you play, or <span class="pn-supporting__link"' + PN_KEY_ACTIVATE + ' onclick="Router.go(\'scramble-live\')">start a Scramble round →</span></div>';
 
   h += '<div class="form-section">';
   // Player is always the current user — try multiple identification methods
@@ -389,15 +398,20 @@ function renderPlaySetup() {
   }
   var playAs = myPlayer || myLocalPlayer;
   if (!playAs) {
-    h += '<div style="padding:20px;text-align:center;font-size:12px;color:var(--red)">Could not identify your player profile. Please contact the Commissioner.</div>';
+    // Designed error state (P10: an unlinked profile is a failure, not a
+    // legitimate empty) — names the WHAT (no linked player profile) and the
+    // ACTION (the Commissioner links it).
+    h += '<div class="pf-empty pf-empty--error"><div class="pf-empty__h">We can\'t find your player profile</div><div class="pf-empty__b">Your account isn\'t linked to a member profile yet, so live scoring can\'t start. Message the Commissioner and they\'ll link you up.</div></div>';
+    h += '</div>'; // .form-section
     document.querySelector('[data-page="playnow"]').innerHTML = h;
     return;
   }
   // v8.23.87 — elevated paper "form sheet" gives the setup figure-ground depth:
   // the card lifts off the deeper canvas so the fields read as crisp inset wells
-  // (this page was the lone flat surface where fields sat muddy on the same ground).
-  h += '<div class="pn-setup-card" style="background:var(--cb-paper);border:1px solid var(--border);border-radius:var(--r-4);box-shadow:var(--shadow-md);padding:20px 18px 18px">';
-  h += '<div class="ff"><label class="ff-label">Playing as</label><div class="ff-input" style="background:var(--bg4);color:var(--gold);font-weight:600">' + escHtml(playAs.name) + '</div><input type="hidden" id="pn-player" value="' + playAs.id + '"></div>';
+  // (this page was the lone flat surface where fields sat muddy on the same
+  // ground). Recipe now lives in components.css (.pn-setup-card).
+  h += '<div class="pn-setup-card">';
+  h += '<div class="ff"><label class="ff-label">Playing as</label><div class="ff-input pn-playas">' + escHtml(playAs.name) + '</div><input type="hidden" id="pn-player" value="' + playAs.id + '"></div>';
 
   h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="pn-course" placeholder="Search courses..." autocomplete="off" oninput="showPlayCourseSearch(this)"><div id="search-pn-course" class="search-results"></div></div>';
   h += '<input type="hidden" id="pn-rating" value=""><input type="hidden" id="pn-slope" value=""><input type="hidden" id="pn-course-id" value=""><input type="hidden" id="pn-tee-name" value="">';
@@ -407,7 +421,9 @@ function renderPlaySetup() {
   h += '<div class="ff"><label class="ff-label">Holes</label><select class="ff-input" id="pn-holes"><option value="18">18 holes</option><option value="front9">Front 9 (holes 1–9)</option><option value="back9">Back 9 (holes 10–18)</option></select></div>';
   h += '<div id="pn-scramble-team-section"></div>';
 
-  h += '<button class="btn full green" onclick="startLiveRound()" style="margin-top:14px;font-size:15px;padding:15px 20px;letter-spacing:.4px">Tee it up</button>';
+  // Felt + brass CTA — the same voice as the Play hub card (activity.js):
+  // felt ground, brass label, brass chevron. Recipe in components.css.
+  h += '<button class="pn-cta" onclick="startLiveRound()">Tee it up<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></button>';
   h += '</div>'; // .pn-setup-card
   h += '</div>'; // .form-section
 
@@ -442,24 +458,28 @@ function renderPnScrambleTeamSelector() {
   var myTeams = myPid ? teams.filter(function(t) { return t.members && t.members.indexOf(myPid) !== -1; }) : [];
   var selectedId = (document.getElementById("pn-scramble-team-id") || {}).value || "";
 
-  var h = '<div style="border-top:1px solid var(--border);padding-top:14px;margin-top:8px">';
-  h += '<div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding:0 0 10px;font-weight:600">Scramble team</div>';
+  // Canonical in-card section head (mono brass eyebrow) + the shared
+  // selectable-well recipe — selection state is a class toggle now, so
+  // pnSelectTeam below stays in sync with this markup.
+  var h = '<div class="pn-sec">';
+  h += '<div class="pn-sec__eyebrow">Scramble team</div>';
 
   if (myTeams.length > 0) {
     myTeams.forEach(function(t) {
       var mates = t.members.map(function(mid) { var p = PB.getPlayer(mid); return p ? p.name : mid; }).join(", ");
       var sel = t.id === selectedId;
-      h += '<div onclick="pnSelectTeam(\'' + t.id + '\')" id="pn-team-row-' + t.id + '" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;border:1.5px solid ' + (sel ? 'var(--gold)' : 'var(--border)') + ';border-radius:8px;padding:10px 12px;margin-bottom:6px;background:' + (sel ? 'rgba(var(--gold-rgb),.07)' : 'transparent') + '">';
-      h += '<div><div style="font-size:13px;font-weight:600">' + escHtml(t.name) + '</div>';
-      h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(mates) + '</div></div>';
-      h += '<div style="display:flex;align-items:center;gap:8px"><span style="font-size:10px;color:var(--muted)">' + t.size + '-man</span>';
-      h += '<div style="width:16px;height:16px;border-radius:8px;border:1.5px solid ' + (sel ? 'var(--gold)' : 'var(--border)') + ';background:' + (sel ? 'var(--gold)' : 'transparent') + ';display:flex;align-items:center;justify-content:center">' + (sel ? '<svg viewBox="0 0 10 10" width="8" height="8" fill="none" stroke="white" stroke-width="2"><path d="M2 5l2 2 4-4"/></svg>' : '') + '</div></div></div>';
+      h += '<div class="pn-well pn-team-row' + (sel ? ' pn-well--sel' : '') + '" id="pn-team-row-' + t.id + '"' + PN_KEY_ACTIVATE + ' onclick="pnSelectTeam(\'' + t.id + '\')">';
+      h += '<div><div class="pn-row__title">' + escHtml(t.name) + '</div>';
+      h += '<div class="pn-row__sub">' + escHtml(mates) + '</div></div>';
+      h += '<div class="pn-row__right"><span class="pn-row__tag">' + t.size + '-man</span>';
+      h += '<div class="pn-check">' + (sel ? PN_CHECK_SVG : '') + '</div></div></div>';
     });
   } else {
-    h += '<div style="font-size:11px;color:var(--muted);padding:4px 0 10px">No teams yet, create one below.</div>';
+    // Designed empty (legitimate: a new member simply has no teams yet).
+    h += '<div class="pf-empty" style="margin-bottom:10px"><div class="pf-empty__h">No teams yet</div><div class="pf-empty__b">Create one below — pick your partners and a captain.</div></div>';
   }
 
-  h += '<div id="pn-create-team-toggle-wrap" style="margin-top:4px"><button class="btn-sm" onclick="pnToggleCreateTeam()" style="width:100%;padding:9px;font-size:12px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer">+ Create new team</button></div>';
+  h += '<div id="pn-create-team-toggle-wrap" style="margin-top:4px"><button class="pn-ghost pn-ghost--block" onclick="pnToggleCreateTeam()">+ Create new team</button></div>';
   h += '<div id="pn-create-team-form" style="display:none"></div>';
   h += '<input type="hidden" id="pn-scramble-team-id" value="' + escHtml(selectedId) + '">';
   h += '</div>';
@@ -475,14 +495,11 @@ function pnSelectTeam(teamId) {
     var row = document.getElementById("pn-team-row-" + t.id);
     if (!row) return;
     var sel = t.id === teamId;
-    row.style.border = "1.5px solid " + (sel ? "var(--gold)" : "var(--border)");
-    row.style.background = sel ? "rgba(var(--gold-rgb),.07)" : "transparent";
-    var check = row.querySelector("div[style*='border-radius:8px']");
-    if (check) {
-      check.style.borderColor = sel ? "var(--gold)" : "var(--border)";
-      check.style.background = sel ? "var(--gold)" : "transparent";
-      check.innerHTML = sel ? '<svg viewBox="0 0 10 10" width="8" height="8" fill="none" stroke="white" stroke-width="2"><path d="M2 5l2 2 4-4"/></svg>' : "";
-    }
+    // Selection is a class toggle — the .pn-well--sel recipe styles both the
+    // row and its .pn-check disc; only the glyph needs imperative swapping.
+    row.classList.toggle("pn-well--sel", sel);
+    var check = row.querySelector(".pn-check");
+    if (check) check.innerHTML = sel ? PN_CHECK_SVG : "";
   });
 }
 
@@ -510,31 +527,34 @@ function pnRenderCreateTeamForm() {
   var playAs = myPlayer || myLocalPlayer;
   var myPid = playAs ? playAs.id : null;
 
-  var h = '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;margin-top:8px">';
-  h += '<div style="font-size:12px;font-weight:600;color:var(--cream);margin-bottom:12px">New team</div>';
+  // Inset sheet keeps the inline form subordinate to the setup card; every
+  // label rides the canonical ff-label rhythm (the old per-label inline
+  // font-size:10px overrides broke the form's vertical voice).
+  var h = '<div class="pn-subcard">';
+  h += '<div class="pn-sec__eyebrow">New team</div>';
 
-  h += '<div class="ff" style="margin-bottom:10px"><label class="ff-label" style="font-size:10px">Team name</label><input class="ff-input" id="pn-new-team-name" placeholder="e.g. The Bogey Boys" autocomplete="off"></div>';
+  h += '<div class="ff"><label class="ff-label">Team name</label><input class="ff-input" id="pn-new-team-name" placeholder="e.g. The Bogey Boys" autocomplete="off"></div>';
 
-  h += '<div style="margin-bottom:12px"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Team size</div><div style="display:flex;gap:6px">';
+  h += '<div class="ff"><label class="ff-label">Team size</label><div style="display:flex;gap:6px">';
   [2,3,4].forEach(function(n) {
     var a = pnScrambleTeamSize === n;
-    h += '<button onclick="pnSetTeamSize(' + n + ')" style="flex:1;padding:8px;border-radius:6px;border:1.5px solid ' + (a ? 'var(--gold)' : 'var(--border)') + ';background:' + (a ? 'rgba(var(--gold-rgb),.12)' : 'transparent') + ';color:' + (a ? 'var(--gold)' : 'var(--muted)') + ';font-size:12px;font-weight:600;cursor:pointer">' + n + '-man</button>';
+    h += '<button class="pn-seg' + (a ? ' pn-seg--sel' : '') + '" onclick="pnSetTeamSize(' + n + ')">' + n + '-man</button>';
   });
   h += '</div></div>';
 
-  h += '<div style="margin-bottom:10px"><div style="font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Members <span style="color:' + (pnScrambleSelected.length === pnScrambleTeamSize ? 'var(--birdie)' : 'var(--muted)') + '">(' + pnScrambleSelected.length + '/' + pnScrambleTeamSize + ')</span></div>';
+  h += '<div class="ff"><label class="ff-label">Members <span style="color:' + (pnScrambleSelected.length === pnScrambleTeamSize ? 'var(--birdie)' : 'var(--muted)') + '">(' + pnScrambleSelected.length + '/' + pnScrambleTeamSize + ')</span></label>';
   players.forEach(function(p) {
     var isSelf = p.id === myPid;
     var inTeam = pnScrambleSelected.indexOf(p.id) !== -1;
-    h += '<div onclick="pnToggleMember(\'' + p.id + '\')" id="pn-m-' + p.id + '" style="cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:9px 10px;border-radius:6px;border:1px solid ' + (inTeam ? 'var(--gold)' : 'var(--border)') + ';background:' + (inTeam ? 'rgba(var(--gold-rgb),.07)' : 'transparent') + ';margin-bottom:4px">';
-    h += '<div style="font-size:12px;color:var(--cream)">' + escHtml(p.name) + (isSelf ? ' <span style="font-size:9px;color:var(--gold)">(you)</span>' : '') + '</div>';
-    h += '<div style="width:16px;height:16px;border-radius:8px;border:1.5px solid ' + (inTeam ? 'var(--gold)' : 'var(--border)') + ';background:' + (inTeam ? 'var(--gold)' : 'transparent') + ';display:flex;align-items:center;justify-content:center;flex-shrink:0">' + (inTeam ? '<svg viewBox="0 0 10 10" width="8" height="8" fill="none" stroke="white" stroke-width="2"><path d="M2 5l2 2 4-4"/></svg>' : '') + '</div>';
+    h += '<div class="pn-well pn-member-row' + (inTeam ? ' pn-well--sel' : '') + '" id="pn-m-' + p.id + '"' + PN_KEY_ACTIVATE + ' onclick="pnToggleMember(\'' + p.id + '\')">';
+    h += '<div class="pn-row__name">' + escHtml(p.name) + (isSelf ? ' <span class="pn-row__you">(you)</span>' : '') + '</div>';
+    h += '<div class="pn-check">' + (inTeam ? PN_CHECK_SVG : '') + '</div>';
     h += '</div>';
   });
   h += '</div>';
 
   if (pnScrambleSelected.length > 0) {
-    h += '<div class="ff" style="margin-bottom:12px"><label class="ff-label" style="font-size:10px">Captain (hits last every shot)</label><select class="ff-input" id="pn-new-team-captain">';
+    h += '<div class="ff"><label class="ff-label">Captain (hits last every shot)</label><select class="ff-input" id="pn-new-team-captain">';
     pnScrambleSelected.forEach(function(pid) {
       var p = PB.getPlayer(pid);
       h += '<option value="' + pid + '">' + escHtml(p ? p.name : pid) + '</option>';
@@ -542,9 +562,9 @@ function pnRenderCreateTeamForm() {
     h += '</select></div>';
   }
 
-  h += '<div style="display:flex;gap:8px;margin-top:4px">';
-  h += '<button class="btn full green" onclick="pnSaveNewTeam()" style="flex:1;font-size:12px;padding:9px">Save &amp; use this team</button>';
-  h += '<button onclick="pnToggleCreateTeam()" style="padding:9px 14px;font-size:11px;border:1px solid var(--border);border-radius:6px;background:transparent;color:var(--muted);cursor:pointer">Cancel</button>';
+  h += '<div class="pn-actions">';
+  h += '<button class="btn green" onclick="pnSaveNewTeam()">Save &amp; use this team</button>';
+  h += '<button class="pn-ghost" onclick="pnToggleCreateTeam()">Cancel</button>';
   h += '</div></div>';
 
   form.innerHTML = h;
@@ -615,14 +635,16 @@ function renderPnTeeSelector(courseId) {
       var si = document.getElementById("pn-slope"); if (si && defTee.slope) si.value = defTee.slope;
     }
   }
-  var h = '<div class="ff"><label class="ff-label">Tee</label><div style="display:flex;flex-wrap:wrap;gap:6px;padding:2px 0">';
+  // Tee chips ride the same selectable-well recipe as the team rows (one
+  // selection language across the whole setup card); full re-render on
+  // select keeps the state class honest.
+  var h = '<div class="ff"><label class="ff-label">Tee</label><div class="pn-tee-row">';
   course.allTees.forEach(function(tee) {
     var sel = tee.name === currentTee;
     var info = [tee.yards ? tee.yards + " yds" : "", tee.rating && tee.slope ? tee.rating + "/" + tee.slope : ""].filter(Boolean).join(" · ");
-    h += '<div onclick="pnSelectTee(\'' + courseId.replace(/'/g,"\\'") + '\',\'' + (tee.name||"").replace(/'/g,"\\'") + '\')" ';
-    h += 'style="cursor:pointer;padding:8px 14px;border-radius:8px;border:1.5px solid ' + (sel ? "var(--gold)" : "var(--border)") + ';background:' + (sel ? "rgba(var(--gold-rgb),.1)" : "transparent") + ';-webkit-tap-highlight-color:transparent">';
-    h += '<div style="font-size:13px;font-weight:600;color:' + (sel ? "var(--gold)" : "var(--cream)") + '">' + escHtml(tee.name || "") + '</div>';
-    if (info) h += '<div style="font-size:9px;color:var(--muted);margin-top:2px">' + escHtml(info) + '</div>';
+    h += '<div class="pn-well pn-tee-chip' + (sel ? ' pn-well--sel' : '') + '"' + PN_KEY_ACTIVATE + ' onclick="pnSelectTee(\'' + courseId.replace(/'/g,"\\'") + '\',\'' + (tee.name||"").replace(/'/g,"\\'") + '\')">';
+    h += '<div class="pn-row__title">' + escHtml(tee.name || "") + '</div>';
+    if (info) h += '<div class="pn-row__sub">' + escHtml(info) + '</div>';
     h += '</div>';
   });
   h += '</div></div>';

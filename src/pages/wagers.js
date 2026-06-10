@@ -29,16 +29,23 @@ Router.register("wagers", function(params) {
   renderWagerList();
 });
 
+// Canonical eyebrow+title section head — mono brass eyebrow over a
+// display-serif title (the v8.24.24 members-detail pf-sec__* treatment,
+// recipes in components.css).
+function _wgSecHead(eyebrow, title) {
+  return '<div class="sec-head"><div><div class="pf-sec__eyebrow">' + eyebrow + '</div><span class="sec-title pf-sec__title">' + title + '</span></div></div>';
+}
+
 function renderWagerList() {
   var uid = currentUser ? currentUser.uid : null;
   var h = '<div class="sh"><h2>Wagers</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'home\')">← Back</button><button class="btn-sm green" onclick="Router.go(\'wagers\',{create:true})">+ New Wager</button></div></div>';
 
   // Balance
   var balance = getParCoinBalance(uid);
-  h += '<div style="padding:0 16px 12px;display:flex;align-items:center;gap:8px">';
-  h += '<svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="var(--gold)" stroke-width="1.3"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7"/></svg>';
-  h += '<span style="font-size:14px;font-weight:700;color:var(--gold)">' + balance + '</span>';
-  h += '<span style="font-size:10px;color:var(--muted)">available to wager</span>';
+  h += '<div class="wg-balance">';
+  h += '<svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="var(--cb-brass)" stroke-width="1.3" aria-hidden="true"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7"/></svg>';
+  h += '<span class="wg-balance__amt">' + balance + '</span>';
+  h += '<span class="wg-balance__note">available to wager</span>';
   h += '</div>';
 
   // Active wagers
@@ -64,7 +71,7 @@ function renderWagerList() {
       }
       var wh = '';
       mine.forEach(function(w) { wh += _renderWagerCard(w, uid); });
-      el.innerHTML = '<div class="section"><div class="sec-head"><span class="sec-title">Active wagers</span></div>' + wh + '</div>';
+      el.innerHTML = '<div class="section">' + _wgSecHead("On the book", "Active wagers") + wh + '</div>';
       _loadCompletedWagers(uid, el);
     }).catch(function(err) {
       pbWarn("[Wagers]", err.message);
@@ -74,20 +81,20 @@ function renderWagerList() {
   }
 }
 
-// Empty-state markup for the wager list. Mirrors the bounties board empty
-// state (icon + display-font status heading + body + CTA + idea chips) so the
-// two sibling betting surfaces read as one coherent family.
+// Designed empty state in the Caddy bookmaker voice — pf-empty dashed frame
+// (the canonical designed-empty recipe) + felt CTA + idea slips kept from the
+// bounties-family treatment so the sibling betting surfaces stay one family.
 function _wagerEmptyHTML() {
-  var eh = '<div style="padding:24px 16px;text-align:center">';
-  eh += '<div style="margin-bottom:12px"><svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>';
-  eh += '<div style="font-family:var(--font-display);font-size:18px;color:var(--gold);margin-bottom:6px">No Active Wagers</div>';
-  eh += '<div style="font-size:12px;color:var(--muted);line-height:1.5;max-width:280px;margin:0 auto 16px">Challenge a friend and bet ParCoins on who plays the better round. Coins lock when the wager is accepted and release once the round is scored.</div>';
-  eh += '<button class="btn full green" onclick="Router.go(\'wagers\',{create:true})" style="max-width:240px;margin:0 auto;font-size:13px;padding:14px">Start a Wager</button>';
-  eh += '<div style="margin-top:20px;text-align:left">';
-  eh += '<div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;text-align:center">Wager Ideas</div>';
+  var eh = '<div class="pf-empty wg-empty">';
+  eh += '<div class="wg-empty__icon"><svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>';
+  eh += '<div class="pf-empty__h">No action on the books</div>';
+  eh += '<div class="pf-empty__b">Call someone out — coins lock in escrow when the wager is accepted and pay out once the round is scored.</div>';
+  eh += '<button class="wg-btn wg-btn--felt wg-empty__cta" onclick="Router.go(\'wagers\',{create:true})">Start a Wager</button>';
+  eh += '<div class="wg-empty__ideas">';
+  eh += '<div class="wg-empty__ideas-label">Wager ideas</div>';
   var examples = ["Lower total at Heritage Hills · 100 coins", "Fewest putts next round · 50 coins", "Beat my best at Sequoyah · 75 coins"];
   examples.forEach(function(ex) {
-    eh += '<div style="display:flex;align-items:center;gap:9px;padding:11px 13px;margin-bottom:6px;background:var(--cb-paper);border:1px solid var(--border);border-radius:var(--r-2);font-size:12px;color:var(--cb-ink)"><span style="width:6px;height:6px;border-radius:50%;background:var(--gold);flex:none"></span><span>' + ex + '</span></div>';
+    eh += '<div class="wg-empty__idea"><span>' + ex + '</span></div>';
   });
   eh += '</div></div>';
   return eh;
@@ -101,7 +108,7 @@ function _loadCompletedWagers(uid, appendTo) {
       if (w.fromUid === uid || w.toUid === uid) completed.push(w);
     });
     if (!completed.length) return;
-    var ch = '<div class="section" style="margin-top:8px"><div class="sec-head"><span class="sec-title">Past wagers</span></div>';
+    var ch = '<div class="section" style="margin-top:8px">' + _wgSecHead("Settled", "Past wagers");
     completed.forEach(function(w) { ch += _renderWagerCard(w, uid); });
     ch += '</div>';
     appendTo.innerHTML += ch;
@@ -114,35 +121,37 @@ function _renderWagerCard(w, uid) {
   var oppName = isFrom ? (w.toName || "Opponent") : (w.fromName || "Challenger");
   var myName = isFrom ? (w.fromName || "You") : (w.toName || "You");
   var coinAmt = w.type === "nassau" ? (w.amount * 3) : w.amount;
-  var statusColor = w.status === "pending" ? "var(--gold)" : w.status === "accepted" ? "var(--birdie)" : w.status === "completed" ? "var(--muted)" : "var(--red)";
-  var statusLabel = w.status === "pending" ? "PENDING" : w.status === "accepted" ? "ACTIVE" : w.status === "completed" ? (w.winner === uid ? "WON" : w.winner === "tie" ? "TIE" : "LOST") : w.status.toUpperCase();
-  var statusBg = w.winner === uid ? "rgba(var(--birdie-rgb),.08)" : w.winner === "tie" ? "rgba(var(--gold-rgb),.06)" : w.status === "completed" ? "rgba(var(--red-rgb),.06)" : "transparent";
+  // One card geometry for every state; the mono status word carries the
+  // outcome tone (wg-card__status--* recipes) instead of per-status washes.
+  var statusTone = w.status === "pending" ? "pending" : w.status === "accepted" ? "live" : w.status === "completed" ? (w.winner === uid ? "won" : w.winner === "tie" ? "muted" : "lost") : "lost";
+  var statusLabel = w.status === "pending" ? "Pending" : w.status === "accepted" ? "Active" : w.status === "completed" ? (w.winner === uid ? "Won" : w.winner === "tie" ? "Tie" : "Lost") : w.status;
 
-  var h = '<div class="card" style="background:' + statusBg + '">';
-  h += '<div style="padding:14px 16px">';
-  // Header: type icon + opponent + amount
-  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">';
-  h += '<div style="display:flex;align-items:center;gap:10px">';
-  h += '<div style="width:32px;height:32px;border-radius:50%;background:rgba(var(--gold-rgb),.1);border:1px solid rgba(var(--gold-rgb),.2);display:flex;align-items:center;justify-content:center;color:var(--gold)">' + wagerTypeIcon(w.type, 16) + '</div>';
-  h += '<div><div style="font-size:13px;font-weight:700;color:var(--cream)">' + escHtml(myName) + ' vs ' + escHtml(oppName) + '</div>';
-  h += '<div style="font-size:10px;color:var(--muted)">' + type.label + (w.course ? ' · ' + escHtml(w.course) : '') + '</div></div></div>';
-  h += '<div style="text-align:right"><div style="font-size:16px;font-weight:700;color:var(--gold)">' + coinAmt + '</div>';
-  h += '<div style="font-size:8px;font-weight:700;color:' + statusColor + ';letter-spacing:.5px">' + statusLabel + '</div></div>';
+  var h = '<div class="wg-card">';
+  // Header: type icon + matchup + stake (brass mono) + status word
+  h += '<div class="wg-card__row">';
+  h += '<div class="wg-card__icon">' + wagerTypeIcon(w.type, 16) + '</div>';
+  h += '<div class="wg-card__main">';
+  h += '<div class="wg-card__name">' + escHtml(myName) + ' vs ' + escHtml(oppName) + '</div>';
+  h += '<div class="wg-card__meta">' + type.label + (w.course ? ' · ' + escHtml(w.course) : '') + '</div>';
   h += '</div>';
-  // Actions
+  h += '<div class="wg-card__right">';
+  h += '<div class="wg-card__stake">' + coinAmt + '</div>';
+  h += '<div class="wg-card__status wg-card__status--' + statusTone + '">' + escHtml(statusLabel) + '</div>';
+  h += '</div></div>';
+  // Actions — felt confirm / ghost decline (44pt vocabulary)
   if (w.status === "pending" && !isFrom) {
-    h += '<div style="display:flex;gap:6px">';
-    h += '<button class="btn-sm green" style="flex:1" onclick="acceptWager(\'' + w._id + '\')">Accept (' + w.amount + ' coins)</button>';
-    h += '<button class="btn-sm outline" style="flex:1;color:var(--red);border-color:rgba(var(--red-rgb),.2)" onclick="declineWager(\'' + w._id + '\')">Decline</button>';
+    h += '<div class="wg-card__actions">';
+    h += '<button class="wg-btn wg-btn--felt" onclick="acceptWager(\'' + w._id + '\')">Accept · ' + coinAmt + '</button>';
+    h += '<button class="wg-btn wg-btn--ghost" onclick="declineWager(\'' + w._id + '\')">Decline</button>';
     h += '</div>';
   } else if (w.status === "pending" && isFrom) {
-    h += '<div style="font-size:10px;color:var(--muted);font-style:italic">Waiting for ' + escHtml(oppName) + ' to accept...</div>';
+    h += '<div class="wg-card__wait">Waiting for ' + escHtml(oppName) + ' to accept...</div>';
   }
   // Result details for completed
   if (w.status === "completed" && w.resultDetail) {
-    h += '<div style="font-size:10px;color:var(--muted);margin-top:4px;border-top:1px solid var(--border);padding-top:6px">' + escHtml(w.resultDetail) + '</div>';
+    h += '<div class="wg-card__result">' + escHtml(w.resultDetail) + '</div>';
   }
-  h += '</div></div>';
+  h += '</div>';
   return h;
 }
 
@@ -164,16 +173,16 @@ function renderCreateWager(presetOpponent) {
   });
   h += '</select></div>';
 
-  // Wager type
+  // Wager type — radiogroup cells with the theme-row brass-ring selected state
   h += '<div class="ff"><label class="ff-label">Wager type</label>';
-  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px" id="wager-types">';
+  h += '<div class="wg-type" role="radiogroup" aria-label="Wager type" id="wager-types">';
   Object.keys(WAGER_TYPES).forEach(function(key) {
     var wt = WAGER_TYPES[key];
-    h += '<div onclick="selectWagerType(\'' + key + '\')" id="wt-' + key + '" style="cursor:pointer;padding:12px;border:1px solid var(--border);border-radius:var(--radius);text-align:center;transition:border-color .15s">';
-    h += '<div style="color:var(--gold);margin-bottom:6px">' + wagerTypeIcon(key, 26) + '</div>';
-    h += '<div style="font-size:11px;font-weight:600;color:var(--cream)">' + wt.label + '</div>';
-    h += '<div style="font-size:9px;color:var(--muted);margin-top:2px">' + wt.desc + '</div>';
-    h += '</div>';
+    h += '<button type="button" class="wg-type__cell" role="radio" aria-checked="false" onclick="selectWagerType(\'' + key + '\')" id="wt-' + key + '">';
+    h += '<div class="wg-type__icon">' + wagerTypeIcon(key, 26) + '</div>';
+    h += '<div class="wg-type__name">' + wt.label + '</div>';
+    h += '<div class="wg-type__desc">' + wt.desc + '</div>';
+    h += '</button>';
   });
   h += '</div>';
   h += '<input type="hidden" id="wager-type" value="stroke"></div>';
@@ -183,16 +192,15 @@ function renderCreateWager(presetOpponent) {
   h += '<input type="text" class="ff-input" id="wager-course" placeholder="Any course" oninput="showWagerCourseSearch(this)"></div>';
   h += '<div id="search-wager-course"></div>';
 
-  // Amount
+  // Amount — quick-picks share the brass-ring selection grammar; the typed
+  // figure is brass mono like every stake on this page
   h += '<div class="ff"><label class="ff-label">Coins to wager (you have ' + balance + ')</label>';
-  h += '<div style="display:flex;gap:6px">';
+  h += '<div class="wg-amt" id="wager-amounts">';
   [25, 50, 100, 200].forEach(function(amt) {
-    var disabled = balance < amt ? ' style="opacity:.3;pointer-events:none"' : '';
-    h += '<button class="btn-sm outline" onclick="document.getElementById(\'wager-amount\').value=' + amt + ';document.querySelectorAll(\'#wager-amounts .btn-sm\').forEach(function(b){b.style.background=\'transparent\'});this.style.background=\'rgba(var(--gold-rgb),.1)\'"' + disabled + '>' + amt + '</button>';
+    h += '<button type="button" class="wg-amt__btn" aria-pressed="false" onclick="selectWagerAmount(' + amt + ',this)"' + (balance < amt ? ' disabled' : '') + '>' + amt + '</button>';
   });
   h += '</div>';
-  h += '<input type="number" class="ff-input" id="wager-amount" value="50" min="10" max="' + balance + '" style="margin-top:6px;text-align:center;font-size:18px;font-weight:700;color:var(--gold)"></div>';
-  h += '<div id="wager-amounts"></div>';
+  h += '<input type="number" class="ff-input wg-amt__input" id="wager-amount" value="50" min="10" max="' + balance + '" oninput="clearWagerAmountPicks()"></div>';
 
   // Visibility
   h += '<div class="ff"><label class="ff-label">Visibility</label>';
@@ -201,13 +209,13 @@ function renderCreateWager(presetOpponent) {
   h += '<option value="private">Private (only you two see it)</option>';
   h += '</select></div>';
 
-  // Nassau note
-  h += '<div id="nassau-note" style="display:none;padding:8px 12px;background:rgba(var(--gold-rgb),.06);border:1px solid rgba(var(--gold-rgb),.12);border-radius:var(--radius);font-size:10px;color:var(--muted);margin-bottom:12px">Nassau wagers are 3 separate bets (front 9, back 9, total). The coin amount is per bet, so a 50-coin Nassau costs 150 total.</div>';
-  h += '<div id="beatscore-note" style="display:none;padding:8px 12px;background:rgba(var(--gold-rgb),.06);border:1px solid rgba(var(--gold-rgb),.12);border-radius:var(--radius);font-size:10px;color:var(--muted);margin-bottom:12px"><div id="beatscore-target">Select opponent and course to see their best score</div><div style="margin-top:4px">You win if your next round at this course beats their personal best there.</div></div>';
+  // Type-specific escrow notes (shown/hidden by selectWagerType)
+  h += '<div id="nassau-note" class="wg-note">Nassau wagers are 3 separate bets (front 9, back 9, total). The coin amount is per bet, so a 50-coin Nassau costs 150 total.</div>';
+  h += '<div id="beatscore-note" class="wg-note"><div id="beatscore-target">Select opponent and course to see their best score</div><div style="margin-top:4px">You win if your next round at this course beats their personal best there.</div></div>';
 
-  // Submit
-  h += '<button class="btn full green" onclick="submitWager()" style="font-size:14px;padding:14px;font-weight:600">Send Challenge</button>';
-  h += '<div style="font-size:9px;color:var(--muted2);text-align:center;margin-top:8px">Coins are held in escrow until the wager resolves. Zero real-world cash value.</div>';
+  // Submit — felt confirm, full-width
+  h += '<button class="wg-btn wg-btn--felt wg-btn--full" onclick="submitWager()">Send Challenge</button>';
+  h += '<div class="wg-fine">Coins are held in escrow until the wager resolves. Zero real-world cash value.</div>';
   h += '</div>';
 
   document.querySelector('[data-page="wagers"]').innerHTML = h;
@@ -222,8 +230,7 @@ function selectWagerType(type) {
   if (input) input.value = type;
   Object.keys(WAGER_TYPES).forEach(function(key) {
     var el = document.getElementById("wt-" + key);
-    if (el) el.style.borderColor = key === type ? "var(--gold)" : "var(--border)";
-    if (el) el.style.background = key === type ? "rgba(var(--gold-rgb),.06)" : "transparent";
+    if (el) el.setAttribute("aria-checked", key === type ? "true" : "false");
   });
   var nassauNote = document.getElementById("nassau-note");
   if (nassauNote) nassauNote.style.display = type === "nassau" ? "block" : "none";
@@ -231,6 +238,22 @@ function selectWagerType(type) {
   if (beatNote) beatNote.style.display = type === "beatscore" ? "block" : "none";
   // Show opponent's best score at course when Beat Their Score is selected
   if (type === "beatscore") _updateBeatScoreTarget();
+}
+
+// Amount quick-picks — aria-pressed carries the brass-ring selected state
+// (one pressed at a time; typing a custom figure clears the picks).
+function selectWagerAmount(amt, btn) {
+  var input = document.getElementById("wager-amount");
+  if (input) input.value = amt;
+  document.querySelectorAll("#wager-amounts .wg-amt__btn").forEach(function(b) {
+    b.setAttribute("aria-pressed", b === btn ? "true" : "false");
+  });
+}
+
+function clearWagerAmountPicks() {
+  document.querySelectorAll("#wager-amounts .wg-amt__btn").forEach(function(b) {
+    b.setAttribute("aria-pressed", "false");
+  });
 }
 
 function _updateBeatScoreTarget() {
