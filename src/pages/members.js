@@ -60,6 +60,13 @@ function renderMemberList() {
         // PB.getPlayers() filter; apply visibility check explicitly here.
         // (V13.3 audit miss — patched in immediate followup.)
         if (PB.isMemberVisibleToViewer && !PB.isMemberVisibleToViewer(d)) return;
+        // v8.24.38 — the roster is the ACTIVE league's member list, not the
+        // whole platform. Filter by the league doc's memberUids (the same
+        // list the security rules treat as membership). Skipped when the
+        // cache hasn't warmed so a cold load still shows a roster rather
+        // than a blank room.
+        var _lgUids = window._activeLeagueMemberUids;
+        if (Array.isArray(_lgUids) && _lgUids.length && _lgUids.indexOf(doc.id) === -1) return;
         fbMembers.push(d);
         if (d.claimedFrom) claimedFromIds.push(d.claimedFrom);
       });
@@ -70,6 +77,10 @@ function renderMemberList() {
       var filtered = players.filter(function(p) {
         return claimedFromIds.indexOf(p.id) === -1;
       });
+      // v8.24.38 — unclaimed legacy local profiles are founding-league members
+      // by definition (they pre-date leagues, same rationale as the trips
+      // visibility rule). Other leagues' rosters list only their own people.
+      if (getActiveLeague() !== "the-parbaughs") filtered = [];
       
       // Add Firebase members — deduplicate by doc ID, claimedFrom, AND username
       var filteredIds = filtered.map(function(p) { return p.id; });
@@ -159,7 +170,9 @@ function _rosterNameHtml(name) {
 
 // Editorial masthead. count === null during the loading state (count unknown).
 function _rosterMasthead(count) {
-  var label = 'THE PARBAUGHS';
+  // v8.24.38 — name the league actually being listed (was hardcoded to
+  // the founding league, wrong for every other league).
+  var label = (window._activeLeagueName || 'The Parbaughs').toUpperCase();
   if (count !== null && count !== undefined) label += ' · ' + count + (count === 1 ? ' MEMBER' : ' MEMBERS');
   return '<button type="button" class="roster-skip" onclick="var el=document.getElementById(\'rosterTableRegion\');if(el){el.focus();el.scrollIntoView();}">Skip to roster</button>' +
     '<div class="roster-masthead">' +

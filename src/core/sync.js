@@ -17,6 +17,8 @@ function loadActiveLeagueName() {
       var d = doc.data();
       if (d.name) window._activeLeagueName = d.name;
       window._activeLeagueCommissioner = d.commissioner || null;
+      // v8.24.38 — cache membership for league-scoped rosters (members.js).
+      window._activeLeagueMemberUids = Array.isArray(d.memberUids) ? d.memberUids : null;
     }
   }).catch(function(){});
 }

@@ -90,16 +90,30 @@ function launcherFor(name) {
 
 async function probeDevServer(url) {
   // Lightweight reachability check — uses node http to avoid pulling in fetch polyfills.
-  return new Promise(function(resolve) {
-    var http = require('http');
-    var u = require('url').parse(url);
-    var req = http.request({ host: u.hostname, port: u.port || 80, path: u.path || '/', method: 'HEAD', timeout: 3000 }, function(res) {
-      resolve(res.statusCode >= 200 && res.statusCode < 500);
+  // v8.24.38 — probe both address families. Vite binds [::1] only on this
+  // box while node sometimes resolves "localhost" to 127.0.0.1, which made
+  // the probe (and therefore the whole suite) fail intermittently even with
+  // the server up. Playwright itself resolves localhost fine.
+  function probeHost(host, port, path) {
+    return new Promise(function(resolve) {
+      var http = require('http');
+      var req = http.request({ host: host, port: port, path: path, method: 'HEAD', timeout: 3000 }, function(res) {
+        resolve(res.statusCode >= 200 && res.statusCode < 500);
+      });
+      req.on('error', function() { resolve(false); });
+      req.on('timeout', function() { req.destroy(); resolve(false); });
+      req.end();
     });
-    req.on('error', function() { resolve(false); });
-    req.on('timeout', function() { req.destroy(); resolve(false); });
-    req.end();
-  });
+  }
+  var u = require('url').parse(url);
+  var port = u.port || 80;
+  var path = u.path || '/';
+  if (await probeHost(u.hostname, port, path)) return true;
+  if (u.hostname === 'localhost') {
+    if (await probeHost('::1', port, path)) return true;
+    if (await probeHost('127.0.0.1', port, path)) return true;
+  }
+  return false;
 }
 
 async function runOnBrowser(browserName, runDir) {
