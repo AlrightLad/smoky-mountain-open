@@ -59,6 +59,31 @@ function _trSortEarned(a, b) {
   return 0;
 }
 
+// Canonical section head — ONE treatment for every section (replaces six
+// inline clones). Mono-brass eyebrow + Fraunces italic title, optional aside
+// slot (count chip or control) on the hairline base. Same rhythm as the
+// app-wide .sec-head, kept editorial for the trophy room.
+function _trSecHead(eyebrow, title, asideHtml) {
+  var s = '<header class="tr-sec-head">';
+  s += '<div class="tr-sec-head__text">';
+  s += '<div class="tr-sec-head__eyebrow">' + escHtml(eyebrow) + '</div>';
+  s += '<h2 class="tr-sec-head__title">' + escHtml(title) + '</h2>';
+  s += '</div>';
+  if (asideHtml) s += asideHtml;
+  s += '</header>';
+  return s;
+}
+
+// Designed empty/loading state (P10) — every section says plainly what lives
+// there and how to fill it, in the Caddy's voice; never bare text. Call sites
+// pass literal copy only (escHtml kept for safety).
+function _trEmpty(head, body, extraClass) {
+  var s = '<div class="tr-empty' + (extraClass ? ' ' + extraClass : '') + '">';
+  if (head) s += '<div class="tr-empty__head">' + escHtml(head) + '</div>';
+  if (body) s += '<div class="tr-empty__body">' + escHtml(body) + '</div>';
+  return s + '</div>';
+}
+
 function _trRecRow(label, value, ctx, onclick) {
   var clickable = !!onclick;
   var s = "<" + (clickable ? 'button type="button"' : "div") + ' class="tr-rec' + (clickable ? " tr-rec--link" : "") + '"' + (clickable ? ' onclick="' + onclick + '"' : "") + ">";
@@ -92,38 +117,30 @@ function _trRollOfHonor() {
   return out;
 }
 
-function renderTrophyRoom(p) {
-  var pid = p.id;
-  // XP source precedence (see PB.getPlayerXPForDisplay in core/data.js).
-  var lvl = PB.calcLevelFromXP(PB.getPlayerXPForDisplay(pid));
-  var achievements = PB.getAchievements(pid);
-  var rounds = PB.getPlayerRounds(pid);
-  var best = PB.getPlayerBest(pid);
-  var best9 = PB.getPlayerBest9(pid);
-  var unique = PB.getUniqueCourses(pid);
-  var aceCount = _trAceCount(p.name);
+// ── Section builders ─────────────────────────────────────────────────────────
+// Each returns one self-contained block so renderTrophyRoom reads as a table
+// of contents. Presentation only; every value still comes from PB.* getters.
 
+function _trMastheadSec(p, pid, lvl, trophyCount, aceCount) {
   var displayName = p.username || p.name || "Member";
   var firstName = String(displayName).trim().split(/\s+/)[0] || displayName;
   var isSelf = !!(currentUser && pid === currentUser.uid);
-
-  var h = '<div class="tr-wrap">';
-
-  // ── Masthead ──
-  h += '<div class="roster-masthead">';
+  var h = '<div class="roster-masthead">';
   h += '<div class="roster-eyebrow">THE TROPHY ROOM · ' + escHtml(String(displayName).toUpperCase()) + '</div>';
   h += '<h1 class="roster-headline">' + (isSelf ? "Your hardware." : escHtml(firstName) + "&rsquo;s hardware.") + '</h1>';
-  h += '<div class="tr-subdeck">' + _trSubdeck(lvl, achievements.length, aceCount) + '</div>';
+  h += '<div class="tr-subdeck">' + _trSubdeck(lvl, trophyCount, aceCount) + '</div>';
   h += '<button type="button" class="tr-back" onclick="Router.go(\'members\',{id:\'' + pid + '\'})">&larr; Back to profile</button>';
-  h += '</div>';
+  return h + '</div>';
+}
 
-  // ── Standing (level + title + XP progress) ──
+// Standing (level + title + XP progress)
+function _trStandingSec(lvl) {
   var xpInLevel = lvl.xp - lvl.currentLevelXp;
   var xpNeeded = lvl.nextLevelXp - lvl.currentLevelXp;
   var pct = xpNeeded > 0 ? Math.min(100, Math.round((xpInLevel / xpNeeded) * 100)) : 100;
   var atMax = lvl.level >= 100 || xpNeeded <= 0;
   var nextTitle = _trNextTitle(lvl.level);
-  h += '<section class="tr-standing" aria-label="Current standing">';
+  var h = '<section class="tr-standing" aria-label="Current standing">';
   h += '<div class="tr-standing__rail"><div class="tr-standing__lvlcap">Level</div><div class="tr-standing__level" data-count="' + lvl.level + '">0</div></div>';
   h += '<div class="tr-standing__body">';
   h += '<div class="tr-standing__title">' + escHtml(lvl.name) + '</div>';
@@ -132,75 +149,95 @@ function renderTrophyRoom(p) {
   if (atMax) h += '<div class="tr-standing__next">Top of the board. G.O.A.T. status.</div>';
   else h += '<div class="tr-standing__next">' + (xpNeeded - xpInLevel).toLocaleString() + ' XP to Level ' + (lvl.level + 1) + (nextTitle ? ' · ' + escHtml(nextTitle) : '') + '</div>';
   h += '</div>';
-  h += '</section>';
+  return h + '</section>';
+}
 
-  // ── Recently earned marquee (real achievements, newest first) or editorial empty ──
+// Recently earned marquee (real achievements, newest first)
+function _trRecentSec(achievements) {
+  var h = '<section class="tr-sec" aria-label="Recently earned">';
+  h += _trSecHead("Fresh hardware", "Recently earned", achievements.length ? '<div class="tr-sec-count">' + achievements.length + ' total</div>' : null);
   if (achievements.length) {
     var recent = achievements.slice().sort(_trSortEarned).slice(0, 6);
-    h += '<section class="tr-sec" aria-label="Recently earned">';
-    h += '<div class="tr-sec-head"><h2 class="tr-sec-title">Recently earned</h2><div class="tr-sec-count">' + achievements.length + ' total</div></div>';
     h += '<div class="tr-marquee">';
     recent.forEach(function(a) {
       var earned = _trFmtEarned(a.earnedAt);
       h += '<div class="tr-cell"><div class="tr-cell__emblem">' + a.icon + '</div><div class="tr-cell__name">' + escHtml(a.name) + '</div><div class="tr-cell__meta">' + (earned || "Unlocked") + '</div></div>';
     });
     h += '</div>';
-    h += '</section>';
   } else {
-    h += '<section class="tr-sec" aria-label="Trophies"><div class="tr-empty"><div class="tr-empty__head">No trophies yet.</div><div class="tr-empty__body">Log a round, break a record, win a match. The wall below shows everything there is to earn.</div></div></section>';
+    h += _trEmpty("The shelf is waiting.", "Log a round, break a record, win a match — the wall below shows everything there is to earn, and the first few come quick.");
   }
+  return h + '</section>';
+}
 
-  // ── Records (real personal bests; aces deep-link to the dedicated wall) ──
-  h += '<section class="tr-sec" aria-label="Records">';
-  h += '<div class="tr-sec-head"><h2 class="tr-sec-title">Records</h2></div>';
-  h += '<div class="tr-records">';
-  h += _trRecRow("Best round", best ? String(best.score) : "—", null, null);
-  if (best9) h += _trRecRow("Best nine", String(best9.score), best9.holesMode === "back9" ? "Back 9" : "Front 9", null);
-  h += _trRecRow("Rounds logged", String(rounds.length), null, null);
-  h += _trRecRow("Courses played", String(unique), null, "window._courseViewMode='ours';Router.go('courses')");
-  h += _trRecRow("Aces", String(aceCount), aceCount === 1 ? "hole-in-one" : "holes-in-one", "Router.go('aces')");
-  h += '</div>';
-  h += '</section>';
-
-  // ── Roll of Honor (rank 13) — the league's chain of season champions ──
-  // Lineage, not a flat badge: each past season's champion, reigning holder lit
-  // at the top. Pure read from getSeasonStandings per completed season (P9 — only
-  // real, points-bearing champions; nobody crowned for an unfinished season).
+// Roll of Honor (rank 13) — the hero: the league's chain of season champions.
+// Lineage, not a flat badge: each past season's champion, reigning holder lit
+// at the top. Pure read from getSeasonStandings per completed season (P9 — only
+// real, points-bearing champions; nobody crowned for an unfinished season).
+function _trHonorSec() {
   var honor = _trRollOfHonor();
-  if (honor.length) {
-    h += '<section class="tr-sec" aria-label="Roll of Honor">';
-    h += '<div class="tr-sec-head"><h2 class="tr-sec-title">Roll of Honor</h2><div class="tr-sec-count">' + honor.length + ' season' + (honor.length !== 1 ? 's' : '') + '</div></div>';
-    h += '<div class="tr-honor">';
-    honor.forEach(function(e, i) {
-      var champPlayer = (PB.getPlayer && PB.getPlayer(e.id)) || { name: e.champName };
-      var go = "Router.go('members',{id:'" + String(e.id).replace(/'/g, "\\'") + "'})";
-      h += '<div class="tr-honor__row' + (i === 0 ? ' tr-honor__row--current' : '') + '" role="button" tabindex="0" onclick="' + go + '" onkeydown="if(event.key===\'Enter\'){' + go + '}">';
-      h += '<span class="tr-honor__node"></span>';
-      h += renderAvatar(champPlayer, i === 0 ? 42 : 32, false);
-      h += '<div class="tr-honor__main"><div class="tr-honor__season">' + escHtml(e.season) + (i === 0 ? '<span class="tr-honor__reign">Reigning</span>' : '') + '</div><div class="tr-honor__champ">' + escHtml(e.champName) + '</div></div>';
-      h += '<div class="tr-honor__pts">' + e.pts + '<span>pts</span></div>';
-      h += '</div>';
-    });
-    h += '</div>';
-    h += '<div class="tr-honor__caption">' + escHtml(honor.length === 1 ? honor[0].champName + " holds the only crown so far — someone take it off him." : "The crown has changed hands across " + honor.length + " seasons. Whose name goes on next?") + '</div>';
-    h += '</section>';
+  var h = '<section class="tr-sec" aria-label="Roll of Honor">';
+  h += _trSecHead("Season champions", "Roll of Honor", honor.length ? '<div class="tr-sec-count">' + honor.length + ' season' + (honor.length !== 1 ? 's' : '') + '</div>' : null);
+  if (!honor.length) {
+    h += _trEmpty("No crowns handed out yet.", "The first completed season puts the first name on this wall. No pressure — but it might as well be yours.");
+    return h + '</section>';
   }
+  h += '<div class="tr-honor-panel">';
+  h += '<div class="tr-honor">';
+  honor.forEach(function(e, i) {
+    var champPlayer = (PB.getPlayer && PB.getPlayer(e.id)) || { name: e.champName };
+    var go = "Router.go('members',{id:'" + String(e.id).replace(/'/g, "\\'") + "'})";
+    h += '<div class="tr-honor__row' + (i === 0 ? ' tr-honor__row--current' : '') + '" role="button" tabindex="0" onclick="' + go + '" onkeydown="if(event.key===\'Enter\'){' + go + '}">';
+    h += '<span class="tr-honor__node"></span>';
+    h += renderAvatar(champPlayer, i === 0 ? 42 : 32, false);
+    h += '<div class="tr-honor__main"><div class="tr-honor__season">' + escHtml(e.season) + (i === 0 ? '<span class="tr-honor__reign">Reigning</span>' : '') + '</div><div class="tr-honor__champ">' + escHtml(e.champName) + '</div></div>';
+    h += '<div class="tr-honor__pts">' + e.pts + '<span>pts</span></div>';
+    h += '</div>';
+  });
+  h += '</div>';
+  h += '<div class="tr-honor__caption">' + escHtml(honor.length === 1 ? honor[0].champName + " holds the only crown so far — someone take it off him." : "The crown has changed hands across " + honor.length + " seasons. Whose name goes on next?") + '</div>';
+  h += '</div>';
+  return h + '</section>';
+}
 
-  // ── The wall (full catalog with locked silhouettes; toggle filters to earned) ──
-  h += '<section class="tr-sec" aria-label="Achievement wall">';
-  h += '<div class="tr-sec-head"><h2 class="tr-sec-title">The wall</h2><button type="button" id="trWallToggle" class="tr-wall-toggle" aria-pressed="false" onclick="toggleTrophyFilter(\'' + pid + '\')">Earned only</button></div>';
+// Records ledger (real personal bests; aces deep-link to the dedicated wall)
+function _trRecordsSec(s) {
+  var h = '<section class="tr-sec" aria-label="Records">';
+  h += _trSecHead("The ledger", "Records", null);
+  if (s.rounds.length || s.best || s.best9 || s.aceCount || s.unique) {
+    h += '<div class="tr-records">';
+    h += _trRecRow("Best round", s.best ? String(s.best.score) : "—", null, null);
+    if (s.best9) h += _trRecRow("Best nine", String(s.best9.score), s.best9.holesMode === "back9" ? "Back 9" : "Front 9", null);
+    h += _trRecRow("Rounds logged", String(s.rounds.length), null, null);
+    h += _trRecRow("Courses played", String(s.unique), null, "window._courseViewMode='ours';Router.go('courses')");
+    h += _trRecRow("Aces", String(s.aceCount), s.aceCount === 1 ? "hole-in-one" : "holes-in-one", "Router.go('aces')");
+    h += '</div>';
+  } else {
+    h += _trEmpty("No numbers in the book yet.", "Your first logged round opens the ledger — best round, best nine, and every line after writes itself.");
+  }
+  return h + '</section>';
+}
+
+// The wall (full catalog with locked silhouettes; toggle filters to earned)
+function _trWallSec(pid) {
+  var h = '<section class="tr-sec" aria-label="Achievement wall">';
+  h += _trSecHead("Every trophy there is", "The wall", '<button type="button" id="trWallToggle" class="tr-wall-toggle" aria-pressed="false" onclick="toggleTrophyFilter(\'' + pid + '\')">Earned only</button>');
   h += '<div id="trophyAchGrid"></div>';
-  h += '</section>';
+  return h + '</section>';
+}
 
-  // ── League trophies (custom catalog; computed leaders fill in async) ──
-  h += '<section class="tr-sec" aria-label="League and platform trophies">';
-  h += '<div class="tr-sec-head"><h2 class="tr-sec-title">League trophies</h2></div>';
-  h += '<div id="trophyCustomGrid"><div class="tr-empty"><div class="tr-empty__body">Loading trophies...</div></div></div>';
-  h += '</section>';
+// League trophies (custom catalog; computed leaders fill in async)
+function _trLeagueSec() {
+  var h = '<section class="tr-sec" aria-label="League and platform trophies">';
+  h += _trSecHead("Commissioner's cabinet", "League trophies", null);
+  h += '<div id="trophyCustomGrid">' + _trEmpty(null, "Loading league trophies…", "tr-empty--loading") + '</div>';
+  return h + '</section>';
+}
 
-  // ── Titles (level progression rail) ──
-  h += '<section class="tr-sec" aria-label="Title progression">';
-  h += '<div class="tr-sec-head"><h2 class="tr-sec-title">Titles</h2><div class="tr-sec-count">Level ' + lvl.level + ' of 100</div></div>';
+// Titles (level progression rail)
+function _trTitlesSec(lvl) {
+  var h = '<section class="tr-sec" aria-label="Title progression">';
+  h += _trSecHead("The climb to 100", "Titles", '<div class="tr-sec-count">Level ' + lvl.level + ' of 100</div>');
   h += '<div class="tr-titles">';
   _TR_TITLE_KEYS.forEach(function(lv) {
     var unlocked = lvl.level >= lv;
@@ -214,8 +251,32 @@ function renderTrophyRoom(p) {
     h += '</div>';
   });
   h += '</div>';
-  h += '</section>';
+  return h + '</section>';
+}
 
+function renderTrophyRoom(p) {
+  var pid = p.id;
+  // XP source precedence (see PB.getPlayerXPForDisplay in core/data.js).
+  var lvl = PB.calcLevelFromXP(PB.getPlayerXPForDisplay(pid));
+  var achievements = PB.getAchievements(pid);
+  var aceCount = _trAceCount(p.name);
+  var stats = {
+    rounds: PB.getPlayerRounds(pid),
+    best: PB.getPlayerBest(pid),
+    best9: PB.getPlayerBest9(pid),
+    unique: PB.getUniqueCourses(pid),
+    aceCount: aceCount
+  };
+
+  var h = '<div class="tr-wrap">';
+  h += _trMastheadSec(p, pid, lvl, achievements.length, aceCount);
+  h += _trStandingSec(lvl);
+  h += _trRecentSec(achievements);
+  h += _trHonorSec();
+  h += _trRecordsSec(stats);
+  h += _trWallSec(pid);
+  h += _trLeagueSec();
+  h += _trTitlesSec(lvl);
   h += '</div>'; // .tr-wrap
 
   document.querySelector('[data-page="trophyroom"]').innerHTML = h;
@@ -279,9 +340,8 @@ function renderTrophyAchGrid(pid, unlockedOnly) {
     }
     
     var unlockedCount = catAchs.filter(function(a) { return unlockedIds[a.id]; }).length;
-    var totalCount = unlockedOnly ? catAchs.length : catAchs.length;
-    
-    h += '<div class="ach-cat-head">' + cat.name + ' <span style="color:var(--cb-ink-faint);font-weight:400">' + unlockedCount + (unlockedOnly ? '' : '/' + totalCount) + '</span></div>';
+
+    h += '<div class="ach-cat-head">' + cat.name + ' <span class="ach-cat-head__count">' + unlockedCount + (unlockedOnly ? '' : '/' + catAchs.length) + '</span></div>';
     h += '<div class="ach-grid">';
     catAchs.forEach(function(a) {
       var unlocked = unlockedIds[a.id];
@@ -291,20 +351,21 @@ function renderTrophyAchGrid(pid, unlockedOnly) {
       h += '<div class="ach-desc">' + escHtml(a.desc) + '</div>';
       if (a.xp > 0) h += '<div class="ach-xp">+' + a.xp + ' XP</div>';
       if (unlocked) {
-        var _eAt = unlocked.earnedAt;
-        if (_eAt) {
-          var _eD = new Date(_eAt + "T12:00:00");
-          var _eMn = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-          h += '<div style="font-size:9px;font-family:var(--font-mono);letter-spacing:.5px;color:var(--cb-moss);margin-top:5px"><svg viewBox="0 0 16 16" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M13 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1V3a1 1 0 00-1-1zM11 1v2M5 1v2M2 6h12"/></svg> ' + _eMn[_eD.getMonth()] + ' ' + _eD.getDate() + ', ' + _eD.getFullYear() + '</div>';
+        var earnedOn = _trFmtEarned(unlocked.earnedAt);
+        if (earnedOn) {
+          h += '<div class="ach-earned"><svg viewBox="0 0 16 16" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1V3a1 1 0 00-1-1zM11 1v2M5 1v2M2 6h12"/></svg> ' + earnedOn + '</div>';
         } else {
-          h += '<div style="font-size:9px;font-family:var(--font-mono);letter-spacing:.5px;color:var(--cb-moss);margin-top:5px"><svg viewBox="0 0 16 16" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M6 8l2 2 3-4"/></svg> UNLOCKED</div>';
+          h += '<div class="ach-earned"><svg viewBox="0 0 16 16" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 8l2 2 3-4"/></svg> UNLOCKED</div>';
         }
       }
       h += '</div>';
     });
     h += '</div>';
   });
-  
+
+  // "Earned only" with nothing earned yet — designed empty, not a blank gap (P10).
+  if (!h) h = _trEmpty("Nothing earned just yet.", "Switch back to “Show all” to scout the full wall — the first trophies fall fast.");
+
   el.innerHTML = h;
 }
 
@@ -325,7 +386,7 @@ function renderTrophyCustomGrid(pid) {
     if (!elNow) return;
     var defs = (typeof pbCachedTrophyDefs === "function" ? pbCachedTrophyDefs() : []).filter(function(d) { return d && d.active !== false; });
     if (!defs.length) {
-      elNow.innerHTML = '<div class="tr-empty"><div class="tr-empty__head">No league trophies yet.</div><div class="tr-empty__body">Custom trophies your commissioner composes for the league show up here, alongside any platform-wide trophies.</div></div>';
+      elNow.innerHTML = _trEmpty("The cabinet stands empty.", "Custom trophies your commissioner composes for the league land here, alongside any platform-wide hardware.");
       return;
     }
     var html = '<div class="tr-custom-grid">';

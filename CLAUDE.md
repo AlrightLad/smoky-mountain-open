@@ -109,7 +109,7 @@ ECC's hook system (30+ hooks) is staged but not active. Coexistence-policy speci
 ## Operational principles (apply to every change)
 
 - **Caddy Notes** (`src/pages/caddynotes.js`) updates on every member-visible change; one honest line per ship if infrastructure-only. `currentNotes` holds latest version only; previous moves to `archiveNotes`. See `docs/CADDY_NOTES_STYLE.md` (writes if needed).
-- **Firestore is source of truth.** localStorage allowed only for: `pb_appearance`, `pb_clubhouse_welcomed`, `pb_liveState`, `golfcourse_api_key`, `dm_read_*`. sessionStorage allowed only for: `pb_weather_cache`, `pb_location_staleness_checked`.
+- **Firestore is source of truth.** localStorage allowed only for: `pb_appearance`, `pb_clubhouse_welcomed`, `pb_liveState`, `golfcourse_api_key`, `dm_read_*`. sessionStorage allowed only for: `pb_weather_cache`, `pb_location_staleness_checked`, `pb_celebrate_*` (confetti refire throttle).
 - **No hardcoded colors** except Visual Reference (hole-dot colors, calendar dots) and share-card template (html2canvas compat). Use Clubhouse tokens.
 - **44pt minimum touch targets.** Test mobile Safari + Chrome.
 - **Zero guessing on course/par data** — GolfCourseAPI only.

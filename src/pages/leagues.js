@@ -412,6 +412,14 @@ function renderLeagueDetail(lid) {
     dh += '</div>'; // hq-grid
     el.innerHTML = dh;
 
+    // task #31 — subtle welcome sprinkle on league-page arrival, at most once
+    // per browser session (once:true). pbCelebrate no-ops under
+    // prefers-reduced-motion; typeof guard keeps this safe if confetti.js
+    // isn't in the bundle yet.
+    if (typeof window.pbCelebrate === "function") {
+      window.pbCelebrate({ key: "league", subtle: true, once: true });
+    }
+
     // Async load members
     if (isComm || isAdmin) {
       _loadLeagueMembers(lid, l);

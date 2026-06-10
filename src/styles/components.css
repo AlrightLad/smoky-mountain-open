@@ -339,6 +339,9 @@ input.s:disabled,
 .course-legend__sub{font-family:var(--font-ui);font-size:11px;color:var(--cb-ink-faint);margin-top:2px;line-height:1.35}
 
 /* ── Roll of Honor — season-champion lineage chain (rank 13) ──────────────── */
+/* Hero panel — the one brass-tinted frame on the trophy page; the chain keeps
+   its rail, the panel gives the section top billing over the ledger + cells. */
+.tr-honor-panel{margin:0 var(--tr-gutter);padding:14px 18px;background:linear-gradient(135deg,rgba(var(--cb-brass-rgb),.07),rgba(var(--cb-brass-rgb),.02));border:1px solid rgba(var(--cb-brass-rgb),.35);border-radius:var(--radius-lg);box-shadow:var(--el-1)}
 .tr-honor{position:relative;margin-top:4px}
 .tr-honor__row{position:relative;display:flex;align-items:center;gap:12px;padding:11px 0 11px 24px;cursor:pointer}
 .tr-honor__row::before{content:'';position:absolute;left:5px;top:0;bottom:0;width:2px;background:rgba(var(--cb-brass-rgb),.3)}
@@ -1218,12 +1221,14 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 /* ═══════════════════════════════════════════════════════════════════════════
    TROPHY ROOM
    ═══════════════════════════════════════════════════════════════════════════ */
-.tr-wrap{max-width:680px;margin:0 auto;padding-bottom:32px}
-.tr-wrap .roster-masthead{padding:28px 16px 14px;position:relative}
+/* --tr-gutter: single horizontal-rhythm token for the whole trophy room
+   (sections, grids, ledger, empties) — widens at desktop breakpoints below. */
+.tr-wrap{--tr-gutter:16px;max-width:680px;margin:0 auto;padding-bottom:32px}
+.tr-wrap .roster-masthead{padding:28px var(--tr-gutter) 14px;position:relative}
 .tr-subdeck{font-family:var(--font-mono);font-size:12px;letter-spacing:.4px;color:var(--cb-ink-faint);margin-top:12px;text-transform:uppercase}
 .tr-back{margin-top:14px;background:none;border:none;padding:0;font-family:var(--font-mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--cb-ink-link);cursor:pointer}
 .tr-back:hover{color:var(--cb-brass-deep)}
-.tr-standing{display:flex;gap:18px;align-items:center;margin:4px 16px 8px;padding:18px 20px;background:var(--cb-chalk-2);border:1px solid var(--cb-chalk-3);border-radius:var(--radius)}
+.tr-standing{display:flex;gap:18px;align-items:center;margin:4px var(--tr-gutter) 8px;padding:18px 20px;background:var(--cb-chalk-2);border:1px solid var(--cb-chalk-3);border-radius:var(--radius-lg)}
 .tr-standing__rail{display:flex;flex-direction:column;align-items:center;flex-shrink:0;min-width:84px;border-right:1px solid var(--cb-chalk-3);padding-right:18px}
 .tr-standing__lvlcap{font-family:var(--font-mono);font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--cb-ink-faint)}
 .tr-standing__level{font-family:var(--font-display);font-style:italic;font-weight:800;font-size:56px;line-height:.9;color:var(--cb-brass)}
@@ -1233,21 +1238,31 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 .tr-standing__bar{position:relative;height:5px;background:var(--cb-chalk-3);border-radius:3px;margin-top:12px;overflow:hidden}
 .tr-standing__fill{position:absolute;inset:0;background:linear-gradient(90deg,var(--cb-brass-deep),var(--cb-brass));border-radius:3px;transform-origin:left center;transition:transform var(--duration-slow) var(--ease-emphasized);will-change:transform}
 .tr-standing__next{font-size:12px;color:var(--cb-ink-soft);margin-top:8px}
-.tr-sec{margin-top:22px}
-.tr-sec-head{display:flex;align-items:baseline;justify-content:space-between;padding:0 16px 10px;border-bottom:1px solid var(--cb-chalk-3);margin:0 0 14px}
-.tr-sec-title{font-family:var(--font-display);font-style:italic;font-weight:700;font-size:20px;color:var(--cb-ink);margin:0}
-.tr-sec-count{font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-ink-faint)}
-.tr-marquee{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;padding:0 16px}
-.tr-cell{text-align:center;padding:18px 12px;background:var(--cb-chalk);border:1px solid var(--cb-brass);border-radius:var(--radius);box-shadow:var(--el-1)}
+.tr-sec{margin-top:26px}
+/* Canonical section head — eyebrow + Fraunces title + aside slot on a hairline
+   base. ONE treatment for all six sections (was six per-section clones). */
+.tr-sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding:0 var(--tr-gutter) 10px;border-bottom:1px solid var(--cb-chalk-3);margin:0 0 14px}
+.tr-sec-head__text{min-width:0}
+.tr-sec-head__eyebrow{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:3px}
+.tr-sec-head__title{font-family:var(--font-display);font-style:italic;font-weight:700;font-size:21px;line-height:1.05;color:var(--cb-ink);margin:0}
+.tr-sec-count{font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-ink-faint);white-space:nowrap;padding-bottom:4px}
+.tr-marquee{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;padding:0 var(--tr-gutter)}
+/* Trophy cells share one geometry with .ach-card: chalk face, soft brass
+   hairline, --radius-lg, el-1 (full-brass border retired as too loud). */
+.tr-cell{text-align:center;padding:16px 12px;background:var(--cb-chalk);border:1px solid rgba(var(--cb-brass-rgb),.35);border-radius:var(--radius-lg);box-shadow:var(--el-1)}
 .tr-cell__emblem{display:flex;align-items:center;justify-content:center;width:46px;height:46px;margin:0 auto 10px;border-radius:50%;color:var(--cb-brass);background:radial-gradient(circle at 50% 30%,rgba(var(--cb-brass-rgb),.20),rgba(var(--cb-brass-rgb),.06));border:1px solid rgba(var(--cb-brass-rgb),.5)}
 .tr-cell__emblem svg{width:20px;height:20px}
 .tr-cell__name{font-family:var(--font-display);font-style:italic;font-weight:700;font-size:15px;color:var(--cb-ink);line-height:1.15}
 .tr-cell__meta{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--cb-moss);margin-top:6px}
-.tr-empty{margin:0 16px;padding:28px 22px;background:var(--cb-chalk-2);border:1px solid var(--cb-chalk-3);border-radius:var(--radius);text-align:center}
+/* Designed empty/loading states (P10) — a dashed "slot waiting to be filled",
+   same visual language as the wall's locked cards. */
+.tr-empty{margin:0 var(--tr-gutter);padding:28px 22px;background:rgba(var(--cb-brass-rgb),.02);border:1px dashed var(--cb-chalk-3);border-radius:var(--radius-lg);text-align:center}
 .tr-empty__head{font-family:var(--font-display);font-style:italic;font-weight:700;font-size:20px;color:var(--cb-ink)}
-.tr-empty__body{font-size:13.5px;color:var(--cb-ink-soft);margin-top:6px;line-height:1.45}
-.tr-records{padding:0 16px;display:flex;flex-direction:column}
-.tr-rec{display:flex;align-items:baseline;justify-content:space-between;width:100%;padding:13px 4px;border-bottom:1px solid var(--cb-chalk-3);background:none;text-align:left;font:inherit}
+.tr-empty__body{font-family:var(--font-ui);font-size:13.5px;color:var(--cb-ink-soft);margin:6px auto 0;line-height:1.5;max-width:44ch}
+.tr-empty--loading{padding:16px 22px}
+/* Records — clean ledger card: hairline frame, hairline row separators. */
+.tr-records{margin:0 var(--tr-gutter);background:var(--cb-chalk);border:1px solid var(--cb-chalk-3);border-radius:var(--radius-lg);box-shadow:var(--el-1);display:flex;flex-direction:column;overflow:hidden}
+.tr-rec{display:flex;align-items:baseline;justify-content:space-between;width:100%;padding:12px 16px;border:none;border-bottom:1px solid var(--cb-chalk-3);background:none;text-align:left;font:inherit}
 .tr-rec:last-child{border-bottom:none}
 .tr-rec--link{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .tr-rec--link:hover .tr-rec__val{color:var(--cb-brass-deep)}
@@ -1258,8 +1273,8 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 .tr-wall-toggle{background:none;border:1px solid var(--cb-chalk-3);border-radius:999px;padding:5px 12px;font-family:var(--font-mono);font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--cb-ink-soft);cursor:pointer;transition:border-color var(--duration-fast) var(--ease-default),color var(--duration-fast) var(--ease-default)}
 .tr-wall-toggle:hover{border-color:var(--cb-brass)}
 .tr-wall-toggle--on{border-color:var(--cb-brass);color:var(--cb-brass-deep);background:rgba(var(--cb-brass-rgb),.08)}
-.ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;padding:0 16px}
-.ach-card{background:var(--cb-chalk);border:1px solid rgba(var(--cb-brass-rgb),.35);border-radius:var(--radius);padding:14px 12px;text-align:center;box-shadow:var(--el-1);transition:border-color var(--duration-fast) var(--ease-default),transform var(--duration-fast) var(--ease-default),box-shadow var(--duration-fast) var(--ease-default)}
+.ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;padding:0 var(--tr-gutter)}
+.ach-card{background:var(--cb-chalk);border:1px solid rgba(var(--cb-brass-rgb),.35);border-radius:var(--radius-lg);padding:14px 12px;text-align:center;box-shadow:var(--el-1);transition:border-color var(--duration-fast) var(--ease-default),transform var(--duration-fast) var(--ease-default),box-shadow var(--duration-fast) var(--ease-default)}
 .ach-card:hover{border-color:var(--cb-brass);box-shadow:var(--el-2)}
 .ach-card:active{transform:scale(.985)}
 /* Locked = recessed "to earn" slot, not invisible. opacity:.35 made the whole card vanish on chalk. */
@@ -1274,9 +1289,14 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 .ach-name{font-family:var(--font-display);font-style:italic;font-size:14.5px;font-weight:700;color:var(--cb-ink);letter-spacing:.1px;line-height:1.15}
 .ach-desc{font-size:11.5px;color:var(--cb-ink-soft);margin-top:3px;line-height:1.3}
 .ach-xp{font-family:var(--font-mono);font-size:10px;letter-spacing:.5px;color:var(--cb-brass-deep);font-weight:700;margin-top:5px}
-.ach-cat-head{font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--cb-brass-deep);text-transform:uppercase;letter-spacing:1.8px;padding:16px 16px 8px}
-.tr-titles{padding:0 16px;display:flex;flex-direction:column;gap:5px}
-.title-row{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;background:var(--cb-chalk);border:1px solid var(--cb-chalk-3);border-radius:var(--radius)}
+/* Earned stamp (date or UNLOCKED) — was two inline-style clones in the JS. */
+.ach-earned{font-family:var(--font-mono);font-size:9px;letter-spacing:.5px;color:var(--cb-moss);margin-top:5px}
+.ach-earned svg{vertical-align:middle}
+.ach-cat-head{font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--cb-brass-deep);text-transform:uppercase;letter-spacing:1.8px;padding:16px var(--tr-gutter) 8px}
+.ach-cat-head__count{color:var(--cb-ink-faint);font-weight:400}
+.tr-titles{padding:0 var(--tr-gutter);display:flex;flex-direction:column;gap:5px}
+/* margin:0 neutralizes legacy base.css wide-viewport margins; gutter comes from .tr-titles. */
+.title-row{display:flex;justify-content:space-between;align-items:center;margin:0;padding:11px 14px;background:var(--cb-chalk);border:1px solid var(--cb-chalk-3);border-radius:var(--radius-lg)}
 .title-row.locked{background:var(--cb-chalk-2);border-style:dashed}
 .title-row.locked .t-name{color:var(--cb-mute)}
 .title-row.locked .t-level{color:var(--cb-mute-2)}
@@ -1286,6 +1306,9 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 .t-status--current{background:rgba(var(--cb-brass-rgb),.14);color:var(--cb-brass-deep)}
 .t-status--unlocked{background:rgba(var(--cb-moss-rgb),.12);color:var(--cb-moss)}
 .t-status--locked{color:var(--cb-mute-2);background:none}
+/* Wide-viewport gutters — match the app shell's 24/32px rhythm (.sec-head). */
+@media (min-width:768px){.tr-wrap{--tr-gutter:24px}}
+@media (min-width:1024px){.tr-wrap{--tr-gutter:32px}}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    LOADING & SKELETONS
@@ -4413,7 +4436,7 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 .tc-loading { padding: 84px 16px; text-align: center; font-family: var(--font-mono); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; color: var(--cb-mute); }
 
 /* ── Trophy-room custom catalog cards ─────────────────────────────────────── */
-.tr-custom-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; padding: 0 16px; }
+.tr-custom-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; padding: 0 var(--tr-gutter); }
 .tr-custom-card { display: flex; gap: 14px; padding: 16px; background: var(--cb-chalk); border: 1px solid var(--cb-chalk-3); border-radius: var(--radius-lg); box-shadow: var(--el-1); transition: border-color var(--duration-fast) var(--ease-out); }
 .tr-custom-card:hover { border-color: var(--cb-brass); }
 .tr-custom-card__emblem { flex-shrink: 0; display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; border-radius: 50%; color: var(--cb-brass); background: radial-gradient(circle at 50% 30%, rgba(var(--cb-brass-rgb), .2), rgba(var(--cb-brass-rgb), .06)); border: 1px solid rgba(var(--cb-brass-rgb), .5); }

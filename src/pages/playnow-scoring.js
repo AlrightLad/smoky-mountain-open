@@ -727,6 +727,18 @@ function finishLiveRound() {
 
   if (completed < 9) { Router.toast("Play at least 9 holes"); return; }
 
+  // task #31 — capture the PRIOR personal best BEFORE this round is committed.
+  // PB.addRound() below makes the new round visible to PB.getPlayerBest/Best9
+  // immediately, so reading it after the add would compare the round against
+  // itself. Like-for-like: 18H vs prior 18H best, 9H vs prior 9H best.
+  // Scramble team scores never count as personal bests.
+  var _pbPriorBest = null;
+  if (currentUser && liveState.format !== "scramble" && liveState.format !== "scramble4") {
+    try {
+      _pbPriorBest = completed >= 18 ? PB.getPlayerBest(currentUser.uid) : PB.getPlayerBest9(currentUser.uid);
+    } catch (e) { _pbPriorBest = null; }
+  }
+
   // Save as a local round.
   // v8.13.0 — Pass liveState.roundId so /rounds/{id} aligns with the same
   // identifier used in /liverounds/{playerUid}.roundId during the live phase.
@@ -813,6 +825,19 @@ function finishLiveRound() {
       }
     }
   }
+
+  // task #31 — confetti + Caddy toast when this round beats the prior personal
+  // best. Independent of the ParCoin award block above (economy code untouched,
+  // AMD-018 gate 4). pbCelebrate self-guards: no-op under prefers-reduced-motion
+  // and throttled so the 'best' key can't fire twice within 30s. The typeof
+  // guard keeps this path safe if confetti.js isn't in the bundle yet.
+  if (_pbPriorBest && _pbPriorBest.score && totalScore < _pbPriorBest.score) {
+    if (typeof window.pbCelebrate === "function") window.pbCelebrate({ key: "best" });
+    if (typeof PB !== "undefined" && PB && typeof PB.toast === "function") {
+      PB.toast({ type: "success", eyebrow: "The Caddy", message: "New personal best!" });
+    }
+  }
+
   // Check if any wagers or bounties can be resolved with this round
   setTimeout(function() {
     if (typeof checkWagerResolution === "function") checkWagerResolution(round);

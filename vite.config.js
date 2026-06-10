@@ -22,7 +22,7 @@ function minifyBlock(code, label) {
   return result.code;
 }
 
-var CORE_FILES = ['utils.js', 'notification-types.js', 'theme.js', 'animate.js', 'handicap.js', 'firebase.js', 'firebase-photos.js', 'data.js', 'sync.js', 'sync-attestation.js', 'parcoins.js', 'weather.js', 'caddie.js', 'charts.js', 'analytics.js', 'transitions.js', 'router.js', 'router-notifications.js', 'tournament-engine.js', 'router-sharecard.js', 'router-achievement.js', 'router-activity-feed.js', 'router-sidebar.js', 'router-empty-states.js', 'page-shell.js', 'bottomsheet.js', 'haptics.js', 'loading.js', 'crisis-banner.js', 'quick-search.js',
+var CORE_FILES = ['utils.js', 'notification-types.js', 'theme.js', 'animate.js', 'handicap.js', 'firebase.js', 'firebase-photos.js', 'data.js', 'sync.js', 'sync-attestation.js', 'parcoins.js', 'weather.js', 'caddie.js', 'charts.js', 'analytics.js', 'transitions.js', 'router.js', 'router-notifications.js', 'tournament-engine.js', 'router-sharecard.js', 'router-achievement.js', 'router-activity-feed.js', 'router-sidebar.js', 'router-empty-states.js', 'page-shell.js', 'bottomsheet.js', 'haptics.js', 'confetti.js', 'loading.js', 'crisis-banner.js', 'quick-search.js',
   // M1 Capacitor native runtime abstraction — each module attaches to PB.native.<name>
   // and provides uniform interface (native via Capacitor plugin OR web fallback).
   // Load order: index first (declares namespace + runtime detection), then sub-modules.
