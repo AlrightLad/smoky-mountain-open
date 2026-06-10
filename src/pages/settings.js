@@ -231,6 +231,9 @@ Router.register("settings", function(params) {
   about += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">App version</div></div><div class="set-row__value set-row__value--mono">v' + APP_VERSION + '</div></div>';
   about += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Founded</div></div><div class="set-row__value">2026 · York, PA</div></div>';
   about += '<div style="font-family:var(--font-display);font-style:italic;font-size:14px;color:var(--cb-mute);margin:14px 0 18px;line-height:1.5">The Parbaughs Golf Platform. Built by The Commissioner. Firebase-powered, real-time sync.</div>';
+  // v8.24.13 — baseline first-run fix: "Skip" on the welcome tour used to be
+  // unrecoverable. The tour can now be replayed any time from here.
+  about += '<button class="set-btn" onclick="Router.go(\'onboarding\')">Replay the welcome tour</button>';
   about += '<button class="set-btn" onclick="window.open(\'privacy.html\',\'_blank\',\'noopener\')">Privacy policy</button>';
   about += '<button class="set-btn" onclick="window.open(\'terms.html\',\'_blank\',\'noopener\')">Terms of service</button>';
   about += '<div class="set-row__desc" style="text-align:center;margin-top:14px">Questions? <a href="mailto:support@parbaughs.golf" style="color:var(--cb-brass);font-weight:600">support@parbaughs.golf</a></div>';

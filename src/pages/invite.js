@@ -16,9 +16,19 @@ Router.register("invite", function() {
       var ih = '<div class="sec-head"><span class="sec-title">Your invites</span></div>';
       if (!invites.length) ih += '<div style="font-size:11px;color:var(--muted)">None yet</div>';
       invites.forEach(function(inv) {
+        // v8.24.13 — baseline first-run fix: a code past its 7-day expiry kept
+        // rendering "ACTIVE" (isInviteExpired existed but was never consulted
+        // here), so the next member's first experience was a rejection error.
+        // Show the honest state + when it lapsed.
+        var displayStatus = (inv.status || "").toUpperCase();
+        var statusColor = inv.status === "active" ? "var(--birdie)" : "var(--muted)";
+        if (inv.status === "active" && isInviteExpired(inv)) {
+          displayStatus = "EXPIRED";
+          statusColor = "var(--muted)";
+        }
         ih += '<div class="card"><div class="card-body"><div style="display:flex;justify-content:space-between;align-items:center">';
         ih += '<span style="font-family:monospace;font-size:13px;font-weight:700;color:var(--gold);letter-spacing:2px">' + inv.code + '</span>';
-        ih += '<span style="font-size:10px;color:' + (inv.status==="active"?"var(--birdie)":"var(--muted)") + '">' + (inv.status||"").toUpperCase() + '</span>';
+        ih += '<span style="font-size:10px;color:' + statusColor + '">' + displayStatus + '</span>';
         ih += '</div></div></div>';
       });
       document.getElementById("myInvites").innerHTML = ih;

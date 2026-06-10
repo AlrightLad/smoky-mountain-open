@@ -187,10 +187,25 @@ html{background:var(--bg)!important}body{font-family:'Inter',system-ui,sans-seri
       <a class="rr-sidebar__item tappable" data-route="members" role="link" tabindex="0">Members</a>
     </nav>
     <div class="rr-sidebar__divider"></div>
+    <!-- v8.24.13 baseline IA fix: the rail amputated the whole More tree on
+         desktop/tablet — Chat (the product's stated heart), Wagers, Leagues,
+         Tee Times, Courses, Scramble had ZERO visible entry. -->
+    <div class="rr-sidebar__section">Club</div>
+    <nav class="rr-sidebar__nav" id="rrSidebarNavClub">
+      <a class="rr-sidebar__item tappable" data-route="chat" role="link" tabindex="0">Clubhouse Chat</a>
+      <a class="rr-sidebar__item tappable" data-route="teetimes" role="link" tabindex="0">Tee Times</a>
+      <a class="rr-sidebar__item tappable" data-route="courses" role="link" tabindex="0">Courses</a>
+      <a class="rr-sidebar__item tappable" data-route="wagers" role="link" tabindex="0">Wagers</a>
+      <a class="rr-sidebar__item tappable" data-route="scramble" role="link" tabindex="0">Scramble</a>
+      <a class="rr-sidebar__item tappable" data-route="leagues" role="link" tabindex="0">My Leagues</a>
+    </nav>
+    <div class="rr-sidebar__divider"></div>
     <div class="rr-sidebar__section">Yours</div>
     <nav class="rr-sidebar__nav" id="rrSidebarNavYours">
       <a class="rr-sidebar__item tappable" data-route="shop" role="link" tabindex="0">Shop</a>
       <a class="rr-sidebar__item tappable" data-route="trophyroom" role="link" tabindex="0">Trophy Room</a>
+      <a class="rr-sidebar__item tappable" data-route="records" role="link" tabindex="0">Records</a>
+      <a class="rr-sidebar__item tappable" data-route="more" role="link" tabindex="0">Everything else</a>
     </nav>
     <div class="rr-sidebar__actions" aria-label="Account actions">
       <button type="button" class="rr-sidebar__action" aria-label="Notifications" aria-disabled="true" tabindex="-1" onclick="event.preventDefault();event.stopPropagation();">

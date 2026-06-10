@@ -221,7 +221,19 @@ function submitOnboardingProfile() {
   var pushEl = document.getElementById("onb-push");
 
   if (!name || name.length < 2) { Router.toast("Please enter your name"); return; }
+  // v8.24.13 — baseline first-run fix: username was written RAW. Login resolves
+  // username -> email via a toLowerCase() lookup (firebase.js), so a mixed-case
+  // username broke that member's own sign-in; duplicates collided silently.
+  // Normalize like account-creation does (lowercase), validate charset, and
+  // check uniqueness against the member roster before engraving it.
+  username = username.replace(/^@/, "").toLowerCase();
   if (!username || username.length < 3) { Router.toast("Username must be 3+ characters"); return; }
+  if (!/^[a-z0-9_.]{3,20}$/.test(username)) { Router.toast("Usernames use letters, numbers, dots, underscores only"); return; }
+  var _unameTaken = (typeof PB !== "undefined" && PB.getPlayers) && PB.getPlayers().some(function(m) {
+    if (currentUser && (m.id === currentUser.uid)) return false;
+    return m.username && m.username.toLowerCase() === username;
+  });
+  if (_unameTaken) { Router.toast("That username is taken — pick another"); return; }
 
   var updates = {
     name: name,
@@ -249,9 +261,12 @@ function submitOnboardingProfile() {
       if (currentProfile) Object.assign(currentProfile, updates);
       Router.toast("Profile saved! Welcome to " + (window._activeLeagueName || "Parbaughs") + ".");
       Router.go("home");
-    }).catch(function() {
-      if (currentProfile) Object.assign(currentProfile, updates);
-      Router.go("home");
+    }).catch(function(err) {
+      // v8.24.13 — baseline fix: failure was silently swallowed (member walked
+      // away believing their nameplate saved when nothing persisted). Surface
+      // it and STAY on the form so they can retry.
+      if (typeof pbWarn === "function") pbWarn("[onboarding] profile save failed:", err && err.message);
+      Router.toast("Couldn't save your profile — check your connection and tap Save again.");
     });
   } else {
     if (currentProfile) Object.assign(currentProfile, updates);

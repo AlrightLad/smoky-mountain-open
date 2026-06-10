@@ -8,8 +8,30 @@
 // navigating here, which is now a no-op. Cleanup deferred to a
 // follow-on rangeActiveView removal sweep (low priority).
 Router.register("activity", function() {
-  var h = '<div class="sh"><h2>Range</h2>';
+  // v8.24.13 — baseline IA fix: the bottom-nav tab is labeled "Play" but this
+  // page opened as "Range" with NO path to start a round — the new member's #1
+  // taught task dead-ended. The page is now the Play hub: start-a-round CTA
+  // first (live round indicator when one is running), Range below it.
+  var h = '<div class="sh"><h2>Play</h2>';
   h += '<button class="btn-sm green" onclick="startRangeSession()">Hit the Range</button>';
+  h += '</div>';
+  var _live = (typeof liveState !== "undefined" && liveState && liveState.active);
+  h += '<div style="padding:0 16px 12px">';
+  if (_live) {
+    h += '<div class="card" onclick="Router.go(\'playnow\')" style="cursor:pointer;background:var(--cb-felt);border-color:var(--cb-felt)">';
+    h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 14px">';
+    h += '<div><div style="font-size:14px;font-weight:700;color:var(--cb-chalk)">Round in progress</div>';
+    h += '<div style="font-size:11px;color:var(--cb-mute-3);margin-top:2px">' + escHtml(liveState.course || "On the course") + ' &middot; tap to return</div></div>';
+    h += '<div style="display:flex;align-items:center;gap:5px"><div style="width:7px;height:7px;border-radius:50%;background:var(--cb-brass);animation:pulse-dot 2s infinite"></div><span style="font-size:9px;color:var(--cb-brass);font-weight:700;letter-spacing:1px">LIVE</span></div>';
+    h += '</div></div>';
+  } else {
+    h += '<div class="card tappable" onclick="Router.go(\'playnow\')" role="button" tabindex="0" onkeydown="if(event.key===\'Enter\')Router.go(\'playnow\')" style="cursor:pointer;background:var(--cb-felt);border-color:var(--cb-felt)">';
+    h += '<div style="display:flex;justify-content:space-between;align-items:center;padding:14px">';
+    h += '<div><div style="font-size:15px;font-weight:700;color:var(--cb-brass)">Start a round</div>';
+    h += '<div style="font-size:11px;color:var(--cb-mute-3);margin-top:2px">Live scoring, hole by hole. The club is watching.</div></div>';
+    h += '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="var(--cb-brass)" stroke-width="2" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>';
+    h += '</div></div>';
+  }
   h += '</div>';
   h += renderActivityRange();
   h += renderPageFooter();

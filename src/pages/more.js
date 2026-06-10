@@ -47,6 +47,19 @@ Router.register("more", function() {
     {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>', label:"Challenges", sub:"H2H matches and rivalries", page:"challenges"}
   ]);
 
+  // ── The Season ── (v8.24.13 — baseline IA fix: Standings, Feed, Records,
+  // Trophy Room, Awards, Season Recap, and Aces were unreachable from mobile
+  // nav; the onboarding tour even points new members at Standings.)
+  h += section("The Season", [
+    {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 20h4V10H4zM10 20h4V4h-4zM16 20h4v-7h-4z"/></svg>', label:"Standings", sub:"The season ladder", page:"standings"},
+    {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1h2a2 2 0 012 2v9a2 2 0 01-2 2zM7 8h6M7 12h8M7 16h5"/></svg>', label:"The Feed", sub:"The club's front page", page:"feed"},
+    {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5A2.5 2.5 0 016.5 17H20V2H6.5A2.5 2.5 0 004 4.5v15zM4 19.5A2.5 2.5 0 006.5 22H20v-5"/></svg>', label:"Records", sub:"The club record book", page:"records"},
+    {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 21h8M12 17v4M7 4h10v4a5 5 0 01-10 0zM7 5H4v2a3 3 0 003 3M17 5h3v2a3 3 0 01-3 3"/></svg>', label:"Trophy Room", sub:"Crowns, plaques, the Roll of Honor", page:"trophyroom"},
+    {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="9" r="6"/><path d="M9 14l-1.5 7L12 18.5 16.5 21 15 14"/></svg>', label:"Awards Night", sub:"Season superlatives", page:"awards"},
+    {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4M16 3v4M3 11h18M12 15l1 2h2l-1.5 1.5.5 2-2-1-2 1 .5-2L9 17h2z"/></svg>', label:"Season Recap", sub:"The year in review", page:"seasonrecap"},
+    {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>', label:"Aces", sub:"The hole-in-one wall", page:"aces"}
+  ]);
+
   // ── Community ──
   var _myLeagueCount = currentProfile && currentProfile.leagues ? currentProfile.leagues.length : 1;
   h += section("Community", [
@@ -56,7 +69,8 @@ Router.register("more", function() {
     {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="10" cy="8" r="5"/><circle cx="18" cy="8" r="5"/><path d="M3 20c0-4.4 3.6-8 8-8h6c4.4 0 8 3.6 8 8"/></svg>', label:"Scramble Teams", sub:"2v2, 3v3, 4v4 W-L records", page:"scramble"},
     {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>', label:"Tee Times", sub:"Post and RSVP", page:"teetimes"},
     {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>', label:"Clubhouse Chat", sub:"Trash talk central", page:"chat"},
-    {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="10"/></svg>', label:"Drills Library", sub:"Practice drills for every skill", page:"drills"}
+    {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="10"/></svg>', label:"Drills Library", sub:"Practice drills for every skill", page:"drills"},
+    {icon:'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.4" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.4" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.4" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.4" fill="currentColor"/></svg>', label:"Party Games", sub:"Clubhouse games for the group", page:"partygames"}
   ]);
 
   // ── Info ──
