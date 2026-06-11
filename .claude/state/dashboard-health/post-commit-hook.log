@@ -131,3 +131,16 @@ Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
   PASS  activity.html                4 activity rows OR KPIs (>=1)
   PASS  amendments.html              4 amendment rows OR KPIs (>=1)
   PASS  app-health.html              16 dimension cards (>=5)
+  PASS  design-system.html           451 design tokens (>=5)
+  PASS  discussion-bubbles.html      4 threads OR KPIs (>=1)
+  PASS  escalations.html             4 rows OR KPIs (>=1)
+  PASS  main-flows.html              24 main-flows content (>=1)
+  PASS  proposals.html               4 proposal rows OR KPIs (>=1)
+  PASS  sessions.html                1 session cards (strict, NO empty-state fallback) (>=1)
+  PASS  token-usage.html             3 token rows OR cards (>=1)
+
+visual-gate: 1 FAILURE(S)
+  FAIL  founder-checklist.html
+    expected >=1 of [.fc-item], found 0
+    screenshot: .claude\state\visual-gate\founder-checklist.png
+[write-regen-heartbeat] OK ts=2026-06-11T00:20:59Z source=post-commit-hook status=PASS
