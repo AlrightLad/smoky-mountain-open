@@ -15,3 +15,57 @@
 [ingest-session-transcripts] wrote session-transcript-summary.json (374 buckets, 17320711375 total tokens, 313 sessions) [write-content-changed]
 
 --- scripts/aggregate-token-usage.py ---
+[aggregate-token] real_events=375 estimated_events=18263 manual_entries=0
+[aggregate-token] all-time: real=17320813375 estimated=19484610 manual=0
+[aggregate-token] snapshot write=True (write-content-changed) -> .claude\state\telemetry\aggregates\token-usage-snapshot.json
+[aggregate-token] cursor   write=True (write-content-changed) -> .claude\state\telemetry\aggregates\.token-usage-cursor.json
+
+--- scripts/aggregate-test-health.py ---
+[aggregate-test-health] OK status=green timestamp=2026-06-11T20:15:29Z write=False (skip-idempotent-grace-content-unchanged-1164192s)
+
+--- scripts/aggregate-security-health.py ---
+[aggregate-security-health] OK status=yellow cred_leaks=0 vuln_deps=1 write=False (skip-idempotent-grace-content-unchanged-21638s)
+
+--- scripts/aggregate-approvals-pipeline.py ---
+[aggregate-approvals-pipeline] OK status=green summary=watcher no-new-files 4.7min ago · 2 in inbox write=False (skip-idempotent-fresh-7s)
+
+--- scripts/aggregate-architecture-review.py ---
+[aggregate-architecture-review] OK status=yellow findings=4 pending_recs=0 write=False (skip-idempotent-grace-content-unchanged-12055s)
+
+--- scripts/aggregate-fiq-status.py ---
+[aggregate-fiq-status] OK status=green declared=26 deployed=26 write=False (skip-idempotent-grace-content-unchanged-162202s)
+
+--- scripts/aggregate-self-tests.py ---
+[aggregate-self-tests] starting D40 parity checks across 5 aggregators
+  [aggregate-test-health] PASS status=green age=1164201s [content-stable 1164201s, idempotent skip]
+  [aggregate-security-health] PASS status=yellow age=21644s
+  [aggregate-approvals-pipeline] PASS status=green age=-2s
+  [aggregate-architecture-review] PASS status=yellow age=12057s
+  [aggregate-fiq-status] PASS status=green age=162202s [content-stable 162202s, idempotent skip]
+[aggregate-self-tests] OK all 5 aggregators pass parity
+
+--- scripts/inject-health-banners.py ---
+[inject-health-banners] banner-architecture      already-present
+[inject-health-banners] banner-approvals         already-present
+[inject-health-banners] banner-security          already-present
+[inject-health-banners] banner-test              already-present
+[inject-health-banners] detail-architecture      already-present
+[inject-health-banners] detail-approvals         already-present
+[inject-health-banners] detail-security          already-present
+[inject-health-banners] detail-test              already-present
+
+--- scripts/regen-proposals.py ---
+[regen-proposals] running shipped-scan first...
+  [scan] [scan-shipped] approved/ is empty; nothing to scan
+[regen-proposals] OK   proposals.html
+[regen-proposals] counts: pending=0 approved=0 deferred=0 shipped=8 rejected=0
+
+--- scripts/regen-amendments.py ---
+[regen-amendments] OK   amendments.html
+[regen-amendments] counts: pending=0 approved=0 deferred=0 applied=28 rejected=0
+
+--- scripts/regen-escalations.py ---
+[regen-escalations] OK   escalations.html
+[regen-escalations] pending=0 approved=0 applied=3 deferred=0 rejected=0
+
+--- scripts/regen-dashboard.py ---
