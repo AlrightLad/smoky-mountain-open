@@ -128,3 +128,23 @@ Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
 --- visual-gate ---
   PASS  dashboard.html               30 KPI cells populated (>=20)
   PASS  activity.html                4 activity rows OR KPIs (>=1)
+  PASS  amendments.html              4 amendment rows OR KPIs (>=1)
+  PASS  app-health.html              15 dimension cards (>=5)
+  PASS  design-system.html           451 design tokens (>=5)
+  PASS  discussion-bubbles.html      4 threads OR KPIs (>=1)
+  PASS  escalations.html             4 rows OR KPIs (>=1)
+  PASS  main-flows.html              4557 main-flows content (>=1)
+  PASS  proposals.html               4 proposal rows OR KPIs (>=1)
+  PASS  sessions.html                1 session cards (strict, NO empty-state fallback) (>=1)
+  PASS  token-usage.html             3 token rows OR cards (>=1)
+
+visual-gate: 1 FAILURE(S)
+  FAIL  founder-checklist.html
+    expected >=1 of [.fc-item], found 0
+    screenshot: .claude\state\visual-gate\founder-checklist.png
+[write-regen-heartbeat] OK ts=2026-06-11T20:26:51Z source=post-commit-hook status=PASS
+
+--- P9.5 self-test ---
+[ingest-session-transcripts] scanned 307 JSONL file(s), found 0 new assistant turns
+[ingest-session-transcripts] skipped session-transcript-summary.json (374 buckets, 17360023754 total tokens, 313 sessions) [skip-idempotent-fresh-275s]
+[ingest-session-transcripts] SELF-TEST OK: 307 JSONLs \u2192 17360023754 tokens across 374 buckets
