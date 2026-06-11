@@ -22,6 +22,7 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">June 2026 · The polish pass</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    { item: "Security hardening: a few spots that printed member-typed text — challenge matchups and stakes, the aces story and witnesses, your bio in the edit form — now run it through the same escaping the rest of the app uses, so a username or note can never inject markup. Invisible to you; closes gaps a follow-up audit caught.", tag: "FIXED" },
     { item: "The Play tab no longer greets a new member with three zeros. Before you've logged a range session, the \"0 sessions / 0h 0m / 0wk\" stat strip is hidden — the page just shows the start-a-round card and a clean prompt to hit the range. Empty shouldn't look broken.", tag: "IMPROVED" },
     { item: "Two More-menu icons got the golf treatment: Challenges is now two crossed flagsticks (a match, head to head) instead of crossed swords, and the Drills Library is a bucket of range balls instead of a pair of generic recycle arrows.", tag: "IMPROVED" },
     { item: "The \"arriving\" flair on the Pro Shop shelf each got its own icon — a sand-splash for Sandy, two flagsticks for Halved, a melting 8 for The Snowman, a ball dropping into the cup for Birdie Drop. They're still coming soon, but the shelf no longer looks like six copies of the same sparkle.", tag: "IMPROVED" },

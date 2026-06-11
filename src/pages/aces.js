@@ -39,7 +39,7 @@ function renderAceList() {
       h += '</div></div>';
       h += '<div style="font-size:14px;font-weight:700;color:var(--gold)">ACE</div>';
       h += '</div>';
-      if (ace.description) h += '<div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.4;font-style:italic">"' + ace.description + '"</div>';
+      if (ace.description) h += '<div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.4;font-style:italic">"' + escHtml(ace.description) + '"</div>';
       h += '</div></div>';
     });
   } else {
@@ -106,14 +106,14 @@ function renderAceDetail(idx) {
   // Player's story
   if (ace.description) {
     h += '<div class="section"><div class="sec-head"><span class="sec-title">The story</span></div>';
-    h += '<div class="card"><div class="card-body"><div style="font-size:14px;color:var(--cream);line-height:1.6;font-style:italic">"' + ace.description + '"</div></div></div>';
+    h += '<div class="card"><div class="card-body"><div style="font-size:14px;color:var(--cream);line-height:1.6;font-style:italic">"' + escHtml(ace.description) + '"</div></div></div>';
     h += '</div>';
   }
 
   // Witnesses
   if (ace.witnesses) {
     h += '<div class="section"><div class="sec-head"><span class="sec-title">Witnesses</span></div>';
-    h += '<div class="card"><div class="card-body" style="font-size:13px;color:var(--muted)">' + ace.witnesses + '</div></div>';
+    h += '<div class="card"><div class="card-body" style="font-size:13px;color:var(--muted)">' + escHtml(ace.witnesses) + '</div></div>';
     h += '</div>';
   }
 

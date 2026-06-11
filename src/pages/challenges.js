@@ -28,9 +28,9 @@ function renderChallengeList() {
       var statusColor = c.status === "pending" ? "var(--gold)" : c.status === "accepted" ? "var(--birdie)" : c.status === "completed" ? "var(--cream)" : "var(--red)";
       h += '<div class="card"><div style="padding:14px 16px">';
       h += '<div style="display:flex;justify-content:space-between;align-items:center">';
-      h += '<div><div style="font-size:13px;font-weight:600">' + (from?from.username||from.name:"?") + ' vs ' + (to?to.username||to.name:"?") + '</div>';
-      if (c.course) h += '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + c.course + '</div>';
-      if (c.stakes) h += '<div style="font-size:11px;color:var(--gold2);margin-top:2px;font-style:italic">' + c.stakes + '</div>';
+      h += '<div><div style="font-size:13px;font-weight:600">' + escHtml(from?(from.username||from.name):"Unknown player") + ' vs ' + escHtml(to?(to.username||to.name):"Unknown player") + '</div>';
+      if (c.course) h += '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + escHtml(c.course) + '</div>';
+      if (c.stakes) h += '<div style="font-size:11px;color:var(--gold2);margin-top:2px;font-style:italic">' + escHtml(c.stakes) + '</div>';
       h += '<div style="font-size:9px;color:var(--muted2);margin-top:3px">' + (c.created || "") + '</div>';
       h += '</div>';
       h += '<div style="font-size:10px;font-weight:600;color:' + statusColor + ';text-transform:uppercase;letter-spacing:.5px">' + c.status + '</div>';
@@ -65,12 +65,12 @@ function renderCreateChallenge(presetOpponent) {
 
   h += '<div class="form-section"><div class="form-title">Challenge details</div>';
   h += '<div class="ff"><label class="ff-label">From</label><select class="ff-input" id="ch-from">';
-  players.forEach(function(p) { h += '<option value="' + p.id + '"' + (p.id === myUid ? ' selected' : '') + '>' + (p.username||p.name) + '</option>'; });
+  players.forEach(function(p) { h += '<option value="' + escHtml(p.id) + '"' + (p.id === myUid ? ' selected' : '') + '>' + escHtml(p.username||p.name) + '</option>'; });
   h += '</select></div>';
   h += '<div class="ff"><label class="ff-label">Challenge</label><select class="ff-input" id="ch-to">';
   players.forEach(function(p) {
     if (p.id === myUid) return; // Can't challenge yourself
-    h += '<option value="' + p.id + '"' + (p.id === presetOpponent ? ' selected' : '') + '>' + (p.username||p.name) + '</option>';
+    h += '<option value="' + escHtml(p.id) + '"' + (p.id === presetOpponent ? ' selected' : '') + '>' + escHtml(p.username||p.name) + '</option>';
   });
   h += '</select></div>';
   h += '<div class="ff"><label class="ff-label">Course</label><input class="ff-input" id="ch-course" placeholder="Start typing..." oninput="showChallengeCourseSearch(this)"><div id="search-ch-course" class="search-results"></div></div>';
@@ -86,7 +86,7 @@ function showChallengeCourseSearch(input) {
   if (!results.length) { container.innerHTML = ""; return; }
   var h = '';
   results.forEach(function(c) {
-    h += '<div class="search-item" onclick="document.getElementById(\'ch-course\').value=\'' + c.name.replace(/'/g, "\\'") + '\';document.getElementById(\'search-ch-course\').innerHTML=\'\'">' + c.name + ' <span style="color:var(--muted);font-size:11px">' + c.loc + '</span></div>';
+    h += '<div class="search-item" onclick="document.getElementById(\'ch-course\').value=\'' + escHtml(c.name.replace(/'/g, "\\'")) + '\';document.getElementById(\'search-ch-course\').innerHTML=\'\'">' + escHtml(c.name) + ' <span style="color:var(--muted);font-size:11px">' + escHtml(c.loc||'') + '</span></div>';
   });
   container.innerHTML = h;
 }

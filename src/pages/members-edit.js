@@ -120,7 +120,7 @@ function renderMemberEditForm(p) {
 
   h += '<div style="text-align:center;margin:4px 0 12px"><span style="font-size:10px;color:var(--gold);cursor:pointer" onclick="Router.go(\'shop\')">More cosmetics in the Shop →</span></div>';
 
-  h += '<div class="ff"><label class="ff-label">Bio</label><textarea class="ff-input" id="edit-bio" placeholder="Tell us about your game...">' + (p.bio || "") + '</textarea></div>';
+  h += '<div class="ff"><label class="ff-label">Bio</label><textarea class="ff-input" id="edit-bio" placeholder="Tell us about your game...">' + escHtml(p.bio || "") + '</textarea></div>';
   h += '<div class="ff"><label class="ff-label">Profile photo</label>';
   h += '<div style="margin-bottom:8px"><button class="btn-sm outline" style="font-size:11px" onclick="uploadMemberPhoto(\'' + pid + '\')">Upload photo</button></div>';
   h += '<div class="ff-label" style="margin-top:8px;margin-bottom:6px">Or choose a default</div>';
