@@ -174,6 +174,15 @@ export default defineConfig(function(configEnv) {
   base: '/smoky-mountain-open/',
   root: '.',
   publicDir: 'public',
+  // v8.24.83 — the cron/regen continuously rewrites docs/reports/*.html and
+  // .claude/state telemetry; vite's dev watcher was firing an HMR reload storm
+  // on every rewrite, which hung Playwright (smoke + visual capture) mid-run.
+  // None of these are app source, so exclude them from the dev watcher.
+  server: {
+    watch: {
+      ignored: ['**/docs/reports/**', '**/.claude/**', '**/tests/smoke/output/**', '**/.playwright-mcp/**'],
+    },
+  },
   plugins: [
     coreScriptsPlugin(),
     // Inline CSS into HTML — produces a single self-contained file
