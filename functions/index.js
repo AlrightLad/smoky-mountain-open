@@ -1241,3 +1241,10 @@ exports.grantCoins = functions.region('us-central1').https.onRequest(async funct
     res.status(500).json({ ok: false, reason: 'Could not grant' });
   }
 });
+
+// onFeedbackEmail — emails the Commissioner on each new member bug report /
+// feature request (feature_requests onCreate). Notification layer over the
+// in-app triage board; provider-agnostic over Resend, fail-soft until the
+// Founder configures functions/.env + deploys (AMD-018 gate 1). See
+// functions/lib/feedback-email.js for the full implementation + config keys.
+exports.onFeedbackEmail = require('./lib/feedback-email').onFeedbackEmail;

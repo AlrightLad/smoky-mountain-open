@@ -22,6 +22,7 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">June 2026 · The polish pass</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    { item: "Report a Bug and Feature Request now reliably reach the Commissioner. Behind the scenes the triage board was only showing feature requests — bug reports (which save different fields) rendered blank with the wrong name, so some reports were effectively invisible. The Commissioner's board now shows every report in full — type, severity, the page you flagged, your steps — filterable by Bugs vs Features, with one-tap accept/reject. Email alerts to the Commissioner are coming next so nothing slips through.", tag: "FIXED" },
     { item: "Your username is now locked at the server, not just in the UI — it was already labeled \"permanent,\" and now the rules enforce it, so no one can rename their account to impersonate another member.", tag: "FIXED" },
     { item: "Comments on rounds are now capped at 400 characters, matching the chat cap — keeps round cards tidy and prevents one giant comment from bloating a post.", tag: "FIXED" },
     { item: "Small hardening: Clubhouse Chat messages are now capped at 500 characters so the chat stays snappy and no single message can bloat the feed.", tag: "FIXED" },
