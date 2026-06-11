@@ -82,7 +82,7 @@ Router.register("chat", function() {
   // Chat feed
   h += '<div style="margin:0 16px 6px"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Trash Talk</div></div>';
   h += '<div id="chatFeed" class="section">' + skeletonFeed() + '</div>';
-  h += '<div class="chat-input-row"><input type="text" id="chatInput" placeholder="Talk trash..." onkeydown="if(event.key===\'Enter\')sendChat()"><button onclick="sendChat()">Send</button></div>';
+  h += '<div class="chat-input-row"><input type="text" id="chatInput" maxlength="500" placeholder="Talk trash..." onkeydown="if(event.key===\'Enter\')sendChat()"><button onclick="sendChat()">Send</button></div>';
   document.querySelector('[data-page="chat"]').innerHTML = h;
 
   // Start listener
@@ -583,6 +583,9 @@ function deleteChat(docId, _confirmed) {
 function sendChat() {
   var input = document.getElementById("chatInput"); var text = input.value.trim();
   if (!text || !db) return;
+  // v8.24.89 — cap length so a single chat doc can't be arbitrarily large
+  // (unbounded-write surface, page-sweep #14). 500 chars is plenty for trash talk.
+  if (text.length > 500) text = text.slice(0, 500);
   db.collection("chat").add(leagueDoc("chat", { id:genId(), text:text, authorId:currentUser?currentUser.uid:"anon", authorName:currentProfile?PB.getDisplayName(currentProfile):"Anon", createdAt:fsTimestamp() }))
     .then(function(){input.value=""}).catch(function(){Router.toast("Failed to send")});
 }
