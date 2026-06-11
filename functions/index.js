@@ -734,6 +734,15 @@ exports.joinLeague = functions
       throw new functions.https.HttpsError('failed-precondition',
         'FOUNDING-FOUR is registration-only, not usable for joining leagues');
     }
+    // v8.24.54 (sec #23) — bind the invite to its league. A league-scoped
+    // invite can only join the league it was cut for; otherwise a member
+    // holding any valid code could substitute an arbitrary target leagueId
+    // and join leagues they were never invited to. Legacy null-leagueId
+    // invites keep the prior open behavior. (Ships on the next functions deploy.)
+    if (result.leagueId && result.leagueId !== leagueId) {
+      throw new functions.https.HttpsError('failed-precondition',
+        'This invite is not for that league.');
+    }
 
     // Member doc must exist (registration is separate).
     const memberRef = db.collection('members').doc(uid);

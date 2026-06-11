@@ -2239,6 +2239,63 @@ async function runAll() {
   });
 
   // ─────────────────────────────────────────────────────────────────
+  // SECURITY HARDENING (v8.24.54 — pentest findings #13/#14/#15)
+  // ─────────────────────────────────────────────────────────────────
+
+  await runTest('sec#13: DM create with 3 participants is rejected', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await assertFails(authenticatedAs(USER_A).collection('dms').doc(USER_A + '_' + USER_B)
+      .set({ participants: [USER_A, USER_B, USER_C] }));
+  });
+
+  await runTest('sec#13: DM create whose id does not match the pair is rejected', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await assertFails(authenticatedAs(USER_A).collection('dms').doc('totally_wrong_id')
+      .set({ participants: [USER_A, USER_B] }));
+  });
+
+  await runTest('sec#13: legitimate 2-party DM with matching id still succeeds', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await assertSucceeds(authenticatedAs(USER_A).collection('dms').doc(USER_A + '_' + USER_B)
+      .set({ participants: [USER_A, USER_B] }));
+  });
+
+  await runTest('sec#14: notification with fromUserId=self succeeds', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await assertSucceeds(authenticatedAs(USER_A).collection('notifications').doc('nx1')
+      .set({ toUserId: USER_B, fromUserId: USER_A, title: 't', message: 'm' }));
+  });
+
+  await runTest('sec#14: forged notification (fromUserId != self) is rejected', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await assertFails(authenticatedAs(USER_A).collection('notifications').doc('nx2')
+      .set({ toUserId: USER_B, fromUserId: USER_C, title: 'You were banned', message: 'fake' }));
+  });
+
+  await runTest('sec#14: notification with no fromUserId is rejected', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await assertFails(authenticatedAs(USER_A).collection('notifications').doc('nx3')
+      .set({ toUserId: USER_B, title: 't', message: 'm' }));
+  });
+
+  await runTest('sec#15: active member can create + update a course', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await assertSucceeds(authenticatedAs(USER_A).collection('courses').doc('cx1')
+      .set({ name: 'Pebble', par: 72, addedBy: USER_A }));
+    await assertSucceeds(authenticatedAs(USER_A).collection('courses').doc('cx1')
+      .set({ photo: 'x' }, { merge: true }));
+  });
+
+  await runTest('sec#15: non-founder cannot DELETE a course; founder can', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await withFounderConfig(FOUNDER);
+    await withPlatformRole(FOUNDER, 'founder');
+    await seedDoc('courses/cx2', { name: 'Augusta', par: 72 });
+    await assertFails(authenticatedAs(USER_A).collection('courses').doc('cx2').delete());
+    await assertSucceeds(authenticatedAs(FOUNDER).collection('courses').doc('cx2').delete());
+  });
+
+  // ─────────────────────────────────────────────────────────────────
   // WRAP UP
   // ─────────────────────────────────────────────────────────────────
 

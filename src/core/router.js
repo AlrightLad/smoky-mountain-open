@@ -487,6 +487,8 @@ function sendNotification(toUserId, notif) {
   notif.toUserId = toUserId;
   notif.read = false;
   notif.createdAt = fsTimestamp();
+  // v8.24.54 (sec #14) — provenance stamp so rules can reject forged senders.
+  notif.fromUserId = (window.currentUser && window.currentUser.uid) || (typeof currentUser !== 'undefined' && currentUser && currentUser.uid) || '';
   // Optional leagueId on new writes — null when no active league context.
   // Existing reads ignore unknown fields; backward-compatible.
   var lid = (window.currentProfile && window.currentProfile.activeLeague) || null;

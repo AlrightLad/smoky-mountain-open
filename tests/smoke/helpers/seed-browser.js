@@ -50,6 +50,10 @@ async function insertForSmoke(page, entries) {
       var ref = window.db.collection('notifications').doc();
       var doc = {
         toUserId: currentUser.uid,
+        // v8.24.54 — seed the REAL shape: sendNotification now stamps
+        // fromUserId, and the hardened rule requires fromUserId == uid() on
+        // create (anti-forgery). The smoke user notifies itself for setup.
+        fromUserId: currentUser.uid,
         type: e.type,
         title: e.title || '',
         message: e.message || '',
