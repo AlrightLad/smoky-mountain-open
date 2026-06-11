@@ -30,7 +30,9 @@ Router.register("records", function() {
     var cap = v > 0 ? populatedHint : zeroHint;
     var capColor = v > 0 ? "var(--gold)" : "var(--muted)";
     var s = '<div class="card" onclick="Router.go(\'' + route + '\')" style="cursor:pointer;margin-bottom:0"><div style="padding:14px 12px;text-align:center">';
-    s += '<div style="font-size:20px;font-family:var(--font-display);font-weight:700;color:var(--gold)">' + v + '</div>';
+    // v8.24.67 — zero numeral muted (brass reserved for real values per the
+    // brass-role rule; a gold "0" reads as a broken stat, P9/P10 dead-state).
+    s += '<div style="font-size:20px;font-family:var(--font-display);font-weight:700;color:' + (v > 0 ? 'var(--gold)' : 'var(--cb-mute-3)') + '">' + v + '</div>';
     s += '<div style="font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.8px">' + label + '</div>';
     if (cap) {
       s += '<div style="font-size:9px;color:' + capColor + ';margin-top:4px;letter-spacing:0.4px;line-height:1.3">' + cap + '</div>';

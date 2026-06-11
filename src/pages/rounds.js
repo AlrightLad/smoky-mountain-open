@@ -64,11 +64,12 @@ function renderRoundsList() {
     h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-top:8px">' + subBits.join(' · ') + '</div>';
     h += '</div>';
   } else {
-    h += '<div class="hcap-box"><div class="hcap-val">—</div><div class="hcap-label">Your handicap index</div>';
+    // v8.24.67 — empty-state numeral muted + made a progress count (was a
+    // full-gold "—", which reads as a broken/missing value per the P9/P10
+    // dead-dash rule). The path-forward line carries the meaning.
     var nMore = Math.max(0, 3 - myRounds.length);
-    if (nMore > 0) {
-      h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-top:8px">' + nMore + ' more round' + (nMore === 1 ? '' : 's') + ' until official</div>';
-    }
+    h += '<div class="hcap-box"><div class="hcap-val hcap-val--empty">' + (myRounds.length || 0) + '<span class="hcap-val__of">/3</span></div><div class="hcap-label">Rounds toward your index</div>';
+    h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-top:8px">' + (nMore > 0 ? nMore + ' more to unlock your handicap' : 'log one more to refresh') + '</div>';
     h += '</div>';
   }
 
