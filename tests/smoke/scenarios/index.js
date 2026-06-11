@@ -42,5 +42,6 @@ module.exports = [
   // v8.24.31 — 2026-06-10 marathon feature assertions (pbConfirm/confetti/
   // tee-intro-dark/invite-floor/toast-delegation/theme-flip).
   require('./s27-marathon-2026-06-10-features.js'),
+  require('./s28-growth-trilogy.js'),
   require('./s11-logout-cleanup.js')
 ];
