@@ -128,7 +128,35 @@ var PRO_SHOP_CATALOG = [
   {id:"pc22_bag_room",     cat:"voice", tier:"locker", name:"Bag Room Guy", price:800, arriving:true, preview:"#6f6a5b", desc:"The heckling friend. \"Big number brewing on 14? Prove me wrong, I'd love that.\""},
   // I · Trophy Cabinet — commemorative, never for sale
   {id:"pc24_green_jacket", cat:"border", tier:"commem", name:"The Green Jacket", price:0, earnedBy:"Season champion only", ringClass:"", preview:"#1d3a2a", desc:"Deep-green wool ring, three small brass buttons, your championship year engraved at six o'clock."},
-  {id:"pc25_ace_marker",   cat:"teemarker", tier:"commem", name:"Ace Marker", price:0, earnedBy:"Hole-in-one only", preview:"#e9d9ae", desc:"A gold ball on a brass pedestal, date engraved. There is no second way to get this, and everyone knows it."}
+  {id:"pc25_ace_marker",   cat:"teemarker", tier:"commem", name:"Ace Marker", price:0, earnedBy:"Hole-in-one only", preview:"#e9d9ae", desc:"A gold ball on a brass pedestal, date engraved. There is no second way to get this, and everyone knows it."},
+
+  // ══ NEXT WAVE (v8.24.57, PC-26..43) — prestige register: brass, leather,
+  // parchment, engraving + in-group golf humor. Research: proshop-nextwave-
+  // 2026-06-11.md. Ball-marker is the one new surface (rides teemarker-style
+  // render on the name). Flair items stay arriving (render surface pending).
+  // J · BALL MARKERS — new surface, the most-coveted real pro-shop object
+  {id:"pc26_found_coin",   cat:"ball", tier:"range",   name:"Found Coin",     price:200, preview:"#b58a3a", desc:"A weathered brass penny you marked with on a whim and never stopped. Milled-edge, worn smooth."},
+  {id:"pc27_pitch_mark",   cat:"ball", tier:"proshop", name:"Pitch-Mark",     price:350, preview:"#cfd2d6", desc:"Milled silver, a crosshair engraved dead center. Reads your line for you. Allegedly."},
+  {id:"pc43_ctp_marker",   cat:"ball", tier:"commem",  name:"Closest to the Pin", price:0, earnedBy:"Season closest-to-pin leader", preview:"#b58a3a", desc:"Brass disc, a flagstick struck clean through it. Earned on the green, never in the shop."},
+  // A · RINGS (live)
+  {id:"pc39_wax_seal",     cat:"border", tier:"locker", name:"The Wax Seal",   price:900, ringClass:"ring-wax-seal", preview:"#7a2e2e", desc:"A claret wax seal pressed at six o'clock, a ribbon tail beneath. Correspondence from the committee."},
+  {id:"pc40_hickory_brass",cat:"border", tier:"locker", name:"Hickory & Brass",price:700, ringClass:"ring-hickory", preview:"#7a4a28", desc:"Hickory-grain wood ringed in brass ferrule. The shaft they played before steel was legal."},
+  {id:"pc42_founders_crest",cat:"border",tier:"cabinet",name:"The Founders' Crest",price:1500, ringClass:"ring-claret", preview:"#cfd2d6", desc:"The crest in relief inside an engraved-silver bezel, a slow light sweeping across it. The priciest ring money can buy — the Green Jacket it is not."},
+  // C · SCORECARD SKINS (live)
+  {id:"pc28_the_sleeve",   cat:"card", tier:"proshop", name:"The Sleeve",      price:300, preview:"#cabd98", css:"border:1px solid #c2b48c;border-left:4px solid #b3a378;background:linear-gradient(160deg,rgba(202,189,152,.16),rgba(232,224,196,.1))", desc:"Kraft three-ball sleeve stock, the flap torn open. Smells like a fresh dozen."},
+  {id:"pc41_trophy_room",  cat:"card", tier:"locker",  name:"The Trophy Room", price:900, preview:"#5a4632", css:"border-left:5px solid #5a4632;background:linear-gradient(90deg,rgba(90,70,50,.22),rgba(90,70,50,.05) 55%,transparent)", desc:"Walnut-panel ground with an engraved-brass plaque header. The room where the silver lives."},
+  // E · TITLES + bag-tag plate (live)
+  {id:"pc36_member_tag",   cat:"title", tier:"proshop", name:"Member No. __",  price:500, plate:true, preview:"#7a4a28", desc:"Renders your title as a leather bag tag with a brass rivet. Quietly states you were here early."},
+  {id:"pc37_sandbagger",   cat:"title", tier:"range",   name:"The Sandbagger's Confession", price:250, preview:"#8a8674", desc:"\"Said it was a practice round.\" Wears the truth so you don't have to."},
+  {id:"pc38_mulligan",     cat:"title", tier:"range",   name:"Mulligan Club",  price:250, preview:"#8a8674", desc:"\"Plays it as it lies. Usually.\" Membership has its privileges, and its breakfast balls."},
+  // B · NAMEPLATES (live)
+  {id:"pc29_stimp_13",     cat:"nameplate", tier:"proshop", name:"Stimp 13",   price:500, preview:"#1d3a2a", desc:"Bentgrass felt behind your name with a single mown light-stripe. Fast. Don't be above the hole."},
+  // D · FEED FLAIR (arriving — render surface pending)
+  {id:"pc31_halved",       cat:"flair", tier:"range",   name:"Halved",         price:250, arriving:true, preview:"#b58a3a", desc:"A tied result clinks two crossed flagsticks on the feed card. Nobody lost. Nobody won. Golf."},
+  {id:"pc32_sandy",        cat:"flair", tier:"proshop", name:"Sandy",          price:350, arriving:true, preview:"#d9c389", desc:"An up-and-down from the bunker throws a little sand-splash and a one-putt tick. Hardest par in golf."},
+  {id:"pc33_snowman",      cat:"flair", tier:"range",   name:"The Snowman",    price:200, arriving:true, preview:"#cfe2d4", desc:"An honest 8 slumps a melting snowman onto the card with a wry 'noted.' Own the blow-up."},
+  // F · TEE MARKERS (live)
+  {id:"pc34_whipping",     cat:"teemarker", tier:"range", name:"Whipping & Glue", price:250, preview:"#7a4a28", desc:"A hickory butt wrapped in red whipping thread. Old-world, like your short game."}
 ];
 // Legacy items kept ON SALE in the Paint Locker (the best ~15); every other
 // legacy item is retired from sale. Owned items are grandfathered forever —
@@ -147,6 +175,7 @@ var PRO_SHOP_SHELVES = [
   {cat:"card",      title:"Scorecard Skins",meta:"Real materials on your round cards"},
   {cat:"flair",     title:"Feed Flair",     meta:"Moments of glory, once per card — arriving"},
   {cat:"title",     title:"Titles",         meta:"Under your name, in your voice"},
+  {cat:"ball",      title:"Ball Markers",    meta:"What you mark with on the green"},
   {cat:"teemarker", title:"Tee Markers",    meta:"Your totem, planted beside your name"},
   {cat:"voice",     title:"The Caddy",      meta:"His tone, your pick — arriving"}
 ];
@@ -239,7 +268,7 @@ Router.register("shop", function() {
       c += '<div style="border-radius:var(--radius);background:var(--bg3);margin-bottom:8px;padding:8px 10px;text-align:left;' + (item.css || '') + '"><div style="font-size:9px;font-weight:600;color:var(--cream)">' + escHtml(_myName) + '</div><div style="font-size:8px;color:var(--muted);margin-top:1px">Honey Run · 92</div></div>';
     } else if (item.cat === 'flair') {
       c += '<div style="height:34px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:18px;color:' + item.preview + '"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l2.5 2.5M16.5 16.5L19 19M19 5l-2.5 2.5M7.5 16.5L5 19"/></svg></div>';
-    } else if (item.cat === 'teemarker') {
+    } else if (item.cat === 'teemarker' || item.cat === 'ball') {
       c += '<div style="height:34px;margin-bottom:8px;display:flex;align-items:center;justify-content:center"><span style="width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 30%,' + item.preview + ',rgba(0,0,0,.35));box-shadow:0 3px 4px -2px rgba(0,0,0,.5)"></span></div>';
     } else if (item.cat === 'voice') {
       c += '<div style="height:34px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:16px">⛳</div>';

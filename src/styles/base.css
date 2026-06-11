@@ -819,6 +819,7 @@ button,a,[onclick],.btn,.btn-sm,.card,.member-row,.search-item,.notif-item,.tee-
   [data-page="invite"],
   [data-page="more"],
   [data-page="seasonrecap"],
+  [data-page="caddynotes"],
   [data-page="records"] {
     max-width: 680px;
     margin-left: auto;

@@ -4790,3 +4790,8 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 .plate-locker-brass::after{right:2px}
 .plate-yardage{background:#efe9d6 repeating-linear-gradient(0deg,transparent 0 4px,rgba(110,100,70,.16) 4px 5px),#efe9d6 repeating-linear-gradient(90deg,transparent 0 4px,rgba(110,100,70,.12) 4px 5px);color:#3c3526!important;padding:1px 8px;border-radius:3px;border:1px solid #cfc5a4}
 .plate-sunday{background:#1d3a2a;color:#f4efdf!important;padding:1px 8px;border-radius:2px;font-family:var(--font-mono);letter-spacing:1.5px;text-transform:uppercase;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+
+/* ── Next-wave ornamental rings (v8.24.57) ── */
+.ring-wax-seal{border:3px solid var(--cb-mute-3,#c9c5bd)!important;position:relative}
+.ring-wax-seal::after{content:"";position:absolute;bottom:-5px;left:50%;width:13px;height:13px;margin-left:-6.5px;border-radius:50%;background:radial-gradient(circle at 38% 32%,#a83c3c,#6e1f1f);box-shadow:0 1px 2px rgba(0,0,0,.4),inset 0 0 3px rgba(0,0,0,.4);pointer-events:none}
+.ring-hickory{border:4px solid #7a4a28!important;box-shadow:0 0 0 1.5px #caa75c,inset 0 0 0 1.5px #5a3418;background-image:repeating-linear-gradient(115deg,rgba(90,52,24,.0) 0 3px,rgba(120,74,40,.35) 3px 4px)}

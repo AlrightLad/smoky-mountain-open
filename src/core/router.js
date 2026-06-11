@@ -353,6 +353,13 @@ function pbNameplateClass(p) {
   if (n === 'pc07_leaderboard_sunday') return 'plate-sunday';
   return '';
 }
+function pbBallMarkerHtml(p) {
+  if (!p || !p.equippedCosmetics || !p.equippedCosmetics.ball) return '';
+  var b = p.equippedCosmetics.ball;
+  var col = b === 'pc27_pitch_mark' ? '#cfd2d6' : b === 'pc43_ctp_marker' ? '#b58a3a' : '#b58a3a';
+  var cross = (b === 'pc27_pitch_mark') ? '<path d="M6 2.5v7M2.5 6h7" stroke="#5a5f66" stroke-width="1"/>' : (b === 'pc43_ctp_marker' ? '<path d="M6 1v10" stroke="#3a2a12" stroke-width="1.2"/>' : '');
+  return '<span class="pb-ballmarker" title="Ball marker" style="display:inline-flex;vertical-align:-1px;margin-left:4px"><svg viewBox="0 0 12 12" width="11" height="11"><circle cx="6" cy="6" r="5" fill="' + col + '" stroke="rgba(0,0,0,.3)" stroke-width=".5"/>' + cross + '</svg></span>';
+}
 function pbTeeMarkerHtml(p) {
   if (!p || !p.equippedCosmetics || !p.equippedCosmetics.teemarker) return '';
   var t = p.equippedCosmetics.teemarker;
@@ -389,7 +396,7 @@ function renderUsername(p, extraStyle, clickToProfile) {
 
   // v8.24.51 — nameplate wraps the name; tee marker trails it.
   var plateClass = pbNameplateClass(p);
-  var marker = pbTeeMarkerHtml(p);
+  var marker = pbTeeMarkerHtml(p) + pbBallMarkerHtml(p);
   if (plateClass) {
     return '<span class="' + nameClass + ' ' + plateClass + '" style="' + cursor + (extraStyle || '') + '"' + click + '>' + inner + '</span>' + marker;
   }
