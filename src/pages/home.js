@@ -589,8 +589,8 @@ function _renderPulses(pulses) {
     // 4px tall, brass-faint track + brass fill, with a subtle min-width on
     // the fill so 0% still reads as "started" rather than empty.
     if (typeof p.progress === "number" && p.progress >= 0 && p.progress <= 100) {
-      h += '<div style="margin-top:10px;height:4px;background:var(--cb-brass-faint, rgba(212,168,87,0.18));border-radius:2px;overflow:hidden">';
-      h += '<div style="height:100%;width:' + Math.max(p.progress, 4) + '%;background:var(--cb-brass);border-radius:2px;transition:width 600ms cubic-bezier(0.25,0.4,0.25,1)"></div>';
+      h += '<div style="margin-top:10px;height:6px;background:var(--cb-brass-faint, rgba(212,168,87,0.18));border-radius:3px;overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.18)">';
+      h += '<div style="height:100%;width:' + Math.max(p.progress, 6) + '%;background:var(--cb-brass);border-radius:3px;transition:width 600ms cubic-bezier(0.25,0.4,0.25,1)"></div>';
       h += '</div>';
     }
     h += '</div>';
