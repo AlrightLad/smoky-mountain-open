@@ -30,16 +30,22 @@ const OUT = path.resolve(__dirname, 'main-flows-v2');
     const page = await ctx.newPage();
     await auth.loginReal(page, DEV_URL);
     if (label === 'mobile') {
-      await page.evaluate(() => Router.go('shop'));
-      await page.waitForTimeout(2200);
-      await page.screenshot({ path: path.join(OUT, 'proshop-top.png') });
-      await page.evaluate(() => window.scrollTo(0, 1400));
-      await page.waitForTimeout(500);
-      await page.screenshot({ path: path.join(OUT, 'proshop-shelves.png') });
-      await page.evaluate(() => window.scrollTo(0, 3400));
-      await page.waitForTimeout(500);
-      await page.screenshot({ path: path.join(OUT, 'proshop-cabinet.png') });
-      console.log('captured proshop');
+      const r = await page.evaluate(() => {
+        const fake = { id: 'x', username: 'Brayden', equippedCosmetics: { nameplate: 'pc05_locker_brass', teemarker: 'pc18_rubber_duck' } };
+        const html = renderUsername(fake, 'font-size:14px;font-weight:700;', false);
+        const host = document.createElement('div');
+        host.id = 'shipb-host';
+        host.style.cssText = 'position:fixed;top:80px;left:16px;z-index:9999;background:var(--bg);padding:14px;border:1px solid var(--border);border-radius:10px;display:flex;flex-direction:column;gap:10px';
+        const fake2 = { id: 'y', username: 'Nick', equippedCosmetics: { nameplate: 'pc06_yardage_book', teemarker: 'pc17_brass_acorn' } };
+        const fake3 = { id: 'z', username: 'KAYVAN', equippedCosmetics: { nameplate: 'pc07_leaderboard_sunday', teemarker: 'pc20_parbaugh_marker' } };
+        host.innerHTML = html + '<div>' + renderUsername(fake2, 'font-size:14px;font-weight:700;', false) + '</div><div>' + renderUsername(fake3, 'font-size:14px;font-weight:700;', false) + '</div>';
+        document.body.appendChild(host);
+        return { hasPlate: html.indexOf('plate-locker-brass') !== -1, hasMarker: html.indexOf('pb-teemarker') !== -1 };
+      });
+      console.log('VERIFY:', JSON.stringify(r));
+      await page.waitForTimeout(600);
+      await page.screenshot({ path: path.join(OUT, 'shipB-nameplate.png') });
+      console.log('captured shipB');
     }
     await ctx.close();
   }

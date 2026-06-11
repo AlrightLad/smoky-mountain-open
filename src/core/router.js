@@ -340,6 +340,32 @@ function renderAvatar(p, size, clickToProfile) {
 // #discriminator tag muted. Member identity reads cleanly without the tag
 // dominating; disambiguation context is still visible. When username has no
 // discriminator (legacy single-name members) the render is unchanged.
+// ── Pro Shop ship B (v8.24.51): nameplates + tee markers ────────────────
+// Nameplates render BEHIND the name (Discord-nameplate pattern); tee markers
+// are a small totem AFTER it. Both ride renderUsername, so every surface
+// that uses the central helper (feed, rosters, scramble, trips, tournament,
+// home, profiles) gets them at once.
+function pbNameplateClass(p) {
+  if (!p || !p.equippedCosmetics || !p.equippedCosmetics.nameplate) return '';
+  var n = p.equippedCosmetics.nameplate;
+  if (n === 'pc05_locker_brass') return 'plate-locker-brass';
+  if (n === 'pc06_yardage_book') return 'plate-yardage';
+  if (n === 'pc07_leaderboard_sunday') return 'plate-sunday';
+  return '';
+}
+function pbTeeMarkerHtml(p) {
+  if (!p || !p.equippedCosmetics || !p.equippedCosmetics.teemarker) return '';
+  var t = p.equippedCosmetics.teemarker;
+  var svg = '';
+  if (t === 'pc17_brass_acorn') svg = '<svg viewBox="0 0 12 12" width="11" height="11"><circle cx="6" cy="7" r="4" fill="url(#pbtmBrass)"/><path d="M3 4.5C3 3 4.3 2 6 2s3 1 3 2.5c0 .6-1.3 1-3 1s-3-.4-3-1z" fill="#8a6a2e"/><defs><radialGradient id="pbtmBrass" cx=".35" cy=".3"><stop offset="0" stop-color="#e2c177"/><stop offset="1" stop-color="#8a6a2e"/></radialGradient></defs></svg>';
+  else if (t === 'pc18_rubber_duck') svg = '<svg viewBox="0 0 12 12" width="11" height="11"><ellipse cx="6" cy="8" rx="4.4" ry="2.8" fill="#e8c84a"/><circle cx="3.6" cy="4.6" r="2.2" fill="#e8c84a"/><path d="M1.2 4.6l-1-.4 1-.5z" fill="#d98a2b"/><circle cx="3.1" cy="4.1" r=".5" fill="#2b2b2b"/></svg>';
+  else if (t === 'pc19_persimmon') svg = '<svg viewBox="0 0 12 12" width="11" height="11"><path d="M2 7c0-2.4 2-3.6 4.2-3.6S10.5 4.8 10.5 7c0 1.6-1.4 2.6-3.3 2.6C4 9.6 2 8.8 2 7z" fill="#7a4a28"/><path d="M2 7.8h8.5v.9c-1 .8-2.4 1-3.3.9C4.3 9.6 2.6 8.9 2 7.8z" fill="#caa75c"/><rect x="5.4" y="0" width="1" height="3.6" rx=".5" fill="#5a4632"/></svg>';
+  else if (t === 'pc20_parbaugh_marker') svg = '<svg viewBox="0 0 12 12" width="11" height="11"><circle cx="6" cy="6" r="5" fill="#b4893e"/><text x="6" y="8.6" text-anchor="middle" font-family="Georgia,serif" font-size="7.5" font-weight="700" fill="#241c0c">P</text></svg>';
+  else if (t === 'pc25_ace_marker') svg = '<svg viewBox="0 0 12 12" width="11" height="11"><rect x="3.5" y="8" width="5" height="2.4" rx=".6" fill="#8a6a2e"/><circle cx="6" cy="5" r="3" fill="url(#pbtmGold)"/><defs><radialGradient id="pbtmGold" cx=".35" cy=".3"><stop offset="0" stop-color="#f4dd9a"/><stop offset="1" stop-color="#b4893e"/></radialGradient></defs></svg>';
+  if (!svg) return '';
+  return '<span class="pb-teemarker" title="Tee marker" style="display:inline-flex;vertical-align:-1px;margin-left:4px">' + svg + '</span>';
+}
+
 function renderUsername(p, extraStyle, clickToProfile) {
   if (!p) return '<span style="' + (extraStyle || '') + '">Unknown</span>';
   var name = p.username || p.name || 'Member';
@@ -361,7 +387,13 @@ function renderUsername(p, extraStyle, clickToProfile) {
     inner = escHtml(name);
   }
 
-  return '<span class="' + nameClass + '" style="' + cursor + (extraStyle || '') + '"' + click + '>' + inner + '</span>';
+  // v8.24.51 — nameplate wraps the name; tee marker trails it.
+  var plateClass = pbNameplateClass(p);
+  var marker = pbTeeMarkerHtml(p);
+  if (plateClass) {
+    return '<span class="' + nameClass + ' ' + plateClass + '" style="' + cursor + (extraStyle || '') + '"' + click + '>' + inner + '</span>' + marker;
+  }
+  return '<span class="' + nameClass + '" style="' + cursor + (extraStyle || '') + '"' + click + '>' + inner + '</span>' + marker;
 }
 
 // renderAvatarUsername(player, avatarSize, nameStyle) → HTML string

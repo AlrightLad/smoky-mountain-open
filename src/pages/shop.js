@@ -103,9 +103,9 @@ var PRO_SHOP_CATALOG = [
   {id:"pc03_fried_egg",    cat:"border", tier:"proshop", name:"Fried Egg",       price:300, ringClass:"ring-fried-egg", preview:"#d9c389", desc:"Half-buried in bunker sand, a lip of splash frozen mid-blast. Own your lies."},
   {id:"pc04_claret",       cat:"border", tier:"cabinet", name:"The Claret",      price:1500, ringClass:"ring-claret", preview:"#cfd2d6", desc:"Engraved trophy silver with a jug-handle flourish; a light sweep crosses the engraving."},
   // B · Nameplates — NEW surface, arriving (renders next ship)
-  {id:"pc05_locker_brass", cat:"nameplate", tier:"locker", name:"Locker Brass", price:500, arriving:true, preview:"#caa75c", desc:"Brushed brass behind your name, engraved serif, two screw heads. Your locker, everywhere."},
-  {id:"pc06_yardage_book", cat:"nameplate", tier:"proshop", name:"The Yardage Book", price:350, arriving:true, preview:"#d8d2c0", desc:"Graph paper, a hand-sketched green contour, a penciled carry number fading behind your name."},
-  {id:"pc07_leaderboard_sunday", cat:"nameplate", tier:"locker", name:"Leaderboard Sunday", price:750, arriving:true, preview:"#1d3a2a", desc:"Hand-set white letters on deep green; your score-to-par renders red or green, pulled live."},
+  {id:"pc05_locker_brass", cat:"nameplate", tier:"locker", name:"Locker Brass", price:500, preview:"#caa75c", desc:"Brushed brass behind your name, engraved serif, two screw heads. Your locker, everywhere."},
+  {id:"pc06_yardage_book", cat:"nameplate", tier:"proshop", name:"The Yardage Book", price:350, preview:"#d8d2c0", desc:"Graph paper, a hand-sketched green contour, a penciled carry number fading behind your name."},
+  {id:"pc07_leaderboard_sunday", cat:"nameplate", tier:"locker", name:"Leaderboard Sunday", price:750, preview:"#1d3a2a", desc:"Hand-set white letters on deep green, straight off the manual board. Sunday at a major, every day."},
   // C · Scorecard skins — render via getPlayerCardCss (live now)
   {id:"pc08_pencil_parchment", cat:"card", tier:"proshop", name:"Pencil & Parchment", price:400, preview:"#cabd98", css:"border:1px solid #c2b48c;border-left:4px solid #b3a378;background:linear-gradient(0deg,rgba(202,189,152,.12),rgba(232,224,196,.16)),repeating-linear-gradient(0deg,transparent 0 7px,rgba(150,135,95,.07) 7px 8px)", desc:"Vintage paper stock, dot-grid rules, your numbers in pencil grey."},
   {id:"pc09_member_guest", cat:"card", tier:"locker", name:"The Member-Guest", price:500, preview:"#e9dfc4", css:"border-top:3px double rgba(180,137,62,.85);border-bottom:3px double rgba(180,137,62,.85);background:linear-gradient(180deg,rgba(244,238,220,.16),rgba(233,223,196,.1))", desc:"Cream card, double brass rules, your league's name as a pale watermark."},
@@ -119,10 +119,10 @@ var PRO_SHOP_CATALOG = [
   {id:"pc15_cart_path",    cat:"title", tier:"range", name:"Cart Path Only", price:250, preview:"#8a8674", desc:"For the member whose ball has seen more concrete than fairway. Worn with pride or not at all."},
   {id:"pc16_postman",      cat:"title", tier:"proshop", name:"The Postman", price:400, preview:"#b4893e", desc:"Posts every round. Rain, shame, or triple bogey — always delivers."},
   // F · Tee markers — NEW surface, arriving
-  {id:"pc17_brass_acorn",  cat:"teemarker", tier:"range", name:"Brass Acorn", price:200, arriving:true, preview:"#caa75c", desc:"The classic club tee marker, polished. Says you've been here a while."},
-  {id:"pc18_rubber_duck",  cat:"teemarker", tier:"proshop", name:"Rubber Duck", price:350, arriving:true, preview:"#e8c84a", desc:"A small yellow duck. For the member with a documented relationship with water."},
-  {id:"pc19_persimmon",    cat:"teemarker", tier:"proshop", name:"Persimmon", price:350, arriving:true, preview:"#7a4a28", desc:"A tiny persimmon driver head, brass sole plate, whipping and all. Feel player."},
-  {id:"pc20_parbaugh_marker", cat:"teemarker", tier:"locker", name:"The Parbaugh", price:500, arriving:true, preview:"#b4893e", desc:"The league crest cast as a founding-gold marker. Fly the flag."},
+  {id:"pc17_brass_acorn",  cat:"teemarker", tier:"range", name:"Brass Acorn", price:200, preview:"#caa75c", desc:"The classic club tee marker, polished. Says you've been here a while."},
+  {id:"pc18_rubber_duck",  cat:"teemarker", tier:"proshop", name:"Rubber Duck", price:350, preview:"#e8c84a", desc:"A small yellow duck. For the member with a documented relationship with water."},
+  {id:"pc19_persimmon",    cat:"teemarker", tier:"proshop", name:"Persimmon", price:350, preview:"#7a4a28", desc:"A tiny persimmon driver head, brass sole plate, whipping and all. Feel player."},
+  {id:"pc20_parbaugh_marker", cat:"teemarker", tier:"locker", name:"The Parbaugh", price:500, preview:"#b4893e", desc:"The league crest cast as a founding-gold marker. Fly the flag."},
   // G · Caddy voice packs — NEW, arriving
   {id:"pc21_old_tom",      cat:"voice", tier:"locker", name:"Old Tom", price:800, arriving:true, preview:"#6f6a5b", desc:"Gruff links wisdom. \"Aye. Intae the wind, that's a three-club day. Swing easy.\""},
   {id:"pc22_bag_room",     cat:"voice", tier:"locker", name:"Bag Room Guy", price:800, arriving:true, preview:"#6f6a5b", desc:"The heckling friend. \"Big number brewing on 14? Prove me wrong, I'd love that.\""},
@@ -143,11 +143,11 @@ var PRO_SHOP_TIERS = {
 };
 var PRO_SHOP_SHELVES = [
   {cat:"border",    title:"Rings",          meta:"Worn on your avatar, everywhere"},
-  {cat:"nameplate", title:"Nameplates",     meta:"Behind your name on every board — arriving"},
+  {cat:"nameplate", title:"Nameplates",     meta:"Behind your name, everywhere it appears"},
   {cat:"card",      title:"Scorecard Skins",meta:"Real materials on your round cards"},
   {cat:"flair",     title:"Feed Flair",     meta:"Moments of glory, once per card — arriving"},
   {cat:"title",     title:"Titles",         meta:"Under your name, in your voice"},
-  {cat:"teemarker", title:"Tee Markers",    meta:"Your totem on live rounds — arriving"},
+  {cat:"teemarker", title:"Tee Markers",    meta:"Your totem, planted beside your name"},
   {cat:"voice",     title:"The Caddy",      meta:"His tone, your pick — arriving"}
 ];
 
