@@ -56,11 +56,17 @@ function _buildWrappedSlides(year) {
   myRounds.forEach(function(r) { var m = parseInt(r.date.substring(5, 7)) - 1; monthCounts[m] = (monthCounts[m] || 0) + 1; });
   var topMonth = Object.keys(monthCounts).sort(function(a, b) { return monthCounts[b] - monthCounts[a]; })[0];
 
-  // Best + average (18-hole individual)
+  // Best + average (18-hole individual; 9-hole members get their best 9 —
+  // brief #8: nine-hole golf is first-class, not a missing slide)
   var full18 = indiv.filter(function(r) { return (!r.holesPlayed || r.holesPlayed >= 18) && r.score; });
   var best = null;
   full18.forEach(function(r) { if (!best || r.score < best.score) best = r; });
   var avg = full18.length ? Math.round(full18.reduce(function(a, r) { return a + r.score; }, 0) / full18.length * 10) / 10 : null;
+  var best9 = null;
+  if (!best) {
+    indiv.filter(function(r) { return r.holesPlayed && r.holesPlayed <= 9 && r.score; })
+      .forEach(function(r) { if (!best9 || r.score < best9.score) best9 = r; });
+  }
 
   // League position
   var standings = season.standings || [];
@@ -85,6 +91,12 @@ function _buildWrappedSlides(year) {
       stat: String(best.score), statLabel: "your best 18",
       body: "Shot at " + best.course + (best.date ? " on " + best.date : "") + (avg ? ". Season average: " + avg + "." : ".")
     });
+  } else if (best9) {
+    slides.push({
+      bg: "paper", eyebrow: "The scoring",
+      stat: String(best9.score), statLabel: "your best 9",
+      body: "Shot at " + best9.course + (best9.date ? " on " + best9.date : "") + ". Nine-hole golf counts here."
+    });
   }
   if (homeCourse) {
     slides.push({
@@ -107,7 +119,7 @@ function _buildWrappedSlides(year) {
     finale: true,
     shareRows: [
       { rank: 1, name: "Rounds", value: String(myRounds.length) },
-      best ? { rank: 2, name: "Best 18", value: best.score + " · " + best.course } : null,
+      best ? { rank: 2, name: "Best 18", value: best.score + " · " + best.course } : (best9 ? { rank: 2, name: "Best 9", value: best9.score + " · " + best9.course } : null),
       avg ? { rank: 3, name: "Average", value: String(avg) } : null,
       homeCourse ? { rank: 4, name: "Home course", value: homeCourse + " (" + courseCounts[homeCourse] + "x)" } : null,
       myRow ? { rank: 5, name: "League rank", value: "#" + myRank + " · " + (myRow.points || 0) + " pts" } : null
