@@ -80,6 +80,17 @@ Structural UI/UX/consistency/actionability audit to the 9.5 bar. **Honest scores
 - **#9 pulse bar:** ✅ DONE v8.24.94 — home.js pulse progress bar 4→6px tall,
   radius 2→3px, min-width 4→6%, inset shadow for depth.
 
+## Progress log
+- **#1 touch targets — ✅ DONE v8.24.98.** Verified rendered heights via injected
+  samples in real CSS context (all now exactly 44px): `.feed-wrap .feed-action`,
+  `.feed-empty__cta`, `.hm-nemesis`, `.shop-item__equip` (its `__buy` sibling
+  already had 44px). **False positive:** `.shop-item__state` is a non-interactive
+  status label (reserved/equipped/locked, no cursor:pointer) — correctly NOT given
+  a 44px floor.
+- **#9 pulse bar — ✅ DONE v8.24.94.**
+- **#11 email-verify banner — ❌ FALSE POSITIVE** (defined in home-rail-newuser.js).
+- **Banner contrast (separate Founder report) — ✅ DONE v8.24.96.**
+
 ## Drain order recommendation
 Systemic first (fix-all-pages): #1 → #2 → #3 → #4, each verified before edit.
 Then per-page taste: #9, #10, #6, #7, #8. Then #5, #11, #12.

@@ -359,7 +359,7 @@ input.s:disabled,
 .tr-honor__caption{font-family:var(--font-display);font-style:italic;font-size:14px;color:var(--cb-ink-faint);margin-top:12px;padding-left:24px}
 
 /* ── Mobile-home nemesis chip (rank 1, cream-surface variant) ─────────────── */
-.hm-nemesis{display:inline-flex;align-items:center;gap:8px;margin:13px 22px 0;padding:7px 13px;background:rgba(var(--cb-brass-rgb),.08);border:1px solid rgba(var(--cb-brass-rgb),.3);border-radius:20px;cursor:pointer;transition:background var(--duration-fast) var(--ease-out)}
+.hm-nemesis{display:inline-flex;align-items:center;gap:8px;margin:13px 22px 0;min-height:44px;padding:7px 13px;background:rgba(var(--cb-brass-rgb),.08);border:1px solid rgba(var(--cb-brass-rgb),.3);border-radius:20px;cursor:pointer;transition:background var(--duration-fast) var(--ease-out)}
 .hm-nemesis:hover{background:rgba(var(--cb-brass-rgb),.15)}
 .hm-nemesis:focus-visible{outline:2px solid var(--cb-brass);outline-offset:2px}
 .hm-nemesis__tag{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-brass)}
@@ -374,7 +374,7 @@ input.s:disabled,
 
 /* Action row — mono uppercase, brass when active (scoped to beat the legacy rule). */
 .feed-wrap .feed-actions{display:flex;align-items:center;flex-wrap:wrap;gap:18px;row-gap:10px;margin-top:14px;padding-top:0;border-top:none}
-.feed-wrap .feed-action{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--cb-mute);background:none;border:none;padding:6px 0;cursor:pointer;transition:color var(--duration-fast) var(--ease-default)}
+.feed-wrap .feed-action{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;color:var(--cb-mute);background:none;border:none;min-height:44px;padding:6px 0;cursor:pointer;transition:color var(--duration-fast) var(--ease-default)}
 .feed-wrap .feed-action:hover{color:var(--cb-ink)}
 .feed-wrap .feed-action--on{color:var(--cb-brass)}
 .feed-wrap .feed-action svg{flex-shrink:0}
@@ -398,7 +398,7 @@ input.s:disabled,
 .feed-empty__eyebrow{font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:14px}
 .feed-empty__head{font-family:var(--font-display);font-style:italic;font-weight:700;font-size:26px;line-height:1.1;color:var(--cb-ink);margin-bottom:10px}
 .feed-empty__body{font-family:var(--font-ui);font-size:14px;line-height:1.5;color:var(--cb-ink-faint);max-width:36ch;margin:0 auto 18px}
-.feed-empty__cta{font-family:var(--font-mono);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cb-chalk);background:var(--cb-brass);border:none;border-radius:10px;padding:12px 20px;cursor:pointer;transition:background var(--duration-fast) var(--ease-default)}
+.feed-empty__cta{font-family:var(--font-mono);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cb-chalk);background:var(--cb-brass);border:none;border-radius:10px;min-height:44px;padding:12px 20px;cursor:pointer;transition:background var(--duration-fast) var(--ease-default)}
 .feed-empty__cta:hover{background:var(--cb-brass-deep)}
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -4235,6 +4235,7 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.5px;
+  min-height: 44px;
   padding: 9px;
   border-radius: var(--radius-md);
   background: var(--cb-felt);
