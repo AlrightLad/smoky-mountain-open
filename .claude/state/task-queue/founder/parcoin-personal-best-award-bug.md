@@ -1,5 +1,5 @@
 ---
-status: open
+status: verified-closed
 severity: yellow
 priority: MEDIUM
 authored_at: 2026-06-10T16:25:00Z
@@ -45,3 +45,7 @@ silently doesn't — a real (small) coin-supply change.
 Reply **approve parcoin-personal-best-award-bug** and the fix ships through
 the normal cycle (with a rules-test-style unit check that the award fires
 exactly once on a genuine new best). Reply **deny + reason** to log it.
+
+
+---
+**VERIFIED-CLOSED 2026-06-11:** Founder: "parcoin fix: approved" + standing grant: bug-fixes of this kind no longer need founder input. Fix ships in v8.24.47.

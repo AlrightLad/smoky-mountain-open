@@ -1,5 +1,5 @@
 ---
-status: open
+status: verified-closed
 severity: yellow
 priority: HIGH
 founder_action_required: true
@@ -79,3 +79,7 @@ deleteMyAccount answers, flips this file to closed, and closes tasks
 Copy the red error text into the chat — the agent diagnoses from there.
 Nothing in this procedure can break the live app: a failed deploy leaves
 the current functions running untouched.
+
+
+---
+**VERIFIED-CLOSED 2026-06-11:** Founder ran the deploy ("deploy done"). Agent verified: key-less searchCourses returns real course JSON; deleteMyAccount answers with proper credential guard (not 404). Course auto-create fully live for all members; account deletion live (App Store 5.1.1(v) satisfied).

@@ -814,15 +814,17 @@ function finishLiveRound() {
     var isAttested = !!round.attestedBy;
     var roundCoins = calcRoundCoins(is9h, isAttested);
     awardCoins(currentUser.uid, roundCoins, "round_complete", "Completed " + (is9h ? "9H" : "18H") + " round at " + liveState.course + " (" + totalScore + ")" + (isAttested ? " [attested]" : ""), "round_" + round.id);
-    // Personal best check
-    var prevBest = PB.getPlayerBest(currentUser.uid);
-    if (!is9h && prevBest && prevBest.score && totalScore < prevBest.score) {
+    // Personal best check — v8.24.47 (founder-approved fix): compare against
+    // _pbPriorBest, the snapshot taken BEFORE PB.addRound() committed this
+    // round (same snapshot the confetti uses). The old code re-read the best
+    // AFTER the round was added, so a new best compared against itself and
+    // the award never paid out. The 9-hole slice(0,-1) workaround is replaced
+    // by the same snapshot for symmetry (it assumed the new round is always
+    // LAST in the list — true today, but the snapshot doesn't have to assume).
+    if (!is9h && _pbPriorBest && _pbPriorBest.score && totalScore < _pbPriorBest.score) {
       awardCoins(currentUser.uid, PARCOIN_RATES.personal_best_18h, "personal_best", "New PB (18H): " + totalScore + " at " + liveState.course, "pb_" + round.id);
-    } else if (is9h) {
-      var prevBest9 = PB.getPlayerRounds(currentUser.uid).filter(function(r){return r.holesPlayed&&r.holesPlayed<18&&r.score}).map(function(r){return r.score});
-      if (prevBest9.length > 1 && totalScore < Math.min.apply(null, prevBest9.slice(0,-1))) {
-        awardCoins(currentUser.uid, PARCOIN_RATES.personal_best_9h, "personal_best_9h", "New PB (9H): " + totalScore, "pb9_" + round.id);
-      }
+    } else if (is9h && _pbPriorBest && _pbPriorBest.score && totalScore < _pbPriorBest.score) {
+      awardCoins(currentUser.uid, PARCOIN_RATES.personal_best_9h, "personal_best_9h", "New PB (9H): " + totalScore, "pb9_" + round.id);
     }
   }
 

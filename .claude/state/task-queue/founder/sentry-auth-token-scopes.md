@@ -1,5 +1,5 @@
 ---
-status: open
+status: verified-closed
 severity: yellow
 priority: MEDIUM
 authored_at: 2026-05-24T14:30:00Z
@@ -86,3 +86,7 @@ Paste whatever the screen says into the chat. The two usual snags:
 
 Read-only scopes only — a leaked token could see error events but never
 change them. Treat like a password anyway; it lives only in `.env`.
+
+
+---
+**VERIFIED-CLOSED 2026-06-11:** Founder created the new token ("sentry token done"). Agent verified: issues endpoint returns data (16 stale issues, all pre-v8.24 and already fixed; zero events in last 24h). Script updated to use known org/project slugs (new token lacks org:read for discovery — not needed). Per-cycle Sentry repair loop is ON.

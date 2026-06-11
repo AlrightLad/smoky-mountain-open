@@ -49,9 +49,20 @@ const args = process.argv.slice(2);
 const since = (args.find(a => a.startsWith('--since=')) || '--since=24h').split('=')[1];
 const raw = args.includes('--raw');
 
-// Org + project slugs. Resolved at runtime by asking Sentry which orgs
-// + projects the token has access to (avoids hardcoded slug drift).
+// Org + project slugs. v8.24.47 — known slugs win: the 2026-06-11 token
+// carries event:read + project:read but NOT org:read, so listing
+// /organizations/ 403s while reading the project's issues works fine.
+// Env overrides (SENTRY_ORG / SENTRY_PROJECT) > known defaults > discovery.
 async function resolveOrgProject() {
+    const envOrg = process.env.SENTRY_ORG || 'parbaughs';
+    const envProject = process.env.SENTRY_PROJECT || 'javascript';
+    if (envOrg && envProject) {
+        const probe = await fetch(`https://sentry.io/api/0/projects/${envOrg}/${envProject}/`, {
+            headers: { Authorization: `Bearer ${token}`, 'Accept': 'application/json' },
+        });
+        if (probe.ok) return { org: envOrg, project: envProject };
+        console.error(`[sentry-fetch] known slugs ${envOrg}/${envProject} probe: HTTP ${probe.status} — falling back to discovery`);
+    }
     const orgRes = await fetch('https://sentry.io/api/0/organizations/', {
         headers: { Authorization: `Bearer ${token}`, 'Accept': 'application/json' },
     });

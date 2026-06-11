@@ -1,0 +1,2434 @@
+{
+  "fetched_at": "2026-06-11T02:57:28.037Z",
+  "since": "24h",
+  "count": 16,
+  "events": [
+    {
+      "id": "7517253193",
+      "shareId": null,
+      "shortId": "JAVASCRIPT-G",
+      "title": "Error: send was called before connect",
+      "culprit": "Object.send(smoky-mountain-open/@vite/client)",
+      "permalink": "https://parbaughs.sentry.io/issues/7517253193/",
+      "logger": null,
+      "level": "error",
+      "status": "unresolved",
+      "statusDetails": {},
+      "substatus": "ongoing",
+      "isPublic": false,
+      "platform": "javascript",
+      "project": {
+        "id": "4511434123116544",
+        "name": "javascript",
+        "slug": "javascript",
+        "platform": "javascript"
+      },
+      "type": "error",
+      "metadata": {
+        "value": "send was called before connect",
+        "type": "Error",
+        "filename": "/smoky-mountain-open/@vite/client",
+        "function": "Object.send",
+        "in_app_frame_mix": "in-app-only",
+        "sdk": {
+          "name": "sentry.javascript.browser",
+          "name_normalized": "sentry.javascript.browser"
+        },
+        "initial_priority": 75,
+        "title": null
+      },
+      "numComments": 0,
+      "assignedTo": null,
+      "isBookmarked": false,
+      "isSubscribed": false,
+      "subscriptionDetails": null,
+      "hasSeen": false,
+      "annotations": [],
+      "issueType": "error",
+      "issueCategory": "error",
+      "priority": "high",
+      "priorityLockedAt": null,
+      "seerFixabilityScore": null,
+      "seerAutofixLastTriggered": null,
+      "seerExplorerAutofixLastTriggered": null,
+      "isUnhandled": true,
+      "count": "20",
+      "userCount": 0,
+      "firstSeen": "2026-05-31T14:57:46.508000Z",
+      "lastSeen": "2026-05-31T14:58:43.498000Z",
+      "stats": {
+        "24h": [
+          [
+            1781060400,
+            0
+          ],
+          [
+            1781064000,
+            0
+          ],
+          [
+            1781067600,
+            0
+          ],
+          [
+            1781071200,
+            0
+          ],
+          [
+            1781074800,
+            0
+          ],
+          [
+            1781078400,
+            0
+          ],
+          [
+            1781082000,
+            0
+          ],
+          [
+            1781085600,
+            0
+          ],
+          [
+            1781089200,
+            0
+          ],
+          [
+            1781092800,
+            0
+          ],
+          [
+            1781096400,
+            0
+          ],
+          [
+            1781100000,
+            0
+          ],
+          [
+            1781103600,
+            0
+          ],
+          [
+            1781107200,
+            0
+          ],
+          [
+            1781110800,
+            0
+          ],
+          [
+            1781114400,
+            0
+          ],
+          [
+            1781118000,
+            0
+          ],
+          [
+            1781121600,
+            0
+          ],
+          [
+            1781125200,
+            0
+          ],
+          [
+            1781128800,
+            0
+          ],
+          [
+            1781132400,
+            0
+          ],
+          [
+            1781136000,
+            0
+          ],
+          [
+            1781139600,
+            0
+          ],
+          [
+            1781143200,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "id": "7517253190",
+      "shareId": null,
+      "shortId": "JAVASCRIPT-F",
+      "title": "Error: send was called before connect",
+      "culprit": "Object.send(smoky-mountain-open/@vite/client)",
+      "permalink": "https://parbaughs.sentry.io/issues/7517253190/",
+      "logger": null,
+      "level": "error",
+      "status": "unresolved",
+      "statusDetails": {},
+      "substatus": "ongoing",
+      "isPublic": false,
+      "platform": "javascript",
+      "project": {
+        "id": "4511434123116544",
+        "name": "javascript",
+        "slug": "javascript",
+        "platform": "javascript"
+      },
+      "type": "error",
+      "metadata": {
+        "value": "send was called before connect",
+        "type": "Error",
+        "filename": "/smoky-mountain-open/@vite/client",
+        "function": "Object.send",
+        "in_app_frame_mix": "mixed",
+        "sdk": {
+          "name": "sentry.javascript.browser",
+          "name_normalized": "sentry.javascript.browser"
+        },
+        "initial_priority": 75,
+        "title": null
+      },
+      "numComments": 0,
+      "assignedTo": null,
+      "isBookmarked": false,
+      "isSubscribed": false,
+      "subscriptionDetails": null,
+      "hasSeen": false,
+      "annotations": [],
+      "issueType": "error",
+      "issueCategory": "error",
+      "priority": "high",
+      "priorityLockedAt": null,
+      "seerFixabilityScore": 0.2417229264974594,
+      "seerAutofixLastTriggered": null,
+      "seerExplorerAutofixLastTriggered": null,
+      "isUnhandled": true,
+      "count": "20",
+      "userCount": 0,
+      "firstSeen": "2026-05-31T14:57:46.502000Z",
+      "lastSeen": "2026-05-31T14:58:43.497000Z",
+      "stats": {
+        "24h": [
+          [
+            1781060400,
+            0
+          ],
+          [
+            1781064000,
+            0
+          ],
+          [
+            1781067600,
+            0
+          ],
+          [
+            1781071200,
+            0
+          ],
+          [
+            1781074800,
+            0
+          ],
+          [
+            1781078400,
+            0
+          ],
+          [
+            1781082000,
+            0
+          ],
+          [
+            1781085600,
+            0
+          ],
+          [
+            1781089200,
+            0
+          ],
+          [
+            1781092800,
+            0
+          ],
+          [
+            1781096400,
+            0
+          ],
+          [
+            1781100000,
+            0
+          ],
+          [
+            1781103600,
+            0
+          ],
+          [
+            1781107200,
+            0
+          ],
+          [
+            1781110800,
+            0
+          ],
+          [
+            1781114400,
+            0
+          ],
+          [
+            1781118000,
+            0
+          ],
+          [
+            1781121600,
+            0
+          ],
+          [
+            1781125200,
+            0
+          ],
+          [
+            1781128800,
+            0
+          ],
+          [
+            1781132400,
+            0
+          ],
+          [
+            1781136000,
+            0
+          ],
+          [
+            1781139600,
+            0
+          ],
+          [
+            1781143200,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "id": "7515761160",
+      "shareId": null,
+      "shortId": "JAVASCRIPT-E",
+      "title": "FirebaseError: Failed to get documents from server. (However, these documents may exist in the local cache. Run again without setting source to \"server\" to retrieve the cached documents.)",
+      "culprit": "http://localhost:5173/smoky-mountain-open/",
+      "permalink": "https://parbaughs.sentry.io/issues/7515761160/",
+      "logger": null,
+      "level": "error",
+      "status": "unresolved",
+      "statusDetails": {},
+      "substatus": "ongoing",
+      "isPublic": false,
+      "platform": "javascript",
+      "project": {
+        "id": "4511434123116544",
+        "name": "javascript",
+        "slug": "javascript",
+        "platform": "javascript"
+      },
+      "type": "error",
+      "metadata": {
+        "value": "Failed to get documents from server. (However, these documents may exist in the local cache. Run again without setting source to \"server\" to retrieve the cached documents.)",
+        "type": "FirebaseError",
+        "sdk": {
+          "name": "sentry.javascript.browser",
+          "name_normalized": "sentry.javascript.browser"
+        },
+        "initial_priority": 75,
+        "title": null
+      },
+      "numComments": 0,
+      "assignedTo": null,
+      "isBookmarked": false,
+      "isSubscribed": false,
+      "subscriptionDetails": null,
+      "hasSeen": false,
+      "annotations": [],
+      "issueType": "error",
+      "issueCategory": "error",
+      "priority": "high",
+      "priorityLockedAt": null,
+      "seerFixabilityScore": 0.21562744677066803,
+      "seerAutofixLastTriggered": null,
+      "seerExplorerAutofixLastTriggered": null,
+      "isUnhandled": true,
+      "count": "23",
+      "userCount": 0,
+      "firstSeen": "2026-05-30T16:44:27.235000Z",
+      "lastSeen": "2026-05-31T12:44:18.647000Z",
+      "stats": {
+        "24h": [
+          [
+            1781060400,
+            0
+          ],
+          [
+            1781064000,
+            0
+          ],
+          [
+            1781067600,
+            0
+          ],
+          [
+            1781071200,
+            0
+          ],
+          [
+            1781074800,
+            0
+          ],
+          [
+            1781078400,
+            0
+          ],
+          [
+            1781082000,
+            0
+          ],
+          [
+            1781085600,
+            0
+          ],
+          [
+            1781089200,
+            0
+          ],
+          [
+            1781092800,
+            0
+          ],
+          [
+            1781096400,
+            0
+          ],
+          [
+            1781100000,
+            0
+          ],
+          [
+            1781103600,
+            0
+          ],
+          [
+            1781107200,
+            0
+          ],
+          [
+            1781110800,
+            0
+          ],
+          [
+            1781114400,
+            0
+          ],
+          [
+            1781118000,
+            0
+          ],
+          [
+            1781121600,
+            0
+          ],
+          [
+            1781125200,
+            0
+          ],
+          [
+            1781128800,
+            0
+          ],
+          [
+            1781132400,
+            0
+          ],
+          [
+            1781136000,
+            0
+          ],
+          [
+            1781139600,
+            0
+          ],
+          [
+            1781143200,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "id": "7515277651",
+      "shareId": null,
+      "shortId": "JAVASCRIPT-C",
+      "title": "SyntaxError: Unexpected token '<'",
+      "culprit": "?(smoky-mountain-open/assets/deferred)",
+      "permalink": "https://parbaughs.sentry.io/issues/7515277651/",
+      "logger": null,
+      "level": "error",
+      "status": "unresolved",
+      "statusDetails": {},
+      "substatus": "ongoing",
+      "isPublic": false,
+      "platform": "javascript",
+      "project": {
+        "id": "4511434123116544",
+        "name": "javascript",
+        "slug": "javascript",
+        "platform": "javascript"
+      },
+      "type": "error",
+      "metadata": {
+        "value": "Unexpected token '<'",
+        "type": "SyntaxError",
+        "in_app_frame_mix": "in-app-only",
+        "sdk": {
+          "name": "sentry.javascript.browser",
+          "name_normalized": "sentry.javascript.browser"
+        },
+        "initial_priority": 75,
+        "title": null
+      },
+      "numComments": 0,
+      "assignedTo": null,
+      "isBookmarked": false,
+      "isSubscribed": false,
+      "subscriptionDetails": null,
+      "hasSeen": false,
+      "annotations": [],
+      "issueType": "error",
+      "issueCategory": "error",
+      "priority": "high",
+      "priorityLockedAt": null,
+      "seerFixabilityScore": 0.5232239961624146,
+      "seerAutofixLastTriggered": null,
+      "seerExplorerAutofixLastTriggered": null,
+      "isUnhandled": true,
+      "count": "6",
+      "userCount": 0,
+      "firstSeen": "2026-05-30T08:55:42.609000Z",
+      "lastSeen": "2026-05-30T09:43:47.249000Z",
+      "stats": {
+        "24h": [
+          [
+            1781060400,
+            0
+          ],
+          [
+            1781064000,
+            0
+          ],
+          [
+            1781067600,
+            0
+          ],
+          [
+            1781071200,
+            0
+          ],
+          [
+            1781074800,
+            0
+          ],
+          [
+            1781078400,
+            0
+          ],
+          [
+            1781082000,
+            0
+          ],
+          [
+            1781085600,
+            0
+          ],
+          [
+            1781089200,
+            0
+          ],
+          [
+            1781092800,
+            0
+          ],
+          [
+            1781096400,
+            0
+          ],
+          [
+            1781100000,
+            0
+          ],
+          [
+            1781103600,
+            0
+          ],
+          [
+            1781107200,
+            0
+          ],
+          [
+            1781110800,
+            0
+          ],
+          [
+            1781114400,
+            0
+          ],
+          [
+            1781118000,
+            0
+          ],
+          [
+            1781121600,
+            0
+          ],
+          [
+            1781125200,
+            0
+          ],
+          [
+            1781128800,
+            0
+          ],
+          [
+            1781132400,
+            0
+          ],
+          [
+            1781136000,
+            0
+          ],
+          [
+            1781139600,
+            0
+          ],
+          [
+            1781143200,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "id": "7515277693",
+      "shareId": null,
+      "shortId": "JAVASCRIPT-D",
+      "title": "TypeError: Cannot read properties of null (reading 'style')",
+      "culprit": "HTMLImageElement.onerror(smoky-mountain-open/)",
+      "permalink": "https://parbaughs.sentry.io/issues/7515277693/",
+      "logger": null,
+      "level": "error",
+      "status": "unresolved",
+      "statusDetails": {},
+      "substatus": "ongoing",
+      "isPublic": false,
+      "platform": "javascript",
+      "project": {
+        "id": "4511434123116544",
+        "name": "javascript",
+        "slug": "javascript",
+        "platform": "javascript"
+      },
+      "type": "error",
+      "metadata": {
+        "value": "Cannot read properties of null (reading 'style')",
+        "type": "TypeError",
+        "filename": "/smoky-mountain-open/",
+        "function": "HTMLImageElement.onerror",
+        "in_app_frame_mix": "in-app-only",
+        "sdk": {
+          "name": "sentry.javascript.browser",
+          "name_normalized": "sentry.javascript.browser"
+        },
+        "initial_priority": 75,
+        "title": null
+      },
+      "numComments": 0,
+      "assignedTo": null,
+      "isBookmarked": false,
+      "isSubscribed": false,
+      "subscriptionDetails": null,
+      "hasSeen": false,
+      "annotations": [],
+      "issueType": "error",
+      "issueCategory": "error",
+      "priority": "high",
+      "priorityLockedAt": null,
+      "seerFixabilityScore": 0.6604307293891907,
+      "seerAutofixLastTriggered": null,
+      "seerExplorerAutofixLastTriggered": null,
+      "isUnhandled": true,
+      "count": "5",
+      "userCount": 0,
+      "firstSeen": "2026-05-30T08:55:42.652000Z",
+      "lastSeen": "2026-05-30T09:34:16.457000Z",
+      "stats": {
+        "24h": [
+          [
+            1781060400,
+            0
+          ],
+          [
+            1781064000,
+            0
+          ],
+          [
+            1781067600,
+            0
+          ],
+          [
+            1781071200,
+            0
+          ],
+          [
+            1781074800,
+            0
+          ],
+          [
+            1781078400,
+            0
+          ],
+          [
+            1781082000,
+            0
+          ],
+          [
+            1781085600,
+            0
+          ],
+          [
+            1781089200,
+            0
+          ],
+          [
+            1781092800,
+            0
+          ],
+          [
+            1781096400,
+            0
+          ],
+          [
+            1781100000,
+            0
+          ],
+          [
+            1781103600,
+            0
+          ],
+          [
+            1781107200,
+            0
+          ],
+          [
+            1781110800,
+            0
+          ],
+          [
+            1781114400,
+            0
+          ],
+          [
+            1781118000,
+            0
+          ],
+          [
+            1781121600,
+            0
+          ],
+          [
+            1781125200,
+            0
+          ],
+          [
+            1781128800,
+            0
+          ],
+          [
+            1781132400,
+            0
+          ],
+          [
+            1781136000,
+            0
+          ],
+          [
+            1781139600,
+            0
+          ],
+          [
+            1781143200,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "id": "7515277634",
+      "shareId": null,
+      "shortId": "JAVASCRIPT-B",
+      "title": "ReferenceError: startTeeTimeListener is not defined",
+      "culprit": "initFirebaseListeners(smoky-mountain-open/)",
+      "permalink": "https://parbaughs.sentry.io/issues/7515277634/",
+      "logger": null,
+      "level": "error",
+      "status": "unresolved",
+      "statusDetails": {},
+      "substatus": "ongoing",
+      "isPublic": false,
+      "platform": "javascript",
+      "project": {
+        "id": "4511434123116544",
+        "name": "javascript",
+        "slug": "javascript",
+        "platform": "javascript"
+      },
+      "type": "error",
+      "metadata": {
+        "value": "startTeeTimeListener is not defined",
+        "type": "ReferenceError",
+        "filename": "/smoky-mountain-open/",
+        "function": "initFirebaseListeners",
+        "in_app_frame_mix": "in-app-only",
+        "sdk": {
+          "name": "sentry.javascript.browser",
+          "name_normalized": "sentry.javascript.browser"
+        },
+        "initial_priority": 75,
+        "title": null
+      },
+      "numComments": 0,
+      "assignedTo": null,
+      "isBookmarked": false,
+      "isSubscribed": false,
+      "subscriptionDetails": null,
+      "hasSeen": false,
+      "annotations": [],
+      "issueType": "error",
+      "issueCategory": "error",
+      "priority": "high",
+      "priorityLockedAt": null,
+      "seerFixabilityScore": 0.7324977517127991,
+      "seerAutofixLastTriggered": null,
+      "seerExplorerAutofixLastTriggered": null,
+      "isUnhandled": true,
+      "count": "5",
+      "userCount": 0,
+      "firstSeen": "2026-05-30T08:55:42.562000Z",
+      "lastSeen": "2026-05-30T09:34:16.361000Z",
+      "stats": {
+        "24h": [
+          [
+            1781060400,
+            0
+          ],
+          [
+            1781064000,
+            0
+          ],
+          [
+            1781067600,
+            0
+          ],
+          [
+            1781071200,
+            0
+          ],
+          [
+            1781074800,
+            0
+          ],
+          [
+            1781078400,
+            0
+          ],
+          [
+            1781082000,
+            0
+          ],
+          [
+            1781085600,
+            0
+          ],
+          [
+            1781089200,
+            0
+          ],
+          [
+            1781092800,
+            0
+          ],
+          [
+            1781096400,
+            0
+          ],
+          [
+            1781100000,
+            0
+          ],
+          [
+            1781103600,
+            0
+          ],
+          [
+            1781107200,
+            0
+          ],
+          [
+            1781110800,
+            0
+          ],
+          [
+            1781114400,
+            0
+          ],
+          [
+            1781118000,
+            0
+          ],
+          [
+            1781121600,
+            0
+          ],
+          [
+            1781125200,
+            0
+          ],
+          [
+            1781128800,
+            0
+          ],
+          [
+            1781132400,
+            0
+          ],
+          [
+            1781136000,
+            0
+          ],
+          [
+            1781139600,
+            0
+          ],
+          [
+            1781143200,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "id": "7513640145",
+      "shareId": null,
+      "shortId": "JAVASCRIPT-5",
+      "title": "FirebaseError: ",
+      "culprit": "http://localhost:5173/smoky-mountain-open/",
+      "permalink": "https://parbaughs.sentry.io/issues/7513640145/",
+      "logger": null,
+      "level": "error",
+      "status": "unresolved",
+      "statusDetails": {},
+      "substatus": "ongoing",
+      "isPublic": false,
+      "platform": "javascript",
+      "project": {
+        "id": "4511434123116544",
+        "name": "javascript",
+        "slug": "javascript",
+        "platform": "javascript"
+      },
+      "type": "error",
+      "metadata": {
+        "value": "\nevaluation error at L528:22 for 'list' @ L528, Null value error. for 'list' @ L528",
+        "type": "FirebaseError",
+        "sdk": {
+          "name": "sentry.javascript.browser",
+          "name_normalized": "sentry.javascript.browser"
+        },
+        "initial_priority": 75,
+        "title": null
+      },
+      "numComments": 0,
+      "assignedTo": null,
+      "isBookmarked": false,
+      "isSubscribed": false,
+      "subscriptionDetails": null,
+      "hasSeen": false,
+      "annotations": [],
+      "issueType": "error",
+      "issueCategory": "error",
+      "priority": "high",
+      "priorityLockedAt": null,
+      "seerFixabilityScore": 0.6429529190063477,
+      "seerAutofixLastTriggered": null,
+      "seerExplorerAutofixLastTriggered": null,
+      "isUnhandled": true,
+      "count": "16",
+      "userCount": 0,
+      "firstSeen": "2026-05-29T11:41:46.266000Z",
+      "lastSeen": "2026-05-30T02:11:28.313000Z",
+      "stats": {
+        "24h": [
+          [
+            1781060400,
+            0
+          ],
+          [
+            1781064000,
+            0
+          ],
+          [
+            1781067600,
+            0
+          ],
+          [
+            1781071200,
+            0
+          ],
+          [
+            1781074800,
+            0
+          ],
+          [
+            1781078400,
+            0
+          ],
+          [
+            1781082000,
+            0
+          ],
+          [
+            1781085600,
+            0
+          ],
+          [
+            1781089200,
+            0
+          ],
+          [
+            1781092800,
+            0
+          ],
+          [
+            1781096400,
+            0
+          ],
+          [
+            1781100000,
+            0
+          ],
+          [
+            1781103600,
+            0
+          ],
+          [
+            1781107200,
+            0
+          ],
+          [
+            1781110800,
+            0
+          ],
+          [
+            1781114400,
+            0
+          ],
+          [
+            1781118000,
+            0
+          ],
+          [
+            1781121600,
+            0
+          ],
+          [
+            1781125200,
+            0
+          ],
+          [
+            1781128800,
+            0
+          ],
+          [
+            1781132400,
+            0
+          ],
+          [
+            1781136000,
+            0
+          ],
+          [
+            1781139600,
+            0
+          ],
+          [
+            1781143200,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "id": "7514556334",
+      "shareId": null,
+      "shortId": "JAVASCRIPT-A",
+      "title": "TypeError: Cannot read properties of undefined (reading 'send')",
+      "culprit": "Object.send(smoky-mountain-open/@vite/client)",
+      "permalink": "https://parbaughs.sentry.io/issues/7514556334/",
+      "logger": null,
+      "level": "error",
+      "status": "unresolved",
+      "statusDetails": {},
+      "substatus": "ongoing",
+      "isPublic": false,
+      "platform": "javascript",
+      "project": {
+        "id": "4511434123116544",
+        "name": "javascript",
+        "slug": "javascript",
+        "platform": "javascript"
+      },
+      "type": "error",
+      "metadata": {
+        "value": "Cannot read properties of undefined (reading 'send')",
+        "type": "TypeError",
+        "filename": "/smoky-mountain-open/@vite/client",
+        "function": "Object.send",
+        "in_app_frame_mix": "in-app-only",
+        "sdk": {
+          "name": "sentry.javascript.browser",
+          "name_normalized": "sentry.javascript.browser"
+        },
+        "initial_priority": 75
+      },
+      "numComments": 0,
+      "assignedTo": null,
+      "isBookmarked": false,
+      "isSubscribed": false,
+      "subscriptionDetails": null,
+      "hasSeen": false,
+      "annotations": [],
+      "issueType": "error",
+      "issueCategory": "error",
+      "priority": "high",
+      "priorityLockedAt": null,
+      "seerFixabilityScore": 0.5902233719825745,
+      "seerAutofixLastTriggered": null,
+      "seerExplorerAutofixLastTriggered": null,
+      "isUnhandled": true,
+      "count": "1",
+      "userCount": 0,
+      "firstSeen": "2026-05-29T21:10:05.974000Z",
+      "lastSeen": "2026-05-29T21:10:05.974000Z",
+      "stats": {
+        "24h": [
+          [
+            1781060400,
+            0
+          ],
+          [
+            1781064000,
+            0
+          ],
+          [
+            1781067600,
+            0
+          ],
+          [
+            1781071200,
+            0
+          ],
+          [
+            1781074800,
+            0
+          ],
+          [
+            1781078400,
+            0
+          ],
+          [
+            1781082000,
+            0
+          ],
+          [
+            1781085600,
+            0
+          ],
+          [
+            1781089200,
+            0
+          ],
+          [
+            1781092800,
+            0
+          ],
+          [
+            1781096400,
+            0
+          ],
+          [
+            1781100000,
+            0
+          ],
+          [
+            1781103600,
+            0
+          ],
+          [
+            1781107200,
+            0
+          ],
+          [
+            1781110800,
+            0
+          ],
+          [
+            1781114400,
+            0
+          ],
+          [
+            1781118000,
+            0
+          ],
+          [
+            1781121600,
+            0
+          ],
+          [
+            1781125200,
+            0
+          ],
+          [
+            1781128800,
+            0
+          ],
+          [
+            1781132400,
+            0
+          ],
+          [
+            1781136000,
+            0
+          ],
+          [
+            1781139600,
+            0
+          ],
+          [
+            1781143200,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "id": "7514556314",
+      "shareId": null,
+      "shortId": "JAVASCRIPT-9",
+      "title": "TypeError: Cannot read properties of undefined (reading 'send')",
+      "culprit": "Object.send(smoky-mountain-open/@vite/client)",
+      "permalink": "https://parbaughs.sentry.io/issues/7514556314/",
+      "logger": null,
+      "level": "error",
+      "status": "unresolved",
+      "statusDetails": {},
+      "substatus": "ongoing",
+      "isPublic": false,
+      "platform": "javascript",
+      "project": {
+        "id": "4511434123116544",
+        "name": "javascript",
+        "slug": "javascript",
+        "platform": "javascript"
+      },
+      "type": "error",
+      "metadata": {
+        "value": "Cannot read properties of undefined (reading 'send')",
+        "type": "TypeError",
+        "filename": "/smoky-mountain-open/@vite/client",
+        "function": "Object.send",
+        "in_app_frame_mix": "in-app-only",
+        "sdk": {
+          "name": "sentry.javascript.browser",
+          "name_normalized": "sentry.javascript.browser"
+        },
+        "initial_priority": 75
+      },
+      "numComments": 0,
+      "assignedTo": null,
+      "isBookmarked": false,
+      "isSubscribed": false,
+      "subscriptionDetails": null,
+      "hasSeen": false,
+      "annotations": [],
+      "issueType": "error",
+      "issueCategory": "error",
+      "priority": "high",
+      "priorityLockedAt": null,
+      "seerFixabilityScore": 0.5917143225669861,
+      "seerAutofixLastTriggered": null,
+      "seerExplorerAutofixLastTriggered": null,
+      "isUnhandled": true,
+      "count": "1",
+      "userCount": 0,
+      "firstSeen": "2026-05-29T21:10:05.970000Z",
+      "lastSeen": "2026-05-29T21:10:05.970000Z",
+      "stats": {
+        "24h": [
+          [
+            1781060400,
+            0
+          ],
+          [
+            1781064000,
+            0
+          ],
+          [
+            1781067600,
+            0
+          ],
+          [
+            1781071200,
+            0
+          ],
+          [
+            1781074800,
+            0
+          ],
+          [
+            1781078400,
+            0
+          ],
+          [
+            1781082000,
+            0
+          ],
+          [
+            1781085600,
+            0
+          ],
+          [
+            1781089200,
+            0
+          ],
+          [
+            1781092800,
+            0
+          ],
+          [
+            1781096400,
+            0
+          ],
+          [
+            1781100000,
+            0
+          ],
+          [
+            1781103600,
+            0
+          ],
+          [
+            1781107200,
+            0
+          ],
+          [
+            1781110800,
+            0
+          ],
+          [
+            1781114400,
+            0
+          ],
+          [
+            1781118000,
+            0
+          ],
+          [
+            1781121600,
+            0
+          ],
+          [
+            1781125200,
+            0
+          ],
+          [
+            1781128800,
+            0
+          ],
+          [
+            1781132400,
+            0
+          ],
+          [
+            1781136000,
+            0
+          ],
+          [
+            1781139600,
+            0
+          ],
+          [
+            1781143200,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "id": "7513672405",
+      "shareId": null,
+      "shortId": "JAVASCRIPT-8",
+      "title": "FirebaseError: ",
+      "culprit": "http://localhost:5173/smoky-mountain-open/",
+      "permalink": "https://parbaughs.sentry.io/issues/7513672405/",
+      "logger": null,
+      "level": "error",
+      "status": "unresolved",
+      "statusDetails": {},
+      "substatus": "ongoing",
+      "isPublic": false,
+      "platform": "javascript",
+      "project": {
+        "id": "4511434123116544",
+        "name": "javascript",
+        "slug": "javascript",
+        "platform": "javascript"
+      },
+      "type": "error",
+      "metadata": {
+        "value": "\nNull value error. for 'list' @ L174, Null value error. for 'list' @ L174",
+        "type": "FirebaseError",
+        "sdk": {
+          "name": "sentry.javascript.browser",
+          "name_normalized": "sentry.javascript.browser"
+        },
+        "initial_priority": 75
+      },
+      "numComments": 0,
+      "assignedTo": null,
+      "isBookmarked": false,
+      "isSubscribed": false,
+      "subscriptionDetails": null,
+      "hasSeen": false,
+      "annotations": [],
+      "issueType": "error",
+      "issueCategory": "error",
+      "priority": "high",
+      "priorityLockedAt": null,
+      "seerFixabilityScore": 0.6261049509048462,
+      "seerAutofixLastTriggered": null,
+      "seerExplorerAutofixLastTriggered": null,
+      "isUnhandled": true,
+      "count": "1",
+      "userCount": 0,
+      "firstSeen": "2026-05-29T12:03:54.639000Z",
+      "lastSeen": "2026-05-29T12:03:54.639000Z",
+      "stats": {
+        "24h": [
+          [
+            1781060400,
+            0
+          ],
+          [
+            1781064000,
+            0
+          ],
+          [
+            1781067600,
+            0
+          ],
+          [
+            1781071200,
+            0
+          ],
+          [
+            1781074800,
+            0
+          ],
+          [
+            1781078400,
+            0
+          ],
+          [
+            1781082000,
+            0
+          ],
+          [
+            1781085600,
+            0
+          ],
+          [
+            1781089200,
+            0
+          ],
+          [
+            1781092800,
+            0
+          ],
+          [
+            1781096400,
+            0
+          ],
+          [
+            1781100000,
+            0
+          ],
+          [
+            1781103600,
+            0
+          ],
+          [
+            1781107200,
+            0
+          ],
+          [
+            1781110800,
+            0
+          ],
+          [
+            1781114400,
+            0
+          ],
+          [
+            1781118000,
+            0
+          ],
+          [
+            1781121600,
+            0
+          ],
+          [
+            1781125200,
+            0
+          ],
+          [
+            1781128800,
+            0
+          ],
+          [
+            1781132400,
+            0
+          ],
+          [
+            1781136000,
+            0
+          ],
+          [
+            1781139600,
+            0
+          ],
+          [
+            1781143200,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "id": "7513672070",
+      "shareId": null,
+      "shortId": "JAVASCRIPT-7",
+      "title": "FirebaseError: ",
+      "culprit": "http://localhost:5173/smoky-mountain-open/",
+      "permalink": "https://parbaughs.sentry.io/issues/7513672070/",
+      "logger": null,
+      "level": "error",
+      "status": "unresolved",
+      "statusDetails": {},
+      "substatus": "ongoing",
+      "isPublic": false,
+      "platform": "javascript",
+      "project": {
+        "id": "4511434123116544",
+        "name": "javascript",
+        "slug": "javascript",
+        "platform": "javascript"
+      },
+      "type": "error",
+      "metadata": {
+        "value": "\nevaluation error at L727:22 for 'list' @ L727, Null value error. for 'list' @ L727",
+        "type": "FirebaseError",
+        "sdk": {
+          "name": "sentry.javascript.browser",
+          "name_normalized": "sentry.javascript.browser"
+        },
+        "initial_priority": 75
+      },
+      "numComments": 0,
+      "assignedTo": null,
+      "isBookmarked": false,
+      "isSubscribed": false,
+      "subscriptionDetails": null,
+      "hasSeen": false,
+      "annotations": [],
+      "issueType": "error",
+      "issueCategory": "error",
+      "priority": "high",
+      "priorityLockedAt": null,
+      "seerFixabilityScore": 0.6802857518196106,
+      "seerAutofixLastTriggered": null,
+      "seerExplorerAutofixLastTriggered": null,
+      "isUnhandled": true,
+      "count": "1",
+      "userCount": 0,
+      "firstSeen": "2026-05-29T12:03:39.746000Z",
+      "lastSeen": "2026-05-29T12:03:39.746000Z",
+      "stats": {
+        "24h": [
+          [
+            1781060400,
+            0
+          ],
+          [
+            1781064000,
+            0
+          ],
+          [
+            1781067600,
+            0
+          ],
+          [
+            1781071200,
+            0
+          ],
+          [
+            1781074800,
+            0
+          ],
+          [
+            1781078400,
+            0
+          ],
+          [
+            1781082000,
+            0
+          ],
+          [
+            1781085600,
+            0
+          ],
+          [
+            1781089200,
+            0
+          ],
+          [
+            1781092800,
+            0
+          ],
+          [
+            1781096400,
+            0
+          ],
+          [
+            1781100000,
+            0
+          ],
+          [
+            1781103600,
+            0
+          ],
+          [
+            1781107200,
+            0
+          ],
+          [
+            1781110800,
+            0
+          ],
+          [
+            1781114400,
+            0
+          ],
+          [
+            1781118000,
+            0
+          ],
+          [
+            1781121600,
+            0
+          ],
+          [
+            1781125200,
+            0
+          ],
+          [
+            1781128800,
+            0
+          ],
+          [
+            1781132400,
+            0
+          ],
+          [
+            1781136000,
+            0
+          ],
+          [
+            1781139600,
+            0
+          ],
+          [
+            1781143200,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "id": "7513671683",
+      "shareId": null,
+      "shortId": "JAVASCRIPT-6",
+      "title": "FirebaseError: ",
+      "culprit": "http://localhost:5173/smoky-mountain-open/",
+      "permalink": "https://parbaughs.sentry.io/issues/7513671683/",
+      "logger": null,
+      "level": "error",
+      "status": "unresolved",
+      "statusDetails": {},
+      "substatus": "ongoing",
+      "isPublic": false,
+      "platform": "javascript",
+      "project": {
+        "id": "4511434123116544",
+        "name": "javascript",
+        "slug": "javascript",
+        "platform": "javascript"
+      },
+      "type": "error",
+      "metadata": {
+        "value": "\nevaluation error at L599:22 for 'list' @ L599, Null value error. for 'list' @ L599",
+        "type": "FirebaseError",
+        "sdk": {
+          "name": "sentry.javascript.browser",
+          "name_normalized": "sentry.javascript.browser"
+        },
+        "initial_priority": 75
+      },
+      "numComments": 0,
+      "assignedTo": null,
+      "isBookmarked": false,
+      "isSubscribed": false,
+      "subscriptionDetails": null,
+      "hasSeen": false,
+      "annotations": [],
+      "issueType": "error",
+      "issueCategory": "error",
+      "priority": "high",
+      "priorityLockedAt": null,
+      "seerFixabilityScore": 0.6906018853187561,
+      "seerAutofixLastTriggered": null,
+      "seerExplorerAutofixLastTriggered": null,
+      "isUnhandled": true,
+      "count": "1",
+      "userCount": 0,
+      "firstSeen": "2026-05-29T12:03:24.833000Z",
+      "lastSeen": "2026-05-29T12:03:24.833000Z",
+      "stats": {
+        "24h": [
+          [
+            1781060400,
+            0
+          ],
+          [
+            1781064000,
+            0
+          ],
+          [
+            1781067600,
+            0
+          ],
+          [
+            1781071200,
+            0
+          ],
+          [
+            1781074800,
+            0
+          ],
+          [
+            1781078400,
+            0
+          ],
+          [
+            1781082000,
+            0
+          ],
+          [
+            1781085600,
+            0
+          ],
+          [
+            1781089200,
+            0
+          ],
+          [
+            1781092800,
+            0
+          ],
+          [
+            1781096400,
+            0
+          ],
+          [
+            1781100000,
+            0
+          ],
+          [
+            1781103600,
+            0
+          ],
+          [
+            1781107200,
+            0
+          ],
+          [
+            1781110800,
+            0
+          ],
+          [
+            1781114400,
+            0
+          ],
+          [
+            1781118000,
+            0
+          ],
+          [
+            1781121600,
+            0
+          ],
+          [
+            1781125200,
+            0
+          ],
+          [
+            1781128800,
+            0
+          ],
+          [
+            1781132400,
+            0
+          ],
+          [
+            1781136000,
+            0
+          ],
+          [
+            1781139600,
+            0
+          ],
+          [
+            1781143200,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "id": "7500591066",
+      "shareId": null,
+      "shortId": "JAVASCRIPT-4",
+      "title": "ReferenceError: checkAndAwardNewAchievements is not defined",
+      "culprit": "enterApp(core/firebase)",
+      "permalink": "https://parbaughs.sentry.io/issues/7500591066/",
+      "logger": null,
+      "level": "error",
+      "status": "unresolved",
+      "statusDetails": {},
+      "substatus": "ongoing",
+      "isPublic": false,
+      "platform": "javascript",
+      "project": {
+        "id": "4511434123116544",
+        "name": "javascript",
+        "slug": "javascript",
+        "platform": "javascript"
+      },
+      "type": "error",
+      "metadata": {
+        "value": "checkAndAwardNewAchievements is not defined",
+        "type": "ReferenceError",
+        "filename": "/core/firebase.js",
+        "function": "enterApp",
+        "in_app_frame_mix": "in-app-only",
+        "sdk": {
+          "name": "sentry.javascript.browser",
+          "name_normalized": "sentry.javascript.browser"
+        },
+        "initial_priority": 75
+      },
+      "numComments": 0,
+      "assignedTo": null,
+      "isBookmarked": false,
+      "isSubscribed": false,
+      "subscriptionDetails": null,
+      "hasSeen": false,
+      "annotations": [],
+      "issueType": "error",
+      "issueCategory": "error",
+      "priority": "high",
+      "priorityLockedAt": null,
+      "seerFixabilityScore": 0.6824612617492676,
+      "seerAutofixLastTriggered": null,
+      "seerExplorerAutofixLastTriggered": null,
+      "isUnhandled": true,
+      "count": "1",
+      "userCount": 0,
+      "firstSeen": "2026-05-22T20:24:18.134000Z",
+      "lastSeen": "2026-05-22T20:24:18.134000Z",
+      "stats": {
+        "24h": [
+          [
+            1781060400,
+            0
+          ],
+          [
+            1781064000,
+            0
+          ],
+          [
+            1781067600,
+            0
+          ],
+          [
+            1781071200,
+            0
+          ],
+          [
+            1781074800,
+            0
+          ],
+          [
+            1781078400,
+            0
+          ],
+          [
+            1781082000,
+            0
+          ],
+          [
+            1781085600,
+            0
+          ],
+          [
+            1781089200,
+            0
+          ],
+          [
+            1781092800,
+            0
+          ],
+          [
+            1781096400,
+            0
+          ],
+          [
+            1781100000,
+            0
+          ],
+          [
+            1781103600,
+            0
+          ],
+          [
+            1781107200,
+            0
+          ],
+          [
+            1781110800,
+            0
+          ],
+          [
+            1781114400,
+            0
+          ],
+          [
+            1781118000,
+            0
+          ],
+          [
+            1781121600,
+            0
+          ],
+          [
+            1781125200,
+            0
+          ],
+          [
+            1781128800,
+            0
+          ],
+          [
+            1781132400,
+            0
+          ],
+          [
+            1781136000,
+            0
+          ],
+          [
+            1781139600,
+            0
+          ],
+          [
+            1781143200,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "id": "7500376817",
+      "shareId": null,
+      "shortId": "JAVASCRIPT-3",
+      "title": "ReferenceError: _attachSpectatorListener is not defined",
+      "culprit": "?(pages/spectator)",
+      "permalink": "https://parbaughs.sentry.io/issues/7500376817/",
+      "logger": null,
+      "level": "error",
+      "status": "unresolved",
+      "statusDetails": {},
+      "substatus": "ongoing",
+      "isPublic": false,
+      "platform": "javascript",
+      "project": {
+        "id": "4511434123116544",
+        "name": "javascript",
+        "slug": "javascript",
+        "platform": "javascript"
+      },
+      "type": "error",
+      "metadata": {
+        "value": "_attachSpectatorListener is not defined",
+        "type": "ReferenceError",
+        "in_app_frame_mix": "in-app-only",
+        "sdk": {
+          "name": "sentry.javascript.browser",
+          "name_normalized": "sentry.javascript.browser"
+        },
+        "initial_priority": 75
+      },
+      "numComments": 0,
+      "assignedTo": null,
+      "isBookmarked": false,
+      "isSubscribed": false,
+      "subscriptionDetails": null,
+      "hasSeen": false,
+      "annotations": [],
+      "issueType": "error",
+      "issueCategory": "error",
+      "priority": "high",
+      "priorityLockedAt": null,
+      "seerFixabilityScore": 0.5693926215171814,
+      "seerAutofixLastTriggered": null,
+      "seerExplorerAutofixLastTriggered": null,
+      "isUnhandled": true,
+      "count": "1",
+      "userCount": 0,
+      "firstSeen": "2026-05-22T18:21:27.812000Z",
+      "lastSeen": "2026-05-22T18:21:27.812000Z",
+      "stats": {
+        "24h": [
+          [
+            1781060400,
+            0
+          ],
+          [
+            1781064000,
+            0
+          ],
+          [
+            1781067600,
+            0
+          ],
+          [
+            1781071200,
+            0
+          ],
+          [
+            1781074800,
+            0
+          ],
+          [
+            1781078400,
+            0
+          ],
+          [
+            1781082000,
+            0
+          ],
+          [
+            1781085600,
+            0
+          ],
+          [
+            1781089200,
+            0
+          ],
+          [
+            1781092800,
+            0
+          ],
+          [
+            1781096400,
+            0
+          ],
+          [
+            1781100000,
+            0
+          ],
+          [
+            1781103600,
+            0
+          ],
+          [
+            1781107200,
+            0
+          ],
+          [
+            1781110800,
+            0
+          ],
+          [
+            1781114400,
+            0
+          ],
+          [
+            1781118000,
+            0
+          ],
+          [
+            1781121600,
+            0
+          ],
+          [
+            1781125200,
+            0
+          ],
+          [
+            1781128800,
+            0
+          ],
+          [
+            1781132400,
+            0
+          ],
+          [
+            1781136000,
+            0
+          ],
+          [
+            1781139600,
+            0
+          ],
+          [
+            1781143200,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "id": "7500238585",
+      "shareId": null,
+      "shortId": "JAVASCRIPT-2",
+      "title": "PARBAUGHS direct-curl probe",
+      "culprit": "",
+      "permalink": "https://parbaughs.sentry.io/issues/7500238585/",
+      "logger": null,
+      "level": "error",
+      "status": "unresolved",
+      "statusDetails": {},
+      "substatus": "ongoing",
+      "isPublic": false,
+      "platform": "javascript",
+      "project": {
+        "id": "4511434123116544",
+        "name": "javascript",
+        "slug": "javascript",
+        "platform": "javascript"
+      },
+      "type": "default",
+      "metadata": {
+        "title": "PARBAUGHS direct-curl probe",
+        "initial_priority": 75
+      },
+      "numComments": 0,
+      "assignedTo": null,
+      "isBookmarked": false,
+      "isSubscribed": false,
+      "subscriptionDetails": null,
+      "hasSeen": true,
+      "annotations": [],
+      "issueType": "error",
+      "issueCategory": "error",
+      "priority": "high",
+      "priorityLockedAt": null,
+      "seerFixabilityScore": 0.25388336181640625,
+      "seerAutofixLastTriggered": null,
+      "seerExplorerAutofixLastTriggered": null,
+      "isUnhandled": false,
+      "count": "1",
+      "userCount": 1,
+      "firstSeen": "2026-05-22T17:03:03Z",
+      "lastSeen": "2026-05-22T17:03:03Z",
+      "stats": {
+        "24h": [
+          [
+            1781060400,
+            0
+          ],
+          [
+            1781064000,
+            0
+          ],
+          [
+            1781067600,
+            0
+          ],
+          [
+            1781071200,
+            0
+          ],
+          [
+            1781074800,
+            0
+          ],
+          [
+            1781078400,
+            0
+          ],
+          [
+            1781082000,
+            0
+          ],
+          [
+            1781085600,
+            0
+          ],
+          [
+            1781089200,
+            0
+          ],
+          [
+            1781092800,
+            0
+          ],
+          [
+            1781096400,
+            0
+          ],
+          [
+            1781100000,
+            0
+          ],
+          [
+            1781103600,
+            0
+          ],
+          [
+            1781107200,
+            0
+          ],
+          [
+            1781110800,
+            0
+          ],
+          [
+            1781114400,
+            0
+          ],
+          [
+            1781118000,
+            0
+          ],
+          [
+            1781121600,
+            0
+          ],
+          [
+            1781125200,
+            0
+          ],
+          [
+            1781128800,
+            0
+          ],
+          [
+            1781132400,
+            0
+          ],
+          [
+            1781136000,
+            0
+          ],
+          [
+            1781139600,
+            0
+          ],
+          [
+            1781143200,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "id": "7500236827",
+      "shareId": null,
+      "shortId": "JAVASCRIPT-1",
+      "title": "Error: DEEP PROBE UNCAUGHT — parbaughs-deep-probe-1779469331338",
+      "culprit": "r(/C:/Users/Zach/smoky-mountain-open/dist/index.html)",
+      "permalink": "https://parbaughs.sentry.io/issues/7500236827/",
+      "logger": null,
+      "level": "error",
+      "status": "unresolved",
+      "statusDetails": {},
+      "substatus": "ongoing",
+      "isPublic": false,
+      "platform": "javascript",
+      "project": {
+        "id": "4511434123116544",
+        "name": "javascript",
+        "slug": "javascript",
+        "platform": "javascript"
+      },
+      "type": "error",
+      "metadata": {
+        "value": "DEEP PROBE UNCAUGHT — parbaughs-deep-probe-1779469331338",
+        "type": "Error",
+        "function": "eval",
+        "in_app_frame_mix": "in-app-only",
+        "sdk": {
+          "name": "sentry.javascript.browser",
+          "name_normalized": "sentry.javascript.browser"
+        },
+        "initial_priority": 75
+      },
+      "numComments": 0,
+      "assignedTo": null,
+      "isBookmarked": false,
+      "isSubscribed": false,
+      "subscriptionDetails": null,
+      "hasSeen": true,
+      "annotations": [],
+      "issueType": "error",
+      "issueCategory": "error",
+      "priority": "high",
+      "priorityLockedAt": null,
+      "seerFixabilityScore": 0.328521728515625,
+      "seerAutofixLastTriggered": null,
+      "seerExplorerAutofixLastTriggered": null,
+      "isUnhandled": true,
+      "count": "1",
+      "userCount": 0,
+      "firstSeen": "2026-05-22T17:02:11.365000Z",
+      "lastSeen": "2026-05-22T17:02:11.365000Z",
+      "stats": {
+        "24h": [
+          [
+            1781060400,
+            0
+          ],
+          [
+            1781064000,
+            0
+          ],
+          [
+            1781067600,
+            0
+          ],
+          [
+            1781071200,
+            0
+          ],
+          [
+            1781074800,
+            0
+          ],
+          [
+            1781078400,
+            0
+          ],
+          [
+            1781082000,
+            0
+          ],
+          [
+            1781085600,
+            0
+          ],
+          [
+            1781089200,
+            0
+          ],
+          [
+            1781092800,
+            0
+          ],
+          [
+            1781096400,
+            0
+          ],
+          [
+            1781100000,
+            0
+          ],
+          [
+            1781103600,
+            0
+          ],
+          [
+            1781107200,
+            0
+          ],
+          [
+            1781110800,
+            0
+          ],
+          [
+            1781114400,
+            0
+          ],
+          [
+            1781118000,
+            0
+          ],
+          [
+            1781121600,
+            0
+          ],
+          [
+            1781125200,
+            0
+          ],
+          [
+            1781128800,
+            0
+          ],
+          [
+            1781132400,
+            0
+          ],
+          [
+            1781136000,
+            0
+          ],
+          [
+            1781139600,
+            0
+          ],
+          [
+            1781143200,
+            0
+          ]
+        ]
+      }
+    }
+  ]
+}
