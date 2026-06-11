@@ -822,9 +822,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-11T19:36:47.380759Z",
+  "generated_at": "2026-06-11T20:15:58.438809Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 86.2,
+  "overall_score": 87.7,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -838,9 +838,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 91.2,
+    "pre_deduction_score": 92.7,
     "deduction": 5,
-    "post_deduction_score": 86.2
+    "post_deduction_score": 87.7
   },
   "dimensions": {
     "A1_roadmap": {
@@ -977,7 +977,7 @@
     "A10_mobile_first": {
       "score": 100,
       "status": "green",
-      "label": "37 touch-target rules · mobile-spec=True · lhci=True · manifest=True",
+      "label": "38 touch-target rules · mobile-spec=True · lhci=True · manifest=True",
       "source": "src/styles/, tests/e2e/, public/manifest.json",
       "weak_points": []
     },
@@ -989,20 +989,20 @@
       "weak_points": []
     },
     "A12_operational": {
-      "score": 60,
-      "status": "yellow",
-      "label": "pipeline=red · 9 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "score": 90,
+      "status": "green",
+      "label": "pipeline=green · 8 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "9 of last 10 cron watcher runs hit skip-dirty",
+          "what": "8 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
       ],
       "details": {
         "watcher_last_status": "PASS",
-        "watcher_exit_reason": "skip-dirty"
+        "watcher_exit_reason": "no-new-files"
       }
     }
   },
@@ -1012,12 +1012,6 @@
       "where": "src/pages/members-detail.js",
       "what_action": "Split into modules per AMD-027 budget",
       "dimension": "A5_code_quality"
-    },
-    {
-      "what": "9 of last 10 cron watcher runs hit skip-dirty",
-      "where": "scripts/cron/logs/*-downloads-watcher.log",
-      "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
-      "dimension": "A12_operational"
     }
   ],
   "founder_attention": [],
@@ -1027,27 +1021,16 @@
       "where": "src/pages/members-detail.js",
       "what_action": "Split into modules per AMD-027 budget",
       "dimension": "A5_code_quality"
-    },
-    {
-      "what": "9 of last 10 cron watcher runs hit skip-dirty",
-      "where": "scripts/cron/logs/*-downloads-watcher.log",
-      "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
-      "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "72e6623b",
-    "subject": "feat(shop)+fix(dev): nameplate materials + vite watch-ignore for generated artifacts (v8.24.83)",
-    "committed_at": "2026-06-11T15:36:22-04:00",
-    "trigger": "app-commit",
-    "is_app_commit": true,
-    "app_files_touched": [
-      "public/sw.js",
-      "src/core/utils.js",
-      "src/pages/caddynotes.js",
-      "src/styles/components.css"
-    ],
-    "total_files_touched": 7
+    "sha": "c089b4e0",
+    "subject": "cron(routine): auto-commit telemetry output before watcher preflight (2026-06-11T20:15:50.2160524Z)",
+    "committed_at": "2026-06-11T16:15:50-04:00",
+    "trigger": "cron",
+    "is_app_commit": false,
+    "app_files_touched": [],
+    "total_files_touched": 1
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
