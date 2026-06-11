@@ -188,6 +188,16 @@ service cloud.firestore {
     // Update: owner (if active) or Founder. platformRole/suspension/ban
     //   are immutable via client — Cloud Function writes those.
     // Delete: Founder only (decision 3.5.a).
+    // v8.24.56 (sec #10) — members_private holds PII (email; fcmToken +
+    // location migrate here on the coordinated function deploy). Readable +
+    // writable ONLY by the owner; the founder can read for support. The
+    // push Cloud Function reads via Admin SDK (bypasses rules). This is the
+    // collection the public members doc used to leak cross-league.
+    match /members_private/{memberId} {
+      allow read: if isAuth() && (uid() == memberId || amIFounder());
+      allow write: if isAuth() && uid() == memberId;
+    }
+
     match /members/{memberId} {
       allow read: if isAuth() && (uid() == memberId || amIReadable());
       allow create: if isAuth()

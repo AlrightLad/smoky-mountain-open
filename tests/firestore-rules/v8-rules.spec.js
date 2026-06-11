@@ -2296,6 +2296,35 @@ async function runAll() {
   });
 
   // ─────────────────────────────────────────────────────────────────
+  // MEMBERS_PRIVATE (v8.24.56 — sec #10: email/PII moved off the public doc)
+  // ─────────────────────────────────────────────────────────────────
+
+  await runTest('members_private: owner can read + write their own', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await assertSucceeds(authenticatedAs(USER_A).collection('members_private').doc(USER_A).set({ email: 'a@x.test' }));
+    await assertSucceeds(authenticatedAs(USER_A).collection('members_private').doc(USER_A).get());
+  });
+
+  await runTest('members_private: a member CANNOT read another member private doc (the leak that was)', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await withPlatformRole(USER_B, 'user');
+    await seedDoc('members_private/' + USER_B, { email: 'victim@x.test' });
+    await assertFails(authenticatedAs(USER_A).collection('members_private').doc(USER_B).get());
+  });
+
+  await runTest('members_private: founder can read any private doc (support)', async () => {
+    await withFounderConfig(FOUNDER);
+    await withPlatformRole(FOUNDER, 'founder');
+    await seedDoc('members_private/' + USER_A, { email: 'a@x.test' });
+    await assertSucceeds(authenticatedAs(FOUNDER).collection('members_private').doc(USER_A).get());
+  });
+
+  await runTest('members_private: a member cannot WRITE another member private doc', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await assertFails(authenticatedAs(USER_A).collection('members_private').doc(USER_B).set({ email: 'spoof@x.test' }));
+  });
+
+  // ─────────────────────────────────────────────────────────────────
   // WRAP UP
   // ─────────────────────────────────────────────────────────────────
 

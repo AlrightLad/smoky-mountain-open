@@ -1094,7 +1094,7 @@ var PB = (function() {
     if (player && (player.founding || player.isFoundingFour)) xp += 500;
     if (player) xp += 250; // Beta tester — all current members qualify
     if (player && isFounderRole(player)) xp += 500;
-    if (player && player.email === "jopinksalot@msn.com") xp += 250;
+    if (player && player.username === "flossonthefairway") xp += 250;  // v8.24.56 — was email (PII); username is public
 
     // Profile completion XP
     if (player) {
@@ -1434,7 +1434,7 @@ var PB = (function() {
     if (parbaughRounds.length >= 25) achievements.push({id:"parbaugh_veteran",name:"Parbaugh Veteran",desc:"25 Parbaugh Rounds",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M1 8h3l2-2 2 2 2-2 2 2h3' fill='none' stroke='currentColor' stroke-width='1.2'/><path d='M4 8v4M12 8v4' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"milestone",title:"The Glue Guy"});
 
     // --- UNIQUE SPECIAL BADGES ---
-    if (player && player.email === "jopinksalot@msn.com") achievements.push({id:"boss_wife",name:"The Boss's Wife",desc:"The one who really runs things",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M2 12h12L13 5l-3 3-2-4-2 4-3-3z' fill='none' stroke='currentColor' stroke-width='1.2'/><rect x='2' y='12' width='12' height='2' rx='1' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:250,cat:"special",title:"The Boss's Wife",badge:"boss_wife"});
+    if (player && player.username === "flossonthefairway") achievements.push({id:"boss_wife",name:"The Boss's Wife",desc:"The one who really runs things",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M2 12h12L13 5l-3 3-2-4-2 4-3-3z' fill='none' stroke='currentColor' stroke-width='1.2'/><rect x='2' y='12' width='12' height='2' rx='1' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:250,cat:"special",title:"The Boss's Wife",badge:"boss_wife"});
     if (player && isFounderRole(player)) achievements.push({id:"the_commish",name:"The Commissioner",desc:"Running the show",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l6 4H2zM3 6v7M6 6v7M10 6v7M13 6v7M1 13h14M1 14h14' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"special",title:"The Commissioner",badge:"commissioner"});
 
     // --- EVENT PARTICIPATION BADGES ---

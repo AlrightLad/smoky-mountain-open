@@ -341,8 +341,7 @@ function doRegister() {
           profile = {
             id: user.uid,
             claimedFrom: claimId,
-            email: email,
-            username: username.toLowerCase(),
+            username: username.toLowerCase(),  // v8.24.56 — email moved to members_private (privacy)
             name: claimedPlayer.name || username,
             nick: claimedPlayer.nick || "",
             bio: claimedPlayer.bio || "",
@@ -378,7 +377,7 @@ function doRegister() {
           // Determine league from invite (all existing invites have leagueId:"the-parbaughs")
           var _invLeague = inv.leagueId || "the-parbaughs";
           profile = {
-            id:user.uid, email:email, username:username.toLowerCase(), name:username,
+            id:user.uid, username:username.toLowerCase(), name:username,  // v8.24.56 — email -> members_private
             nick:"", bio:"", range:"", photo:null, emoji:"", clubs:{}, facts:[],
             xp:0, level:1, badges:isFoundingCode ? ["founder"] : [],
             role:assignedRole,
@@ -390,6 +389,10 @@ function doRegister() {
           };
         }
         
+        // v8.24.56 (sec #10) — email is PII; it lives in members_private/{uid}
+        // (owner+founder readable only), never the public members doc that
+        // every league member can read. Written first so it's never missing.
+        db.collection("members_private").doc(user.uid).set({ email: email, createdAt: fsTimestamp() }, { merge: true }).catch(function(){});
         return db.collection("members").doc(user.uid).set(profile).then(function() {
           if (!isFoundingCode) inviteRef.update({ usedBy:user.uid, status:"used", usedAt:fsTimestamp() });
           
