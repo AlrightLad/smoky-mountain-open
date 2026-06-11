@@ -4864,3 +4864,85 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 .feed-row.card-skin-sleeve{border:1px solid #c2b48c;border-left:4px solid #b3a378;background:linear-gradient(160deg,rgba(202,189,152,.18),rgba(232,224,196,.1)),repeating-linear-gradient(105deg,transparent 0 3px,rgba(150,130,90,.05) 3px 4px)}
 .feed-row.card-skin-trophy-room{border-left:5px solid #5a4632;background:linear-gradient(100deg,rgba(90,70,50,.24),rgba(107,84,64,.12) 45%,rgba(74,56,40,.06));box-shadow:inset 0 0 20px rgba(40,28,16,.2)}
 .feed-row.card-skin-trophy-room::before{content:"";position:absolute;left:5px;top:8px;bottom:8px;width:3px;background:linear-gradient(180deg,#e2bd78,#9c7c38);box-shadow:0 0 2px rgba(0,0,0,.4);pointer-events:none}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   ONBOARDING WALKTHROUGH (FTUE) — .pbw-* overlay/spotlight/stage/CTA
+   Engine: src/core/walkthrough.js (window.pbWalk). z-index 9100 (above intro
+   9000, below celebrate 9999). Token-driven so all 6 themes recolor. Inert
+   until walkthrough.js mounts #pbWalk. CTA contrast pair is the verified AA
+   pass (ink #2A2822 on --cb-brass-3 = 8.03:1); plain --cb-brass (3.81:1 on
+   felt) is reserved for hairlines/rings only, never CTA text.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.pbw-overlay { position: fixed; inset: 0; z-index: 9100; }
+.pbw-scrim {
+  position: absolute;
+  background: var(--cb-scrim, rgba(8, 20, 14, 0.72));
+  opacity: 0.78;
+  transition: opacity var(--dur-base, 240ms) var(--ease-default, ease);
+  pointer-events: none;            /* taps fall THROUGH the hole to the real control */
+}
+.pbw-spotlight {
+  position: absolute;
+  border: 2px solid var(--cb-brass);
+  border-radius: var(--r-2, 8px);
+  box-shadow: 0 0 0 9999px var(--cb-scrim, rgba(8, 20, 14, 0.72));
+  pointer-events: none;
+  transition: top var(--dur-smooth, 320ms) var(--ease-emphasized, cubic-bezier(.2,.7,.2,1)),
+              left var(--dur-smooth, 320ms) var(--ease-emphasized, cubic-bezier(.2,.7,.2,1)),
+              width var(--dur-smooth, 320ms) var(--ease-emphasized, cubic-bezier(.2,.7,.2,1)),
+              height var(--dur-smooth, 320ms) var(--ease-emphasized, cubic-bezier(.2,.7,.2,1));
+}
+
+/* STAGE card — centered themed sheet with the Caddy figure */
+.pbw-card {
+  position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%);
+  width: min(420px, calc(100vw - 32px));
+  background: var(--cb-paper); border: 1px solid var(--border, rgba(0,0,0,.08));
+  border-radius: var(--r-3, 14px); box-shadow: var(--el-3, 0 12px 40px rgba(0,0,0,.28));
+  padding: 18px 18px 16px; box-sizing: border-box;
+}
+.pbw-coach {           /* spotlight speech bubble (tethered near the target) */
+  position: absolute; width: min(320px, calc(100vw - 32px));
+  background: var(--cb-paper); border: 1px solid var(--cb-brass);
+  border-radius: var(--r-3, 14px); box-shadow: var(--el-3, 0 12px 40px rgba(0,0,0,.28));
+  padding: 14px 16px; box-sizing: border-box;
+}
+.pbw-stage { display: flex; justify-content: center; padding-bottom: 6px;
+  border-bottom: 1px solid rgba(var(--cb-brass-rgb), .25); margin-bottom: 12px; }
+.pbw-stage svg { width: 140px; height: auto; }
+.pbw-bust { width: 56px; height: 56px; border-radius: 50%; overflow: hidden;
+  border: 2px solid var(--cb-brass); background: var(--cb-paper);
+  display: flex; align-items: flex-end; justify-content: center; flex: none; }
+
+.pbw-eyebrow { font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase; color: var(--cb-brass-deep); margin-bottom: 5px; }
+.pbw-body { font-family: var(--font-display); font-size: 17px; line-height: 1.35;
+  color: var(--cb-ink); margin-bottom: 14px; }
+
+.pbw-actions { display: flex; align-items: center; gap: 10px; }
+.pbw-actions .primary {
+  flex: 1; min-height: 44px; border: none; border-radius: var(--r-2, 8px);
+  font-family: var(--font-ui); font-size: 14px; font-weight: 700; cursor: pointer;
+  color: #2A2822;                         /* verified 8.03:1 on brass-3 — AA pass */
+  background-color: var(--cb-brass-3);
+}
+.pbw-actions .primary:active { filter: brightness(.95); }
+.pbw-skip { background: none; border: none; cursor: pointer; min-height: 44px; padding: 0 8px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 1px;
+  text-transform: uppercase; color: var(--cb-brass-deep); }
+.pbw-skip-tr { position: absolute; top: calc(12px + env(safe-area-inset-top)); right: 14px; z-index: 2; }
+
+/* progress dots — truthful "step N of M" */
+.pbw-dots { display: flex; gap: 7px; justify-content: center; margin-top: 12px; }
+.pbw-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(var(--cb-brass-rgb), .3); }
+.pbw-dot--on { background: var(--cb-brass); }
+
+/* High-contrast: the dim scrim is overridden by the system → keep a visible cutout outline */
+@media (forced-colors: active) {
+  .pbw-spotlight { border: 2px solid CanvasText; box-shadow: 0 0 0 9999px Canvas; }
+  .pbw-card, .pbw-coach { border: 1px solid CanvasText; }
+}
+/* Reduced motion: instant cut, no glide (the engine still reaches the complete-write) */
+@media (prefers-reduced-motion: reduce) {
+  .pbw-scrim, .pbw-spotlight { transition: none; }
+}
