@@ -822,9 +822,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-11T12:32:55.146750Z",
+  "generated_at": "2026-06-11T12:37:51.629799Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 88.2,
+  "overall_score": 87.4,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -838,9 +838,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 93.2,
+    "pre_deduction_score": 92.4,
     "deduction": 5,
-    "post_deduction_score": 88.2
+    "post_deduction_score": 87.4
   },
   "dimensions": {
     "A1_roadmap": {
@@ -989,14 +989,14 @@
       "weak_points": []
     },
     "A12_operational": {
-      "score": 100,
+      "score": 85,
       "status": "green",
-      "label": "pipeline=green · 2 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=yellow · 2 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [],
       "details": {
         "watcher_last_status": "PASS",
-        "watcher_exit_reason": "no-new-files"
+        "watcher_exit_reason": "skip-dirty"
       }
     }
   },
@@ -1018,17 +1018,16 @@
     }
   ],
   "audit_trigger": {
-    "sha": "9314d5ca",
-    "subject": "feat(ui): findplayers card chevron affordance + CTA casing (v8.24.60, #41)",
-    "committed_at": "2026-06-11T08:32:31-04:00",
+    "sha": "0bd40508",
+    "subject": "feat(ui): Play screen single primary action â€” Start a round; Range demoted to ghost (v8.24.61, #41)",
+    "committed_at": "2026-06-11T08:37:28-04:00",
     "trigger": "app-commit",
     "is_app_commit": true,
     "app_files_touched": [
       "public/sw.js",
       "src/core/utils.js",
-      "src/pages/caddynotes.js",
-      "src/pages/findplayers.js",
-      "src/pages/trips.js"
+      "src/pages/activity.js",
+      "src/pages/caddynotes.js"
     ],
     "total_files_touched": 6
   },
