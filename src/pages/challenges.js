@@ -71,9 +71,11 @@ function renderCreateChallenge(presetOpponent) {
   var h = '<div class="sh"><h2>New challenge</h2><button class="back" onclick="Router.back(\'challenges\')">← Back</button></div>';
 
   h += '<div class="form-section"><div class="form-title">Challenge details</div>';
-  h += '<div class="ff"><label class="ff-label">From</label><select class="ff-input" id="ch-from">';
-  players.forEach(function(p) { h += '<option value="' + escHtml(p.id) + '"' + (p.id === myUid ? ' selected' : '') + '>' + escHtml(p.username||p.name) + '</option>'; });
-  h += '</select></div>';
+  // v8.24.88 — the challenger is always YOU. Was an editable <select> over all
+  // players, which let a member create a challenge attributed to someone else
+  // (impersonation, page-sweep #15). Fixed, read-only display.
+  var _meName = currentProfile ? (currentProfile.username || currentProfile.name || 'You') : 'You';
+  h += '<div class="ff"><label class="ff-label">From</label><div class="ff-input" style="display:flex;align-items:center;color:var(--cb-ink);background:var(--cb-paper)">' + escHtml(_meName) + '</div></div>';
   h += '<div class="ff"><label class="ff-label">Challenge</label><select class="ff-input" id="ch-to">';
   players.forEach(function(p) {
     if (p.id === myUid) return; // Can't challenge yourself
@@ -99,9 +101,12 @@ function showChallengeCourseSearch(input) {
 }
 
 function submitChallenge() {
-  var from = document.getElementById("ch-from").value;
+  // v8.24.88 — the challenger is always the signed-in user (server-of-record),
+  // never a client-chosen 'from' (impersonation fix, page-sweep #15).
+  var from = currentUser ? currentUser.uid : (currentProfile ? currentProfile.id : null);
   var to = document.getElementById("ch-to").value;
-  if (from === to) { Router.toast("Pick two different players"); return; }
+  if (!from) { Router.toast("Sign in to send a challenge"); return; }
+  if (from === to) { Router.toast("Pick a different opponent"); return; }
   var course = document.getElementById("ch-course").value;
   var stakes = document.getElementById("ch-stakes").value;
   PB.createChallenge(from, to, course, stakes);

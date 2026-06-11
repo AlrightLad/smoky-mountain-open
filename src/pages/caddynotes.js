@@ -22,6 +22,7 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">June 2026 · The polish pass</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    { item: "Challenges now always come FROM you — the \"From\" field used to be a dropdown of every member, which technically let someone create a challenge under another player's name. It's now locked to your own account.", tag: "FIXED" },
     { item: "More security hardening: a second audit pass found a few more spots that showed member-typed text without escaping — custom drill names, home course, head-to-head player names, the Events course search, and ace photos. All locked down. Invisible to you; nothing can inject into another member's screen.", tag: "FIXED" },
     { item: "The newest Pro Shop pieces now wear a small NEW badge so you can spot fresh arrivals on the shelves at a glance.", tag: "IMPROVED" },
     { item: "The Parbaughs tee-marker now shows a crisp engraved P on the brass disc (it used to be an unreadable letter at small size), with a struck-metal sheen. Small thing, but the founding marker should look minted.", tag: "IMPROVED" },
