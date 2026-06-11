@@ -13,7 +13,9 @@ Router.register("activity", function() {
   // taught task dead-ended. The page is now the Play hub: start-a-round CTA
   // first (live round indicator when one is running), Range below it.
   var h = '<div class="sh"><h2>Play</h2>';
-  h += '<button class="btn-sm green" onclick="startRangeSession()">Hit the Range</button>';
+  // v8.24.61 — demoted to a ghost button so the felt-green "Start a round"
+  // card is the single, unambiguous primary action (was two competing primaries).
+  h += '<button class="btn-sm outline" onclick="startRangeSession()">Hit the Range</button>';
   h += '</div>';
   var _live = (typeof liveState !== "undefined" && liveState && liveState.active);
   h += '<div style="padding:0 16px 12px">';
