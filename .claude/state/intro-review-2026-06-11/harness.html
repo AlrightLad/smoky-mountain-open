@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Tee-shot intro review harness</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #0c2c20; }
+  :root { --font-display: Georgia, "Times New Roman", serif; --font-mono: ui-monospace, monospace; }
+  /* The intro mounts a fixed overlay (#pbIntro). For frame review we let it
+     fill the window and screenshot it. */
+</style>
+</head>
+<body>
+<!-- Load the REAL intro module over HTTP (served from repo root → always the current file, no drift). -->
+<script src="/src/core/intro.js"></script>
+<script>
+  // Render a single static frame at fraction t (0..1) and hold it for screenshot.
+  window.pbRender = function (t) {
+    try {
+      if (!window.pbTeeIntro) { document.body.innerHTML = '<p style="color:#f88;font:14px monospace">pbTeeIntro NOT loaded</p>'; return 'NO_MODULE'; }
+      if (!document.getElementById('pbIntro')) window.pbTeeIntro.show();
+      // hide the "tap to tee off" hint so it doesn't obscure the finish pose
+      var hint = document.getElementById('pbi-hint'); if (hint) hint.style.opacity = '0';
+      window.pbTeeIntro._applyAt(typeof t === 'number' ? t : 0);
+      return 'OK t=' + t;
+    } catch (e) { return 'ERR ' + (e && e.message); }
+  };
+  window.pbModuleLoaded = !!window.pbTeeIntro;
+  window.pbRender(0);
+</script>
+</body>
+</html>

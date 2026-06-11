@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   TEE-SHOT WELCOME INTRO (v8.24.82 — PROFILE rebuild · task #34)
+   TEE-SHOT WELCOME INTRO (v8.24.93 — wrapped finish + filled torso · task #34)
 
    A pro-golfer SILHOUETTE, viewed side-on (profile, facing the target to the
    RIGHT), swings off the tee at dawn — the club traces a big clean overhead
@@ -56,8 +56,8 @@
     [0.62,   90,  60,  24,  6,  10,  2],   // downswing — arm drops FAST, lag holds, hips clearing
     [0.66,  -26,   8,  18, 16,  13,  4],   // impact — shaft to the ball, body posting up, head still
     [0.69,  -52,  -6,  14, 22,  13,  6],   // through impact — release, hands lead
-    [0.82, -150, -22,  5,  42,  14, 16],   // follow-through — club swings up past the target side
-    [1.00, -250, -44,  0,  60,  15, 26]    // finish — club WRAPPED behind the head/lead shoulder, tall
+    [0.82, -150, -70,  4,  42,  14, 16],   // follow-through — hands rising toward the head, club folding over
+    [1.00, -185,-124, -3,  60,  15, 26]    // finish — HANDS HIGH by the head, club WRAPPED down-behind, posted tall
   ];
   function _pose(t) {
     var prev = KEY[0], prevPct = 0;
@@ -106,7 +106,7 @@
         '<path id="pbi-leg-lead" d="" fill="none" stroke="' + C.figure + '" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>' +
         '<circle id="pbi-hips" cx="0" cy="0" r="12" fill="' + C.figure + '"/>' +
         '<g id="pbi-upper">' +
-          '<line id="pbi-spine" x1="0" y1="0" x2="0" y2="0" stroke="' + C.figure + '" stroke-width="20" stroke-linecap="round"/>' +
+          '<path id="pbi-torso" d="" fill="' + C.figure + '"/>' +
           '<circle id="pbi-head" cx="0" cy="0" r="14" fill="' + C.figure + '"/>' +
           '<path id="pbi-cap" d="" fill="' + C.figure + '"/>' +
           '<line id="pbi-arm" x1="0" y1="0" x2="0" y2="0" stroke="' + C.figure + '" stroke-width="10" stroke-linecap="round"/>' +
@@ -154,7 +154,16 @@
     var SLEN = 56;
     var SX = HX + Math.sin(leanR) * SLEN;   // shoulder x (forward of hips when leaning)
     var SY = HY - Math.cos(leanR) * SLEN;   // shoulder y (up)
-    _set("pbi-spine", { x1: HX, y1: HY, x2: SX, y2: SY });
+    // Torso as a tapered FILLED silhouette (broad shoulders -> narrower hips),
+    // not a single stroke — this is what stops the figure reading as a stick.
+    var _tdx = SX - HX, _tdy = SY - HY, _tdl = Math.sqrt(_tdx*_tdx + _tdy*_tdy) || 1;
+    var _px = -_tdy / _tdl, _py = _tdx / _tdl;   // unit perpendicular to the spine
+    var WSH = 36, WHIP = 24;                       // shoulder + hip widths
+    _set("pbi-torso", { d:
+      "M " + (HX + _px*WHIP/2) + " " + (HY + _py*WHIP/2) +
+      " L " + (SX + _px*WSH/2) + " " + (SY + _py*WSH/2) +
+      " Q " + SX + " " + (SY - 4) + " " + (SX - _px*WSH/2) + " " + (SY - _py*WSH/2) +
+      " L " + (HX - _px*WHIP/2) + " " + (HY - _py*WHIP/2) + " Z" });
     // head above the shoulder along the spine line; cap bill toward target (right)
     var hx = SX + Math.sin(leanR) * 18, hy = SY - Math.cos(leanR) * 18;
     _set("pbi-head", { cx: hx, cy: hy });
