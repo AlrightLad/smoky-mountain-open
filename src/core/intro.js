@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   TEE-SHOT WELCOME INTRO (v8.24.93 — wrapped finish + filled torso · task #34)
+   TEE-SHOT WELCOME INTRO (v8.24.95 — wrapped finish + filled torso + 2-segment arm · task #34)
 
    A pro-golfer SILHOUETTE, viewed side-on (profile, facing the target to the
    RIGHT), swings off the tee at dawn — the club traces a big clean overhead
@@ -109,7 +109,7 @@
           '<path id="pbi-torso" d="" fill="' + C.figure + '"/>' +
           '<circle id="pbi-head" cx="0" cy="0" r="14" fill="' + C.figure + '"/>' +
           '<path id="pbi-cap" d="" fill="' + C.figure + '"/>' +
-          '<line id="pbi-arm" x1="0" y1="0" x2="0" y2="0" stroke="' + C.figure + '" stroke-width="10" stroke-linecap="round"/>' +
+          '<path id="pbi-arm" d="" fill="none" stroke="' + C.figure + '" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>' +
           '<line id="pbi-club" x1="0" y1="0" x2="0" y2="0" stroke="' + C.shaft + '" stroke-width="4" stroke-linecap="round"/>' +
           '<line id="pbi-clubhead" x1="0" y1="0" x2="0" y2="0" stroke="' + C.brass + '" stroke-width="6" stroke-linecap="round"/>' +
         '</g>' +
@@ -181,7 +181,15 @@
     var cRad = (aDeg + p.lag) * Math.PI / 180;
     var cx2 = ax - SHAFT * Math.sin(cRad);
     var cy2 = ay + SHAFT * Math.cos(cRad);
-    _set("pbi-arm", { x1: SX, y1: SY, x2: ax, y2: ay });
+    // 2-segment arm (shoulder -> elbow -> hands): a subtle elbow bend reads as a
+    // real arm, not a single stick. Bend grows with the wrist hinge (lag) and is
+    // biased to the trailing side of the arm line.
+    var _adx = ax - SX, _ady = ay - SY, _adl = Math.sqrt(_adx*_adx + _ady*_ady) || 1;
+    var _apx = -_ady / _adl, _apy = _adx / _adl;     // unit perpendicular to the arm
+    if (_apy < 0) { _apx = -_apx; _apy = -_apy; }    // bias the elbow downward (natural)
+    var _bend = 7 + Math.abs(p.lag) * 0.06;          // more bend when the wrist is hinged
+    var _ex = (SX + ax) / 2 + _apx * _bend, _ey = (SY + ay) / 2 + _apy * _bend;
+    _set("pbi-arm", { d: "M " + SX + " " + SY + " L " + _ex + " " + _ey + " L " + ax + " " + ay });
     _set("pbi-club", { x1: ax, y1: ay, x2: cx2, y2: cy2 });
     var px = (cy2 - ay), py = -(cx2 - ax), pl = Math.sqrt(px*px + py*py) || 1;
     _set("pbi-clubhead", { x1: cx2 - 6*px/pl, y1: cy2 - 6*py/pl, x2: cx2 + 6*px/pl, y2: cy2 + 6*py/pl });
