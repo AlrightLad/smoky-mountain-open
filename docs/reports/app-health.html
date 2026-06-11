@@ -822,9 +822,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-11T21:04:32.202811Z",
+  "generated_at": "2026-06-11T21:09:57.407954Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 86.9,
+  "overall_score": 87.7,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -838,9 +838,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 91.9,
+    "pre_deduction_score": 92.7,
     "deduction": 5,
-    "post_deduction_score": 86.9
+    "post_deduction_score": 87.7
   },
   "dimensions": {
     "A1_roadmap": {
@@ -956,7 +956,7 @@
     "A7_data_integrity": {
       "score": 100,
       "status": "green",
-      "label": "894 lines rules · 26 indexes; missing coverage matrix=False, schema validation=False",
+      "label": "904 lines rules · 26 indexes; missing coverage matrix=False, schema validation=False",
       "source": "firestore.rules + firestore.indexes.json + docs/ + functions/index.js + scripts/migrations/",
       "weak_points": []
     },
@@ -989,9 +989,9 @@
       "weak_points": []
     },
     "A12_operational": {
-      "score": 75,
-      "status": "yellow",
-      "label": "pipeline=yellow · 4 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "score": 90,
+      "status": "green",
+      "label": "pipeline=green · 4 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
@@ -1002,7 +1002,7 @@
       ],
       "details": {
         "watcher_last_status": "PASS",
-        "watcher_exit_reason": "skip-dirty"
+        "watcher_exit_reason": "no-new-files"
       }
     }
   },
@@ -1012,12 +1012,6 @@
       "where": "src/pages/members-detail.js",
       "what_action": "Split into modules per AMD-027 budget",
       "dimension": "A5_code_quality"
-    },
-    {
-      "what": "4 of last 10 cron watcher runs hit skip-dirty",
-      "where": "scripts/cron/logs/*-downloads-watcher.log",
-      "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
-      "dimension": "A12_operational"
     }
   ],
   "founder_attention": [],
@@ -1027,22 +1021,20 @@
       "where": "src/pages/members-detail.js",
       "what_action": "Split into modules per AMD-027 budget",
       "dimension": "A5_code_quality"
-    },
-    {
-      "what": "4 of last 10 cron watcher runs hit skip-dirty",
-      "where": "scripts/cron/logs/*-downloads-watcher.log",
-      "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
-      "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "c1f551a0",
-    "subject": "chore(reports): regen post v8.24.90",
-    "committed_at": "2026-06-11T17:03:23-04:00",
-    "trigger": "substrate-commit",
-    "is_app_commit": false,
-    "app_files_touched": [],
-    "total_files_touched": 1
+    "sha": "578e60e8",
+    "subject": "fix(security): username immutable via client rules (v8.24.91, page-sweep #12)",
+    "committed_at": "2026-06-11T17:09:33-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "public/sw.js",
+      "src/core/utils.js",
+      "src/pages/caddynotes.js"
+    ],
+    "total_files_touched": 7
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
