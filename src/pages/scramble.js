@@ -256,7 +256,7 @@ function renderTeamDetail(teamId) {
       h += '<div><div style="font-size:13px;font-weight:600;color:var(--cream)">' + m.score + '</div>';
       h += '<div style="font-size:10px;color:var(--muted)">' + escHtml(m.course || "Unknown course") + (m.date ? ' · ' + m.date : '') + '</div></div></div>';
       h += '<div style="display:flex;align-items:center;gap:8px">';
-      h += '<div style="font-size:14px;font-weight:700;color:' + (diff <= 0 ? 'var(--birdie)' : 'var(--red)') + '">' + (diff > 0 ? '+' : '') + diff + '</div>';
+      h += '<div style="font-size:14px;font-weight:700;color:' + (diff <= 0 ? 'var(--birdie)' : 'var(--muted)') + '">' + (diff > 0 ? '+' : '') + diff + '</div>';
       var safeTeam = escHtml(team.name || '');
       var safeCourse = escHtml(m.course || '');
       var safeFormat = escHtml(m.format || 'Scramble');
@@ -288,21 +288,28 @@ function renderTeamDetail(teamId) {
   }
 
   h += '<div class="section"><div class="sec-head"><span class="sec-title">Team stats</span></div>';
-  h += '<div class="hof-card">';
-  h += '<div class="hof-row"><span class="hof-label">Rounds played</span><span class="hof-val">' + matches.length + '</span></div>';
-  h += '<div class="hof-row"><span class="hof-label">Courses played</span><span class="hof-val">' + (uniqueCourses || '—') + '</span></div>';
-  h += '<div class="hof-row"><span class="hof-label">Favorite course</span><span class="hof-val">' + escHtml(favCourse || '—') + '</span></div>';
-  h += '<div class="hof-row"><span class="hof-label">Best score</span><span class="hof-val"' + (bestScore ? ' style="color:var(--birdie)"' : '') + '>' + (bestScore || '—') + '</span></div>';
-  h += '<div class="hof-row"><span class="hof-label">Worst score</span><span class="hof-val"' + (worstScore && worstScore !== bestScore ? ' style="color:var(--red)"' : '') + '>' + (worstScore && worstScore !== bestScore ? worstScore : '—') + '</span></div>';
-  h += '<div class="hof-row"><span class="hof-label">Average score</span><span class="hof-val">' + (avgScore || '—') + '</span></div>';
-  h += '<div class="hof-row"><span class="hof-label">Team handicap</span><span class="hof-val"' + (teamHdcp !== null ? ' style="color:var(--gold)"' : '') + '>' + (teamHdcp !== null ? teamHdcp : '—') + '</span></div>';
-  // W-L record from matches
+  // v8.24.74 — a team with zero rounds used to render a 7-row table of every
+  // value as "—", which reads as broken. Show one path-forward line instead
+  // (P10 actionable-empty-state); the full table appears once they've played.
   var h2hMatches = matches.filter(function(m){ return m.result === "win" || m.result === "loss" || m.result === "tie"; });
-  var teamWins = h2hMatches.filter(function(m){ return m.result === "win"; }).length;
-  var teamLosses = h2hMatches.filter(function(m){ return m.result === "loss"; }).length;
-  var teamTies = h2hMatches.filter(function(m){ return m.result === "tie"; }).length;
-  h += '<div class="hof-row"><span class="hof-label">Match record (W-L' + (teamTies ? '-T' : '') + ')</span><span class="hof-val" style="color:var(--gold);font-weight:700">' + (h2hMatches.length ? teamWins + '-' + teamLosses + (teamTies ? '-' + teamTies : '') : '—') + '</span></div>';
-  h += '</div></div>';
+  if (!matches.length) {
+    h += '<div class="hof-card"><div class="empty"><div class="empty-text">No stats yet — log this team\'s first round to start tracking best score, handicap, and match record.</div></div></div></div>';
+  } else {
+    h += '<div class="hof-card">';
+    h += '<div class="hof-row"><span class="hof-label">Rounds played</span><span class="hof-val">' + matches.length + '</span></div>';
+    h += '<div class="hof-row"><span class="hof-label">Courses played</span><span class="hof-val">' + (uniqueCourses || '—') + '</span></div>';
+    h += '<div class="hof-row"><span class="hof-label">Favorite course</span><span class="hof-val">' + escHtml(favCourse || '—') + '</span></div>';
+    h += '<div class="hof-row"><span class="hof-label">Best score</span><span class="hof-val"' + (bestScore ? ' style="color:var(--birdie)"' : '') + '>' + (bestScore || '—') + '</span></div>';
+    h += '<div class="hof-row"><span class="hof-label">Worst score</span><span class="hof-val"' + (worstScore && worstScore !== bestScore ? ' style="color:var(--muted)"' : '') + '>' + (worstScore && worstScore !== bestScore ? worstScore : '—') + '</span></div>';
+    h += '<div class="hof-row"><span class="hof-label">Average score</span><span class="hof-val">' + (avgScore || '—') + '</span></div>';
+    h += '<div class="hof-row"><span class="hof-label">Team handicap</span><span class="hof-val"' + (teamHdcp !== null ? ' style="color:var(--gold)"' : '') + '>' + (teamHdcp !== null ? teamHdcp : '—') + '</span></div>';
+    // W-L record from matches
+    var teamWins = h2hMatches.filter(function(m){ return m.result === "win"; }).length;
+    var teamLosses = h2hMatches.filter(function(m){ return m.result === "loss"; }).length;
+    var teamTies = h2hMatches.filter(function(m){ return m.result === "tie"; }).length;
+    h += '<div class="hof-row"><span class="hof-label">Match record (W-L' + (teamTies ? '-T' : '') + ')</span><span class="hof-val" style="color:var(--gold);font-weight:700">' + (h2hMatches.length ? teamWins + '-' + teamLosses + (teamTies ? '-' + teamTies : '') : '—') + '</span></div>';
+    h += '</div></div>';
+  }
 
   // Match history — vs other teams
   if (h2hMatches.length) {
@@ -325,7 +332,9 @@ function renderTeamDetail(teamId) {
     h += '<div class="section"><div class="sec-head"><span class="sec-title">Round history</span></div>';
     matches.slice().reverse().forEach(function(m) {
       var diff = m.score ? m.score - coursePar : null;
-      var diffColor = diff === null ? 'var(--muted)' : diff <= 0 ? 'var(--birdie)' : diff <= 4 ? 'var(--gold)' : 'var(--red)';
+      // Community-safe (scramble.js:67-69 rule): under/at par reads quiet
+      // green, over par is neutral muted — never alarm-red on a member's score.
+      var diffColor = diff === null ? 'var(--muted)' : diff <= 0 ? 'var(--birdie)' : 'var(--muted)';
       var diffStr = diff === null ? '—' : (diff > 0 ? '+' : '') + diff;
       h += '<div class="card" style="margin-bottom:6px"><div style="padding:10px 16px;display:flex;justify-content:space-between;align-items:center">';
       h += '<div><div style="font-size:12px;font-weight:600;color:var(--cream)">' + escHtml(m.course || "Unknown") + '</div>';

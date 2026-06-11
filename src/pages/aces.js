@@ -13,7 +13,11 @@ function renderAceList() {
   var aces = rec.holeInOnes || [];
   var courses = PB.getCourses();
 
-  var h = '<div class="sh"><h2>Ace wall</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'records\')">← Back</button><button class="btn-sm green" onclick="Router.go(\'aces\',{add:true})">+ Log ace</button></div></div>';
+  // v8.24.74 — header CTA is the single primary only when the wall already
+  // has aces; on an empty wall the in-card "Log first ace" is the primary, so
+  // the header demotes to outline (no two competing brass primaries).
+  var _addBtnClass = aces.length ? 'btn-sm green' : 'btn-sm outline';
+  var h = '<div class="sh"><h2>Ace wall</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'records\')">← Back</button><button class="' + _addBtnClass + '" onclick="Router.go(\'aces\',{add:true})">+ Log ace</button></div></div>';
 
   if (aces.length) {
     h += '<div style="text-align:center;padding:8px 16px 16px"><div style="font-size:48px;font-weight:800;color:var(--gold)">' + aces.length + '</div>';
@@ -29,15 +33,18 @@ function renderAceList() {
       }
       h += '<div style="padding:14px 16px">';
       h += '<div style="display:flex;justify-content:space-between;align-items:flex-start">';
-      h += '<div><div style="font-size:17px;font-weight:700;color:var(--gold)">' + escHtml(ace.by||'') + '</div>';
-      h += '<div style="font-size:13px;color:var(--cream);margin-top:2px">' + escHtml(ace.course||'') + (isDirectory ? ' <span style="color:var(--gold)" title="Parbaugh Directory Course"></span>' : '') + '</div>';
+      // v8.24.74 — name is ink (not brass): the page's brass hero is the ace
+      // COUNT at the top; per-card brass-on-brass left nothing as the focus.
+      // Directory marker is now a real flag glyph (was an empty styled span).
+      h += '<div><div style="font-size:17px;font-weight:700;color:var(--cream)">' + escHtml(ace.by||'') + '</div>';
+      h += '<div style="font-size:13px;color:var(--muted);margin-top:2px">' + escHtml(ace.course||'') + (isDirectory ? ' <svg viewBox="0 0 12 12" width="9" height="9" style="vertical-align:baseline" aria-label="Parbaugh Directory Course"><title>Parbaugh Directory Course</title><path d="M3 11V2l5 2-5 2" fill="var(--gold)"/></svg>' : '') + '</div>';
       h += '<div style="font-size:12px;color:var(--muted);margin-top:4px">';
       if (ace.hole) h += 'Hole ' + ace.hole + ' · ';
       if (ace.distance) h += ace.distance + ' yds · ';
       if (ace.club) h += ace.club + ' · ';
       h += ace.date;
       h += '</div></div>';
-      h += '<div style="font-size:14px;font-weight:700;color:var(--gold)">ACE</div>';
+      h += '<div style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:2px;color:var(--cb-mute-2)">ACE</div>';
       h += '</div>';
       if (ace.description) h += '<div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.4;font-style:italic">"' + escHtml(ace.description) + '"</div>';
       h += '</div></div>';
@@ -47,7 +54,7 @@ function renderAceList() {
     // v8.24.58 — golf-oriented empty glyph (was none): a ball dropping into the cup.
     h += '<div style="margin-bottom:14px"><svg viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="var(--gold)" stroke-width="1.5" opacity=".7"><ellipse cx="24" cy="34" rx="13" ry="4"/><path d="M24 34V20" stroke-dasharray="2 3"/><circle cx="24" cy="15" r="5"/><path d="M19 36c1.5 2 8.5 2 10 0"/></svg></div>';
     h += '<div style="font-family:var(--font-display);font-size:28px;color:var(--gold)">Ace Wall</div>';
-    h += '<div style="font-size:16px;font-weight:700;color:var(--gold);margin-top:8px">No aces yet</div>';
+    h += '<div style="font-size:16px;font-weight:700;color:var(--cream);margin-top:8px">No aces yet</div>';
     h += '<div class="empty-text" style="margin-top:4px">When a Parbaugh makes a hole-in-one, it gets immortalized here</div>';
     h += '<div style="margin-top:16px"><button class="btn green" onclick="Router.go(\'aces\',{add:true})">Log first ace</button></div>';
     h += '</div></div>';
@@ -92,7 +99,7 @@ function renderAceDetail(idx) {
   h += '<div class="pd-banner">';
   if (player) h += renderAvatar(player, 70, false);
   h += '<div style="font-size:24px;font-weight:800;color:var(--gold);margin-top:4px">' + escHtml(ace.by||'') + '</div>';
-  h += '<div style="font-size:15px;color:var(--cream);margin-top:4px">' + escHtml(ace.course||'') + (isDirectory ? ' <span style="color:var(--gold)"></span>' : '') + '</div>';
+  h += '<div style="font-size:15px;color:var(--cream);margin-top:4px">' + escHtml(ace.course||'') + (isDirectory ? ' <svg viewBox="0 0 12 12" width="10" height="10" style="vertical-align:baseline" aria-label="Parbaugh Directory Course"><title>Parbaugh Directory Course</title><path d="M3 11V2l5 2-5 2" fill="var(--gold)"/></svg>' : '') + '</div>';
   h += '<div style="font-size:13px;color:var(--muted);margin-top:4px">' + ace.date + '</div>';
   h += '</div>';
 
