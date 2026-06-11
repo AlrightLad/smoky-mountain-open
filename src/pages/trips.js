@@ -27,7 +27,13 @@ Router.register("trips", function(params) {
     return !activeTrips.find(function(a) { return a.id === t.id; });
   }).reverse(); // most recent first
 
-  var h = '<div class="sh"><h2>Events</h2><button class="btn-sm green" onclick="Router.go(\'trips\',{create:true})">+ New Event</button></div>';
+  // v8.24.75 — editorial Clubhouse masthead (was a legacy .sh/h2 + green-btn
+  // row a tier below the leagues/shop bar). Eyebrow + Fraunces headline + the
+  // single brass CTA.
+  var _upc = activeTrips.length;
+  var h = '<div class="roster-masthead"><div class="roster-eyebrow">EVENTS · ' + _upc + ' UPCOMING</div>';
+  h += '<h1 class="roster-headline">The events board.</h1></div>';
+  h += '<div style="padding:0 16px 10px"><button class="btn-sm green" onclick="Router.go(\'trips\',{create:true})">+ New Event</button></div>';
 
   // Commissioner-only tournament CTA — revealed async after the league-doc
   // commissioner cache warms (see reveal block after innerHTML below).
@@ -52,7 +58,7 @@ Router.register("trips", function(params) {
       ? '<div style="text-align:right"><span class="badge gld" style="font-size:9px">' + escHtml(winner.name || winner.username) + '</span><div style="font-size:9px;color:var(--gold);margin-top:4px;letter-spacing:.3px">Champion</div></div>'
       : t.status === "upcoming"
         ? '<span class="badge">Upcoming</span>'
-        : '<span class="badge">Active</span>';
+        : '<span class="badge gld">Active</span>';
     card += '<div>' + badge + '</div></div></div>';
     return card;
   }
@@ -62,7 +68,7 @@ Router.register("trips", function(params) {
     activeTrips.forEach(function(t) { h += tripCard(t); });
   } else {
     h += '<div style="text-align:center;padding:32px 16px">';
-    h += '<div style="margin-bottom:12px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5" opacity=".6"><path d="M16 6v36"/><path d="M16 6l18 5.5L16 17"/><ellipse cx="26" cy="42" rx="16" ry="3.5"/></svg></div>';
+    h += '<div style="margin-bottom:12px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--cb-mute)" stroke-width="1.5"><path d="M16 6v36"/><path d="M16 6l18 5.5L16 17"/><ellipse cx="26" cy="42" rx="16" ry="3.5"/></svg></div>';
     h += '<div style="font-family:var(--font-display);font-size:18px;color:var(--gold)">No Upcoming Events</div>';
     h += '<div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-width:280px;margin-left:auto;margin-right:auto">Plan a golf trip, tournament, or hangout. Set dates, invite the crew, and track scores together.</div>';
     h += '<button class="btn full green" style="margin-top:16px;max-width:280px;margin-left:auto;margin-right:auto" onclick="Router.go(\'trips\',{create:true})">+ New Event</button>';

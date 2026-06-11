@@ -434,8 +434,13 @@ function renderLeagueDetail(lid) {
       dh += '<div class="hq-rail-module"><div class="hq-rail-module__eyebrow">About</div>';
       dh += '<p style="font-family:var(--font-display);font-style:italic;font-size:15.5px;line-height:1.5;color:var(--cb-ink);margin:0">' + escHtml(l.description) + '</p></div>';
     }
-    dh += '<div class="hq-rail-module"><div class="hq-rail-module__eyebrow">Clubhouse</div>';
-    dh += '<p style="font-family:var(--font-display);font-style:italic;font-size:17px;line-height:1.4;color:var(--cb-ink-soft);margin:8px 0 0">"Community over competition. Always."</p></div>';
+    // v8.24.75 — the founding-league motto is The Parbaughs' identity; it read
+    // as boilerplate in the prime rail slot of every OTHER league. Gate it to
+    // the founding league; other leagues' rail collapses cleanly to just About.
+    if (l.badge === "founding") {
+      dh += '<div class="hq-rail-module"><div class="hq-rail-module__eyebrow">Clubhouse</div>';
+      dh += '<p style="font-family:var(--font-display);font-style:italic;font-size:17px;line-height:1.4;color:var(--cb-ink-soft);margin:8px 0 0">"Community over competition. Always."</p></div>';
+    }
     dh += '</aside>';
 
     dh += '</div>'; // hq-grid

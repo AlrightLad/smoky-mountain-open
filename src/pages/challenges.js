@@ -18,7 +18,11 @@ function renderChallengeList() {
     });
   } catch(e) {}
 
-  var h = '<div class="sh"><h2>Challenges</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'records\')">← Back</button><button class="btn-sm green" onclick="Router.go(\'challenges\',{create:true})">+ New</button></div></div>';
+  // v8.24.75 — header CTA is the single primary only when challenges exist; on
+  // an empty board the in-body "Start a Challenge" is the primary, so the
+  // header demotes to outline (no two competing brass primaries).
+  var _newBtnClass = challenges.length ? 'btn-sm green' : 'btn-sm outline';
+  var h = '<div class="sh"><h2>Challenges</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'records\')">← Back</button><button class="' + _newBtnClass + '" onclick="Router.go(\'challenges\',{create:true})">+ New</button></div></div>';
 
   if (challenges.length) {
     challenges.sort(function(a,b){return (b.ts||0)-(a.ts||0)});
@@ -44,10 +48,13 @@ function renderChallengeList() {
     h += '<button class="btn full green" onclick="Router.go(\'challenges\',{create:true})" style="max-width:240px;margin:0 auto;font-size:13px;padding:14px">Start a Challenge</button>';
     h += '<div style="margin-top:20px;text-align:left">';
     h += '<div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;text-align:center">Challenge Ideas</div>';
+    // v8.24.75 \u2014 role-neutral examples (were hardcoded founding-league names
+    // like "Beat Kayvan's 107" / "Mr Parbaugh vs Nick", which read as nonsense
+    // to any other league \u2014 same legacy-data-leak class the trips filter fixed).
     var examples = [
-      "Beat Kayvan\'s 107 at Connestee \u00b7 50 coins",
-      "Most pars this weekend, Mr Parbaugh vs Nick \u00b7 75 coins",
-      "Nassau at Honey Run \u00b7 100 coins"
+      "Beat your buddy\'s best score \u00b7 50 coins",
+      "Most pars this weekend \u00b7 75 coins",
+      "Nassau, front vs back nine \u00b7 100 coins"
     ];
     examples.forEach(function(ex) {
       h += '<div style="display:flex;align-items:center;gap:9px;padding:11px 13px;margin-bottom:6px;background:var(--cb-paper);border:1px solid var(--border);border-radius:var(--r-2);font-size:12px;color:var(--cb-ink)"><span style="width:6px;height:6px;border-radius:50%;background:var(--gold);flex:none"></span><span>' + ex + '</span></div>';
