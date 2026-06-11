@@ -299,7 +299,13 @@ Router.register("shop", function() {
       // plate as pc14, so the two priciest title plates looked identical).
       var _plateCls = item.id === 'pc36_member_tag' ? 'title-tag-leather' : 'title-engraved';
       var _plateText = item.id === 'pc36_member_tag' ? 'Member No. 7' : 'Grinder';
-      c += '<div style="padding:4px 0 8px;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="font-size:12px;font-weight:700;color:var(--cream)">' + escHtml(_myName) + '</div>' + (item.plate ? '<span class="' + _plateCls + '">' + _plateText + '</span>' : '<div style="font-size:10px;color:' + item.preview + ';font-style:italic">' + item.name + '</div>') + '</div>';
+      // v8.24.77 — plain titles now render as a struck engraved chip (was flat
+      // italic text — identical for every title). pc15/37/38 get a glyph.
+      var _tMod = item.id === 'pc15_cart_path' ? ' title-plain--road' : item.id === 'pc37_sandbagger' ? ' title-plain--wax' : item.id === 'pc38_mulligan' ? ' title-plain--coin' : '';
+      var _titleEl = item.plate
+        ? '<span class="' + _plateCls + '">' + _plateText + '</span>'
+        : '<span class="title-plain' + _tMod + '" style="--ti:' + item.preview + '">' + escHtml(item.name) + '</span>';
+      c += '<div style="padding:4px 0 8px;display:flex;flex-direction:column;align-items:center;gap:5px"><div style="font-size:12px;font-weight:700;color:var(--cream)">' + escHtml(_myName) + '</div>' + _titleEl + '</div>';
     }
     c += '<div class="shop-item__name">' + item.name + '</div>';
     c += '<div class="shop-item__desc">' + item.desc + '</div>';
