@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-11T16:39:08.386006Z",
+  "generated_at": "2026-06-11T16:42:42.212217Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 87.7,
   "overall_grade": "A-",
@@ -1024,13 +1024,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "c5825a53",
-    "subject": "chore(reports): regen post v8.24.79",
-    "committed_at": "2026-06-11T12:37:55-04:00",
+    "sha": "97bf89fb",
+    "subject": "chore(state): checkpoint log + gitignore sentry event dumps",
+    "committed_at": "2026-06-11T12:42:20-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 1
+    "total_files_touched": 2
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
