@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-11T15:47:31.438306Z",
+  "generated_at": "2026-06-11T15:50:29.524481Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 87.7,
   "overall_grade": "A-",
@@ -1024,13 +1024,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "574876a4",
-    "subject": "fix(ci): repair Heartbeat Cycle â€” sync package-lock version (8.23.1->8.24.77)",
-    "committed_at": "2026-06-11T11:47:07-04:00",
+    "sha": "8abb2d16",
+    "subject": "chore(state): log stop decision + heartbeat-verified checkpoint",
+    "committed_at": "2026-06-11T11:50:07-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 2
+    "total_files_touched": 1
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
