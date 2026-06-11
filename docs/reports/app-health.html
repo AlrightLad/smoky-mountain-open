@@ -822,9 +822,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-11T04:10:41.997494Z",
+  "generated_at": "2026-06-11T04:13:15.118189Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 86.9,
+  "overall_score": 86.2,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -838,9 +838,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 91.9,
+    "pre_deduction_score": 91.2,
     "deduction": 5,
-    "post_deduction_score": 86.9
+    "post_deduction_score": 86.2
   },
   "dimensions": {
     "A1_roadmap": {
@@ -989,9 +989,9 @@
       "weak_points": []
     },
     "A12_operational": {
-      "score": 75,
+      "score": 60,
       "status": "yellow",
-      "label": "pipeline=yellow · 7 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=red · 7 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
@@ -1036,9 +1036,9 @@
     }
   ],
   "audit_trigger": {
-    "sha": "a9e441c6",
-    "subject": "Overnight triage 2026-06-11 - 0 reports, 0 proposals, 0 FIQ entries graded",
-    "committed_at": "2026-06-11T00:10:17-04:00",
+    "sha": "a37e913b",
+    "subject": "test(audit): dead-control static auditor â€” traces every Router.go target + onclick handler to a real route/function (clean: 0 dead nav, 0 dead handlers as of v8.24.52)",
+    "committed_at": "2026-06-11T00:12:51-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
