@@ -800,7 +800,7 @@ textarea.ff-input{min-height:60px;resize:vertical}
    HALL OF FAME
    ═══════════════════════════════════════════════════════════════════════════ */
 .hof-card{margin:0 16px 10px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:var(--sp-4)}
-.hof-title{font-family:var(--font-display);font-size:var(--text-md);font-weight:700;color:var(--gold);margin-bottom:10px;transition:color var(--duration-fast) var(--ease-default)}
+.hof-title{font-family:var(--font-display);font-size:var(--text-md);font-weight:700;color:var(--cb-ink);margin-bottom:10px;transition:color var(--duration-fast) var(--ease-default)}
 .hof-title:hover{color:var(--gold3);text-shadow:0 0 8px rgba(var(--gold-rgb),.1)}
 .hof-row{display:flex;justify-content:space-between;padding:var(--sp-2) 0;border-bottom:1px solid var(--border);gap:var(--sp-2)}
 .hof-row:last-child{border:none}
