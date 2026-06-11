@@ -1,82 +1,63 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   TEE-SHOT WELCOME INTRO (v8.24.78 rebuild · task #34)
+   TEE-SHOT WELCOME INTRO (v8.24.82 — PROFILE rebuild · task #34)
 
-   Post-sign-in welcome moment: a pro-golfer SILHOUETTE swings off the tee at
-   dawn — the ball launches on a brass trail into a brightening sky, the overlay
-   fades into the Clubhouse. Founder spec: a silhouette of a pro golfer swinging
-   from the tee box; clean, artful, not clunky or bland.
+   A pro-golfer SILHOUETTE, viewed side-on (profile, facing the target to the
+   RIGHT), swings off the tee at dawn — the club traces a big clean overhead
+   arc, the ball launches down the fairway on a brass trail, then the overlay
+   fades into the Clubhouse.
 
-   This is a full rebuild of the v8.24.29 stick-figure version (which rendered
-   as thin chalk lines on a flat green — bland). Now: a filled dark silhouette
-   (thick round-capped limbs + a solid torso) against a dawn gradient with a sun
-   and horizon glow, the sky brightening on impact. Swing timing follows the
-   salvaged research spec (Tour Tempo ~3:1 backswing:downswing with a beat at the
-   top; hips lead the downswing; wrist lag held then released; head down through
-   impact; high wrapped finish).
+   Why profile (v8.24.82): the v8.24.80 FACE-ON build read as "waving a stick
+   sideways" — a real golf swing foreshortens into/out of the screen face-on,
+   so the club never looked like it went up and behind. Side-on, the club
+   sweeps a visible ~220° arc (down at the ball → up behind the head → down
+   through impact → wrapped high at the finish): the iconic golf-swing read.
 
-   Phases over [0,1]:
-     0–6%   address (idle breath)          46–54% TRANSITION BEAT (hold at top)
-     6–18%  takeaway (low + slow)          54–64% downswing (FAST — hips lead)
-     18–46% backswing to the top           64–67% IMPACT (+burst, sky flash)
-                                           67–82% follow-through
-                                           82–100% high finish hold
+   The arm+club rotate as one unit around the shoulder; the spine un-tilts and
+   the body posts up onto the lead leg through impact to a balanced finish.
+   Tour-tempo timing (~3:1 back:through with a beat at the top), reduced-motion
+   safe, once/session, ON by default (opt out via pb_intro_enabled='0').
 
-   GATES: localStorage pb_intro_enabled (default ON as of v8.24.78 — was OFF
-   while the art was a stick figure), once per session (sessionStorage
-   pb_intro_seen), never under prefers-reduced-motion. Keyboard: Enter/Space
-   swing, Escape/second-tap skip (listener on document).
-
-   Colors here are an intentional hardcoded art asset (like the share-card
-   template) — a dawn silhouette palette, not themeable Clubhouse tokens.
+   Colors are an intentional dawn-silhouette art palette (like the share card),
+   not themeable Clubhouse tokens.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 (function() {
-  var DUR = 2400;             // full timeline ms (research: 1.6–2.5s window)
+  var DUR = 2500;
   var _raf = null, _root = null, _started = false, _t0 = 0;
 
-  // Dawn silhouette palette (art asset)
   var C = {
     skyTop: "#0c2c20", skyMid: "#1a4636", glow: "#caa04a", glowHot: "#f0d488",
     sun: "#f6e6b4", ground: "#06140e", figure: "#071109",
     shaft: "#0a1810", brass: "#d8b260", ball: "#fdfcf7", trail: "218,178,96"
   };
 
-  function _reduced() {
-    try { return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { return false; }
-  }
-  function _enabled() {
-    // v8.24.80: ON by default — the rebuilt dawn-silhouette swing cleared the
-    // bar (was the bland stick figure, gated off). Members can opt out by
-    // setting pb_intro_enabled="0". Still once-per-session + reduced-motion-safe.
-    try { return localStorage.getItem("pb_intro_enabled") !== "0"; } catch (e) { return true; }
-  }
-  function _seen() {
-    try { return sessionStorage.getItem("pb_intro_seen") === "1"; } catch (e) { return false; }
-  }
-  function _markSeen() {
-    try { sessionStorage.setItem("pb_intro_seen", "1"); } catch (e) {}
-  }
+  function _reduced() { try { return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { return false; } }
+  function _enabled() { try { return localStorage.getItem("pb_intro_enabled") !== "0"; } catch (e) { return true; } }
+  function _seen() { try { return sessionStorage.getItem("pb_intro_seen") === "1"; } catch (e) { return false; } }
+  function _markSeen() { try { sessionStorage.setItem("pb_intro_seen", "1"); } catch (e) {} }
 
-  // easing
   function _easeInOut(f) { return f < .5 ? 2*f*f : 1 - Math.pow(-2*f + 2, 2) / 2; }
-  function _easeIn(f) { return f * f; }
-  function _easeOut(f) { return 1 - (1 - f) * (1 - f); }
+  function _easeIn(f) { return f * f * f; }
+  function _easeOut(f) { return 1 - Math.pow(1 - f, 3); }
 
-  // [endPct, armDeg, lagDeg, hipShift, torsoLean, shoulderTilt, kneeDrop, trailHeel]
-  //  armDeg: arm line from shoulder, 0=down, + sweeps toward target (screen left)
-  //  lagDeg: club vs arm line (wrist hinge), + = laid back
-  //  shoulderTilt: shoulder-line rotation (the turn) deg, + = lead shoulder up
-  //  trailHeel: trail-foot heel lift px (finish)
+  // Profile swing. armDeg: arm direction from straight-DOWN (0), POSITIVE =
+  // rotating BACK (counter-clockwise, up-and-behind for a right-facing golfer).
+  // lagDeg: club hinge vs the arm line (held through transition, released at
+  // impact). lean: spine forward-tilt toward the ball (deg, + = bent over the
+  // ball; drops to ~0 standing tall at the finish). turn: body rotation toward
+  // the target through impact (deg). weight: hip slide toward target (px, +right).
+  // heel: trail-foot heel lift at the finish (px).
+  // [endPct, armDeg, lagDeg, lean, turn, weight, heel]
   var KEY = [
-    [0.06,   14,   14,   0,   0,   2,  0,  0],   // address — hands a touch ahead
-    [0.18,  -34,   20,   2,  -3,  -8,  1,  0],   // takeaway — low and slow, shoulders start turning
-    [0.46, -142,  104,   5,  -9, -34,  2,  0],   // top — hands high trail-side, club laid off, full coil
-    [0.54, -146,  110,   1,  -9, -32,  2,  0],   // transition BEAT — hips already bumping, club drifts
-    [0.62,  -46,   92,  -9,   1, -10,  2,  2],   // downswing — arms drop FAST, deep lag held, hips clear
-    [0.65,    2,    6, -13,   5,  14,  1,  6],   // impact — shaft to ball under the shoulder, head behind
-    [0.67,   16,   -8, -13,   6,  16,  1,  8],   // through impact — hands lead, clubhead releases
-    [0.82,  118,  -34, -15,  12,  40,  0, 18],   // follow-through — arms chase, chest to target
-    [1.00,  156,  -60, -17,  16,  52,  0, 24]    // finish — wrapped high, belt to target, heel up
+    [0.00,  -28,   8,  34,  0,   0,  0],   // address — bent over, club down to the ball
+    [0.12,   26,  14,  33, -2,  -3,  0],   // takeaway — low and slow, club starts back
+    [0.45,  205,  40,  30, -6,  -6,  0],   // top — club UP over the head (light lag, not flat)
+    [0.53,  200,  46,  29, -4,   2,  0],   // transition beat — weight bumps target-ward
+    [0.62,   90,  60,  24,  6,  10,  2],   // downswing — arm drops FAST, lag holds, hips clearing
+    [0.66,  -26,   8,  18, 16,  13,  4],   // impact — shaft to the ball, body posting up, head still
+    [0.69,  -52,  -6,  14, 22,  13,  6],   // through impact — release, hands lead
+    [0.82, -150, -22,  5,  42,  14, 16],   // follow-through — club swings up past the target side
+    [1.00, -250, -44,  0,  60,  15, 26]    // finish — club WRAPPED behind the head/lead shoulder, tall
   ];
   function _pose(t) {
     var prev = KEY[0], prevPct = 0;
@@ -85,71 +66,49 @@
       if (t <= k[0]) {
         var span = (k[0] - prevPct) || 1;
         var f = (t - prevPct) / span;
-        // downswing window (0.54–0.65) eases IN (accelerate); top + finish ease in/out; rest ease out
-        f = (k[0] > 0.46 && k[0] <= 0.65) ? _easeIn(f) : (k[0] <= 0.46 || k[0] > 0.82) ? _easeInOut(f) : _easeOut(f);
+        f = (k[0] > 0.53 && k[0] <= 0.66) ? _easeIn(f) : (k[0] <= 0.45 || k[0] > 0.82) ? _easeInOut(f) : _easeOut(f);
         return {
-          arm:  prev[1] + (k[1]-prev[1])*f, lag: prev[2] + (k[2]-prev[2])*f,
-          hip:  prev[3] + (k[3]-prev[3])*f, lean: prev[4] + (k[4]-prev[4])*f,
-          sh:   prev[5] + (k[5]-prev[5])*f, knee: prev[6] + (k[6]-prev[6])*f,
-          heel: prev[7] + (k[7]-prev[7])*f
+          arm: prev[1]+(k[1]-prev[1])*f, lag: prev[2]+(k[2]-prev[2])*f, lean: prev[3]+(k[3]-prev[3])*f,
+          turn: prev[4]+(k[4]-prev[4])*f, weight: prev[5]+(k[5]-prev[5])*f, heel: prev[6]+(k[6]-prev[6])*f
         };
       }
       prev = k; prevPct = k[0];
     }
     var l = KEY[KEY.length-1];
-    return { arm:l[1], lag:l[2], hip:l[3], lean:l[4], sh:l[5], knee:l[6], heel:l[7] };
+    return { arm:l[1], lag:l[2], lean:l[3], turn:l[4], weight:l[5], heel:l[6] };
   }
 
-  // Scene: dawn sky + sun + horizon glow + ground, then the golfer silhouette.
-  // Golfer faces the viewer, right-handed, target = screen LEFT.
   function _scene() {
     return '' +
     '<svg id="pbi-svg" viewBox="0 0 480 460" width="100%" style="max-width:520px;display:block;height:auto" aria-hidden="true">' +
       '<defs>' +
-        '<radialGradient id="pbi-sky" cx="38%" cy="78%" r="95%">' +
-          '<stop offset="0%" stop-color="' + C.glow + '"/>' +
-          '<stop offset="34%" stop-color="' + C.skyMid + '"/>' +
-          '<stop offset="100%" stop-color="' + C.skyTop + '"/>' +
+        '<radialGradient id="pbi-sky" cx="62%" cy="80%" r="95%">' +
+          '<stop offset="0%" stop-color="' + C.glow + '"/><stop offset="34%" stop-color="' + C.skyMid + '"/><stop offset="100%" stop-color="' + C.skyTop + '"/>' +
         '</radialGradient>' +
         '<radialGradient id="pbi-sun" cx="50%" cy="50%" r="50%">' +
-          '<stop offset="0%" stop-color="' + C.sun + '"/>' +
-          '<stop offset="45%" stop-color="' + C.sun + '" stop-opacity=".9"/>' +
-          '<stop offset="100%" stop-color="' + C.glow + '" stop-opacity="0"/>' +
+          '<stop offset="0%" stop-color="' + C.sun + '"/><stop offset="45%" stop-color="' + C.sun + '" stop-opacity=".9"/><stop offset="100%" stop-color="' + C.glow + '" stop-opacity="0"/>' +
         '</radialGradient>' +
       '</defs>' +
-      '<rect id="pbi-skyrect" x="0" y="0" width="480" height="460" fill="url(#pbi-sky)"/>' +
-      // sun low on the horizon, target-side
-      '<circle id="pbi-sun" cx="150" cy="372" r="46" fill="url(#pbi-sun)" opacity=".85"/>' +
-      // ground silhouette (gentle rise)
-      '<path d="M0 392 Q 240 372 480 388 L480 460 L0 460 Z" fill="' + C.ground + '"/>' +
-      // tee + ball
-      '<line id="pbi-tee" x1="214" y1="392" x2="214" y2="382" stroke="' + C.ground + '" stroke-width="3" stroke-linecap="round"/>' +
-      '<path id="pbi-trail" d="" fill="none" stroke="rgba(' + C.trail + ',.0)" stroke-width="3.5" stroke-linecap="round"/>' +
-      '<circle id="pbi-ball" cx="214" cy="377" r="5.5" fill="' + C.ball + '"/>' +
-      // downswing club smear (brass)
-      '<path id="pbi-smear" d="M 196 196 A 110 110 0 0 1 232 376" fill="none" stroke="rgba(' + C.trail + ',.4)" stroke-width="9" stroke-linecap="round" opacity="0"/>' +
-      // impact burst
+      '<rect x="0" y="0" width="480" height="460" fill="url(#pbi-sky)"/>' +
+      '<circle id="pbi-sun" cx="338" cy="372" r="50" fill="url(#pbi-sun)" opacity=".85"/>' +   // sun down-target (right)
+      '<path d="M0 392 Q 240 374 480 388 L480 460 L0 460 Z" fill="' + C.ground + '"/>' +
+      '<line id="pbi-tee" x1="286" y1="390" x2="286" y2="381" stroke="' + C.ground + '" stroke-width="3" stroke-linecap="round"/>' +
+      '<path id="pbi-trail" d="" fill="none" stroke="rgba(' + C.trail + ',0)" stroke-width="3.5" stroke-linecap="round"/>' +
+      '<circle id="pbi-ball" cx="286" cy="376" r="5.5" fill="' + C.ball + '"/>' +
+      '<path id="pbi-smear" d="" fill="none" stroke="rgba(' + C.trail + ',.4)" stroke-width="9" stroke-linecap="round" opacity="0"/>' +
       '<g id="pbi-burst" opacity="0">' +
-        '<line x1="214" y1="377" x2="198" y2="366" stroke="' + C.brass + '" stroke-width="2.5" stroke-linecap="round"/>' +
-        '<line x1="214" y1="377" x2="202" y2="358" stroke="' + C.brass + '" stroke-width="2.5" stroke-linecap="round"/>' +
-        '<line x1="214" y1="377" x2="222" y2="357" stroke="' + C.brass + '" stroke-width="2.5" stroke-linecap="round"/>' +
+        '<line x1="286" y1="376" x2="300" y2="366" stroke="' + C.brass + '" stroke-width="2.5" stroke-linecap="round"/>' +
+        '<line x1="286" y1="376" x2="298" y2="358" stroke="' + C.brass + '" stroke-width="2.5" stroke-linecap="round"/>' +
+        '<line x1="286" y1="376" x2="278" y2="360" stroke="' + C.brass + '" stroke-width="2.5" stroke-linecap="round"/>' +
       '</g>' +
-      // golfer (filled silhouette via thick round-capped limbs + solid torso)
       '<g id="pbi-golfer">' +
-        // legs
-        '<g id="pbi-legs">' +
-          '<path id="pbi-leg-lead" d="" fill="none" stroke="' + C.figure + '" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>' +
-          '<path id="pbi-leg-trail" d="" fill="none" stroke="' + C.figure + '" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>' +
-        '</g>' +
-        // pelvis
-        '<circle id="pbi-hips" cx="0" cy="0" r="13" fill="' + C.figure + '"/>' +
-        // torso group (turns + leans around the hips)
-        '<g id="pbi-torso">' +
-          '<line id="pbi-spine" x1="0" y1="0" x2="0" y2="0" stroke="' + C.figure + '" stroke-width="22" stroke-linecap="round"/>' +
-          '<line id="pbi-shoulders" x1="0" y1="0" x2="0" y2="0" stroke="' + C.figure + '" stroke-width="13" stroke-linecap="round"/>' +
-          '<circle id="pbi-head" cx="0" cy="0" r="15" fill="' + C.figure + '"/>' +
+        '<path id="pbi-leg-trail" d="" fill="none" stroke="' + C.figure + '" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '<path id="pbi-leg-lead" d="" fill="none" stroke="' + C.figure + '" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '<circle id="pbi-hips" cx="0" cy="0" r="12" fill="' + C.figure + '"/>' +
+        '<g id="pbi-upper">' +
+          '<line id="pbi-spine" x1="0" y1="0" x2="0" y2="0" stroke="' + C.figure + '" stroke-width="20" stroke-linecap="round"/>' +
+          '<circle id="pbi-head" cx="0" cy="0" r="14" fill="' + C.figure + '"/>' +
           '<path id="pbi-cap" d="" fill="' + C.figure + '"/>' +
-          // arm (shoulder->hands) + club (hands->head) + clubhead
           '<line id="pbi-arm" x1="0" y1="0" x2="0" y2="0" stroke="' + C.figure + '" stroke-width="10" stroke-linecap="round"/>' +
           '<line id="pbi-club" x1="0" y1="0" x2="0" y2="0" stroke="' + C.shaft + '" stroke-width="4" stroke-linecap="round"/>' +
           '<line id="pbi-clubhead" x1="0" y1="0" x2="0" y2="0" stroke="' + C.brass + '" stroke-width="6" stroke-linecap="round"/>' +
@@ -163,8 +122,7 @@
     _root.id = "pbIntro";
     _root.setAttribute("role", "dialog");
     _root.setAttribute("aria-label", "Welcome to the Clubhouse — tap to tee off");
-    _root.style.cssText = "position:fixed;inset:0;z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;" +
-      "background:" + C.skyTop + ";transition:opacity .4s ease";
+    _root.style.cssText = "position:fixed;inset:0;z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:" + C.skyTop + ";transition:opacity .4s ease";
     _root.innerHTML =
       '<div style="font-family:var(--font-display);font-style:italic;font-weight:700;font-size:30px;color:' + C.glowHot + ';letter-spacing:-.5px;text-shadow:0 1px 12px rgba(0,0,0,.3)">Parbaughs.</div>' +
       _scene() +
@@ -179,94 +137,82 @@
     if (!_started && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); swing(); }
   }
 
-  function _set(id, attrs) {
-    var el = document.getElementById(id); if (!el) return;
-    for (var k in attrs) el.setAttribute(k, String(attrs[k]));
-  }
+  function _set(id, attrs) { var el = document.getElementById(id); if (!el) return; for (var k in attrs) el.setAttribute(k, String(attrs[k])); }
 
   function _apply(t) {
     var p = _pose(t);
-    // anchors (hips at 220,300)
-    var HX = 220, HY = 300;
+    var HX = 205, HY = 302;                 // hips
     var golfer = document.getElementById("pbi-golfer");
-    var torso = document.getElementById("pbi-torso");
-    if (!golfer || !torso) return;
-    golfer.setAttribute("transform", "translate(" + p.hip + " " + p.knee + ")");
-    torso.setAttribute("transform", "rotate(" + p.lean + " " + HX + " " + HY + ")");
+    if (!golfer) return;
+    golfer.setAttribute("transform", "translate(" + p.weight + " 0)");
 
-    // pelvis — filled circle bridging spine + legs (no floating gap)
+    // hips
     _set("pbi-hips", { cx: HX, cy: HY });
-    // spine hip-center -> neck
-    var NX = HX, NY = HY - 52;
-    _set("pbi-spine", { x1: HX, y1: HY, x2: NX, y2: NY });
-    // shoulders: a line through the neck, rotated by shoulder turn (sh)
-    var shRad = p.sh * Math.PI / 180, SHW = 15;
-    var lsx = NX - Math.cos(shRad) * SHW, lsy = NY - Math.sin(shRad) * SHW; // lead shoulder (target/left)
-    var tsx = NX + Math.cos(shRad) * SHW, tsy = NY + Math.sin(shRad) * SHW; // trail shoulder (right)
-    _set("pbi-shoulders", { x1: lsx, y1: lsy, x2: tsx, y2: tsy });
-    // head + cap: above the neck, tilts slightly with shoulder turn but stays down (small)
-    var hx = NX + Math.sin(shRad) * 3, hy = NY - 19;
+    // shoulder sits up the spine; the spine tilts FORWARD (toward target/right)
+    // by `lean`, and the whole upper body rotates toward the target by `turn`.
+    var leanR = p.lean * Math.PI / 180;
+    var SLEN = 56;
+    var SX = HX + Math.sin(leanR) * SLEN;   // shoulder x (forward of hips when leaning)
+    var SY = HY - Math.cos(leanR) * SLEN;   // shoulder y (up)
+    _set("pbi-spine", { x1: HX, y1: HY, x2: SX, y2: SY });
+    // head above the shoulder along the spine line; cap bill toward target (right)
+    var hx = SX + Math.sin(leanR) * 18, hy = SY - Math.cos(leanR) * 18;
     _set("pbi-head", { cx: hx, cy: hy });
-    // Ball cap: a low crown wedge on top + a bill pointing toward the target
-    // (screen left) at the brow line. Reads as "golfer" in silhouette. The bill
-    // direction flips with the body turn so it still points target-ward at the
-    // finish (when the head has turned through). dir = -1 before impact (facing
-    // target/left over the ball), +1 after (chest to target).
-    var bill = (p.sh >= 12 ? 1 : -1);
-    var bx = hx + bill * 16, by = hy - 1;
-    _set("pbi-cap", { d: "M " + (hx - bill*2) + " " + (hy-12) + " Q " + (hx + bill*14) + " " + (hy-13) + " " + (hx + bill*13) + " " + (hy-4) +
-      " L " + bx + " " + (by-1) + " L " + bx + " " + (by+3) + " L " + (hx + bill*4) + " " + (hy+4) + " Z" });
+    _set("pbi-cap", { d: "M " + (hx-4) + " " + (hy-10) + " Q " + (hx+14) + " " + (hy-13) + " " + (hx+20) + " " + (hy-3) +
+      " L " + (hx+20) + " " + (hy+1) + " L " + (hx+8) + " " + (hy+1) + " Q " + (hx+6) + " " + (hy-4) + " " + (hx-4) + " " + (hy-5) + " Z" });
 
-    // arm pivots at the shoulder midpoint between the two shoulders, biased to trail
-    var SX = NX, SY = NY + 2, ARM = 62, SHAFT = 66;
-    var ax = SX - ARM * Math.sin(p.arm * Math.PI / 180);
-    var ay = SY + ARM * Math.cos(p.arm * Math.PI / 180);
-    var cDeg = p.arm + p.lag;
-    var cx2 = ax - SHAFT * Math.sin(cDeg * Math.PI / 180);
-    var cy2 = ay + SHAFT * Math.cos(cDeg * Math.PI / 180);
+    // arm + club rotate around the shoulder. armDeg from straight-down,
+    // POSITIVE = back/CCW (up-behind). turn rotates the whole arm plane toward
+    // target slightly (adds the through-swing release feel).
+    var ARM = 60, SHAFT = 78;
+    var aDeg = p.arm - p.turn * 0.35;
+    var aRad = aDeg * Math.PI / 180;
+    var ax = SX - ARM * Math.sin(aRad);
+    var ay = SY + ARM * Math.cos(aRad);
+    var cRad = (aDeg + p.lag) * Math.PI / 180;
+    var cx2 = ax - SHAFT * Math.sin(cRad);
+    var cy2 = ay + SHAFT * Math.cos(cRad);
     _set("pbi-arm", { x1: SX, y1: SY, x2: ax, y2: ay });
     _set("pbi-club", { x1: ax, y1: ay, x2: cx2, y2: cy2 });
     var px = (cy2 - ay), py = -(cx2 - ax), pl = Math.sqrt(px*px + py*py) || 1;
     _set("pbi-clubhead", { x1: cx2 - 6*px/pl, y1: cy2 - 6*py/pl, x2: cx2 + 6*px/pl, y2: cy2 + 6*py/pl });
 
-    // legs: from the pelvis to the ground (~388), athletic knee flex + wider
-    // stance; trail heel lifts at finish.
-    var kneeY = HY + 46, footY = HY + 86;
-    _set("pbi-leg-lead", { d: "M " + (HX-7) + " " + (HY-2) + " L " + (HX-18) + " " + kneeY + " L " + (HX-20) + " " + footY });
-    _set("pbi-leg-trail", { d: "M " + (HX+7) + " " + (HY-2) + " L " + (HX+18) + " " + kneeY + " L " + (HX+20) + " " + (footY - p.heel) });
+    // legs (profile): trail leg behind (left), lead leg toward target (right).
+    // Lead leg straightens + trail heel lifts as weight posts up at the finish.
+    var footY = HY + 86, kneeY = HY + 46;
+    _set("pbi-leg-trail", { d: "M " + (HX-3) + " " + (HY-1) + " L " + (HX-16) + " " + kneeY + " L " + (HX-14) + " " + (footY - p.heel) });
+    _set("pbi-leg-lead",  { d: "M " + (HX+5) + " " + (HY-1) + " L " + (HX+15) + " " + (kneeY+2) + " L " + (HX+16) + " " + footY });
 
-    // ball flight + brass trail: launches at impact (~0.65)
-    var ball = document.getElementById("pbi-ball");
-    var trail = document.getElementById("pbi-trail");
+    // ball flight: launches toward the target (RIGHT) at impact (~0.66)
+    var ball = document.getElementById("pbi-ball"), trail = document.getElementById("pbi-trail");
     if (ball) {
-      if (t < 0.65) { _set("pbi-ball", { cx: 214, cy: 377, opacity: 1 }); if (trail) trail.setAttribute("opacity", "0"); }
+      if (t < 0.66) { _set("pbi-ball", { cx: 286, cy: 376, opacity: 1 }); if (trail) trail.setAttribute("opacity", "0"); }
       else {
-        var f = Math.min(1, (t - 0.65) / 0.34);
-        var bx = 214 - 250 * f;                          // toward target (left)
-        var by = 377 - (240 * f - 175 * f * f);          // parabola
+        var f = Math.min(1, (t - 0.66) / 0.32);
+        var bx = 286 + 250 * f;                          // toward target (right)
+        var by = 376 - (250 * f - 180 * f * f);          // parabola
         _set("pbi-ball", { cx: bx, cy: by, opacity: (f >= 1 ? 0 : 1) });
         if (trail) {
-          // a short fading trail behind the ball
           var tf = Math.max(0, f - 0.10);
-          var txb = 214 - 250 * tf, tyb = 377 - (240 * tf - 175 * tf * tf);
+          var txb = 286 + 250 * tf, tyb = 376 - (250 * tf - 180 * tf * tf);
           trail.setAttribute("d", "M " + txb + " " + tyb + " L " + bx + " " + by);
           trail.setAttribute("stroke", "rgba(" + C.trail + "," + (0.55 * (1 - f)) + ")");
           trail.setAttribute("opacity", f >= 1 ? "0" : "1");
         }
       }
     }
-
-    // downswing smear: visible only through the fast window
+    // downswing smear: a brass arc tracing the clubhead path through the fast zone
     var smear = document.getElementById("pbi-smear");
-    if (smear) smear.setAttribute("opacity", (t >= 0.55 && t <= 0.66) ? String(0.85 * (1 - Math.abs((t - 0.605) / 0.055))) : "0");
-    // impact burst
+    if (smear) {
+      if (t >= 0.55 && t <= 0.67) {
+        smear.setAttribute("d", "M " + (SX+10) + " " + (SY-70) + " A 120 120 0 0 1 " + (cx2) + " " + (cy2));
+        smear.setAttribute("opacity", String(0.8 * (1 - Math.abs((t - 0.61) / 0.06))));
+      } else smear.setAttribute("opacity", "0");
+    }
     var burst = document.getElementById("pbi-burst");
-    if (burst) burst.setAttribute("opacity", (t >= 0.64 && t <= 0.73) ? String(1 - (t - 0.64) / 0.09) : "0");
-    // sky flash at impact (the dawn brightens)
-    var skyr = document.getElementById("pbi-skyrect");
-    if (skyr) skyr.setAttribute("opacity", (t >= 0.64 && t <= 0.78) ? String(1) : "1");
+    if (burst) burst.setAttribute("opacity", (t >= 0.655 && t <= 0.74) ? String(1 - (t - 0.655) / 0.085) : "0");
     var sun = document.getElementById("pbi-sun");
-    if (sun) sun.setAttribute("opacity", String(0.85 + ((t >= 0.64 && t <= 0.82) ? 0.15 * (1 - Math.abs((t - 0.72) / 0.1)) : 0)));
+    if (sun) sun.setAttribute("opacity", String(0.85 + ((t >= 0.65 && t <= 0.82) ? 0.15 * (1 - Math.abs((t - 0.72) / 0.1)) : 0)));
   }
 
   function swing() {
@@ -279,7 +225,7 @@
       var t = Math.min(1, (now - _t0) / DUR);
       _apply(t);
       if (t < 1) { _raf = requestAnimationFrame(frame); }
-      else { setTimeout(_teardown, 420); }
+      else { setTimeout(_teardown, 480); }
     })(_t0);
   }
 
