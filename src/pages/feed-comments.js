@@ -282,6 +282,9 @@ function feedSubmitComment(roundId) {
   var input = document.getElementById("feedCommentText-" + roundId);
   var text = input ? input.value.trim() : "";
   if (!text) return;
+  // v8.24.90 — cap comment length so a single comment can't bloat the round
+  // doc's comments[] (unbounded-write surface, page-sweep #14).
+  if (text.length > 400) text = text.slice(0, 400);
 
   var name = currentProfile ? PB.getDisplayName(currentProfile) : "Anon";
   var newComment = { uid: currentUser.uid, name: name, text: text, at: new Date().toISOString() };
