@@ -75,6 +75,25 @@ const searchCoursesQuerySchema = z.object({
   key: apiKeySchema.optional(),
 });
 
+// ParCoin Stage 2 — grantCoins (server-authoritative earn). reason is an
+// allow-list of WIRED single-uid earns; sourceId names the authoritative doc
+// the server re-derives the award from (round id, session id, achievement id,
+// course id, or a YYYY-MM-DD date for daily_login). NEVER an amount.
+const grantReasonSchema = z.enum([
+  'round_complete', 'round_attested_bonus', 'personal_best_18h', 'personal_best_9h',
+  'range_session', 'achievement', 'daily_login', 'scorecard_contribution', 'scorecard_verify',
+]);
+const sourceIdSchema = z.string().min(1).max(128).regex(/^[A-Za-z0-9_:\-]+$/, 'sourceId has invalid characters');
+const grantCoinsRequestSchema = z.object({
+  reason: grantReasonSchema,
+  sourceId: sourceIdSchema,
+});
+// settleWager / claimBounty — the cross-uid internal transfers. The server
+// re-resolves from the wager/bounty doc + the canonical rounds; the caller
+// only names which contest to settle.
+const settleWagerRequestSchema = z.object({ wagerId: sourceIdSchema });
+const claimBountyRequestSchema = z.object({ bountyId: sourceIdSchema });
+
 module.exports = {
   // raw schemas (in case downstream wants to compose)
   inviteCodeSchema,
@@ -86,4 +105,7 @@ module.exports = {
   validateInviteRequestSchema,
   joinLeagueRequestSchema,
   searchCoursesQuerySchema,
+  grantCoinsRequestSchema,
+  settleWagerRequestSchema,
+  claimBountyRequestSchema,
 };

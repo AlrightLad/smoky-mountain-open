@@ -1093,3 +1093,151 @@ exports.purchaseCosmetic = functions
     });
     return result;
   });
+
+// ══════════════════════════════════════════════════════════════════════
+// grantCoins — ParCoin Stage 2 server-authoritative EARN (closes pentest
+// #16: client-written balances). HTTP + Bearer (NOT onCall — the client
+// bundle has no functions SDK; every call is a raw fetch, like
+// deleteMyAccount). NEVER trusts a client amount: a REASON_HANDLERS map
+// re-derives the award from the authoritative doc named by sourceId.
+// Idempotent via a deterministic parcoin_grants ledger id, so the same
+// round/session/day can never double-pay. INERT until the gated deploy.
+// ══════════════════════════════════════════════════════════════════════
+const { grantCoinsRequestSchema } = require('./lib/validators');
+const PCR = require('./lib/parcoin-rates');
+
+// Mint `amount` to uid for (reason, sourceId), idempotently. grantId is the
+// dedup anchor; a pre-read inside the txn makes a repeat a no-op success.
+async function mintTo(uid, amount, reason, grantId, label, extraMemberFields) {
+  amount = Math.round(amount || 0);
+  if (amount <= 0) return { ok: true, granted: 0, dedup: false };
+  const grantRef = db.collection('parcoin_grants').doc(grantId);
+  const memberRef = db.collection('members').doc(uid);
+  return db.runTransaction(async (tx) => {
+    const g = await tx.get(grantRef);
+    if (g.exists) return { ok: true, granted: 0, dedup: true };
+    const m = await tx.get(memberRef);
+    if (!m.exists) throw { code: 412, msg: 'No member profile' };
+    const update = {
+      parcoins: FieldValue.increment(amount),
+      parcoinsLifetime: FieldValue.increment(amount),
+    };
+    if (extraMemberFields) Object.assign(update, extraMemberFields);
+    tx.update(memberRef, update);
+    tx.set(grantRef, { uid: uid, reason: reason, amount: amount, createdAt: FieldValue.serverTimestamp(), server: true });
+    tx.set(db.collection('parcoin_transactions').doc(), {
+      uid: uid, amount: amount, reason: reason, label: label || reason, createdAt: FieldValue.serverTimestamp(), server: true,
+    });
+    return { ok: true, granted: amount, dedup: false };
+  });
+}
+
+function _todayUTC() { return new Date().toISOString().slice(0, 10); }
+function _is9h(round) {
+  if (round.holesPlayed && round.holesPlayed < 18) return true;
+  if (Array.isArray(round.holeScores) && round.holeScores.length > 0 && round.holeScores.length < 18) return true;
+  return false;
+}
+function _isScramble(round) { return round.format === 'scramble' || round.format === 'scramble4'; }
+
+// Each handler re-derives {amount, grantId, label, member?} from the
+// authoritative source, or returns {amount:0} to no-op. uid is the caller.
+const REASON_HANDLERS = {
+  async round_complete(uid, sourceId) {
+    const snap = await db.collection('rounds').doc(sourceId).get();
+    if (!snap.exists) return { amount: 0 };
+    const r = snap.data() || {};
+    if (r.player !== uid || _isScramble(r) || !(r.score > 0)) return { amount: 0 };
+    return { amount: PCR.calcRoundCoins(_is9h(r), false), grantId: uid + '_round_complete_' + sourceId, label: 'Round complete' };
+  },
+  async round_attested_bonus(uid, sourceId) {
+    const snap = await db.collection('rounds').doc(sourceId).get();
+    if (!snap.exists) return { amount: 0 };
+    const r = snap.data() || {};
+    if (r.player !== uid || _isScramble(r) || !r.attestedBy) return { amount: 0 };
+    const bonus = _is9h(r) ? PCR.PARCOIN_RATES.round_9h_attested : PCR.PARCOIN_RATES.round_18h_attested;
+    return { amount: bonus, grantId: uid + '_round_attested_' + sourceId, label: 'Attested-round bonus' };
+  },
+  async personal_best_18h(uid, sourceId) {
+    const snap = await db.collection('rounds').doc(sourceId).get();
+    if (!snap.exists) return { amount: 0 };
+    const r = snap.data() || {};
+    if (r.player !== uid || _isScramble(r) || _is9h(r) || !(r.score > 0)) return { amount: 0 };
+    const prior = await db.collection('rounds').where('player', '==', uid).get();
+    let priorMin = Infinity;
+    prior.forEach(function (d) { const x = d.data() || {}; if (d.id !== sourceId && !_isScramble(x) && !_is9h(x) && x.score > 0 && x.score < priorMin) priorMin = x.score; });
+    if (!(r.score < priorMin)) return { amount: 0 };
+    return { amount: PCR.PARCOIN_RATES.personal_best_18h, grantId: uid + '_pb18_' + sourceId, label: 'Personal best (18)' };
+  },
+  async personal_best_9h(uid, sourceId) {
+    const snap = await db.collection('rounds').doc(sourceId).get();
+    if (!snap.exists) return { amount: 0 };
+    const r = snap.data() || {};
+    if (r.player !== uid || _isScramble(r) || !_is9h(r) || !(r.score > 0)) return { amount: 0 };
+    const prior = await db.collection('rounds').where('player', '==', uid).get();
+    let priorMin = Infinity;
+    prior.forEach(function (d) { const x = d.data() || {}; if (d.id !== sourceId && !_isScramble(x) && _is9h(x) && x.score > 0 && x.score < priorMin) priorMin = x.score; });
+    if (!(r.score < priorMin)) return { amount: 0 };
+    return { amount: PCR.PARCOIN_RATES.personal_best_9h, grantId: uid + '_pb9_' + sourceId, label: 'Personal best (9)' };
+  },
+  async range_session(uid, sourceId) {
+    const snap = await db.collection('rangeSessions').doc(sourceId).get();
+    if (!snap.exists) return { amount: 0 };
+    const s = snap.data() || {};
+    if (s.playerId !== uid || (s.durationMin || s.durationMinutes || 0) < 30 || s.isPrivate) return { amount: 0 };
+    // 1/day cap (Founder-approved enforce): grant id keyed on the DAY, so a
+    // second 30-min session the same day is a no-op.
+    return { amount: PCR.PARCOIN_RATES.range_session, grantId: uid + '_range_day_' + _todayUTC(), label: 'Range session' };
+  },
+  async daily_login(uid, sourceId) {
+    // The server uses its OWN date so a forged future/stale date cannot farm.
+    const day = _todayUTC();
+    return { amount: PCR.PARCOIN_RATES.daily_login, grantId: uid + '_daily_login_' + day, label: 'Daily login', member: { lastLoginDate: day } };
+  },
+  // achievement / scorecard_* need a server-trusted source (achievement_catalog
+  // seed; course contributor-uid shape) — until those land they no-op rather
+  // than mis-grant (P9 — never fabricate).
+  async achievement(uid, sourceId) { return { amount: 0 }; },
+  async scorecard_contribution(uid, sourceId) { return { amount: 0 }; },
+  async scorecard_verify(uid, sourceId) { return { amount: 0 }; },
+};
+
+exports.grantCoins = functions.region('us-central1').https.onRequest(async function (req, res) {
+  const origin = req.headers.origin || req.headers.referer || '';
+  const isAllowed = isAllowedOrigin(origin);
+  if (!isAllowed && origin) { res.status(403).json({ ok: false, reason: 'Not authorized' }); return; }
+  res.set('Access-Control-Allow-Origin', isAllowed ? origin : 'https://alrightlad.github.io');
+  res.set('Vary', 'Origin');
+  res.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.set('Access-Control-Allow-Headers', 'Authorization, Content-Type');
+  if (req.method === 'OPTIONS') { res.status(204).send(''); return; }
+  if (req.method !== 'POST') { res.status(405).json({ ok: false, reason: 'Method not allowed' }); return; }
+
+  const authHeader = req.headers.authorization || '';
+  const m = authHeader.match(/^Bearer (.+)$/);
+  if (!m) { res.status(401).json({ ok: false, reason: 'Missing credentials' }); return; }
+  let decoded;
+  try { decoded = await admin.auth().verifyIdToken(m[1], true); }
+  catch (err) { res.status(401).json({ ok: false, reason: 'Invalid session' }); return; }
+  const uid = decoded.uid;
+
+  const limit = rateLimit.check('grantCoins', uid, rateLimit.LIMITS.grantCoins);
+  if (!limit.allowed) { res.status(429).json({ ok: false, reason: 'Slow down a moment.' }); return; }
+
+  const parsed = grantCoinsRequestSchema.safeParse(req.body || {});
+  if (!parsed.success) { res.status(400).json({ ok: false, reason: 'Bad request' }); return; }
+  const reason = parsed.data.reason, sourceId = parsed.data.sourceId;
+
+  try {
+    const handler = REASON_HANDLERS[reason];
+    if (!handler) { res.status(400).json({ ok: false, reason: 'Unknown reason' }); return; }
+    const d = await handler(uid, sourceId);
+    if (!d || !(d.amount > 0)) { res.status(200).json({ ok: true, granted: 0 }); return; }
+    const result = await mintTo(uid, d.amount, reason, d.grantId, d.label, d.member);
+    res.status(200).json(result);
+  } catch (err) {
+    if (err && err.code === 412) { res.status(412).json({ ok: false, reason: err.msg }); return; }
+    console.error('[grantCoins] error:', (err && err.message) || err);
+    res.status(500).json({ ok: false, reason: 'Could not grant' });
+  }
+});

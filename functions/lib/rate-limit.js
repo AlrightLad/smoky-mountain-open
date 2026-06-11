@@ -85,6 +85,10 @@ const LIMITS = {
   searchCourses: 60,
   deleteMyAccount: 5,
   purchaseCosmetic: 30,
+  // ParCoin Stage 2 (server-authoritative earn + transfers)
+  grantCoins: 60,
+  settleWager: 20,
+  claimBounty: 20,
 };
 
 module.exports = { check, clientIp, LIMITS, WINDOW_MS };
