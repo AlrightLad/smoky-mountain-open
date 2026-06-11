@@ -73,10 +73,10 @@ Router.register("chat", function() {
     });
     h += '</div></div>';
   } else {
-    h += '<div style="padding:0 16px 12px"><div style="padding:12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);text-align:center">';
-    h += '<div style="font-size:11px;color:var(--muted)">No upcoming events</div>';
-    h += '<div style="font-size:10px;color:var(--gold);margin-top:4px;cursor:pointer" onclick="Router.go(\'tee-create\')">Post a tee time →</div>';
-    h += '</div></div>';
+    h += '<div style="padding:0 16px 10px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:11px;color:var(--muted)">';
+    h += '<span>No tee times on the books.</span>';
+    h += '<span style="color:var(--gold);font-weight:600;cursor:pointer" onclick="Router.go(\'tee-create\')">Post one →</span>';
+    h += '</div>';
   }
   
   // Chat feed
