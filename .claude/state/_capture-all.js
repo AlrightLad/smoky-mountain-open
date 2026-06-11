@@ -7,7 +7,7 @@ const DEV='http://localhost:5173/smoky-mountain-open/';
 const OUT=path.resolve(__dirname,'ui-audit-2026-06-11');
 fs.mkdirSync(OUT,{recursive:true});
 // simple route navigations (no params) — the member-facing surfaces
-const PAGES=['home','playnow','rounds','roundhistory','courses','records','standings','feed','activity','members','findplayers','leagues','chat','teetimes','trips','scramble','wagers','bounties','challenges','richlist','shop','trophyroom','aces','awards','seasonrecap','partygames','drills','range','rules','faq','more','settings','caddynotes'];
+const PAGES=['playnow','settings','tee-create','leagues'];
 (async()=>{
   const browser=await chromium.launch();
   for(const [label,vp] of [['mobile',{width:390,height:844}],['desktop',{width:1440,height:900}]]){

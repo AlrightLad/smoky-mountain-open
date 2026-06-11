@@ -287,7 +287,7 @@ Router.register("standings", function(params) {
   // v8.24.43 — public share entry point (growth #1). Members cut a frozen,
   // read-only public page of the current board; guests need no account.
   if (standings.length) {
-    h += '<div style="padding:0 16px 4px"><button class="btn-sm outline" style="width:100%;min-height:44px" onclick="shareStandingsBoard()"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" style="vertical-align:-2px;margin-right:6px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>Share the board</button></div>';
+    h += '<div style="padding:0 16px 4px"><button class="btn-sm outline" style="width:100%;min-height:44px" onclick="shareStandingsBoard()"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:-2px;margin-right:6px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>Share the board</button></div>';
   }
 
   h += '<div class="std-section__head"><span class="std-section__title">League trophies</span><span class="std-section__meta">Live leaders</span></div>';

@@ -25,7 +25,7 @@ function _renderCommentRow(roundId, c, ci, commentLikes) {
   var h = '<div data-comment-row="1" data-round-id="' + roundId + '" data-comment-idx="' + ci + '" style="display:flex;gap:6px;align-items:flex-start;padding:4px 0;font-size:11px">';
   h += '<span style="color:var(--gold);font-weight:700;flex-shrink:0">' + escHtml(c.name || "Member") + '</span>';
   h += '<span style="color:var(--cream);flex:1;min-width:0;line-height:1.4">' + escHtml(c.text || "") + '</span>';
-  h += '<span data-action="comment-like" data-round-id="' + roundId + '" data-comment-idx="' + ci + '" data-i-liked="' + (iLikedC ? '1' : '0') + '" data-likes-count="' + cLikes.length + '" onclick="event.stopPropagation();feedToggleCommentLike(\'' + roundId + '\',' + ci + ')" style="cursor:pointer;color:' + likeColor + ';font-size:10px;flex-shrink:0">♥' + (cLikes.length ? ' ' + cLikes.length : '') + '</span>';
+  h += '<span data-action="comment-like" data-round-id="' + roundId + '" data-comment-idx="' + ci + '" data-i-liked="' + (iLikedC ? '1' : '0') + '" data-likes-count="' + cLikes.length + '" onclick="event.stopPropagation();feedToggleCommentLike(\'' + roundId + '\',' + ci + ')" style="cursor:pointer;color:' + likeColor + ';font-size:10px;flex-shrink:0;display:inline-flex;align-items:center;gap:3px"><svg viewBox="0 0 16 16" width="11" height="11" fill="' + (iLikedC ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="1.5"><path d="M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4a3.5 3.5 0 015.5 3c0 3.5-5.5 7-5.5 7z"/></svg>' + (cLikes.length ? cLikes.length : '') + '</span>';
   if (ownComment) {
     h += '<span data-action="comment-delete" data-round-id="' + roundId + '" data-comment-idx="' + ci + '" data-armed="false" onclick="event.stopPropagation();feedConfirmDeleteComment(this,\'' + roundId + '\',' + ci + ')" style="cursor:pointer;color:var(--muted2);font-size:12px;flex-shrink:0">×</span>';
   }
@@ -149,7 +149,7 @@ function _patchCommentLike(roundId, commentIdx, isLiked, count) {
     s.setAttribute('data-i-liked', isLiked ? '1' : '0');
     s.setAttribute('data-likes-count', count);
     s.style.color = isLiked ? "var(--gold)" : "var(--muted2)";
-    s.textContent = "♥" + (count > 0 ? " " + count : "");
+    s.innerHTML = '<svg viewBox="0 0 16 16" width="11" height="11" fill="' + (isLiked ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="1.5"><path d="M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4a3.5 3.5 0 015.5 3c0 3.5-5.5 7-5.5 7z"/></svg>' + (count > 0 ? count : "");
   });
 }
 
