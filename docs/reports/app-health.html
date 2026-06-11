@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-11T23:33:39.586375Z",
+  "generated_at": "2026-06-11T23:43:57.676578Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 86.7,
   "overall_grade": "A-",
@@ -1041,16 +1041,15 @@
     }
   ],
   "audit_trigger": {
-    "sha": "567dbd41",
-    "subject": "feat(onboarding): FTUE foundation â€” WALKTHROUGH_MAJOR + _daysBetween + caddy-voices deck (inert)",
-    "committed_at": "2026-06-11T19:33:14-04:00",
+    "sha": "f22febf9",
+    "subject": "feat(onboarding): caddy-figure.js standing rig (inert) â€” build step 2",
+    "committed_at": "2026-06-11T19:43:33-04:00",
     "trigger": "app-commit",
     "is_app_commit": true,
     "app_files_touched": [
-      "src/core/caddy-voices.js",
-      "src/core/utils.js"
+      "src/core/caddy-figure.js"
     ],
-    "total_files_touched": 2
+    "total_files_touched": 7
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
