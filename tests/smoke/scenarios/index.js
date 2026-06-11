@@ -43,5 +43,6 @@ module.exports = [
   // tee-intro-dark/invite-floor/toast-delegation/theme-flip).
   require('./s27-marathon-2026-06-10-features.js'),
   require('./s28-growth-trilogy.js'),
+  require('./s29-rivalry-route.js'),
   require('./s11-logout-cleanup.js')
 ];

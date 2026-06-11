@@ -16,6 +16,16 @@
    content on mobile — a regression for a mobile-first PWA. */
 
 Router.register("standings", function(params) {
+  // v8.24.52 — rivalry detail rides the standings container through a real
+  // route. Before this, showRivalryDetail() wrote into [data-page="standings"]
+  // without ever showing it, so every rivalry/nemesis button (home, HQ, feed,
+  // profile) rendered into a hidden div and appeared to do nothing. Now the
+  // button navigates here with {rivalry:'p1|p2'} so the container is shown,
+  // the back button works, and the URL state is correct.
+  if (params && params.rivalry) {
+    var pair = String(params.rivalry).split("|");
+    if (typeof renderRivalryDetail === "function") { renderRivalryDetail(pair[0], pair[1]); return; }
+  }
   var year = (params && params.year) ? parseInt(params.year) : new Date().getFullYear();
   var seasonKey = (params && params.season) ? params.season : null;
   var season = PB.getSeasonStandings(year, seasonKey);

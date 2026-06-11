@@ -689,8 +689,17 @@ function renderPageFooter() {
     '</div>';
 }
 
-// Rivalry detail view — used by members.js H2H list.
+// v8.24.52 — public entry point: NAVIGATE to the standings container via a
+// real route so it's actually shown (was rendering into a hidden div). Every
+// caller (home, HQ, feed, profile) passes (p1id, p2id) and is unchanged.
 function showRivalryDetail(p1id, p2id) {
+  if (!p1id || !p2id) return;
+  Router.go("standings", { rivalry: p1id + "|" + p2id });
+}
+
+// Rivalry detail renderer — invoked by the standings route when it receives
+// a {rivalry} param. Writes into the (now-visible) standings container.
+function renderRivalryDetail(p1id, p2id) {
   var p1 = PB.getPlayer(p1id), p2 = PB.getPlayer(p2id);
   if (!p1 || !p2) return;
   var h2h = calcH2H(p1id, p2id);
@@ -725,7 +734,7 @@ function showRivalryDetail(p1id, p2id) {
   });
   matches.sort(function(a,b) { return b.date > a.date ? 1 : -1; });
 
-  var h = '<div class="sh"><h2>' + escHtml(p1.name) + ' vs ' + escHtml(p2.name) + '</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>' + escHtml(p1.name) + ' vs ' + escHtml(p2.name) + '</h2><button class="back" onclick="Router.back()">← Back</button></div>';
 
   // Big score display
   h += '<div style="text-align:center;padding:20px">';
