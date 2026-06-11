@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Caddy figure review</title>
+<link rel="stylesheet" href="/src/styles/base.css">
+<style>
+  body { margin:0; background: var(--cb-canvas, #E7E0CD); font-family: sans-serif; padding: 24px; }
+  #stage { width:200px; }
+  #bust { width:56px; height:56px; border-radius:50%; border:2px solid var(--cb-brass,#B4893E); overflow:hidden; display:flex; align-items:flex-end; justify-content:center; background: var(--cb-paper,#FCFAF5); margin-top:20px; }
+  #bust svg { width:110px; margin-bottom:-14px; }
+</style></head>
+<body>
+<div id="stage"></div>
+<div id="bust"></div>
+<script src="/src/core/caddy-figure.js"></script>
+<script>
+  // Render one pose into one container (snap, no animation, for static capture).
+  window.pbRenderCaddy = function (sel, size, poseName) {
+    try {
+      var el = document.querySelector(sel);
+      pbCaddy.mount(el, { size: size });
+      if (poseName && pbCaddy.POSES[poseName]) {
+        var p = pbCaddy.POSES[poseName].slice();
+        if (poseName === 'point') p[2] = -55; // arm up toward a notional target
+        pbCaddy._apply(p);
+      }
+      return 'ok ' + poseName;
+    } catch (e) { return 'err ' + e.message; }
+  };
+  window.pbRenderCaddy('#stage', 200, 'idle');
+</script>
+</body></html>
