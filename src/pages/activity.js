@@ -62,11 +62,16 @@ function renderActivityRange() {
   var avgFeel = totalSessions ? (mySessions.reduce(function(a,s){return a+(s.feel||2)},0)/totalSessions).toFixed(1) : "—";
   var streakWeeks = calcRangeStreak(mySessions);
 
-  h += '<div class="stats-grid" style="padding:0 16px 8px">';
-  h += statBox(totalSessions, "Sessions");
-  h += statBox(totalHrs + "h " + (totalMins%60) + "m", "Total Time");
-  h += statBox(streakWeeks + "wk", "Streak");
-  h += '</div>';
+  // v8.24.71 — skip the stats grid entirely with zero sessions. A new
+  // member used to see "0 / 0h 0m / 0wk" (three dead zeros) above the
+  // empty card; the empty card alone now carries the path-forward (P9/P10).
+  if (totalSessions > 0) {
+    h += '<div class="stats-grid" style="padding:0 16px 8px">';
+    h += statBox(totalSessions, "Sessions");
+    h += statBox(totalHrs + "h " + (totalMins%60) + "m", "Total Time");
+    h += statBox(streakWeeks + "wk", "Streak");
+    h += '</div>';
+  }
 
   // Practice Insights
   if (mySessions.length >= 3) {
