@@ -277,7 +277,11 @@ function playerRingStyle(p) {
     'ring-crimson-ember': 'ringEmber 1.5s ease-in-out infinite'
   };
   var anim = cls && animMap[cls] ? animMap[cls] : '';
-  return 'border:3px solid ' + color + (shadow ? ';box-shadow:' + shadow : '') + (anim ? ';animation:' + anim : '');
+  // v8.24.76 — when an ornamental .ring-* class is present it owns the border
+  // (via !important) AND draws its ::before/::after art; the inline border just
+  // fought its box model, so suppress it. Plain rings (founder/cosmetic/default)
+  // keep the inline border.
+  return (cls ? '' : 'border:3px solid ' + color) + (shadow ? (cls ? '' : ';box-shadow:' + shadow) : '') + (anim ? ';animation:' + anim : '');
 }
 
 function playerRingClass(p) {
@@ -293,6 +297,12 @@ function playerRingClass(p) {
   if (b === 'pc02_fescue') return 'ring-fescue';
   if (b === 'pc03_fried_egg') return 'ring-fried-egg';
   if (b === 'pc04_claret') return 'ring-claret';
+  // v8.24.76 — these were sold (up to 1500 coins) but UNMAPPED, so they
+  // rendered nothing ornamental when worn. pc42 reuses the claret art for now
+  // (distinct crest art is a follow-up polish item).
+  if (b === 'pc39_wax_seal') return 'ring-wax-seal';
+  if (b === 'pc40_hickory_brass') return 'ring-hickory';
+  if (b === 'pc42_founders_crest') return 'ring-claret';
   return '';
 }
 // ── Cosmetic helpers ──
@@ -320,6 +330,22 @@ function getPlayerCardCss(p) {
   var equipped = cosm.find(function(c) { return c.id === p.equippedCosmetics.card; });
   return equipped ? equipped.css : '';
 }
+// v8.24.76 — Pro Shop scorecard skins (pc*) live in PRO_SHOP_CATALOG, which
+// getPlayerCardCss above does NOT search and which isn't loaded until shop.js
+// is — so equipping a 300-900 coin card used to render NOTHING (P9 no-op).
+// Map them to core CSS classes (always available) instead, mirroring
+// playerRingClass. Legacy COSMETICS_CATALOG cards keep the inline-css path.
+function getPlayerCardClass(p) {
+  if (!p || !p.equippedCosmetics || !p.equippedCosmetics.card) return '';
+  var m = {
+    'pc08_pencil_parchment': 'card-skin-parchment',
+    'pc09_member_guest': 'card-skin-member-guest',
+    'pc10_major_sunday': 'card-skin-major-sunday',
+    'pc28_the_sleeve': 'card-skin-sleeve',
+    'pc41_trophy_room': 'card-skin-trophy-room'
+  };
+  return m[p.equippedCosmetics.card] || '';
+}
 // ── SHARED RENDERING: renderAvatar + renderUsername ────────────────────────
 // Use these EVERYWHERE instead of raw HTML to guarantee ring + name effect consistency.
 
@@ -329,13 +355,18 @@ function getPlayerCardCss(p) {
 function renderAvatar(p, size, clickToProfile) {
   size = size || 36;
   var ringStyle = p ? playerRingStyle(p) : 'border:2px solid var(--gold)';
+  // v8.24.76 — apply the ornamental ring CLASS (was never applied), so the
+  // .ring-* ::before/::after art (rope studs, fescue grass, fried-egg splash,
+  // claret sweep, wax seal, hickory ferrule) actually renders when worn. The
+  // art is absolutely-positioned, so the outer div needs position:relative.
+  var ringCls = p ? playerRingClass(p) : '';
   var avatarInner = p ? Router.getAvatar(p) : '<div style="width:100%;height:100%;background:var(--bg3);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:700;font-size:' + Math.round(size * 0.4) + 'px">?</div>';
   var pid = p ? (p.id || '') : '';
   var click = clickToProfile && pid ? ' onclick="event.stopPropagation();Router.go(\'members\',{id:\'' + pid + '\'})"' : '';
   var cursor = clickToProfile && pid ? 'cursor:pointer;' : '';
-  // Outer div: border + shadow + animation (NO overflow:hidden so glow renders)
+  // Outer div: border + shadow + animation + ring class (NO overflow:hidden so glow/art renders)
   // Inner div: overflow:hidden clips the image/fallback content to the circle
-  return '<div style="width:' + size + 'px;height:' + size + 'px;min-width:' + size + 'px;border-radius:50%;' + ringStyle + ';' + cursor + 'flex-shrink:0"' + click + '><div style="width:100%;height:100%;border-radius:50%;overflow:hidden">' + avatarInner + '</div></div>';
+  return '<div' + (ringCls ? ' class="' + ringCls + '"' : '') + ' style="width:' + size + 'px;height:' + size + 'px;min-width:' + size + 'px;border-radius:50%;position:relative;' + ringStyle + ';' + cursor + 'flex-shrink:0"' + click + '><div style="width:100%;height:100%;border-radius:50%;overflow:hidden">' + avatarInner + '</div></div>';
 }
 
 // renderUsername(player, extraStyle) → HTML string
@@ -358,6 +389,9 @@ function pbNameplateClass(p) {
   if (n === 'pc05_locker_brass') return 'plate-locker-brass';
   if (n === 'pc06_yardage_book') return 'plate-yardage';
   if (n === 'pc07_leaderboard_sunday') return 'plate-sunday';
+  // v8.24.76 — pc29 was sold (500 coins) + fully described but UNMAPPED with no
+  // CSS, so equipping it changed nothing (dead purchase, P9 no-op). Now wired.
+  if (n === 'pc29_stimp_13') return 'plate-stimp';
   return '';
 }
 // v8.24.68 — unified, golf-oriented marker art. ONE source of truth for both

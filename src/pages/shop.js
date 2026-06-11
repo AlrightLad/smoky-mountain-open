@@ -295,7 +295,11 @@ Router.register("shop", function() {
     } else if (item.cat === 'voice') {
       c += '<div style="height:34px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:16px">⛳</div>';
     } else if (item.cat === 'title') {
-      c += '<div style="padding:4px 0 8px;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="font-size:12px;font-weight:700;color:var(--cream)">' + escHtml(_myName) + '</div>' + (item.plate ? '<span class="title-engraved">Grinder</span>' : '<div style="font-size:10px;color:' + item.preview + ';font-style:italic">' + item.name + '</div>') + '</div>';
+      // v8.24.76 — pc36 previews as its leather bag tag (was the same brass
+      // plate as pc14, so the two priciest title plates looked identical).
+      var _plateCls = item.id === 'pc36_member_tag' ? 'title-tag-leather' : 'title-engraved';
+      var _plateText = item.id === 'pc36_member_tag' ? 'Member No. 7' : 'Grinder';
+      c += '<div style="padding:4px 0 8px;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="font-size:12px;font-weight:700;color:var(--cream)">' + escHtml(_myName) + '</div>' + (item.plate ? '<span class="' + _plateCls + '">' + _plateText + '</span>' : '<div style="font-size:10px;color:' + item.preview + ';font-style:italic">' + item.name + '</div>') + '</div>';
     }
     c += '<div class="shop-item__name">' + item.name + '</div>';
     c += '<div class="shop-item__desc">' + item.desc + '</div>';

@@ -43,7 +43,10 @@ function renderFeedItem(a) {
   // ── Rounds — Instagram-style with avatar ──
   var cardCss = '';
   if (_fp) cardCss = getPlayerCardCss(_fp);
-  var h = '<div class="feed-row" style="display:flex;gap:12px;padding:12px 16px;align-items:flex-start;' + cardCss + '">';
+  // v8.24.76 — Pro Shop card skins apply via a class (getPlayerCardClass);
+  // legacy COSMETICS_CATALOG cards keep the inline cardCss path. Never collide.
+  var cardCls = _fp && typeof getPlayerCardClass === 'function' ? getPlayerCardClass(_fp) : '';
+  var h = '<div class="feed-row' + (cardCls ? ' ' + cardCls : '') + '" style="display:flex;gap:12px;padding:12px 16px;align-items:flex-start;' + cardCss + '">';
   // Avatar
   h += renderAvatar(_fp, 44, true);
   // Content

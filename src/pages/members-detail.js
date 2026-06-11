@@ -63,7 +63,12 @@ function renderMemberDetailWithData(p) {
   var activeTitle = p.equippedTitle || p.title || "Member";
   // v8.24.50 — The Engraving (PC-14): owned+equipped, the title renders as a
   // brass plate (class title-engraved) instead of italic text.
-  var titleIsPlate = !!(p.equippedCosmetics && p.equippedCosmetics.titleplate === "pc14_engraving");
+  // v8.24.76 — pc36 (Member No., leather bag tag, 500 coins) was hardcoded
+  // out here so it rendered nothing when equipped. Both plate titles now
+  // render; pc14 = brass engraving, pc36 = leather tag.
+  var _tp = p.equippedCosmetics && p.equippedCosmetics.titleplate;
+  var titleIsPlate = _tp === "pc14_engraving" || _tp === "pc36_member_tag";
+  var titlePlateClass = _tp === "pc36_member_tag" ? "title-tag-leather" : "title-engraved";
   var isBeta = PB.getPlayers().indexOf(p) < 30;
   var isOwnProfile = currentUser && (pid === currentUser.uid || (currentProfile && pid === currentProfile.claimedFrom));
   var canEditPhoto = isOwnProfile;
@@ -119,7 +124,7 @@ function renderMemberDetailWithData(p) {
     h += '<div class="roster-eyebrow">' + escHtml(String(activeTitle).toUpperCase()) + ' · SINCE ' + escHtml(String(p.joinDate || "2026")) + '</div>';
   }
   h += '<h1 class="roster-headline pf-headline">' + renderUsername(p, '', false) + '</h1>';
-  if (titleIsPlate) h += '<div style="margin:4px 0 2px"><span class="title-engraved">' + escHtml(activeTitle) + '</span></div>';
+  if (titleIsPlate) h += '<div style="margin:4px 0 2px"><span class="' + titlePlateClass + '">' + escHtml(activeTitle) + '</span></div>';
   if (p.username && p.name && p.username !== p.name) h += '<div class="pf-realname">' + escHtml(p.name) + '</div>';
   var metaParts = [];
   if (p.homeCourse) metaParts.push(escHtml(p.homeCourse));
