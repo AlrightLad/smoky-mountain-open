@@ -297,6 +297,10 @@ Router.register("shop", function() {
     var tier = item.tier || (item.price >= 1200 ? 'cabinet' : item.price >= 600 ? 'locker' : item.price >= 300 ? 'proshop' : 'range');
     var c = '<div class="shop-item shop-item--' + tier + (equipped ? ' shop-item--equipped' : '') + '"' + (big ? ' style="grid-row:span 1"' : '') + '>';
     c += '<div class="shop-tier-chip shop-tier-chip--' + tier + '">' + (PRO_SHOP_TIERS[tier] ? PRO_SHOP_TIERS[tier].label : tier) + '</div>';
+    // v8.24.86 — NEW badge on the latest-wave pieces (pc26+), an honest
+    // curation/freshness cue (they ARE the newest in the catalog).
+    var _pcNum = (/^pc(\d+)_/.exec(item.id) || [])[1];
+    if (_pcNum && +_pcNum >= 26 && !item.earnedBy) c += '<div class="shop-item__new">NEW</div>';
     // preview
     if (item.cat === 'border') {
       var ringCss = item.ringClass ? '' : 'border:' + (item.css || '3px solid ' + item.preview);

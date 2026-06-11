@@ -4163,7 +4163,10 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 .shop-tabs { margin: 0 0 14px; }
 .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 @media (min-width: 560px) { .shop-grid { grid-template-columns: 1fr 1fr 1fr; } }
+/* v8.24.86 — NEW badge (curation cue on the latest-wave pieces) */
+.shop-item__new { position: absolute; top: 8px; right: 8px; font-family: var(--font-mono); font-size: 7.5px; font-weight: 700; letter-spacing: 1px; color: #241c0c; background: var(--cb-brass-3); padding: 2px 5px; border-radius: 3px; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
 .shop-item {
+  position: relative;
   background: var(--cb-chalk-2);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
