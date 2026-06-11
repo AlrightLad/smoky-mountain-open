@@ -427,11 +427,16 @@ function pbMarkerGlyph(id, px) {
         + '<path d="M3.3 14.3h17.4c-.5 1.6-3 2.6-6.3 2.6S3.8 15.9 3.3 14.3z" fill="#caa75c"/>'
         + '<path d="M7 11.5h2M10.5 11.2h2" stroke="#5a3418" stroke-width=".7" opacity=".7"/>';
       break;
-    case 'pc20_parbaugh_marker': // founding-gold crest disc
+    case 'pc20_parbaugh_marker': // founding-gold crest disc, engraved P
+      // v8.24.85 — vector P (was a Georgia <text> 'P' that was illegible at the
+      // worn 12px size) + a struck-metal gleam/shadow ramp for depth.
       s = '<circle cx="12" cy="12" r="9.5" fill="#b4893e"/>'
         + '<circle cx="12" cy="12" r="9.5" fill="none" stroke="#8a6526" stroke-width="1"/>'
-        + '<circle cx="12" cy="12" r="7" fill="none" stroke="#d8b15f" stroke-width=".8" opacity=".7"/>'
-        + '<text x="12" y="16.6" text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="700" fill="#2a1f0c">P</text>';
+        + '<path d="M4.2 9.2a9.5 9.5 0 0115.6 0" stroke="#ecca7e" stroke-width="1.2" opacity=".55" fill="none"/>'
+        + '<path d="M4.2 14.8a9.5 9.5 0 0015.6 0" stroke="#6e5018" stroke-width="1.2" opacity=".5" fill="none"/>'
+        + '<circle cx="12" cy="12" r="7" fill="none" stroke="#d8b15f" stroke-width=".8" opacity=".6"/>'
+        + '<path d="M9 6.6h4.1a2.9 2.9 0 010 5.8H10.9V18H9z" fill="#3a2c10"/>'           // engraved P body
+        + '<path d="M9 6.6h4.1a2.9 2.9 0 011.9.7 2.9 2.9 0 00-2.4-1.2H9z" fill="#e8c87a" opacity=".6"/>'; // top-lit bevel
       break;
     case 'pc25_ace_marker': // gold ball on a brass pedestal
       s = '<path d="M7 19.2h10l-1.4 2.4H8.4z" fill="#8a6a2e"/>'
