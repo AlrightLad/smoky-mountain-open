@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-11T13:22:53.822070Z",
+  "generated_at": "2026-06-11T13:31:03.018750Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 88.2,
   "overall_grade": "A-",
@@ -889,7 +889,7 @@
           "what_action": "Split into modules per AMD-027 budget"
         },
         {
-          "what": "src/pages/rounds.js is 947 lines (budget 800)",
+          "what": "src/pages/rounds.js is 948 lines (budget 800)",
           "where": "src/pages/rounds.js",
           "what_action": "Split into modules per AMD-027 budget"
         },
@@ -934,7 +934,7 @@
           },
           {
             "file": "src/pages/rounds.js",
-            "lines": 947,
+            "lines": 948,
             "budget": 800
           }
         ]
@@ -991,7 +991,7 @@
     "A12_operational": {
       "score": 100,
       "status": "green",
-      "label": "pipeline=green · 2 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=green · 1 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [],
       "details": {
@@ -1018,10 +1018,10 @@
     }
   ],
   "audit_trigger": {
-    "sha": "4859c6d7",
-    "subject": "chore(reports): regen post v8.24.66",
-    "committed_at": "2026-06-11T09:21:41-04:00",
-    "trigger": "substrate-commit",
+    "sha": "26970f61",
+    "subject": "cron(routine): post-watcher-commit drift sweep (2026-06-11T13:30:53.4335935Z)",
+    "committed_at": "2026-06-11T09:30:53-04:00",
+    "trigger": "cron",
     "is_app_commit": false,
     "app_files_touched": [],
     "total_files_touched": 1
