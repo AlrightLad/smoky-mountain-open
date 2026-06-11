@@ -29,8 +29,8 @@ function renderAceList() {
       }
       h += '<div style="padding:14px 16px">';
       h += '<div style="display:flex;justify-content:space-between;align-items:flex-start">';
-      h += '<div><div style="font-size:17px;font-weight:700;color:var(--gold)">' + ace.by + '</div>';
-      h += '<div style="font-size:13px;color:var(--cream);margin-top:2px">' + ace.course + (isDirectory ? ' <span style="color:var(--gold)" title="Parbaugh Directory Course"></span>' : '') + '</div>';
+      h += '<div><div style="font-size:17px;font-weight:700;color:var(--gold)">' + escHtml(ace.by||'') + '</div>';
+      h += '<div style="font-size:13px;color:var(--cream);margin-top:2px">' + escHtml(ace.course||'') + (isDirectory ? ' <span style="color:var(--gold)" title="Parbaugh Directory Course"></span>' : '') + '</div>';
       h += '<div style="font-size:12px;color:var(--muted);margin-top:4px">';
       if (ace.hole) h += 'Hole ' + ace.hole + ' · ';
       if (ace.distance) h += ace.distance + ' yds · ';
@@ -89,8 +89,8 @@ function renderAceDetail(idx) {
   // Player and details
   h += '<div class="pd-banner">';
   if (player) h += renderAvatar(player, 70, false);
-  h += '<div style="font-size:24px;font-weight:800;color:var(--gold);margin-top:4px">' + ace.by + '</div>';
-  h += '<div style="font-size:15px;color:var(--cream);margin-top:4px">' + ace.course + (isDirectory ? ' <span style="color:var(--gold)"></span>' : '') + '</div>';
+  h += '<div style="font-size:24px;font-weight:800;color:var(--gold);margin-top:4px">' + escHtml(ace.by||'') + '</div>';
+  h += '<div style="font-size:15px;color:var(--cream);margin-top:4px">' + escHtml(ace.course||'') + (isDirectory ? ' <span style="color:var(--gold)"></span>' : '') + '</div>';
   h += '<div style="font-size:13px;color:var(--muted);margin-top:4px">' + ace.date + '</div>';
   h += '</div>';
 

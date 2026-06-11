@@ -61,7 +61,7 @@ function renderFeedItem(a) {
   if (a.score) h += '<div style="font-family:var(--font-display);font-size:22px;font-weight:700;color:var(--gold);line-height:1">' + a.score + '</div>';
   h += '<div style="font-size:9px;color:var(--muted2);margin-top:2px">' + timeLabel + '</div>';
   h += '</div></div>';
-  if (a.quip) h += '<div style="font-size:11px;color:var(--gold2);margin-top:4px;font-style:italic;line-height:1.4">' + a.quip + '</div>';
+  if (a.quip) h += '<div style="font-size:11px;color:var(--gold2);margin-top:4px;font-style:italic;line-height:1.4">' + escHtml(a.quip) + '</div>';  // v8.24.53 XSS: scramble player names
 
   // Like/comment actions for rounds
   if (a.type === "round" && a.roundId) {

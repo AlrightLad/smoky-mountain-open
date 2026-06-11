@@ -112,7 +112,7 @@ Router.register("courses", function(params) {
     h += '<div class="card course-dir-item" data-name="' + escHtml(c.name.toLowerCase()) + '" data-loc="' + escHtml((c.loc||"").toLowerCase()) + '" onclick="Router.go(\'courses\',{id:\'' + c.id + '\'})">';
     var thumbSrc = photoCache["course:" + c.id] || c.photo || '';
     h += '<div class="course-row"><div class="c-thumb">' + courseThumbHTML(c, thumbSrc) + '</div>';
-    h += '<div class="c-info"><div class="c-name">' + c.name + '</div><div class="c-loc">' + c.loc + ' · ' + c.rating + '/' + c.slope + '</div>';
+    h += '<div class="c-info"><div class="c-name">' + escHtml(c.name) + '</div><div class="c-loc">' + escHtml(c.loc||'') + ' · ' + c.rating + '/' + c.slope + '</div>';
     if (showOurs) {
       var lPlays = leagueCoursePlays[c.name] || 0;
       var lBest = leagueCourseBest[c.name];

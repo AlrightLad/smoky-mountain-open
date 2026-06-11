@@ -366,13 +366,13 @@ function renderMemberDetailWithData(p) {
     var isEquipped = activeTitle === t.name;
     if (t.unlocked) {
       h += '<div onclick="equipTitle(\'' + pid + '\',\'' + t.name.replace(/'/g,"\\'") + '\')" style="padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:' + (isEquipped ? 'rgba(var(--gold-rgb),.08)' : 'transparent') + '">';
-      h += '<div><div style="font-size:12px;font-weight:600;color:' + (isEquipped ? 'var(--gold)' : 'var(--cream)') + '">' + t.name + '</div>';
+      h += '<div><div style="font-size:12px;font-weight:600;color:' + (isEquipped ? 'var(--gold)' : 'var(--cream)') + '">' + escHtml(t.name) + '</div>';
       h += '<div style="font-size:9px;color:var(--muted)">' + t.req + '</div></div>';
       if (isEquipped) h += '<div style="font-size:9px;color:var(--gold);font-weight:700;letter-spacing:.5px">EQUIPPED</div>';
       h += '</div>';
     } else {
       h += '<div style="padding:10px 12px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;opacity:.35">';
-      h += '<div><div style="font-size:12px;font-weight:600;color:var(--muted2)">' + t.name + '</div>';
+      h += '<div><div style="font-size:12px;font-weight:600;color:var(--muted2)">' + escHtml(t.name) + '</div>';
       h += '<div style="font-size:9px;color:var(--muted2)">' + t.req + '</div></div>';
       h += '<div style="font-size:10px;color:var(--muted2)">Locked</div></div>';
     }
@@ -769,7 +769,7 @@ function renderMemberDetailWithData(p) {
       } else {
         rightHTML = '<div style="font-size:10px;color:var(--muted2)">' + teamRoundCount + ' rd' + (teamRoundCount !== 1 ? 's' : '') + '</div>';
       }
-      teamContent += '<div class="h2h-row" onclick="Router.go(\'scramble\',{id:\'' + t.id + '\'})" style="cursor:pointer"><div><div style="font-size:13px;font-weight:600">' + t.name + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">w/ ' + mates + '</div></div><div style="text-align:right">' + rightHTML + '</div></div>';
+      teamContent += '<div class="h2h-row" onclick="Router.go(\'scramble\',{id:\'' + t.id + '\'})" style="cursor:pointer"><div><div style="font-size:13px;font-weight:600">' + escHtml(t.name) + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">w/ ' + mates + '</div></div><div style="text-align:right">' + rightHTML + '</div></div>';
     });
   } else {
     teamContent = pfEmpty(null, "Not on any teams yet");

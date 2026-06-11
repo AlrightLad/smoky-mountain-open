@@ -16,7 +16,7 @@ Router.register("scorecard", function(params) {
   // Start live score listener for this trip
   startTripScoreListener(trip.id);
 
-  var h = '<div class="sh"><h2>' + trip.name + '</h2><button class="back" onclick="Router.back(\'trips\')">← Trips</button></div>';
+  var h = '<div class="sh"><h2>' + escHtml(trip.name) + '</h2><button class="back" onclick="Router.back(\'trips\')">← Trips</button></div>';
 
   // Live indicator (only for active events)
   if (trip.status !== "closed") {
@@ -78,7 +78,7 @@ function renderTripScorecard(trip, tripPlayers) {
   var isScorekeeper = c.scorekeeper && myUid && c.scorekeeper === myUid;
   var isRoundFinished = c.finished === true;
 
-  h += '<div class="ci"><div><div class="nm">' + c.n + '</div><div class="dt">' + c.d + ' · ' + c.t + ' · Par ' + pT + '</div></div><div class="bd">' + c.f + '</div></div>';
+  h += '<div class="ci"><div><div class="nm">' + escHtml(c.n) + '</div><div class="dt">' + escHtml(c.d) + ' · ' + escHtml(c.t) + ' · Par ' + pT + '</div></div><div class="bd">' + escHtml(c.f) + '</div></div>';
 
   // Scorekeeper info bar
   if (c.scorekeeper) {
@@ -111,7 +111,7 @@ function renderTripScorecard(trip, tripPlayers) {
     trip.miniGames.forEach(function(g) {
       h += '<div class="mgi"><label>' + g.l + ' (' + g.p + ')</label><select onchange="PB.setMiniWinner(\'' + g.i + '\',this.value)">';
       h += '<option value="">—</option>';
-      tripPlayers.forEach(function(p) { var mw = PB.getMiniWinner(g.i); var isWinner = mw === p.id || PB.getAllPlayerIds(p.id).indexOf(mw) !== -1; h += '<option value="' + p.id + '"' + (isWinner ? " selected" : "") + '>' + p.name + '</option>'; });
+      tripPlayers.forEach(function(p) { var mw = PB.getMiniWinner(g.i); var isWinner = mw === p.id || PB.getAllPlayerIds(p.id).indexOf(mw) !== -1; h += '<option value="' + p.id + '"' + (isWinner ? " selected" : "") + '>' + escHtml(p.name) + '</option>'; });
       h += '</select></div>';
     });
     h += '</div></div>';
@@ -131,7 +131,7 @@ function renderTripScorecard(trip, tripPlayers) {
   h += '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch">';
   h += '<table style="min-width:' + (iS ? "300" : (100 + tripPlayers.length * 70)) + 'px"><thead><tr><th>Hole</th><th>Par</th>';
   if (iS) h += '<th class="g">Team</th>';
-  else tripPlayers.forEach(function(p) { h += '<th class="g">' + p.name + '</th>'; });
+  else tripPlayers.forEach(function(p) { h += '<th class="g">' + escHtml(p.name) + '</th>'; });
   h += '</tr></thead><tbody>';
 
   var tid = trip.id;
@@ -186,7 +186,7 @@ function renderTripScorecard(trip, tripPlayers) {
     tripPlayers.forEach(function(p) {
       var totals = PB.getFirGirTotals(tid, c.key, p.id);
       var fg = PB.getFirGir(tid, c.key, p.id);
-      h += '<div style="margin-bottom:12px"><div style="font-size:12px;font-weight:600;margin-bottom:6px;display:flex;justify-content:space-between"><span>' + p.name + '</span><span style="color:var(--muted);font-size:10px">FIR: ' + totals.fir + '/14 · GIR: ' + totals.gir + '/18</span></div>';
+      h += '<div style="margin-bottom:12px"><div style="font-size:12px;font-weight:600;margin-bottom:6px;display:flex;justify-content:space-between"><span>' + escHtml(p.name) + '</span><span style="color:var(--muted);font-size:10px">FIR: ' + totals.fir + '/14 · GIR: ' + totals.gir + '/18</span></div>';
       h += '<div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table style="min-width:280px"><thead><tr><th style="font-size:8px;padding:4px 2px;position:static">H</th>';
       for (var hi = 0; hi < 18; hi++) h += '<th style="font-size:8px;padding:4px 2px;position:static">' + (hi+1) + '</th>';
       h += '</tr></thead><tbody>';
@@ -250,7 +250,7 @@ function renderTripLB(trip, tripPlayers) {
   sorted.forEach(function(p, i) {
     var tot = PB.getTripPoints(tid, p.id);
     var stbl = 0; trip.courses.forEach(function(c) { if (!c.s) stbl += PB.getTripStableford(tid, c.key, p.id); });
-    h += '<div class="lb-card' + (i === 0 ? " first" : "") + '"><div class="lb-left"><span class="lb-medal">' + (md[i] || "") + '</span><div><div class="lb-name">' + p.name + '</div>';
+    h += '<div class="lb-card' + (i === 0 ? " first" : "") + '"><div class="lb-left"><span class="lb-medal">' + (md[i] || "") + '</span><div><div class="lb-name">' + escHtml(p.name) + '</div>';
     h += '<div class="lb-detail">Mini: ' + PB.getMiniPoints(tid, p.id) + ' · Stbl: ' + stbl + ' · Bonus: ' + PB.getBonusPoints(tid, p.id) + '</div></div></div><div class="lb-pts">' + tot + '</div></div>';
   });
   h += '</div>';
@@ -270,7 +270,7 @@ function renderTripLB(trip, tripPlayers) {
     if (c.s) return;
     h += '<div class="rc"><div class="rh">' + c.d + ' · ' + c.n + ' · ' + c.f + '</div>';
     tripPlayers.forEach(function(p) {
-      h += '<div class="rc-row"><span>' + p.name + '</span><span><span class="rc-strokes">' + (PB.getTripTotal(tid, c.key, p.id, 0, 18) || "—") + '</span> <span class="rc-pts">' + PB.getTripStableford(tid, c.key, p.id) + ' pts</span></span></div>';
+      h += '<div class="rc-row"><span>' + escHtml(p.name) + '</span><span><span class="rc-strokes">' + (PB.getTripTotal(tid, c.key, p.id, 0, 18) || "—") + '</span> <span class="rc-pts">' + PB.getTripStableford(tid, c.key, p.id) + ' pts</span></span></div>';
     });
     h += '</div>';
   });
@@ -283,7 +283,7 @@ function renderTripLB(trip, tripPlayers) {
       h += '<div class="bonus-card"><div class="bonus-info"><div class="bonus-label">' + b.l + '</div><div class="bonus-desc">' + b.d + ' · ' + b.p + ' pts</div></div>';
       h += '<select onchange="PB.setBonusWinner(\'' + b.i + '\',this.value);Router.go(\'scorecard\',{tripId:\'' + tid + '\'})">';
       h += '<option value="">—</option>';
-      tripPlayers.forEach(function(p) { var bw = PB.getBonusWinner(b.i); var isWinner = bw === p.id || PB.getAllPlayerIds(p.id).indexOf(bw) !== -1; h += '<option value="' + p.id + '"' + (isWinner ? " selected" : "") + '>' + p.name + '</option>'; });
+      tripPlayers.forEach(function(p) { var bw = PB.getBonusWinner(b.i); var isWinner = bw === p.id || PB.getAllPlayerIds(p.id).indexOf(bw) !== -1; h += '<option value="' + p.id + '"' + (isWinner ? " selected" : "") + '>' + escHtml(p.name) + '</option>'; });
       h += '</select></div>';
     });
     h += '</div>';

@@ -154,7 +154,7 @@ Router.register("tee-create", function(params) {
   var h = '<div class="sh"><h2>Post Tee Time</h2><button class="back" onclick="Router.back(\'teetimes\')">← Back</button></div>';
   h += '<div class="form-section">';
   h += '<div class="ff"><label class="ff-label">Course</label><select id="teeCourse" class="ff-input">';
-  courses.forEach(function(c) { h += '<option value="' + c.id + '">' + c.name + '</option>'; });
+  courses.forEach(function(c) { h += '<option value="' + escHtml(c.id) + '">' + escHtml(c.name) + '</option>'; });
   h += '</select></div>';
   h += '<div class="ff"><label class="ff-label">Date</label><input type="date" id="teeDate" class="ff-input" min="' + localDateStr() + '" value="' + prefillDate + '"></div>';
   h += '<div class="ff"><label class="ff-label">Tee Time</label><input type="time" id="teeTime" class="ff-input"></div>';

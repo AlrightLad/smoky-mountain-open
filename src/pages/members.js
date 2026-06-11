@@ -520,7 +520,7 @@ function renderAddMemberForm() {
     h += formField("Name", "add-name", "", "text", "First name or nickname");
     h += '<div class="ff"><label class="ff-label">Referred by</label><select class="ff-input" id="add-referral"><option value="">— Select member —</option>';
     PB.getPlayers().forEach(function(p) {
-      h += '<option value="' + p.name + '">' + p.name + (p.founding ? '' : '') + '</option>';
+      h += '<option value="' + escHtml(p.name) + '">' + escHtml(p.name) + '</option>';
     });
     h += '</select></div>';
     h += formField("Score range", "add-range", "", "text", "e.g. 95-105");
@@ -742,8 +742,8 @@ function shareProfileCard(pid) {
   var name = p.username || p.name;
   var title = p.equippedTitle || p.title || "";
   var info = '<div style="text-align:center;margin-bottom:20px">';
-  info += '<div style="font-family:var(--font-display);font-size:24px;font-weight:700;color:#eae8e0">' + name + '</div>';
-  if (title) info += '<div style="font-size:11px;color:#c9a84c;margin-top:4px;font-style:italic">' + title + '</div>';
+  info += '<div style="font-family:var(--font-display);font-size:24px;font-weight:700;color:#eae8e0">' + escHtml(name) + '</div>';
+  if (title) info += '<div style="font-size:11px;color:#c9a84c;margin-top:4px;font-style:italic">' + escHtml(title) + '</div>';
   info += '<div style="font-size:10px;color:#7a7e8a;margin-top:6px">Level ' + (lvl.level||1) + ' \u00b7 ' + (lvl.name||"Rookie") + '</div>';
   info += '</div>';
 
@@ -756,7 +756,7 @@ function shareProfileCard(pid) {
   stats += '</div>';
 
   // Footer
-  var footer = '<div style="text-align:center;padding-top:12px;border-top:1px solid #1e2333;font-size:9px;color:#484d5c">parbaughs.golf/player/' + (p.username || "") + '</div>';
+  var footer = '<div style="text-align:center;padding-top:12px;border-top:1px solid #1e2333;font-size:9px;color:#484d5c">parbaughs.golf/player/' + escHtml(p.username || "") + '</div>';
 
   cardDiv.innerHTML = header + info + stats + footer;
   document.body.appendChild(cardDiv);

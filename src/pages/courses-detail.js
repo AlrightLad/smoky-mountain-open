@@ -7,7 +7,7 @@ function renderCourseDetail(courseId) {
   if (!c) { Router.go("courses"); return; }
   var roundsHere = PB.getCourseRounds(c.name);
 
-  var h = '<div class="sh"><h2>' + c.name + '</h2><button class="back" onclick="Router.back(\'courses\')">← Back</button></div>';
+  var h = '<div class="sh"><h2>' + escHtml(c.name) + '</h2><button class="back" onclick="Router.back(\'courses\')">← Back</button></div>';
 
   var coursePhotoSrc = photoCache["course:" + courseId] || c.photo || "";
   // Async-load course photo(s) from Firestore if not cached

@@ -44,5 +44,6 @@ module.exports = [
   require('./s27-marathon-2026-06-10-features.js'),
   require('./s28-growth-trilogy.js'),
   require('./s29-rivalry-route.js'),
+  require('./s30-xss-escaping.js'),
   require('./s11-logout-cleanup.js')
 ];
