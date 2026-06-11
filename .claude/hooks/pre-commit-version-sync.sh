@@ -18,8 +18,13 @@ cd "$(git rev-parse --show-toplevel)"
 
 app_version="$(grep -E 'var APP_VERSION = "[^"]+";' src/core/utils.js | head -1 | sed -E 's/.*"([^"]+)".*/\1/')"
 pkg_version="$(node -e "console.log(require('./package.json').version)")"
+# package-lock.json root version MUST match too — otherwise `npm ci` (the first
+# real step of the Heartbeat Cycle GitHub Action) hard-fails on a sync error.
+# This drifted silently from 8.23.1 -> 8.24.77 across ~54 ship bumps because
+# this hook only checked package.json. Now it's enforced. (v8.24.78)
+lock_version="$(node -e "console.log(require('./package-lock.json').version)" 2>/dev/null || echo "MISSING")"
 
-if [[ "$app_version" == "$pkg_version" ]]; then
+if [[ "$app_version" == "$pkg_version" && "$lock_version" == "$pkg_version" ]]; then
   exit 0
 fi
 
@@ -29,9 +34,12 @@ fi
   echo "VERSION MISMATCH — commit blocked."
   echo "──────────────────────────────────────────────────────────"
   echo ""
-  echo "  src/core/utils.js  APP_VERSION = \"$app_version\""
-  echo "  package.json       version     = \"$pkg_version\""
+  echo "  src/core/utils.js   APP_VERSION = \"$app_version\""
+  echo "  package.json        version     = \"$pkg_version\""
+  echo "  package-lock.json   version     = \"$lock_version\""
   echo ""
-  echo "Update both to the same value, then re-attempt the commit."
+  echo "All three must match. Fix the lockfile in-place with:"
+  echo "  sed -i 's/\"version\": \"$lock_version\"/\"version\": \"$pkg_version\"/g' package-lock.json"
+  echo "(the root + packages[\"\"] self-version only), then re-attempt the commit."
 } >&2
 exit 2
