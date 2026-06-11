@@ -226,3 +226,36 @@ local diff first). Clean heartbeat: both triage queues absent, regen-all PASS ru
 app-health A- (86.9) with 2 standing attention items (reported truthfully, down from
 88.5 — not a regression from this cron), 3 concurrent-session dirty files left
 untouched. No defect, no proposal, no FIQ grade.*
+
+---
+
+## POST-RUN OBSERVATION (appended after commit — P9 record fidelity + cron-sweeps-staged-work)
+
+My explicit-pathspec triage commit (`Overnight triage 2026-06-11 - 0 reports, 0
+proposals, 0 FIQ entries graded`) **failed to land as its own commit** — `HEAD`
+moved (8418bcc2 → 1a34daee) between my `git add` and `git commit`, aborting with
+`fatal: cannot lock ref 'HEAD'`. This is the documented **cron-sweeps-staged-work**
+race (identical to 06-09): two concurrent commits absorbed all 4 of my triage
+outputs before my commit could grab the ref lock. **All work is committed + intact**
+(verified by content at HEAD, not assumed):
+
+| File | Absorbed into | Verified marker |
+|---|---|---|
+| `.claude/state/wellness/engineer.json` | `8418bcc2 fix(nav)... (v8.24.52, #39)` | tokens 6,295,000 · checkpoint 2026-06-11T04:02:50Z |
+| `.claude/state/wellness/critic.json` | `1a34daee cron(routine): post-commit dashboard regen` | tokens 1,737,000 · checkpoint 2026-06-11T04:02:50Z |
+| `.claude/state/cron/2026-06-11-overnight-run.md` | `1a34daee` | 228 lines, `# Overnight Triage Run — 2026-06-11` |
+| `docs/reports/app-health.html` | `1a34daee` | overall_score 86.9 / A- |
+
+**What happened:** a concurrent feature session shipped `8418bcc2 fix(nav):
+rivalry/nemesis buttons open the tape (v8.24.52, #39)` — which carried the 3
+pre-existing dirty files I had deliberately left untouched (`home.js`,
+`standings.js`, `_capture-chat.js`) **plus** my `engineer.json` (staged-but-uncommitted
+at the moment that session committed). The AMD-019/020 post-commit auto-clean cron
+then fired (`1a34daee`) and swept my remaining 3 staged outputs + routine churn.
+Net: **work intact, feat-provenance split** across two cron/feat commits instead of
+my single triage message — the known acceptable outcome of this race.
+
+**This commit** carries this observation addendum under the runbook's exact
+step-5 message format, so the `Overnight triage 2026-06-11` marker lands in the log
+truthfully (it labels a real change — this record — not an empty commit). Working
+tree was clean before this edit; nothing of mine was lost. **DO NOT push.**
