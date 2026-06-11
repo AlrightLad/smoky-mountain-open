@@ -230,20 +230,27 @@ var Router = (function() {
 // purchased cosmetic rings (equippedCosmetics.border) override the default.
 // Tier-specific rings (commissioner, Mr. Parbaugh, Founding Four) come in v8.1.4.
 
+// v8.24.73 — the avatar ring now ENCODES status instead of painting every
+// member brass. Brass used to be the default for everyone, which drowned the
+// Founding-Four signal (the whole point of the Find Players hierarchy) and
+// diluted brass app-wide (FIX-QUEUE #4). Now: equipped cosmetic > founder
+// brass > a quiet neutral hairline for regular members. The founder ring +
+// the founder star reinforce each other; cosmetics are the other brass cue.
+function _isFounderRing(p) { return !!(p && (p.founding || p.isFoundingFour)); }
 function playerFrameColor(p) {
-  if (!p) return '#B4893E';
+  if (!p) return 'var(--cb-mute-3)';
   // Cosmetic ring override (from shop purchase)
   if (p.equippedCosmetics && p.equippedCosmetics.border && p.equippedCosmetics.border !== "theme-default") {
     var equipped = (typeof shopFindItem === "function") ? shopFindItem(p.equippedCosmetics.border)
       : (typeof COSMETICS_CATALOG !== "undefined" ? COSMETICS_CATALOG : []).find(function(c) { return c.id === p.equippedCosmetics.border; });
     if (equipped) return equipped.preview;
   }
-  // Default: Clubhouse brass for all members
-  return '#B4893E';
+  // Founders wear the Clubhouse brass; everyone else a quiet hairline.
+  return _isFounderRing(p) ? '#B4893E' : 'var(--cb-mute-3)';
 }
 
 function playerRingShadow(p) {
-  if (!p) return '0 0 8px rgba(180,137,62,.5), 0 0 16px rgba(180,137,62,.25)';
+  if (!p) return '';
   // Animated rings handle their own shadows via keyframes
   if (p.equippedCosmetics && p.equippedCosmetics.border) {
     var animatedRings = ['border_pulse_gold','border_shimmer','border_rainbow_shift','border_neon_green','border_crimson_ember'];
@@ -253,8 +260,8 @@ function playerRingShadow(p) {
     var equipped = cosm.find(function(c) { return c.id === p.equippedCosmetics.border; });
     if (equipped) return '0 0 8px ' + equipped.preview + '50, 0 0 16px ' + equipped.preview + '20';
   }
-  // Default: Clubhouse brass glow
-  return '0 0 8px rgba(180,137,62,.5), 0 0 16px rgba(180,137,62,.25)';
+  // Founders keep the brass glow; regular members get none (quiet hairline).
+  return _isFounderRing(p) ? '0 0 8px rgba(180,137,62,.5), 0 0 16px rgba(180,137,62,.25)' : '';
 }
 
 // Returns full inline style for avatar ring (border + shadow + animation)
