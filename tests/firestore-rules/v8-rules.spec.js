@@ -1372,6 +1372,16 @@ async function runAll() {
       const db = authenticatedAs(USER_A);
       await assertSucceeds(db.collection('members').doc(USER_A).update({ bio: 'hi', founding: false }));
     });
+    await runTest('member CANNOT change their username (impersonation, v8.24.91)', async () => {
+      await seedMember(USER_A, { platformRole: 'user', username: 'marcus' });
+      const db = authenticatedAs(USER_A);
+      await assertFails(db.collection('members').doc(USER_A).update({ username: 'someoneelse' }));
+    });
+    await runTest('member CAN save profile with username unchanged', async () => {
+      await seedMember(USER_A, { platformRole: 'user', username: 'marcus' });
+      const db = authenticatedAs(USER_A);
+      await assertSucceeds(db.collection('members').doc(USER_A).update({ bio: 'x', username: 'marcus' }));
+    });
   });
 
   // ─────────────────────────────────────────────────────────────────

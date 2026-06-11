@@ -246,6 +246,16 @@ service cloud.firestore {
                      || request.resource.data.get('isFoundingFour', false) ==
                         resource.data.get('isFoundingFour', false)
                      || amIFounder()
+                   )
+                   // v8.24.91 — username immutable via client (set once at
+                   // create; the UI already labels it "Permanent"). Closes the
+                   // impersonation vector where saveMemberEdit could rename a
+                   // member to another's handle (page-sweep #12). Founder may fix.
+                   && (
+                     !('username' in request.resource.data)
+                     || request.resource.data.get('username', '') ==
+                        resource.data.get('username', '')
+                     || amIFounder()
                    );
       allow delete: if amIFounder();
     }
