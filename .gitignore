@@ -217,3 +217,4 @@ docs/reports/sessions.html
 /.claude/state/research/tee-intro-phases/
 /wg-*.png
 .claude/state/backups/
+.claude/state/sentry/events-*.json
