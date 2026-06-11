@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-11T05:08:34.134298Z",
+  "generated_at": "2026-06-11T05:13:00.347143Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 87.7,
   "overall_grade": "A-",
@@ -991,11 +991,11 @@
     "A12_operational": {
       "score": 90,
       "status": "green",
-      "label": "pipeline=green · 7 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=green · 6 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "7 of last 10 cron watcher runs hit skip-dirty",
+          "what": "6 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -1024,13 +1024,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "937b65d7",
-    "subject": "chore(reports): regen post v8.24.55",
-    "committed_at": "2026-06-11T01:07:13-04:00",
+    "sha": "ce3e944e",
+    "subject": "chore(audit): theme-verification + UI-audit capture artifacts (all 6 themes confirmed applying clean palettes)",
+    "committed_at": "2026-06-11T01:12:33-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 1
+    "total_files_touched": 4
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
