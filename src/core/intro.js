@@ -45,10 +45,10 @@
     try { return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { return false; }
   }
   function _enabled() {
-    // v8.24.78: still gated OFF by default while the rebuilt silhouette is
-    // being polished in the watch-review loop; flips to default-ON once it
-    // clears the Founder bar. (Set pb_intro_enabled="1" to preview.)
-    try { return localStorage.getItem("pb_intro_enabled") === "1"; } catch (e) { return false; }
+    // v8.24.80: ON by default — the rebuilt dawn-silhouette swing cleared the
+    // bar (was the bland stick figure, gated off). Members can opt out by
+    // setting pb_intro_enabled="0". Still once-per-session + reduced-motion-safe.
+    try { return localStorage.getItem("pb_intro_enabled") !== "0"; } catch (e) { return true; }
   }
   function _seen() {
     try { return sessionStorage.getItem("pb_intro_seen") === "1"; } catch (e) { return false; }
@@ -104,7 +104,7 @@
   // Golfer faces the viewer, right-handed, target = screen LEFT.
   function _scene() {
     return '' +
-    '<svg id="pbi-svg" viewBox="0 0 480 460" width="100%" height="auto" style="max-width:520px;display:block" aria-hidden="true">' +
+    '<svg id="pbi-svg" viewBox="0 0 480 460" width="100%" style="max-width:520px;display:block;height:auto" aria-hidden="true">' +
       '<defs>' +
         '<radialGradient id="pbi-sky" cx="38%" cy="78%" r="95%">' +
           '<stop offset="0%" stop-color="' + C.glow + '"/>' +
@@ -200,15 +200,22 @@
     var NX = HX, NY = HY - 52;
     _set("pbi-spine", { x1: HX, y1: HY, x2: NX, y2: NY });
     // shoulders: a line through the neck, rotated by shoulder turn (sh)
-    var shRad = p.sh * Math.PI / 180, SHW = 22;
+    var shRad = p.sh * Math.PI / 180, SHW = 15;
     var lsx = NX - Math.cos(shRad) * SHW, lsy = NY - Math.sin(shRad) * SHW; // lead shoulder (target/left)
     var tsx = NX + Math.cos(shRad) * SHW, tsy = NY + Math.sin(shRad) * SHW; // trail shoulder (right)
     _set("pbi-shoulders", { x1: lsx, y1: lsy, x2: tsx, y2: tsy });
     // head + cap: above the neck, tilts slightly with shoulder turn but stays down (small)
-    var hx = NX + Math.sin(shRad) * 3, hy = NY - 20;
+    var hx = NX + Math.sin(shRad) * 3, hy = NY - 19;
     _set("pbi-head", { cx: hx, cy: hy });
-    // cap brim toward target (left)
-    _set("pbi-cap", { d: "M " + (hx-14) + " " + (hy-3) + " Q " + (hx-2) + " " + (hy-16) + " " + (hx+13) + " " + (hy-9) + " L " + (hx+11) + " " + (hy-4) + " Q " + (hx-2) + " " + (hy-11) + " " + (hx-13) + " " + (hy+1) + " Z" });
+    // Ball cap: a low crown wedge on top + a bill pointing toward the target
+    // (screen left) at the brow line. Reads as "golfer" in silhouette. The bill
+    // direction flips with the body turn so it still points target-ward at the
+    // finish (when the head has turned through). dir = -1 before impact (facing
+    // target/left over the ball), +1 after (chest to target).
+    var bill = (p.sh >= 12 ? 1 : -1);
+    var bx = hx + bill * 16, by = hy - 1;
+    _set("pbi-cap", { d: "M " + (hx - bill*2) + " " + (hy-12) + " Q " + (hx + bill*14) + " " + (hy-13) + " " + (hx + bill*13) + " " + (hy-4) +
+      " L " + bx + " " + (by-1) + " L " + bx + " " + (by+3) + " L " + (hx + bill*4) + " " + (hy+4) + " Z" });
 
     // arm pivots at the shoulder midpoint between the two shoulders, biased to trail
     var SX = NX, SY = NY + 2, ARM = 62, SHAFT = 66;

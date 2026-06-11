@@ -7,8 +7,8 @@
 //      Escape closes + cleans up (replaced 24 native confirm()s).
 //   2. pbCelebrate — exposed; sessionStorage throttle blocks same-key
 //      refire (pb_celebrate_* whitelist).
-//   3. pbTeeIntro — exposed; maybeShow() is a NO-OP while the
-//      pb_intro_enabled flag is unset (ships dark).
+//   3. pbTeeIntro — ON by default (v8.24.80 dawn silhouette); maybeShow()
+//      mounts the overlay unless pb_intro_enabled==='0' (opt-out).
 //   4. pbInvitesLeft — 25-invite floor over a legacy maxInvites:3 profile;
 //      founder profile gets Infinity.
 //   5. Router.toast delegation — legacy call lands in #pb-toast-stack.
@@ -44,12 +44,21 @@ module.exports = {
           try { out.celebrateThrottled = sessionStorage.getItem('pb_celebrate_s27') !== null; } catch (e) {}
         }
 
-        // ── 3. pbTeeIntro dark by default ──
+        // ── 3. pbTeeIntro ON by default (v8.24.80) + opt-out respected ──
+        // Deterministic checks only (mounting depends on prefers-reduced-motion,
+        // which headless reports inconsistently): the fn is exposed, and the
+        // opt-out flag reliably suppresses. "ON by default" is verified visually.
         out.introFn = typeof pbTeeIntro !== 'undefined' && !!pbTeeIntro.maybeShow;
         if (out.introFn) {
+          // The intro is ON by default now, so it may have already auto-mounted
+          // on load — tear that overlay down before testing the opt-out gate.
+          if (pbTeeIntro.skip) pbTeeIntro.skip();
+          var _pre = document.getElementById('pbIntro'); if (_pre && _pre.parentNode) _pre.parentNode.removeChild(_pre);
+          try { sessionStorage.removeItem('pb_intro_seen'); localStorage.setItem('pb_intro_enabled', '0'); } catch (e) {}
+          var showedOptOut = pbTeeIntro.maybeShow();
+          out.introOptOut = showedOptOut === false && !document.getElementById('pbIntro');
+          var _ie = document.getElementById('pbIntro'); if (_ie && _ie.parentNode) _ie.parentNode.removeChild(_ie);
           try { localStorage.removeItem('pb_intro_enabled'); } catch (e) {}
-          var showed = pbTeeIntro.maybeShow();
-          out.introStaysDark = showed === false && !document.getElementById('pbIntro');
         }
 
         // ── 4. invite floor ──
@@ -103,7 +112,7 @@ module.exports = {
     if (r.confirmDangerBg !== 'rgb(142, 58, 58)') failures.push('danger button not claret: ' + r.confirmDangerBg);
     if (!r.confirmCleaned) failures.push('Escape did not clean up pbConfirm');
     if (!r.celebrateFn || r.celebrateThrottled !== true) failures.push('pbCelebrate missing or throttle key not written');
-    if (!r.introFn || r.introStaysDark !== true) failures.push('pbTeeIntro missing or NOT dark by default');
+    if (!r.introFn || r.introOptOut !== true) failures.push('pbTeeIntro fn missing or opt-out broken');
     if (!r.invitesFn || !r.floorApplied || !r.founderInfinite) failures.push('pbInvitesLeft floor/founder wrong');
     if (!r.toastDelegated) failures.push('Router.toast did not land in pb-toast-stack');
     if (!r.themeFlips) failures.push('applyTheme did not flip the palette');

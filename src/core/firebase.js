@@ -761,8 +761,9 @@ function enterApp() {
     Router.go("onboarding");
   } else {
     Router.go("home");
-    // v8.24.29 — tee-shot welcome intro (flag-gated, once/session, post-sign-in
-    // per Founder; no-ops unless pb_intro_enabled==='1').
+    // v8.24.80 — tee-shot welcome intro (dawn pro-golfer silhouette swing).
+    // ON by default now (was the bland stick figure, gated off); once/session,
+    // post-sign-in, reduced-motion-safe. Opt out via pb_intro_enabled='0'.
     if (typeof pbTeeIntro !== "undefined" && pbTeeIntro && pbTeeIntro.maybeShow) {
       setTimeout(function() { pbTeeIntro.maybeShow(); }, 400);
     }
