@@ -822,9 +822,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-11T03:12:01.324873Z",
+  "generated_at": "2026-06-11T03:23:23.813902Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 87.4,
+  "overall_score": 86.9,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -838,9 +838,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 92.4,
+    "pre_deduction_score": 91.9,
     "deduction": 5,
-    "post_deduction_score": 87.4
+    "post_deduction_score": 86.9
   },
   "dimensions": {
     "A1_roadmap": {
@@ -956,7 +956,7 @@
     "A7_data_integrity": {
       "score": 100,
       "status": "green",
-      "label": "798 lines rules · 26 indexes; missing coverage matrix=False, schema validation=False",
+      "label": "836 lines rules · 26 indexes; missing coverage matrix=False, schema validation=False",
       "source": "firestore.rules + firestore.indexes.json + docs/ + functions/index.js + scripts/migrations/",
       "weak_points": []
     },
@@ -989,11 +989,17 @@
       "weak_points": []
     },
     "A12_operational": {
-      "score": 85,
-      "status": "green",
-      "label": "pipeline=yellow · 2 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "score": 75,
+      "status": "yellow",
+      "label": "pipeline=yellow · 4 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
-      "weak_points": [],
+      "weak_points": [
+        {
+          "what": "4 of last 10 cron watcher runs hit skip-dirty",
+          "where": "scripts/cron/logs/*-downloads-watcher.log",
+          "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
+        }
+      ],
       "details": {
         "watcher_last_status": "PASS",
         "watcher_exit_reason": "skip-dirty"
@@ -1006,6 +1012,12 @@
       "where": "src/pages/members-detail.js",
       "what_action": "Split into modules per AMD-027 budget",
       "dimension": "A5_code_quality"
+    },
+    {
+      "what": "4 of last 10 cron watcher runs hit skip-dirty",
+      "where": "scripts/cron/logs/*-downloads-watcher.log",
+      "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
+      "dimension": "A12_operational"
     }
   ],
   "founder_attention": [],
@@ -1015,22 +1027,24 @@
       "where": "src/pages/members-detail.js",
       "what_action": "Split into modules per AMD-027 budget",
       "dimension": "A5_code_quality"
+    },
+    {
+      "what": "4 of last 10 cron watcher runs hit skip-dirty",
+      "where": "scripts/cron/logs/*-downloads-watcher.log",
+      "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
+      "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "eac9a351",
-    "subject": "feat(chat): round chips â€” option B, founder decision 2026-06-11 (v8.24.48)",
-    "committed_at": "2026-06-10T23:11:34-04:00",
+    "sha": "820a26c2",
+    "subject": "feat(arch): multi-league round attribution â€” migration run + rules + dual-write (v8.24.49, #35)",
+    "committed_at": "2026-06-10T23:22:58-04:00",
     "trigger": "app-commit",
     "is_app_commit": true,
     "app_files_touched": [
       "public/sw.js",
       "src/core/sync.js",
-      "src/core/utils.js",
-      "src/pages/caddynotes.js",
-      "src/pages/chat.js",
-      "src/pages/leagues.js",
-      "src/pages/playnow-scoring.js"
+      "src/core/utils.js"
     ],
     "total_files_touched": 9
   },
