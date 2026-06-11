@@ -1037,3 +1037,59 @@ exports.expireSuspensionsAndTransfers = functions
 
     return null;
   });
+
+// ══════════════════════════════════════════════════════════════════════
+// purchaseCosmetic (callable) — v8.24.59, parcoin hardening (sec #17,
+// founder-approved "harden parcoin"). Server-authoritative cosmetic
+// purchase: the ONLY path that may add to members/{uid}.ownedCosmetics or
+// deduct parcoins for a purchase. Reads the price from the world-readable,
+// founder-written shop_catalog/{itemId} doc (seeded by
+// scripts/seed-shop-catalog.mjs), so the client cannot dictate price or
+// grant itself items for free. Idempotent on (uid,itemId): re-buying an
+// owned item is a no-op success, never a double-charge.
+//
+// NOT YET DEPLOYED — ships on the coordinated deploy that also flips the
+// rules to lock ownedCosmetics/parcoins to function-only (gate 1).
+// The earn side (grantCoins, server-derived award amounts) is the larger
+// staged follow-on; see task-queue/founder/parcoin-hardening.md.
+// ══════════════════════════════════════════════════════════════════════
+exports.purchaseCosmetic = functions
+  .region('us-central1')
+  .https.onCall(async (data, context) => {
+    if (!context.auth) throw new functions.https.HttpsError('unauthenticated', 'Sign in required');
+    const uid = context.auth.uid;
+    const itemId = (data && typeof data.itemId === 'string') ? data.itemId.slice(0, 64) : '';
+    if (!/^[a-z0-9_]+$/i.test(itemId)) throw new functions.https.HttpsError('invalid-argument', 'Bad item id');
+
+    // Rate limit (anti-spam): 30 purchases/min/uid.
+    const limit = rateLimit.check('purchaseCosmetic', uid, rateLimit.LIMITS.purchaseCosmetic);
+    if (!limit.allowed) throw new functions.https.HttpsError('resource-exhausted', 'Slow down a moment.');
+
+    const catSnap = await db.collection('shop_catalog').doc(itemId).get();
+    if (!catSnap.exists) throw new functions.https.HttpsError('not-found', 'No such item');
+    const item = catSnap.data();
+    if (item.reserved || item.arriving || item.earnedBy) throw new functions.https.HttpsError('failed-precondition', 'This item is not for sale.');
+    const price = typeof item.price === 'number' ? item.price : NaN;
+    if (!(price >= 0)) throw new functions.https.HttpsError('failed-precondition', 'Item has no price');
+
+    const memberRef = db.collection('members').doc(uid);
+    const result = await db.runTransaction(async (tx) => {
+      const m = await tx.get(memberRef);
+      if (!m.exists) throw new functions.https.HttpsError('failed-precondition', 'No member profile');
+      const md = m.data();
+      const owned = Array.isArray(md.ownedCosmetics) ? md.ownedCosmetics : [];
+      if (owned.indexOf(itemId) !== -1) return { ok: true, alreadyOwned: true, balance: md.parcoins || 0 };
+      const bal = md.parcoins || 0;
+      if (bal < price) throw new functions.https.HttpsError('failed-precondition', 'Not enough ParCoins');
+      tx.update(memberRef, {
+        parcoins: FieldValue.increment(-price),
+        ownedCosmetics: FieldValue.arrayUnion(itemId),
+      });
+      tx.set(db.collection('parcoin_transactions').doc(), {
+        uid, amount: -price, reason: 'purchase', label: 'Purchased: ' + (item.name || itemId),
+        itemId, createdAt: FieldValue.serverTimestamp(), server: true,
+      });
+      return { ok: true, alreadyOwned: false, balance: bal - price };
+    });
+    return result;
+  });

@@ -84,6 +84,7 @@ const LIMITS = {
   joinLeague: 10,
   searchCourses: 60,
   deleteMyAccount: 5,
+  purchaseCosmetic: 30,
 };
 
 module.exports = { check, clientIp, LIMITS, WINDOW_MS };
