@@ -156,7 +156,12 @@ function syncCoursesFromFirestore() {
 }
 
 function syncMember(m) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(m)); d.updatedAt=fsTimestamp(); delete d.photo; db.collection("members").doc(m.id).set(d,{merge:true}).catch(function(){}); }
-function syncRound(r) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(r)); d.createdAt=fsTimestamp(); d.leagueId=getActiveLeague(); db.collection("rounds").doc(r.id||genId()).set(d,{merge:true}).catch(function(){}); }
+// v8.24.49 — multi-league dual-write window (founder-approved 2026-06-11):
+// every round carries BOTH the legacy scalar leagueId and the new
+// leagueIds[] array. Readers migrate per-surface later; the scalar retires
+// only in post-cutover cleanup. A round already carrying leagueIds (future
+// multi-publish UI) keeps its own list.
+function syncRound(r) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(r)); d.createdAt=fsTimestamp(); d.leagueId=getActiveLeague(); if (!Array.isArray(d.leagueIds) || !d.leagueIds.length) d.leagueIds = [d.leagueId]; db.collection("rounds").doc(r.id||genId()).set(d,{merge:true}).catch(function(){}); }
 
 // Compute and persist player stats to Firestore member doc after any round change.
 // IMPORTANT: Stats are GLOBAL — calculated from ALL rounds across ALL leagues.

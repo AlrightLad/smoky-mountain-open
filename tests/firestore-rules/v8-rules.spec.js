@@ -2145,6 +2145,100 @@ async function runAll() {
   });
 
   // ─────────────────────────────────────────────────────────────────
+  // MULTI-LEAGUE ROUNDS (v8.24.49 — founder-approved architecture).
+  // Seeds BOTH real shapes: dual-write docs (scalar + leagueIds[]) the
+  // updated app writes, and scalar-only docs older clients write during
+  // the migration window.
+  // ─────────────────────────────────────────────────────────────────
+
+  function mlRound(overrides) {
+    return Object.assign({
+      id: 'r1', player: USER_A, score: 84, date: '2026-06-11',
+      leagueId: LEAGUE_A, leagueIds: [LEAGUE_A],
+    }, overrides || {});
+  }
+
+  await runTest('ml-rounds: dual-write create by league member succeeds', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await seedDoc('leagues/' + LEAGUE_A, { memberUids: [USER_A] });
+    await assertSucceeds(authenticatedAs(USER_A).collection('rounds').doc('ml1').set(mlRound()));
+  });
+
+  await runTest('ml-rounds: scalar-only create (older client, migration window) succeeds', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await seedDoc('leagues/' + LEAGUE_A, { memberUids: [USER_A] });
+    var r = mlRound({ id: 'ml2' }); delete r.leagueIds;
+    await assertSucceeds(authenticatedAs(USER_A).collection('rounds').doc('ml2').set(r));
+  });
+
+  await runTest('ml-rounds: solo round (no league fields) succeeds — personal-first', async () => {
+    await withPlatformRole(USER_A, 'user');
+    var r = mlRound({ id: 'ml3' }); delete r.leagueIds; delete r.leagueId;
+    await assertSucceeds(authenticatedAs(USER_A).collection('rounds').doc('ml3').set(r));
+  });
+
+  await runTest('ml-rounds: create publishing to a league the author is NOT in fails', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await seedDoc('leagues/' + LEAGUE_A, { memberUids: [USER_A] });
+    await seedDoc('leagues/' + LEAGUE_B, { memberUids: [USER_B] });
+    await assertFails(authenticatedAs(USER_A).collection('rounds').doc('ml4').set(mlRound({ leagueId: LEAGUE_B, leagueIds: [LEAGUE_B] })));
+  });
+
+  await runTest('ml-rounds: create with >4 leagues fails (F9 cap)', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await seedDoc('leagues/' + LEAGUE_A, { memberUids: [USER_A] });
+    await assertFails(authenticatedAs(USER_A).collection('rounds').doc('ml5').set(mlRound({ leagueIds: [LEAGUE_A, 'x2', 'x3', 'x4', 'x5'] })));
+  });
+
+  await runTest('ml-rounds: banned-in-one-published-league blocks create', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await seedDoc('leagues/' + LEAGUE_A, { memberUids: [USER_A] });
+    await seedDoc('leagues/' + LEAGUE_B, { memberUids: [USER_A], bans: [USER_A] });
+    await assertFails(authenticatedAs(USER_A).collection('rounds').doc('ml6').set(mlRound({ leagueIds: [LEAGUE_A, LEAGUE_B] })));
+  });
+
+  await runTest('ml-rounds: author cannot edit leagueIds after create (anti-sandbag)', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await seedDoc('leagues/' + LEAGUE_A, { memberUids: [USER_A] });
+    await seedDoc('leagues/' + LEAGUE_B, { memberUids: [USER_A] });
+    await seedDoc('rounds/ml7', mlRound({ id: 'ml7' }));
+    await assertFails(authenticatedAs(USER_A).collection('rounds').doc('ml7').update({ leagueIds: [LEAGUE_A, LEAGUE_B] }));
+  });
+
+  await runTest('ml-rounds: author still edits own round (non-leagueIds fields)', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await seedDoc('leagues/' + LEAGUE_A, { memberUids: [USER_A] });
+    await seedDoc('rounds/ml8', mlRound({ id: 'ml8' }));
+    await assertSucceeds(authenticatedAs(USER_A).collection('rounds').doc('ml8').update({ score: 82 }));
+  });
+
+  await runTest('ml-rounds: member of ANY published league can engage (likes)', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await withPlatformRole(USER_B, 'user');
+    await seedDoc('leagues/' + LEAGUE_A, { memberUids: [USER_A] });
+    await seedDoc('leagues/' + LEAGUE_B, { memberUids: [USER_B] });
+    await seedDoc('rounds/ml9', mlRound({ id: 'ml9', leagueIds: [LEAGUE_A, LEAGUE_B] }));
+    await assertSucceeds(authenticatedAs(USER_B).collection('rounds').doc('ml9').update({ likes: [USER_B] }));
+  });
+
+  await runTest('ml-rounds: engagement on a SCALAR-ONLY doc still works (dual-read shim)', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await withPlatformRole(USER_B, 'user');
+    await seedDoc('leagues/' + LEAGUE_A, { memberUids: [USER_A, USER_B] });
+    var r = mlRound({ id: 'ml10', player: USER_A }); delete r.leagueIds;
+    await seedDoc('rounds/ml10', r);
+    await assertSucceeds(authenticatedAs(USER_B).collection('rounds').doc('ml10').update({ likes: [USER_B] }));
+  });
+
+  await runTest('ml-rounds: non-member of any published league cannot engage', async () => {
+    await withPlatformRole(USER_A, 'user');
+    await withPlatformRole(USER_C, 'user');
+    await seedDoc('leagues/' + LEAGUE_A, { memberUids: [USER_A] });
+    await seedDoc('rounds/ml11', mlRound({ id: 'ml11' }));
+    await assertFails(authenticatedAs(USER_C).collection('rounds').doc('ml11').update({ likes: [USER_C] }));
+  });
+
+  // ─────────────────────────────────────────────────────────────────
   // WRAP UP
   // ─────────────────────────────────────────────────────────────────
 

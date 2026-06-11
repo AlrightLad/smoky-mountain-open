@@ -305,12 +305,43 @@ service cloud.firestore {
     }
 
     // ─── Rounds (league-scoped) ─────────────────────────────────────
+    // ─── helpers: multi-league round attribution (v8.24.49, F9 4-slot cap).
+    // roundLeagueList is the dual-read shim: prefer leagueIds[], fall back to
+    // [leagueId] so scalar-only docs (older clients during the dual-write
+    // window) keep identical semantics. Rules cannot loop — membership and
+    // ban checks are unrolled to the 4-slot cap, keeping total doc accesses
+    // under the 10-call limit (4 league gets + member doc + block doc ≈ 6).
+    function roundLeagueList(data) {
+      return ('leagueIds' in data && data.leagueIds is list && data.leagueIds.size() > 0)
+        ? data.leagueIds
+        : (('leagueId' in data && data.leagueId != null) ? [data.leagueId] : []);
+    }
+    function memberOfAnyListedLeague(lgs) {
+      return (lgs.size() > 0 && isLeagueMember(lgs[0], uid()))
+          || (lgs.size() > 1 && isLeagueMember(lgs[1], uid()))
+          || (lgs.size() > 2 && isLeagueMember(lgs[2], uid()))
+          || (lgs.size() > 3 && isLeagueMember(lgs[3], uid()));
+    }
+    function bannedFromAnyListedLeague(lgs) {
+      return (lgs.size() > 0 && isBannedFromLeague(lgs[0], uid()))
+          || (lgs.size() > 1 && isBannedFromLeague(lgs[1], uid()))
+          || (lgs.size() > 2 && isBannedFromLeague(lgs[2], uid()))
+          || (lgs.size() > 3 && isBannedFromLeague(lgs[3], uid()));
+    }
+
     match /rounds/{roundId} {
       allow read: if amIReadable();
+      // create (v8.24.49 multi-league): author-only; every published league
+      // must be one the author belongs to and is not banned from; cap 4 (F9).
+      // Solo rounds (no league at all) are allowed — rounds are
+      // personal-first. The dual-read shim accepts scalar-only writers
+      // during the migration window.
       allow create: if amIActive()
                    && request.resource.data.player == uid()
-                   && amILeagueMember(request.resource.data.leagueId)
-                   && !isBannedFromLeague(request.resource.data.leagueId, uid());
+                   && (!('leagueIds' in request.resource.data) || (request.resource.data.leagueIds is list && request.resource.data.leagueIds.size() <= 4))
+                   && (roundLeagueList(request.resource.data).size() == 0
+                       || (memberOfAnyListedLeague(roundLeagueList(request.resource.data))
+                           && !bannedFromAnyListedLeague(roundLeagueList(request.resource.data))));
       // v8.20.0 (Ship 5+5) — author / leadership / founder retain full update
       // authority. League members may update engagement subfields ('likes',
       // 'comments', 'commentLikes') without owning the doc. Same
@@ -324,11 +355,18 @@ service cloud.firestore {
       // like / comment / reaction to the blocker's round (server-enforced;
       // task-queue/founder/block-server-enforcement.md). Author / leadership
       // / founder branches are unaffected — moderation + self-edit stay open.
+      // update (v8.24.49): author keeps full self-edit EXCEPT re-publishing —
+      // leagueIds is immutable after create (anti-sandbag, decision doc open
+      // question 2). Leadership moderation covers the first two listed
+      // leagues (doc-access budget; founder covers the rest). Engagement
+      // stays open to members of ANY published league, dual-read.
       allow update: if amIActive() && (
-        resource.data.player == uid()
-        || amILeagueLeadership(resource.data.leagueId)
+        (resource.data.player == uid()
+         && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['leagueIds']))
+        || (roundLeagueList(resource.data).size() > 0 && amILeagueLeadership(roundLeagueList(resource.data)[0]))
+        || (roundLeagueList(resource.data).size() > 1 && amILeagueLeadership(roundLeagueList(resource.data)[1]))
         || amIFounder()
-        || (amILeagueMember(resource.data.leagueId)
+        || (memberOfAnyListedLeague(roundLeagueList(resource.data))
             && request.resource.data.diff(resource.data).affectedKeys()
                   .hasOnly(['likes', 'comments', 'commentLikes', 'reactions'])
             && !isBlockedBy(resource.data.player))

@@ -216,3 +216,4 @@ docs/reports/sessions.html
 /.claude/state/research/_evidence/
 /.claude/state/research/tee-intro-phases/
 /wg-*.png
+.claude/state/backups/
