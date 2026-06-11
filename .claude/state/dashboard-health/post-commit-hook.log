@@ -1,1 +1,17 @@
 === post-commit hook fired 2026-06-11T19:10:49Z HEAD=529f64a8 ===
+[scaffold-from-templates] done: scaffolded=0 skipped=15
+
+--- scripts/scan-shipped-proposals.py ---
+[scan-shipped] approved/ is empty; nothing to scan
+
+--- scripts/aggregate-telemetry.py ---
+[aggregate] wrote .claude\state\telemetry\aggregates\current-snapshot.json (write-content-changed)
+[aggregate] meter_status=wired-real
+[aggregate] events=32083 handoffs=1 bubbles=7 proposals_pending=0
+
+--- scripts/ingest-session-transcripts.py ---
+[ingest-session-transcripts] scanned 14b32e71-e98c-4be1-819e-5288e4bfd93c.jsonl: +54 new entries (offset 93300214\u219294858284)
+[ingest-session-transcripts] scanned 307 JSONL file(s), found 54 new assistant turns
+[ingest-session-transcripts] wrote session-transcript-summary.json (374 buckets, 17228147689 total tokens, 313 sessions) [write-content-changed]
+
+--- scripts/aggregate-token-usage.py ---
