@@ -59,7 +59,7 @@ Router.register("more", function() {
   h += section("Competition", [
     {icon:icn('<path d="M13 10V3L4 14h7v7l9-11h-7z"/>'), label:"Wagers", sub:"Head-to-head coin bets", page:"wagers"},
     {icon:icn('<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>'), label:"Bounty Board", sub:"Post and claim coin bounties", page:"bounties"},
-    {icon:icn('<path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M19 21l2-2"/><path d="M14.5 6.5L18 3h3v3l-3.5 4"/><path d="M5 14l4 4"/><path d="M7 17l-3 3"/><path d="M3 19l2 2"/>'), label:"Challenges", sub:"H2H matches and rivalries", page:"challenges"}
+    {icon:icn('<path d="M4 21h16"/><path d="M6.5 21L12.5 4"/><path d="M12.5 4l4.2 1.4-4.2 1.4"/><path d="M17.5 21L11.5 4"/><path d="M11.5 4L7.3 5.4l4.2 1.4"/>'), label:"Challenges", sub:"H2H matches and rivalries", page:"challenges"}
   ]);
 
   // ── The Season ── (v8.24.13 — baseline IA fix: Standings, Feed, Records,
@@ -85,7 +85,7 @@ Router.register("more", function() {
     {icon:icn('<circle cx="9" cy="9" r="4"/><circle cx="15" cy="9" r="4"/><path d="M4 20c0-2.8 2.2-5 5-5h6c2.8 0 5 2.2 5 5"/>'), label:"Scramble Teams", sub:"2v2, 3v3, 4v4 W-L records", page:"scramble"},
     {icon:icn('<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>'), label:"Tee Times", sub:"Post and RSVP", page:"teetimes"},
     {icon:icn('<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>'), label:"Clubhouse Chat", sub:"Trash talk central", page:"chat"},
-    {icon:icn('<path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 014-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 01-4 4H3"/>'), label:"Drills Library", sub:"Practice drills for every skill", page:"drills"},
+    {icon:icn('<path d="M6.5 10.5h11l-1.3 9.5H7.8z"/><circle cx="9.5" cy="8.4" r="1.3"/><circle cx="12" cy="7.4" r="1.3"/><circle cx="14.5" cy="8.4" r="1.3"/>'), label:"Drills Library", sub:"Practice drills for every skill", page:"drills"},
     {icon:icn('<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1.5" fill="currentColor" stroke="none"/><circle cx="8.5" cy="15.5" r="1.5" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1.5" fill="currentColor" stroke="none"/>'), label:"Party Games", sub:"Clubhouse games for the group", page:"partygames"}
   ]);
 
