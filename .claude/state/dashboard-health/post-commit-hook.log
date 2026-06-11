@@ -1,48 +1,59 @@
-=== post-commit hook fired 2026-06-11T05:12:37Z HEAD=ce3e944e ===
-[scaffold-from-templates] done: scaffolded=0 skipped=15
+=== post-commit hook fired 2026-06-11T08:26:59Z HEAD=286bfe3 ===
+[scaffold-from-templates] scaffolded activity.html
+[scaffold-from-templates] scaffolded amendments.html
+[scaffold-from-templates] scaffolded dashboard.html
+[scaffold-from-templates] scaffolded design-system.html
+[scaffold-from-templates] scaffolded discussion-bubbles.html
+[scaffold-from-templates] scaffolded escalations.html
+[scaffold-from-templates] scaffolded founder-checklist.html
+[scaffold-from-templates] scaffolded index.html
+[scaffold-from-templates] scaffolded main-flows.html
+[scaffold-from-templates] scaffolded proposals.html
+[scaffold-from-templates] scaffolded sessions.html
+[scaffold-from-templates] scaffolded token-usage.html
+[scaffold-from-templates] scaffolded _assets/
+[scaffold-from-templates] done: scaffolded=13 skipped=2
 
 --- scripts/scan-shipped-proposals.py ---
 [scan-shipped] approved/ is empty; nothing to scan
 
 --- scripts/aggregate-telemetry.py ---
-[aggregate] wrote .claude\state\telemetry\aggregates\current-snapshot.json (write-content-changed)
-[aggregate] meter_status=wired-real
-[aggregate] events=31244 handoffs=1 bubbles=7 proposals_pending=0
+[aggregate] wrote .claude/state/telemetry/aggregates/current-snapshot.json (write-no-prior-file)
+[aggregate] meter_status=gap-per-F1a
+[aggregate] events=2 handoffs=1 bubbles=7 proposals_pending=0
 
 --- scripts/ingest-session-transcripts.py ---
-[ingest-session-transcripts] scanned 14b32e71-e98c-4be1-819e-5288e4bfd93c.jsonl: +10 new entries (offset 68109283\u219268448816)
-[ingest-session-transcripts] scanned 307 JSONL file(s), found 10 new assistant turns
-[ingest-session-transcripts] wrote session-transcript-summary.json (373 buckets, 16540805522 total tokens, 313 sessions) [write-content-changed]
+[ingest-session-transcripts] transcripts dir not found: /home/runner/.claude/projects/C--Users-Zach-smoky-mountain-open
 
 --- scripts/aggregate-token-usage.py ---
-[aggregate-token] real_events=374 estimated_events=17860 manual_entries=0
-[aggregate-token] all-time: real=16540907522 estimated=19484480 manual=0
-[aggregate-token] snapshot write=True (write-content-changed) -> .claude\state\telemetry\aggregates\token-usage-snapshot.json
-[aggregate-token] cursor   write=True (write-content-changed) -> .claude\state\telemetry\aggregates\.token-usage-cursor.json
+[aggregate-token] real_events=373 estimated_events=0 manual_entries=0
+[aggregate-token] all-time: real=16540805522 estimated=0 manual=0
+[aggregate-token] snapshot write=True (write-no-prior-file) -> .claude/state/telemetry/aggregates/token-usage-snapshot.json
+[aggregate-token] cursor   write=True (write-no-prior-file) -> .claude/state/telemetry/aggregates/.token-usage-cursor.json
 
 --- scripts/aggregate-test-health.py ---
-[aggregate-test-health] OK status=green timestamp=2026-06-11T05:12:44Z write=False (skip-idempotent-grace-content-unchanged-1110027s)
+[aggregate-test-health] OK status=unknown timestamp=2026-06-11T08:26:59Z write=True (write-no-prior-file)
 
 --- scripts/aggregate-security-health.py ---
-[aggregate-security-health] OK status=green cred_leaks=0 vuln_deps=0 write=False (skip-idempotent-grace-content-unchanged-1671891s)
+[aggregate-security-health] OK status=green cred_leaks=0 vuln_deps=0 write=True (write-no-prior-file)
 
 --- scripts/aggregate-approvals-pipeline.py ---
-[aggregate-approvals-pipeline] OK status=green summary=watcher no-new-files 2.0min ago � 2 in inbox write=True (write-content-changed)
+[aggregate-approvals-pipeline] OK status=missing summary=no downloads-watcher logs found write=True (write-no-prior-file)
 
 --- scripts/aggregate-architecture-review.py ---
-[aggregate-architecture-review] OK status=yellow findings=3 pending_recs=0 write=False (skip-idempotent-grace-content-unchanged-1531s)
+[aggregate-architecture-review] OK status=yellow findings=3 pending_recs=0 write=True (write-no-prior-file)
 
 --- scripts/aggregate-fiq-status.py ---
-[aggregate-fiq-status] OK status=green declared=26 deployed=26 write=False (skip-idempotent-grace-content-unchanged-108033s)
+[aggregate-fiq-status] OK status=unknown declared=26 deployed=None write=True (write-no-prior-file)
 
 --- scripts/aggregate-self-tests.py ---
+[aggregate-self-tests] FAIL (1 aggregators):
+  aggregate-fiq-status: parity-fail: source-detected but status=unknown
 [aggregate-self-tests] starting D40 parity checks across 5 aggregators
-  [aggregate-test-health] PASS status=green age=1110032s [content-stable 1110032s, idempotent skip]
-  [aggregate-security-health] PASS status=green age=1671894s [content-stable 1671894s, idempotent skip]
-  [aggregate-approvals-pipeline] PASS status=green age=-2s
-  [aggregate-architecture-review] PASS status=yellow age=1533s
-  [aggregate-fiq-status] PASS status=green age=108033s [content-stable 108033s, idempotent skip]
-[aggregate-self-tests] OK all 5 aggregators pass parity
+  [aggregate-test-health] PASS status=unknown age=15s
+  [aggregate-security-health] PASS status=green age=15s
+  [aggregate-approvals-pipeline] PASS status=missing age=1s
+  [aggregate-architecture-review] PASS status=yellow age=1s
 
 --- scripts/inject-health-banners.py ---
 [inject-health-banners] banner-architecture      already-present
@@ -70,8 +81,8 @@
 
 --- scripts/regen-dashboard.py ---
 [regen-dashboard] OK   dashboard.html
-[regen-dashboard] meter_status=wired-real
-[regen-dashboard] handoffs=10 ships=10 proposals_pending=0 bubbles=7 events=31244
+[regen-dashboard] meter_status=gap-per-F1a
+[regen-dashboard] handoffs=4 ships=10 proposals_pending=0 bubbles=7 events=2
 
 --- scripts/regen-main-flows.py ---
 [regen-main-flows] WARN: 6 orphan components in grid (referenced by no flow's path):
@@ -85,7 +96,7 @@
 [regen-main-flows] 6 columns, 47 components, 62 flows; orphans=6
 
 --- scripts/regen-activity.py ---
-[regen-activity] OK   activity.html � total=500 (handoffs=1 telemetry=417 commits=1091)
+[regen-activity] OK   activity.html — total=5 (handoffs=1 telemetry=1 commits=3)
 
 --- scripts/dry-run-regen-ops-views.py ---
 [regen] 7 bubbles (activity.html owned by regen-activity.py; proposals.html owned by regen-proposals.py)
@@ -93,21 +104,21 @@
 
 --- scripts/regen-token-usage.py ---
 [regen-token-usage] OK   token-usage.html
-[regen-token-usage] all-time: real=16540907522 estimated=19484480 manual=0
-[regen-token-usage] pie_views slices: agent=3 work=2 session_top10=10
+[regen-token-usage] all-time: real=16540805522 estimated=0 manual=0
+[regen-token-usage] pie_views slices: agent=1 work=1 session_top10=10
 
 --- scripts/consolidate-lighthouse.py ---
-Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
-  performance       : 83
-  accessibility     : 95
-  best-practices    : 93
-  seo               : 92
+Consolidated 0 pages -> .claude/state/aggregates/lighthouse-scores.json
+  performance       : None
+  accessibility     : None
+  best-practices    : None
+  seo               : None
 
 --- scripts/aggregate-app-health.py ---
-[aggregate-app-health] overall=A- (87.7) � 1 attention items � .claude\state\aggregates\app-health.json
+[aggregate-app-health] overall=C+ (68.0) · 4 attention items · .claude/state/aggregates/app-health.json
 
 --- scripts/regen-app-health.py ---
-[regen-app-health] OK  overall=A- (87.7) � 12 dimensions � docs\reports\app-health.html
+[regen-app-health] OK  overall=C+ (68.0) · 12 dimensions · docs/reports/app-health.html
 
 --- scripts/regen-sessions.py ---
 [regen-sessions] OK   sessions.html 1 sessions
@@ -121,29 +132,31 @@ Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
 
 --- scripts/regen-index.py ---
 [regen-index] OK   index.html
-[regen-index] ships=1 proposals_pending=0 bubbles=1 halt=none git=ce3e944e
+[regen-index] ships=1 proposals_pending=0 bubbles=1 halt=none git=286bfe3f
 
 --- scripts/dashboard-freshness-sentinel.py ---
-[dashboard-freshness] status=green ok=11 repaired=1 unrepairable=0 mismatches=1 duration=2.8s
+[dashboard-freshness] status=green ok=12 repaired=0 unrepairable=0 mismatches=0 duration=0.0s
 
 --- visual-gate ---
-  PASS  dashboard.html               30 KPI cells populated (>=20)
-  PASS  activity.html                4 activity rows OR KPIs (>=1)
-  PASS  amendments.html              4 amendment rows OR KPIs (>=1)
-  PASS  app-health.html              15 dimension cards (>=5)
-  PASS  design-system.html           451 design tokens (>=5)
-  PASS  discussion-bubbles.html      4 threads OR KPIs (>=1)
-  PASS  escalations.html             4 rows OR KPIs (>=1)
-  PASS  founder-checklist.html       3 open checklist items (>=1)
-  PASS  main-flows.html              4557 main-flows content (>=1)
-  PASS  proposals.html               4 proposal rows OR KPIs (>=1)
-  PASS  sessions.html                1 session cards (strict, NO empty-state fallback) (>=1)
-  PASS  token-usage.html             3 token rows OR cards (>=1)
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
 
-visual-gate: ALL 12 PAGES RENDER CONTENT
-[write-regen-heartbeat] OK ts=2026-06-11T05:13:20Z source=post-commit-hook status=PASS
+browserType.launch: Executable doesn't exist at /home/runner/.cache/ms-playwright/chromium_headless_shell-1223/chrome-headless-shell-linux64/chrome-headless-shell
+╔════════════════════════════════════════════════════════════╗
+║ Looks like Playwright was just installed or updated.       ║
+║ Please run the following command to download new browsers: ║
+║                                                            ║
+║     npx playwright install                                 ║
+║                                                            ║
+║ <3 Playwright Team                                         ║
+╚════════════════════════════════════════════════════════════╝
+    at /home/runner/work/smoky-mountain-open/smoky-mountain-open/tests/dashboard-smoke/visual-gate.mjs:57:32 {
+  name: 'Error'
+}
+
+Node.js v20.20.2
+[write-regen-heartbeat] OK ts=2026-06-11T08:27:29Z source=post-commit-hook status=GATE-FAIL
 
 --- P9.5 self-test ---
-[ingest-session-transcripts] scanned 307 JSONL file(s), found 0 new assistant turns
-[ingest-session-transcripts] skipped session-transcript-summary.json (373 buckets, 16540805522 total tokens, 313 sessions) [skip-idempotent-fresh-86s]
-[ingest-session-transcripts] SELF-TEST OK: 307 JSONLs \u2192 16540805522 tokens across 373 buckets
+[ingest-session-transcripts] transcripts dir not found: /home/runner/.claude/projects/C--Users-Zach-smoky-mountain-open
