@@ -62,7 +62,7 @@ Router.register("trips", function(params) {
     activeTrips.forEach(function(t) { h += tripCard(t); });
   } else {
     h += '<div style="text-align:center;padding:32px 16px">';
-    h += '<div style="margin-bottom:12px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5" opacity=".6"><path d="M6 9l18-7 18 7v22l-18 7-18-7V9z"/><path d="M6 9l18 7 18-7"/><path d="M24 16v22"/></svg></div>';
+    h += '<div style="margin-bottom:12px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5" opacity=".6"><path d="M16 6v36"/><path d="M16 6l18 5.5L16 17"/><ellipse cx="26" cy="42" rx="16" ry="3.5"/></svg></div>';
     h += '<div style="font-family:var(--font-display);font-size:18px;color:var(--gold)">No Upcoming Events</div>';
     h += '<div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-width:280px;margin-left:auto;margin-right:auto">Plan a golf trip, tournament, or hangout. Set dates, invite the crew, and track scores together.</div>';
     h += '<button class="btn full green" style="margin-top:16px;max-width:280px;margin-left:auto;margin-right:auto" onclick="Router.go(\'trips\',{create:true})">+ New Event</button>';

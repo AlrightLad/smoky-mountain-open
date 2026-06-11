@@ -44,6 +44,8 @@ function renderAceList() {
     });
   } else {
     h += '<div class="card"><div class="empty" style="padding:40px 20px">';
+    // v8.24.58 — golf-oriented empty glyph (was none): a ball dropping into the cup.
+    h += '<div style="margin-bottom:14px"><svg viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="var(--gold)" stroke-width="1.5" opacity=".7"><ellipse cx="24" cy="34" rx="13" ry="4"/><path d="M24 34V20" stroke-dasharray="2 3"/><circle cx="24" cy="15" r="5"/><path d="M19 36c1.5 2 8.5 2 10 0"/></svg></div>';
     h += '<div style="font-family:var(--font-display);font-size:28px;color:var(--gold)">Ace Wall</div>';
     h += '<div style="font-size:16px;font-weight:700;color:var(--gold);margin-top:8px">No aces yet</div>';
     h += '<div class="empty-text" style="margin-top:4px">When a Parbaugh makes a hole-in-one, it gets immortalized here</div>';
