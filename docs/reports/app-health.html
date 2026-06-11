@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-11T06:56:00.691594Z",
+  "generated_at": "2026-06-11T11:51:07.543202Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 88.2,
   "overall_grade": "A-",
@@ -956,7 +956,7 @@
     "A7_data_integrity": {
       "score": 100,
       "status": "green",
-      "label": "855 lines rules · 26 indexes; missing coverage matrix=False, schema validation=False",
+      "label": "865 lines rules · 26 indexes; missing coverage matrix=False, schema validation=False",
       "source": "firestore.rules + firestore.indexes.json + docs/ + functions/index.js + scripts/migrations/",
       "weak_points": []
     },
@@ -991,7 +991,7 @@
     "A12_operational": {
       "score": 100,
       "status": "green",
-      "label": "pipeline=green · 0 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=green · 1 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [],
       "details": {
@@ -1018,13 +1018,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "2c99745e",
-    "subject": "Maintenance run 2026-06-11",
-    "committed_at": "2026-06-11T02:55:38-04:00",
-    "trigger": "substrate-commit",
+    "sha": "d71bc69a",
+    "subject": "cron(routine): post-watcher-commit drift sweep (2026-06-11T11:50:51.4464118Z)",
+    "committed_at": "2026-06-11T07:50:51-04:00",
+    "trigger": "cron",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 1
+    "total_files_touched": 3
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
