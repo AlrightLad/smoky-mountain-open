@@ -250,6 +250,21 @@ Router.register("shop", function() {
   var _myName = currentProfile ? (currentProfile.username || currentProfile.name || 'You') : 'You';
   var equippedMap = (currentProfile && currentProfile.equippedCosmetics) || {};
 
+  // Distinct golf-moment icon per feed-flair item (24-grid, stroke art).
+  function _flairGlyph(id) {
+    var p = '';
+    switch (id) {
+      case 'pc11_tap_in_tip':  p = '<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.4"/>'; break; // ball-marker stamp
+      case 'pc12_birdie_drop': p = '<path d="M5 9a7 4 0 0014 0"/><circle cx="12" cy="6" r="3"/><path d="M12 9v3"/>'; break; // ball dropping into cup
+      case 'pc13_gallery_roar':p = '<path d="M4 14c0-4 3.5-7 8-7s8 3 8 7"/><path d="M7 17l-1.5 2M17 17l1.5 2M12 18v2.5"/>'; break; // applause ripple
+      case 'pc31_halved':      p = '<path d="M7 3v18M17 3v18"/><path d="M7 5l5 1.5L7 8M17 9l-5 1.5 5 1.5"/>'; break; // two crossed flagsticks
+      case 'pc32_sandy':       p = '<circle cx="12" cy="9" r="3"/><path d="M4 16c2-2 4 1 6-1s4 1 6-1 3 1 4 0"/><path d="M9 5l-1-2M15 5l1-2M6 8L4 7M18 8l2-1"/>'; break; // ball + sand splash
+      case 'pc33_snowman':     p = '<circle cx="12" cy="8" r="3.2"/><circle cx="12" cy="15.5" r="4.3"/>'; break; // the honest 8
+      default:                 p = '<circle cx="12" cy="12" r="3"/><path d="M12 4v3M12 17v3M4 12h3M17 12h3"/>';
+    }
+    return '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' + p + '</svg>';
+  }
+
   // One item card — shared by Front Table, shelves, and the Paint Locker.
   function _proShopCard(item, big) {
     var isOwned = owned.indexOf(item.id) !== -1 || (item.price === 0 && !item.earnedBy);
@@ -267,7 +282,10 @@ Router.register("shop", function() {
     } else if (item.cat === 'card') {
       c += '<div style="border-radius:var(--radius);background:var(--bg3);margin-bottom:8px;padding:8px 10px;text-align:left;' + (item.css || '') + '"><div style="font-size:9px;font-weight:600;color:var(--cream)">' + escHtml(_myName) + '</div><div style="font-size:8px;color:var(--muted);margin-top:1px">Honey Run · 92</div></div>';
     } else if (item.cat === 'flair') {
-      c += '<div style="height:34px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:18px;color:' + item.preview + '"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l2.5 2.5M16.5 16.5L19 19M19 5l-2.5 2.5M7.5 16.5L5 19"/></svg></div>';
+      // v8.24.68 — distinct golf-moment icon per flair (was one generic
+      // sparkle for all). Flair stays "arriving" until its feed-card render
+      // ships, but the shelf shouldn't look like six copies of one item.
+      c += '<div style="height:40px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;color:' + item.preview + '">' + _flairGlyph(item.id) + '</div>';
     } else if (item.cat === 'teemarker' || item.cat === 'ball') {
       // v8.24.68 — render the real golf-art glyph (shared with the worn-on-
       // name render via pbMarkerGlyph), not a generic tinted dot. Falls back
