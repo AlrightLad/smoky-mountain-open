@@ -30,18 +30,10 @@ const OUT = path.resolve(__dirname, 'main-flows-v2');
     const page = await ctx.newPage();
     await auth.loginReal(page, DEV_URL);
     if (label === 'mobile') {
-      await page.evaluate(() => Router.go('wrapped'));
-      await page.waitForTimeout(1500);
-      await page.screenshot({ path: path.join(OUT, 'wrapped-slide1.png') });
-      for (let i = 2; i <= 4; i++) {
-        await page.mouse.click(300, 500);
-        await page.waitForTimeout(700);
-        await page.screenshot({ path: path.join(OUT, 'wrapped-slide' + i + '.png') });
-      }
-      // jump to finale
-      for (let i = 0; i < 4; i++) { await page.mouse.click(300, 500); await page.waitForTimeout(400); }
-      await page.screenshot({ path: path.join(OUT, 'wrapped-finale.png') });
-      console.log('captured wrapped slides');
+      await page.evaluate(() => Router.go('leagues', { id: 'smoke-test-league' }));
+      await page.waitForTimeout(2500);
+      await page.screenshot({ path: path.join(OUT, 'commkit-league.png') });
+      console.log('captured commissioner kit');
     }
     await ctx.close();
   }

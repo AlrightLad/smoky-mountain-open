@@ -344,6 +344,32 @@ function renderLeagueDetail(lid) {
     dh += '<div class="league-stat"><div class="league-stat__label">Access</div><div class="league-stat__value league-stat__value--sm">' + access + '</div></div>';
     dh += '</div></div>';
 
+    // ── Commissioner's first week (v8.24.45, growth #3) ──────────────────
+    // The kit moment: a brand-new commissioner lands on an empty league with
+    // one vanishing toast. This card walks the first 10 minutes — each item
+    // checks itself off from REAL league data (P9), filled async below.
+    // Young leagues only; it retires itself as the league comes alive.
+    var showKit = isComm && isActive && (l.memberCount || 0) <= 4;
+    if (showKit) {
+      dh += '<div class="league-section" id="commKit"><div class="league-section__head"><div><div class="league-section__eyebrow">COMMISSIONER\'S KIT</div><div class="league-section__title">Your first week</div></div></div>';
+      dh += '<div class="card"><div class="card-body" style="padding:6px 14px">';
+      var kitItems = [
+        { id: 'kit-invite', label: 'Invite your crew', hint: 'A league is a group chat with handicaps. Bring 3+.', action: "_leagueScrollTo('leagueInviteGen')", done: (l.memberCount || 0) > 1 },
+        { id: 'kit-tee', label: 'Post the first tee time', hint: 'Give everyone a reason to open the app this week.', action: "Router.go('tee-create')", done: null },
+        { id: 'kit-chat', label: 'Start the trash talk', hint: 'Say something. The Caddy hates an empty room.', action: "Router.go('chat')", done: null },
+        { id: 'kit-round', label: 'Play the first round', hint: 'The board starts moving with one scorecard.', action: "Router.go('playnow')", done: null }
+      ];
+      kitItems.forEach(function(it, i) {
+        dh += '<div id="' + it.id + '" style="display:flex;align-items:center;gap:12px;padding:11px 0' + (i < kitItems.length - 1 ? ';border-bottom:1px solid var(--border)' : '') + ';cursor:pointer;min-height:44px" onclick="' + it.action + '">';
+        dh += '<span class="kit-check" style="width:22px;height:22px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:1.5px solid ' + (it.done ? 'var(--birdie)' : 'var(--border)') + ';color:var(--birdie)">' + (it.done ? '<svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 8.5l3.2 3L13 5"/></svg>' : '') + '</span>';
+        dh += '<div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--cream)' + (it.done ? ';text-decoration:line-through;opacity:.55' : '') + '">' + it.label + '</div>';
+        dh += '<div style="font-size:10px;color:var(--muted);margin-top:1px">' + it.hint + '</div></div>';
+        dh += '<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--muted2)" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>';
+        dh += '</div>';
+      });
+      dh += '</div></div></div>';
+    }
+
     // ── Invite a friend ── (v8.24.19 — Founder P0: the raw league code was
     // BLASTED to every member here; on the founding league that code joins
     // people as FOUNDING members. Removed. Members now generate a PERSONAL
@@ -411,6 +437,23 @@ function renderLeagueDetail(lid) {
 
     dh += '</div>'; // hq-grid
     el.innerHTML = dh;
+
+    // v8.24.45 — commissioner-kit truth fill: each unchecked item asks the
+    // league's own collections whether it already happened (limit-1 reads;
+    // the commissioner is a member, so rules permit). No fabricated checks.
+    if (showKit) {
+      [['teetimes', 'kit-tee'], ['chat', 'kit-chat'], ['rounds', 'kit-round']].forEach(function(pair) {
+        db.collection(pair[0]).where('leagueId', '==', lid).limit(1).get().then(function(snap) {
+          if (snap.empty) return;
+          var row = document.getElementById(pair[1]);
+          if (!row) return;
+          var check = row.querySelector('.kit-check');
+          if (check) { check.style.borderColor = 'var(--birdie)'; check.innerHTML = '<svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 8.5l3.2 3L13 5"/></svg>'; }
+          var title = row.querySelector('div > div');
+          if (title) { title.style.textDecoration = 'line-through'; title.style.opacity = '.55'; }
+        }).catch(function(){});
+      });
+    }
 
     // task #31 — subtle welcome sprinkle on league-page arrival, at most once
     // per browser session (once:true). pbCelebrate no-ops under
