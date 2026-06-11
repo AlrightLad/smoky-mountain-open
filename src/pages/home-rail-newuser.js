@@ -289,8 +289,8 @@ function _renderEmailVerifyBanner() {
   if (!currentUser || currentUser.emailVerified) return "";
   var h = '<div style="padding:10px 22px;background:rgba(180,137,62,0.08);border-bottom:1px solid rgba(180,137,62,0.15);display:flex;align-items:center;gap:10px">';
   h += '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--cb-brass)" stroke-width="1.5" style="flex-shrink:0"><path d="M8 1L1 5v6l7 4 7-4V5L8 1z"/><path d="M1 5l7 4 7-4"/></svg>';
-  h += '<div style="flex:1;font-family:var(--font-mono);font-size:10px;letter-spacing:0.5px;color:var(--cb-brass);line-height:1.4">Verify your email to unlock wagers, bounties, and the shop.</div>';
-  h += '<button style="background:var(--cb-brass);color:var(--cb-chalk);border:none;border-radius:var(--r-1);font:700 10px/1 var(--font-ui);padding:6px 12px;cursor:pointer;flex-shrink:0;letter-spacing:0.5px" onclick="sendVerificationEmail()">Verify</button>';
+  h += '<div style="flex:1;font-family:var(--font-mono);font-size:11px;letter-spacing:0.3px;color:var(--cb-ink);line-height:1.4">Verify your email to unlock wagers, bounties, and the shop.</div>';
+  h += '<button style="background:var(--cb-brass);color:var(--cb-ink);border:none;border-radius:var(--r-1);font:700 11px/1 var(--font-ui);padding:7px 13px;cursor:pointer;flex-shrink:0;letter-spacing:0.5px" onclick="sendVerificationEmail()">Verify</button>';
   h += '</div>';
   return h;
 }

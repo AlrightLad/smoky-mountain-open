@@ -406,7 +406,7 @@ function _renderHQLocationBanner() {
   h += '<span style="font-size:13px;color:var(--cb-charcoal);line-height:1.3">';
   h += "Showing weather for " + locationName + ".";
   h += '</span>';
-  h += '<a onclick="Router.go(\'settings\',{section:\'location\'})" style="font-family:var(--font-mono);font-size:11px;font-weight:600;letter-spacing:1.2px;color:var(--cb-brass);text-transform:uppercase;cursor:pointer;text-decoration:none" role="link" tabindex="0">Set your location →</a>';
+  h += '<a onclick="Router.go(\'settings\',{section:\'location\'})" style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.2px;color:var(--cb-brass-deep);text-transform:uppercase;cursor:pointer;text-decoration:none" role="link" tabindex="0">Set your location →</a>';
   h += '</div>';
   return h;
 }
