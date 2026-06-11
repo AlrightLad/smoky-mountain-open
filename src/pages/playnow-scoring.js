@@ -828,6 +828,27 @@ function finishLiveRound() {
     }
   }
 
+  // v8.24.48 — rounds-in-chat option B (Founder decision 2026-06-11): a
+  // finished LIVE round drops one quiet chip into the league chat — the
+  // conversation starter, not an announcement. Private rounds never post;
+  // the league can switch the whole thing off (settings.roundsInChat=false,
+  // cached on window by loadActiveLeagueName; missing = ON). Manual
+  // backfilled logs intentionally do not post (old dates make weird chat).
+  if (db && currentUser && round && round.visibility !== "private"
+      && window._activeLeagueRoundsInChat !== false
+      && liveState.format !== "scramble" && liveState.format !== "scramble4") {
+    var _chipScore = totalScore + (completed < 18 ? " (9H)" : "");
+    db.collection("chat").add(leagueDoc("chat", {
+      id: genId(),
+      type: "round_chip",
+      text: _chipScore + " at " + (liveState.course || "the course"),
+      roundId: round.id,
+      authorId: currentUser.uid,
+      authorName: currentProfile ? PB.getDisplayName(currentProfile) : "Member",
+      createdAt: fsTimestamp()
+    })).catch(function(){});
+  }
+
   // task #31 — confetti + Caddy toast when this round beats the prior personal
   // best. Independent of the ParCoin award block above (economy code untouched,
   // AMD-018 gate 4). pbCelebrate self-guards: no-op under prefers-reduced-motion

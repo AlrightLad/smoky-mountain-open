@@ -30,10 +30,20 @@ const OUT = path.resolve(__dirname, 'main-flows-v2');
     const page = await ctx.newPage();
     await auth.loginReal(page, DEV_URL);
     if (label === 'mobile') {
-      await page.evaluate(() => Router.go('leagues', { id: 'smoke-test-league' }));
+      await page.evaluate(() => {
+        return db.collection("chat").add(leagueDoc("chat", {
+          id: genId(), type: "round_chip",
+          text: "84 at Honey Run Golf Club",
+          roundId: "smoke-round-test",
+          authorId: currentUser.uid,
+          authorName: PB.getDisplayName(currentProfile),
+          createdAt: fsTimestamp()
+        }));
+      });
+      await page.evaluate(() => Router.go('chat'));
       await page.waitForTimeout(2500);
-      await page.screenshot({ path: path.join(OUT, 'commkit-league.png') });
-      console.log('captured commissioner kit');
+      await page.screenshot({ path: path.join(OUT, 'roundchip-chat.png') });
+      console.log('captured round chip');
     }
     await ctx.close();
   }

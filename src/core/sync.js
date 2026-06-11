@@ -19,6 +19,8 @@ function loadActiveLeagueName() {
       window._activeLeagueCommissioner = d.commissioner || null;
       // v8.24.38 — cache membership for league-scoped rosters (members.js).
       window._activeLeagueMemberUids = Array.isArray(d.memberUids) ? d.memberUids : null;
+      // v8.24.48 — rounds-in-chat (Founder chose B): missing setting = ON.
+      window._activeLeagueRoundsInChat = !(d.settings && d.settings.roundsInChat === false);
     }
   }).catch(function(){});
 }

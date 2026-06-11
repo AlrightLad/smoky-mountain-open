@@ -402,6 +402,9 @@ function renderLeagueDetail(lid) {
         dh += '<div class="league-section" id="leagueSettings"><div class="league-section__head"><div><div class="league-section__eyebrow">ADMIN</div><div class="league-section__title">League settings</div></div></div>';
         dh += '<div class="league-toggle"><span class="league-toggle__label">Visibility</span><button class="league-btn league-btn--ghost league-btn--sm" onclick="toggleLeagueVisibility(\'' + lid + '\')">' + access + '</button></div>';
         dh += '<div class="league-toggle"><span class="league-toggle__label">Require approval to join</span><button class="league-btn league-btn--ghost league-btn--sm" onclick="toggleLeagueApproval(\'' + lid + '\')">' + (l.requireApproval ? "On" : "Off") + '</button></div>';
+        // v8.24.48 — rounds-in-chat (option B). Missing setting = ON.
+        var _ricOn = !(l.settings && l.settings.roundsInChat === false);
+        dh += '<div class="league-toggle"><span class="league-toggle__label">Round results in chat</span><button class="league-btn league-btn--ghost league-btn--sm" onclick="toggleRoundsInChat(\'' + lid + '\',' + (_ricOn ? 'false' : 'true') + ')">' + (_ricOn ? "On" : "Off") + '</button></div>';
         dh += '<div class="league-toggle"><span class="league-toggle__label">League code <span style="font-family:var(--font-mono);letter-spacing:1px;color:var(--cb-brass)">' + escHtml(l.inviteCode || "—") + '</span></span><button class="league-btn league-btn--ghost league-btn--sm" onclick="regenerateInviteCode(\'' + lid + '\')">Regenerate</button></div>';
         dh += '</div>';
 
@@ -761,4 +764,15 @@ function confirmDeleteLeague(lid, leagueName, _typed) {
       Router.go("leagues");
     });
   });
+}
+
+
+// v8.24.48 — commissioner toggle for round chips in chat (option B).
+function toggleRoundsInChat(lid, turnOn) {
+  if (!db || !currentUser) return;
+  db.collection("leagues").doc(lid).set({ settings: { roundsInChat: !!turnOn } }, { merge: true }).then(function() {
+    if (currentProfile && currentProfile.activeLeague === lid) window._activeLeagueRoundsInChat = !!turnOn;
+    Router.toast("Round results in chat: " + (turnOn ? "on" : "off"));
+    Router.go("leagues", { id: lid }, true);
+  }).catch(function(e) { Router.toast(pbErrMsg(e, "Couldn't update the setting.")); });
 }
