@@ -800,7 +800,13 @@ var PB = (function() {
 
     var highlights = [];
     var roasts = [];
-    var seed = (score * 7 + (round.slope || 113)) % 100; // pseudo-random from score for variety
+    // v8.24.66 — seed now folds in a stable per-round hash (date + id), so two
+    // rounds with the SAME score don't print the IDENTICAL caddy line (critique:
+    // verbatim repeat on adjacent cards). Deterministic per round (stable across
+    // re-renders), distinct between rounds.
+    var _rkey = String(round.date || "") + "|" + String(round.id || round.timestamp || "");
+    var _rhash = 0; for (var _ri = 0; _ri < _rkey.length; _ri++) _rhash = ((_rhash << 5) - _rhash + _rkey.charCodeAt(_ri)) | 0;
+    var seed = (score * 7 + (round.slope || 113) + Math.abs(_rhash)) % 100; // pseudo-random from score + per-round hash
 
     // Score-based tiers — using diff vs expected (handicap-adjusted) score
     if (diff <= -8) {
