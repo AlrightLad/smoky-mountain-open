@@ -2433,13 +2433,13 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 
 /* My Leagues card grid (3j.2) */
 .league-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
-@media (min-width: 560px) { .league-grid { grid-template-columns: 1fr 1fr; } }
-@media (min-width: 1100px) { .league-grid { grid-template-columns: 1fr 1fr 1fr; } }
+/* v8.24.65 — auto-fit so a lone league card fills the row (title fits); was fixed 2/3-col making a single card narrow + wrapping the title. */
+@media (min-width: 560px) { .league-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); } }
 .league-card { display: block; background: var(--cb-chalk-2); border: 1px solid var(--cb-chalk-3); border-radius: var(--radius-md); padding: var(--space-5); text-decoration: none; cursor: pointer; transition: border-color .18s ease, transform .18s ease; }
 .league-card:hover { border-color: var(--cb-brass); transform: translateY(-2px); }
 .league-card--active { border-top: 4px solid var(--cb-brass); }
 .league-card__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; margin-bottom: 14px; }
-.league-card__name { font-family: var(--font-display); font-style: italic; font-size: 22px; font-weight: 700; color: var(--cb-ink); line-height: 1.15; }
+.league-card__name { flex: 1; min-width: 0; font-family: var(--font-display); font-style: italic; font-size: 22px; font-weight: 700; color: var(--cb-ink); line-height: 1.15; }
 .league-card__role { flex-shrink: 0; font-family: var(--font-mono); font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 4px 8px; border-radius: 4px; border: 1px solid; }
 .league-card__role--comm { color: var(--cb-brass); border-color: var(--cb-brass); }
 .league-card__role--member { color: var(--cb-mute); border-color: var(--cb-chalk-3); }
