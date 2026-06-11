@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-11T04:34:41.876599Z",
+  "generated_at": "2026-06-11T04:52:52.571955Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 86.9,
   "overall_grade": "A-",
@@ -947,7 +947,7 @@
       "source": ".claude/state/aggregates/architecture-review.json + src/ walk",
       "weak_points": [
         {
-          "what": "functions/index.js is 1030 lines holding 8 Cloud Functions monolithically",
+          "what": "functions/index.js is 1039 lines holding 8 Cloud Functions monolithically",
           "where": "functions/index.js",
           "what_action": "Split into functions/auth.js + functions/notifications.js + functions/league.js + functions/courses.js. Or move to firebase-functions-multi-file structure."
         }
@@ -956,7 +956,7 @@
     "A7_data_integrity": {
       "score": 100,
       "status": "green",
-      "label": "836 lines rules · 26 indexes; missing coverage matrix=False, schema validation=False",
+      "label": "855 lines rules · 26 indexes; missing coverage matrix=False, schema validation=False",
       "source": "firestore.rules + firestore.indexes.json + docs/ + functions/index.js + scripts/migrations/",
       "weak_points": []
     },
@@ -1036,24 +1036,19 @@
     }
   ],
   "audit_trigger": {
-    "sha": "ffb86506",
-    "subject": "fix(security): escape user-controlled strings at 9 stored-XSS sinks (v8.24.53, P8, #40)",
-    "committed_at": "2026-06-11T00:34:12-04:00",
+    "sha": "1ea4687a",
+    "subject": "fix(security): DM/notification/course rule hardening + joinLeague invite-binding (v8.24.54, P8, #40)",
+    "committed_at": "2026-06-11T00:52:25-04:00",
     "trigger": "app-commit",
     "is_app_commit": true,
     "app_files_touched": [
+      "functions/index.js",
       "public/sw.js",
-      "src/core/router-activity-feed.js",
+      "src/core/router.js",
       "src/core/utils.js",
-      "src/pages/aces.js",
-      "src/pages/caddynotes.js",
-      "src/pages/courses-detail.js",
-      "src/pages/courses.js",
-      "src/pages/members-detail.js",
-      "src/pages/members.js",
-      "src/pages/scorecard.js"
+      "src/pages/caddynotes.js"
     ],
-    "total_files_touched": 81
+    "total_files_touched": 11
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
