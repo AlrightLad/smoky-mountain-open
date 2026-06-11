@@ -243,6 +243,30 @@ Router.register("shop", function() {
   h += '<div id="shopLedger" class="shop-ledger__body"><div class="shop-ledger__loading">Loading activity</div></div>';
   h += '</section>';
 
+  // 3m.A.3 Ways to earn (v8.24.84) — Founder ask: surface HOW to earn ParCoins
+  // (incentives), each with its real rate + a destination (P10 actionable). Pure
+  // play earns; never real money. Rates mirror PARCOIN_RATES (parcoins.js).
+  var _earn = [
+    { label: 'Log an 18-hole round', coins: '+50', route: 'rounds' },
+    { label: 'Log a 9-hole round', coins: '+25', route: 'rounds' },
+    { label: 'Get a round attested', coins: '+25', route: 'rounds' },
+    { label: 'Set a new personal best', coins: '+100', route: 'rounds' },
+    { label: 'Hit the range (30+ min)', coins: '+10', route: 'activity' },
+    { label: 'Win a wager or bounty', coins: 'the pot', route: 'wagers' },
+    { label: 'Sign in each day', coins: '+1', route: 'home' }
+  ];
+  h += '<section class="shop-earn" aria-label="Ways to earn ParCoins">';
+  h += '<div class="shop-sec-head"><h2 class="shop-sec-title">Ways to earn</h2><span class="shop-earn__note">Play earns it — never real money</span></div>';
+  h += '<div class="shop-earn__grid">';
+  _earn.forEach(function(e) {
+    h += '<button type="button" class="shop-earn__row" onclick="Router.go(\'' + e.route + '\')">' +
+      '<span class="shop-earn__label">' + escHtml(e.label) + '</span>' +
+      '<span class="shop-earn__coins">' + escHtml(e.coins) + '</span></button>';
+  });
+  h += '</div>';
+  h += '<div class="shop-earn__cabinet">Some pieces can’t be bought at all — a hole-in-one, the season crown, closest-to-the-pin. Earn those on the course; they live in the Champion’s Cabinet below.</div>';
+  h += '</section>';
+
   // ══ THE PRO SHOP floor (v8.24.50) ══
   h += '<section class="shop-cosmetics" id="shopCosmetics" tabindex="-1" aria-label="The Pro Shop">';
 
