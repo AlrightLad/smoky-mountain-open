@@ -556,11 +556,11 @@ function renderMemberDetailWithData(p) {
 
   // === WHAT'S IN THE BAG (collapsible) ===
   var bagContent = '';
-  if (p.bagPhoto) bagContent += '<div style="border-radius:var(--radius);overflow:hidden;margin-bottom:8px"><img alt="" src="' + p.bagPhoto + '" style="width:100%;display:block"></div>';
+  if (p.bagPhoto) bagContent += '<div style="border-radius:var(--radius);overflow:hidden;margin-bottom:8px"><img alt="" src="' + escHtml(p.bagPhoto) + '" style="width:100%;display:block"></div>';
   if (p.bag) {
     var bagLabels = {driver:"Driver",irons:"Irons",wedges:"Wedges",putter:"Putter",bag_brand:"Bag",accessories:"Accessories",fav_ball:"Favorite Ball"};
     Object.keys(bagLabels).forEach(function(k) {
-      if (p.bag && p.bag[k]) bagContent += '<div class="club-row"><span class="club-name">' + bagLabels[k] + '</span><span class="club-yd" style="max-width:200px;text-align:right">' + p.bag[k] + '</span></div>';
+      if (p.bag && p.bag[k]) bagContent += '<div class="club-row"><span class="club-name">' + bagLabels[k] + '</span><span class="club-yd" style="max-width:200px;text-align:right">' + escHtml(p.bag[k]) + '</span></div>';
     });
   }
   if (!bagContent) bagContent = pfEmpty(null, "No equipment listed yet");
@@ -580,7 +580,7 @@ function renderMemberDetailWithData(p) {
   // === KNOWN FOR (collapsible) ===
   if (p.funnyFacts && p.funnyFacts.length) {
     var factsContent = '';
-    p.funnyFacts.forEach(function(f) { factsContent += '<div class="fact-item">• ' + f + '</div>'; });
+    p.funnyFacts.forEach(function(f) { factsContent += '<div class="fact-item">• ' + escHtml(f) + '</div>'; });
     h += profSection("facts-" + pid, "Known for", factsContent, false, "Clubhouse lore");
   }
   h += '</div>'; // close ptab-gear

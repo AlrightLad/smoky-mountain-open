@@ -553,14 +553,14 @@ function renderRoundDetail(roundId, prefetched) {
   if (round.story) {
     h += '<div class="rd-section"><div class="rd-section__eyebrow">In their words</div><h2 class="rd-section__title">The story</h2>';
     h += '<blockquote class="rd-story">' + escHtml(round.story) + '</blockquote>';
-    if (round.storyPhoto) h += '<div class="rd-story__photo"><img alt="Round story photo" src="' + round.storyPhoto + '" style="width:100%;display:block"></div>';
+    if (round.storyPhoto) h += '<div class="rd-story__photo"><img alt="Round story photo" src="' + escHtml(round.storyPhoto) + '" style="width:100%;display:block"></div>';
     h += '</div>';
   }
 
   // Scorecard photo (if the member attached one)
   if (round.scorecardPhoto) {
     h += '<div class="rd-section"><div class="rd-section__eyebrow">From the bag</div><h2 class="rd-section__title">Scorecard photo</h2>';
-    h += '<div class="rd-photo"><img alt="Scorecard photo" src="' + round.scorecardPhoto + '" style="width:100%;display:block"></div>';
+    h += '<div class="rd-photo"><img alt="Scorecard photo" src="' + escHtml(round.scorecardPhoto) + '" style="width:100%;display:block"></div>';
     h += '</div>';
   }
 

@@ -179,7 +179,7 @@ function renderChatMessages(messages) {
       ch += '<div style="display:flex;align-items:center;gap:8px;padding:7px 16px;margin-bottom:8px;font-size:11px;color:var(--muted)">';
       ch += '<svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="var(--gold)" stroke-width="1.4" style="flex-shrink:0"><path d="M5 14V2l7 2.5L5 7"/></svg>';
       ch += '<span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span style="font-weight:600;color:var(--cream)">' + escHtml(chip.authorName || "Member") + '</span> — ' + escHtml(chip.text || "") + (chipTime ? ' <span style="color:var(--muted2)">· ' + chipTime + '</span>' : '') + '</span>';
-      if (chip.roundId) ch += '<span style="cursor:pointer;color:var(--gold);font-weight:600;padding:6px 4px" onclick="event.stopPropagation();Router.go(\'round\',{id:\'' + chip.roundId + '\'})">view</span>';
+      if (chip.roundId) ch += '<span style="cursor:pointer;color:var(--gold);font-weight:600;padding:6px 4px" onclick="event.stopPropagation();Router.go(\'round\',{id:\'' + String(chip.roundId).replace(/[^A-Za-z0-9_-]/g, '') + '\'})">view</span>';
       ch += '<span style="cursor:pointer;color:' + (cILiked ? 'var(--gold)' : 'var(--muted2)') + ';padding:6px 0 6px 4px;display:flex;align-items:center;gap:3px" onclick="event.stopPropagation();toggleLike(\'' + chip._docId + '\')"><svg viewBox="0 0 16 16" width="11" height="11" fill="' + (cILiked ? 'var(--gold)' : 'none') + '" stroke="currentColor" stroke-width="1.5"><path d="M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4a3.5 3.5 0 015.5 3c0 3.5-5.5 7-5.5 7z"/></svg>' + (cLikes.length ? ' ' + cLikes.length : '') + '</span>';
       ch += '</div>';
       return;
