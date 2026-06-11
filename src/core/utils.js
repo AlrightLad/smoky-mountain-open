@@ -6,6 +6,23 @@
 // ── App version — single source of truth ──
 var APP_VERSION = "8.24.98";
 
+// ── Onboarding walkthrough (FTUE) — foundation constants/helpers ──
+// WALKTHROUGH_MAJOR is decoupled from APP_VERSION so a patch bump never
+// re-fires the first-time tour (the Clippy regression). Bump to 2 only on a
+// breaking FTUE change. members/{uid}.walkthrough.ftueVersion is compared to it.
+var WALKTHROUGH_MAJOR = 1;
+
+// Whole-day gap between two YYYY-MM-DD local-date strings (0 if either missing
+// or unparseable). Used to detect a 30+ day lapse for the "while you were gone"
+// welcome-back flow, off lastLoginDate (the only real recency field).
+function _daysBetween(fromStr, toStr) {
+  if (!fromStr || !toStr) return 0;
+  var a = new Date(fromStr + "T00:00:00");
+  var b = new Date(toStr + "T00:00:00");
+  if (isNaN(a) || isNaN(b)) return 0;
+  return Math.round((b - a) / 86400000);
+}
+
 // ══════════════════════════════════════════════════════════════════════════
 // LEAGUE ISOLATION — Nuclear approach. Makes leaking PHYSICALLY IMPOSSIBLE.
 // ══════════════════════════════════════════════════════════════════════════
