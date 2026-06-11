@@ -490,11 +490,16 @@ function _renderStatsStrip(totalRounds, handicap, bestRound, bestRoundId, isNew)
       } else if (handicap != null) {
         hcapCaption = "OFFICIAL";
         hcapColor = "var(--cb-moss, #4ea669)";
-      } else if (myRounds.length) {
-        hcapCaption = "PROVISIONAL";
+      } else if (indiv.length >= 1) {
+        // v8.24.59 — path-forward instead of a lone "PROVISIONAL"/dash (P10):
+        // a handicap needs 3 scoring rounds; say how close they are.
+        hcapCaption = indiv.length + " OF 3 ROUNDS";
+      } else {
+        hcapCaption = "LOG 3 TO START";
       }
 
-      // BEST caption — course of personal best
+      // BEST caption — course of personal best; path-forward when none yet
+      if (!bestRound) { bestCaption = "LOG A ROUND"; }
       if (bestRoundId) {
         var br = myRounds.find(function(r) { return r.id === bestRoundId; });
         if (br && br.course) {
@@ -530,7 +535,7 @@ function _renderStatsStrip(totalRounds, handicap, bestRound, bestRoundId, isNew)
   // HCP
   h += '<div class="home-stat">';
   h += '<div class="home-stat__label">HCP</div>';
-  h += '<div class="home-stat__num" data-stat="handicap">' + hcapStr + '</div>';
+  h += '<div class="home-stat__num" data-stat="handicap"' + (hcapStr === "—" ? ' style="color:var(--cb-mute-3)"' : '') + '>' + hcapStr + '</div>';
   if (hcapCaption) h += '<div class="home-stat__cap" style="color:' + hcapColor + '">' + hcapCaption + '</div>';
   h += '</div>';
 
@@ -538,7 +543,7 @@ function _renderStatsStrip(totalRounds, handicap, bestRound, bestRoundId, isNew)
   var bestClickable = !!bestRoundId;
   h += '<div class="home-stat' + (bestClickable ? ' home-stat--tap" onclick="Router.go(\'rounds\',{roundId:\'' + escHtml(bestRoundId) + '\'})' : '') + '">';
   h += '<div class="home-stat__label">BEST</div>';
-  h += '<div class="home-stat__num" data-stat="best-round">' + bestStr + '</div>';
+  h += '<div class="home-stat__num" data-stat="best-round"' + (bestStr === "—" ? ' style="color:var(--cb-mute-3)"' : '') + '>' + bestStr + '</div>';
   if (bestCaption) h += '<div class="home-stat__cap" style="color:' + bestColor + '">' + bestCaption + '</div>';
   h += '</div>';
 
