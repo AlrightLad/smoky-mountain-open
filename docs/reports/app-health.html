@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-11T12:53:51.421409Z",
+  "generated_at": "2026-06-11T13:00:20.216596Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 88.2,
   "overall_grade": "A-",
@@ -1018,13 +1018,18 @@
     }
   ],
   "audit_trigger": {
-    "sha": "12bbe64a",
-    "subject": "chore(reports): regen post v8.24.63",
-    "committed_at": "2026-06-11T08:52:43-04:00",
-    "trigger": "substrate-commit",
-    "is_app_commit": false,
-    "app_files_touched": [],
-    "total_files_touched": 1
+    "sha": "d9d9e5d9",
+    "subject": "fix(ui): HQ right-rail no longer clips stat values at the 1440 edge (v8.24.64, #41 P9)",
+    "committed_at": "2026-06-11T08:59:55-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "public/sw.js",
+      "src/core/utils.js",
+      "src/pages/caddynotes.js",
+      "src/styles/components.css"
+    ],
+    "total_files_touched": 6
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
