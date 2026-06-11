@@ -353,24 +353,93 @@ function pbNameplateClass(p) {
   if (n === 'pc07_leaderboard_sunday') return 'plate-sunday';
   return '';
 }
+// v8.24.68 — unified, golf-oriented marker art. ONE source of truth for both
+// the worn-on-name render (11px, trailing the username) and the Pro Shop
+// preview (large). Previously the shop drew every tee/ball marker as the same
+// tinted dot — beautiful catalog copy, identical blobs (Founder: "they suck,
+// no one would buy them"). Each marker now reads as the object it describes.
+// On a 24-grid; NO <defs> gradients — the shop renders many at once and shared
+// gradient ids would collide, so all art is layered solid shapes.
+function pbMarkerGlyph(id, px) {
+  px = px || 11;
+  var s = '';
+  switch (id) {
+    // ── Tee markers ──
+    case 'pc17_brass_acorn': // acorn: textured cap + nut + stem
+      s = '<rect x="11.2" y="3" width="1.6" height="3" rx=".8" fill="#6e561f"/>'
+        + '<path d="M5.5 10c0-2.7 2.9-4.3 6.5-4.3s6.5 1.6 6.5 4.3z" fill="#9a7634"/>'
+        + '<path d="M9 6.7v3M12 6.3v3.6M15 6.7v3" stroke="#6e561f" stroke-width=".8"/>'
+        + '<path d="M6.4 10h11.2c0 5.3-2.6 9.6-5.6 9.6S6.4 15.3 6.4 10z" fill="#c69a4e"/>'
+        + '<path d="M9.3 11.2c0 3.4 1 6.3 2.1 7.6" stroke="#e2bd78" stroke-width="1" opacity=".6" fill="none"/>';
+      break;
+    case 'pc18_rubber_duck': // duck: body + head + beak + eye
+      s = '<path d="M3.2 14l-2.2-1.4 2.2-1z" fill="#e0a92e"/>'
+        + '<ellipse cx="12.5" cy="15" rx="8" ry="5" fill="#ecc94b"/>'
+        + '<path d="M16 14.5c1.6-.8 3.2-.7 4.5.2" stroke="#e0a92e" stroke-width="1.2" fill="none"/>'
+        + '<circle cx="8" cy="8.6" r="4.1" fill="#ecc94b"/>'
+        + '<path d="M3.9 8.4l-3 .7 3 1.1z" fill="#e07b39"/>'
+        + '<circle cx="7.2" cy="7.7" r=".95" fill="#2b2b2b"/>';
+      break;
+    case 'pc19_persimmon': // persimmon driver head + brass sole + shaft
+      s = '<rect x="9.2" y="1.8" width="1.7" height="6.4" rx=".8" fill="#5a4632" transform="rotate(-13 10 5)"/>'
+        + '<path d="M3 13c0-3.5 3-5.5 7.5-5.5S21 9.5 21 13c0 2.3-2.5 3.9-6.6 3.9S3 15.3 3 13z" fill="#7a4a28"/>'
+        + '<path d="M3.3 14.3h17.4c-.5 1.6-3 2.6-6.3 2.6S3.8 15.9 3.3 14.3z" fill="#caa75c"/>'
+        + '<path d="M7 11.5h2M10.5 11.2h2" stroke="#5a3418" stroke-width=".7" opacity=".7"/>';
+      break;
+    case 'pc20_parbaugh_marker': // founding-gold crest disc
+      s = '<circle cx="12" cy="12" r="9.5" fill="#b4893e"/>'
+        + '<circle cx="12" cy="12" r="9.5" fill="none" stroke="#8a6526" stroke-width="1"/>'
+        + '<circle cx="12" cy="12" r="7" fill="none" stroke="#d8b15f" stroke-width=".8" opacity=".7"/>'
+        + '<text x="12" y="16.6" text-anchor="middle" font-family="Georgia,serif" font-size="13" font-weight="700" fill="#2a1f0c">P</text>';
+      break;
+    case 'pc25_ace_marker': // gold ball on a brass pedestal
+      s = '<path d="M7 19.2h10l-1.4 2.4H8.4z" fill="#8a6a2e"/>'
+        + '<rect x="6.4" y="18.4" width="11.2" height="1.7" rx=".85" fill="#a9853c"/>'
+        + '<circle cx="12" cy="10" r="6.2" fill="#f2d89a"/>'
+        + '<circle cx="9.8" cy="7.8" r="2" fill="#f8ecc6"/>'
+        + '<circle cx="10.5" cy="11" r=".7" fill="#d8be84"/><circle cx="13" cy="9" r=".7" fill="#d8be84"/><circle cx="13.4" cy="12" r=".7" fill="#d8be84"/>';
+      break;
+    case 'pc34_whipping': // hickory shaft butt wrapped in red thread
+      s = '<rect x="9.2" y="2.4" width="5.6" height="2" rx="1" fill="#caa75c"/>'
+        + '<rect x="9.5" y="4" width="5" height="17" rx="2.3" fill="#7a4a28"/>'
+        + '<path d="M11 5v15M13 5v15" stroke="#5a3418" stroke-width=".6" opacity=".55"/>'
+        + '<path d="M9.5 13l5 1.5M9.5 15l5 1.5M9.5 17l5 1.5M9.5 19l5 1.5" stroke="#c0392b" stroke-width="1.3"/>';
+      break;
+    // ── Ball markers ──
+    case 'pc26_found_coin': // milled-edge brass penny, worn smooth
+      s = '<circle cx="12" cy="12" r="9.2" fill="#9a7430"/>'
+        + '<circle cx="12" cy="12" r="9.2" fill="none" stroke="#7a5a24" stroke-width="1.8" stroke-dasharray="1.1 1.4"/>'
+        + '<circle cx="12" cy="12" r="6.6" fill="#c99a45"/>'
+        + '<circle cx="12" cy="12" r="6.6" fill="none" stroke="#8a6526" stroke-width=".8"/>'
+        + '<path d="M7.6 8.6a6.6 6.6 0 019 0" stroke="#e2bd78" stroke-width="1" opacity=".5" fill="none"/>';
+      break;
+    case 'pc27_pitch_mark': // milled silver disc + crosshair
+      s = '<circle cx="12" cy="12" r="9.2" fill="#cfd2d6"/>'
+        + '<circle cx="12" cy="12" r="9.2" fill="none" stroke="#9aa0a8" stroke-width="1.1"/>'
+        + '<path d="M12 3.4v17.2M3.4 12h17.2" stroke="#5a5f66" stroke-width="1.3"/>'
+        + '<circle cx="12" cy="12" r="1.5" fill="#5a5f66"/>';
+      break;
+    case 'pc43_ctp_marker': // brass disc, flagstick struck clean through
+      s = '<circle cx="12" cy="12" r="8.6" fill="#b58a3a"/>'
+        + '<circle cx="12" cy="12" r="8.6" fill="none" stroke="#8a6526" stroke-width="1"/>'
+        + '<path d="M12 2.2v19.6" stroke="#3a2a12" stroke-width="1.5"/>'
+        + '<path d="M12.5 3.6l5.2 1.7-5.2 1.7z" fill="#c0392b"/>';
+      break;
+    default: return '';
+  }
+  return '<svg viewBox="0 0 24 24" width="' + px + '" height="' + px + '" fill="none">' + s + '</svg>';
+}
 function pbBallMarkerHtml(p) {
   if (!p || !p.equippedCosmetics || !p.equippedCosmetics.ball) return '';
-  var b = p.equippedCosmetics.ball;
-  var col = b === 'pc27_pitch_mark' ? '#cfd2d6' : b === 'pc43_ctp_marker' ? '#b58a3a' : '#b58a3a';
-  var cross = (b === 'pc27_pitch_mark') ? '<path d="M6 2.5v7M2.5 6h7" stroke="#5a5f66" stroke-width="1"/>' : (b === 'pc43_ctp_marker' ? '<path d="M6 1v10" stroke="#3a2a12" stroke-width="1.2"/>' : '');
-  return '<span class="pb-ballmarker" title="Ball marker" style="display:inline-flex;vertical-align:-1px;margin-left:4px"><svg viewBox="0 0 12 12" width="11" height="11"><circle cx="6" cy="6" r="5" fill="' + col + '" stroke="rgba(0,0,0,.3)" stroke-width=".5"/>' + cross + '</svg></span>';
+  var g = pbMarkerGlyph(p.equippedCosmetics.ball, 12);
+  if (!g) return '';
+  return '<span class="pb-ballmarker" title="Ball marker" style="display:inline-flex;vertical-align:-1px;margin-left:4px">' + g + '</span>';
 }
 function pbTeeMarkerHtml(p) {
   if (!p || !p.equippedCosmetics || !p.equippedCosmetics.teemarker) return '';
-  var t = p.equippedCosmetics.teemarker;
-  var svg = '';
-  if (t === 'pc17_brass_acorn') svg = '<svg viewBox="0 0 12 12" width="11" height="11"><circle cx="6" cy="7" r="4" fill="url(#pbtmBrass)"/><path d="M3 4.5C3 3 4.3 2 6 2s3 1 3 2.5c0 .6-1.3 1-3 1s-3-.4-3-1z" fill="#8a6a2e"/><defs><radialGradient id="pbtmBrass" cx=".35" cy=".3"><stop offset="0" stop-color="#e2c177"/><stop offset="1" stop-color="#8a6a2e"/></radialGradient></defs></svg>';
-  else if (t === 'pc18_rubber_duck') svg = '<svg viewBox="0 0 12 12" width="11" height="11"><ellipse cx="6" cy="8" rx="4.4" ry="2.8" fill="#e8c84a"/><circle cx="3.6" cy="4.6" r="2.2" fill="#e8c84a"/><path d="M1.2 4.6l-1-.4 1-.5z" fill="#d98a2b"/><circle cx="3.1" cy="4.1" r=".5" fill="#2b2b2b"/></svg>';
-  else if (t === 'pc19_persimmon') svg = '<svg viewBox="0 0 12 12" width="11" height="11"><path d="M2 7c0-2.4 2-3.6 4.2-3.6S10.5 4.8 10.5 7c0 1.6-1.4 2.6-3.3 2.6C4 9.6 2 8.8 2 7z" fill="#7a4a28"/><path d="M2 7.8h8.5v.9c-1 .8-2.4 1-3.3.9C4.3 9.6 2.6 8.9 2 7.8z" fill="#caa75c"/><rect x="5.4" y="0" width="1" height="3.6" rx=".5" fill="#5a4632"/></svg>';
-  else if (t === 'pc20_parbaugh_marker') svg = '<svg viewBox="0 0 12 12" width="11" height="11"><circle cx="6" cy="6" r="5" fill="#b4893e"/><text x="6" y="8.6" text-anchor="middle" font-family="Georgia,serif" font-size="7.5" font-weight="700" fill="#241c0c">P</text></svg>';
-  else if (t === 'pc25_ace_marker') svg = '<svg viewBox="0 0 12 12" width="11" height="11"><rect x="3.5" y="8" width="5" height="2.4" rx=".6" fill="#8a6a2e"/><circle cx="6" cy="5" r="3" fill="url(#pbtmGold)"/><defs><radialGradient id="pbtmGold" cx=".35" cy=".3"><stop offset="0" stop-color="#f4dd9a"/><stop offset="1" stop-color="#b4893e"/></radialGradient></defs></svg>';
-  if (!svg) return '';
-  return '<span class="pb-teemarker" title="Tee marker" style="display:inline-flex;vertical-align:-1px;margin-left:4px">' + svg + '</span>';
+  var g = pbMarkerGlyph(p.equippedCosmetics.teemarker, 12);
+  if (!g) return '';
+  return '<span class="pb-teemarker" title="Tee marker" style="display:inline-flex;vertical-align:-1px;margin-left:4px">' + g + '</span>';
 }
 
 function renderUsername(p, extraStyle, clickToProfile) {

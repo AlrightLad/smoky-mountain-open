@@ -269,7 +269,11 @@ Router.register("shop", function() {
     } else if (item.cat === 'flair') {
       c += '<div style="height:34px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:18px;color:' + item.preview + '"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l2.5 2.5M16.5 16.5L19 19M19 5l-2.5 2.5M7.5 16.5L5 19"/></svg></div>';
     } else if (item.cat === 'teemarker' || item.cat === 'ball') {
-      c += '<div style="height:34px;margin-bottom:8px;display:flex;align-items:center;justify-content:center"><span style="width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 30%,' + item.preview + ',rgba(0,0,0,.35));box-shadow:0 3px 4px -2px rgba(0,0,0,.5)"></span></div>';
+      // v8.24.68 — render the real golf-art glyph (shared with the worn-on-
+      // name render via pbMarkerGlyph), not a generic tinted dot. Falls back
+      // to the dot only if an item has no art yet.
+      var _mg = (typeof pbMarkerGlyph === 'function') ? pbMarkerGlyph(item.id, 38) : '';
+      c += '<div style="height:46px;margin-bottom:8px;display:flex;align-items:center;justify-content:center">' + (_mg || '<span style="width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 30%,' + item.preview + ',rgba(0,0,0,.35));box-shadow:0 3px 4px -2px rgba(0,0,0,.5)"></span>') + '</div>';
     } else if (item.cat === 'voice') {
       c += '<div style="height:34px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:16px">⛳</div>';
     } else if (item.cat === 'title') {
