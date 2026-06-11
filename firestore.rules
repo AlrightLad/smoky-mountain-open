@@ -230,6 +230,22 @@ service cloud.firestore {
                      || request.resource.data.get('ban', null) ==
                         resource.data.get('ban', null)
                      || amIFounder()
+                   )
+                   // v8.24.79 — founding / isFoundingFour immutable via client
+                   // (set once at create from the invite code). Closes the
+                   // verified self-grant members.doc(me).update({founding:true})
+                   // that faked the Founding-Four star. Founder may adjust.
+                   && (
+                     !('founding' in request.resource.data)
+                     || request.resource.data.get('founding', false) ==
+                        resource.data.get('founding', false)
+                     || amIFounder()
+                   )
+                   && (
+                     !('isFoundingFour' in request.resource.data)
+                     || request.resource.data.get('isFoundingFour', false) ==
+                        resource.data.get('isFoundingFour', false)
+                     || amIFounder()
                    );
       allow delete: if amIFounder();
     }
@@ -858,6 +874,19 @@ service cloud.firestore {
                    && (!('meta' in request.resource.data) || (request.resource.data.meta is string && request.resource.data.meta.size() <= 300));
       allow update: if false;
       allow delete: if amIActive() && (resource.data.createdBy == uid() || amIFounder());
+    }
+
+    // ─── Club records / Ace Wall (records/global) ──────────────────────
+    // v8.24.79 — this block was MISSING, so default-deny silently rejected
+    // every PB.setRecord write (longest drive/putt/hole-out/chip-in AND every
+    // hole-in-one) and the .catch swallowed it — records + the Ace Wall never
+    // persisted (device-local, lost on reload). A single shared club doc;
+    // any active member may record an ace/record (matches the trusted-league
+    // model). Founder-only delete. (Author-binding + league-scoping = follow-up.)
+    match /records/{docId} {
+      allow read: if amIReadable();
+      allow create, update: if amIActive();
+      allow delete: if amIFounder();
     }
 
     // NO CATCH-ALL. Every collection must have explicit rules above.

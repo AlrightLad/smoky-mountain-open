@@ -353,6 +353,26 @@ function startRoundsListener() {
   }, function(err) { pbWarn("[RoundsListener]", err.message); });
 }
 
+// ---- Club records / Ace Wall (records/global) ----
+// v8.24.79 — records + the Ace Wall write to records/global but were NEVER
+// read back (no hydrate path + the rule was missing), so they were device-
+// local and lost on reload. This listener hydrates state.records from
+// Firestore + re-renders the records/aces/trophyroom surfaces on change.
+var _recordsListener = null;
+function startRecordsListener() {
+  if (!db) return;
+  if (_recordsListener) _recordsListener();
+  _recordsListener = db.collection("records").doc("global").onSnapshot(function(doc) {
+    if (!doc.exists) return;
+    var d = doc.data() || {};
+    PB.setRecordsFromFirestore(d);
+    var pg = Router.getPage();
+    if (pg === "records" || pg === "aces" || pg === "trophyroom" || pg === "home") {
+      Router.go(pg, Router.getParams(), true);
+    }
+  }, function(err) { pbWarn("[RecordsListener]", err.message); });
+}
+
 // ---- Custom drills: Firestore only ----
 function loadCustomDrillsFromFirestore() {
   if (!db) return;

@@ -630,6 +630,14 @@ var PB = (function() {
       db.collection('records').doc('global').set(recData, { merge: true }).catch(function(){});
     }
   }
+  // v8.24.79 — hydrate in-memory records from the authoritative records/global
+  // doc (the records listener calls this). Without it, records + the Ace Wall
+  // were device-local and silently lost on reload.
+  function setRecordsFromFirestore(d) {
+    if (!d) return;
+    if (!state.records) state.records = {};
+    for (var k in d) { if (Object.prototype.hasOwnProperty.call(d, k)) state.records[k] = d[k]; }
+  }
 
   /* ---------- CALCULATIONS ---------- */
   function calcStableford(score, par) {
@@ -2181,7 +2189,7 @@ var PB = (function() {
     getFirGir:getFirGir, setFir:setFir, setGir:setGir, getFirGirTotals:getFirGirTotals,
     getMiniWinner:getMiniWinner, setMiniWinner:setMiniWinner, getBonusWinner:getBonusWinner, setBonusWinner:setBonusWinner,
     getScrambleTeams:getScrambleTeams, addScrambleTeam:addScrambleTeam, addScrambleTeamFromFirestore:addScrambleTeamFromFirestore, addScrambleMatch:addScrambleMatch,
-    getRecords:getRecords, setRecord:setRecord,
+    getRecords:getRecords, setRecord:setRecord, setRecordsFromFirestore:setRecordsFromFirestore,
     calcStableford:calcStableford, calcHandicap:calcHandicap, getHandicapDetails:getHandicapDetails,
     getPlayerAvg:getPlayerAvg, getPlayerBest:getPlayerBest, getPlayerBest9:getPlayerBest9, getDisplayName:getDisplayName, fmtLabel:fmtLabel, getUniqueCourses:getUniqueCourses, normCourseName:normCourseName, getAllPlayerIds:getAllPlayerIds,
     getTripStableford:getTripStableford, getTripTotal:getTripTotal,

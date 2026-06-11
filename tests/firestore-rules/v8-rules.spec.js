@@ -1354,6 +1354,48 @@ async function runAll() {
   });
 
   // ─────────────────────────────────────────────────────────────────
+  // members — founding/isFoundingFour immutable via client (v8.24.79)
+  // ─────────────────────────────────────────────────────────────────
+  await group('members — founding/isFoundingFour immutable via client', async () => {
+    await runTest('member CANNOT self-grant founding via update (fake the star)', async () => {
+      await seedMember(USER_A, { platformRole: 'user', founding: false, isFoundingFour: false });
+      const db = authenticatedAs(USER_A);
+      await assertFails(db.collection('members').doc(USER_A).update({ founding: true }));
+    });
+    await runTest('member CANNOT self-grant isFoundingFour via update', async () => {
+      await seedMember(USER_A, { platformRole: 'user', founding: false, isFoundingFour: false });
+      const db = authenticatedAs(USER_A);
+      await assertFails(db.collection('members').doc(USER_A).update({ isFoundingFour: true }));
+    });
+    await runTest('member CAN update other fields with founding unchanged', async () => {
+      await seedMember(USER_A, { platformRole: 'user', founding: false, isFoundingFour: false });
+      const db = authenticatedAs(USER_A);
+      await assertSucceeds(db.collection('members').doc(USER_A).update({ bio: 'hi', founding: false }));
+    });
+  });
+
+  // ─────────────────────────────────────────────────────────────────
+  // records/global — club records + Ace Wall persistence (v8.24.79)
+  // ─────────────────────────────────────────────────────────────────
+  await group('records/global — records + Ace Wall persistence', async () => {
+    await runTest('active member CAN write records/global', async () => {
+      await withPlatformRole(USER_A, 'user');
+      const db = authenticatedAs(USER_A);
+      await assertSucceeds(db.collection('records').doc('global').set({ longestDrive: { distance: 320, by: 'Z' } }, { merge: true }));
+    });
+    await runTest('active member CAN read records/global', async () => {
+      await withPlatformRole(USER_A, 'user');
+      const db = authenticatedAs(USER_A);
+      await assertSucceeds(db.collection('records').doc('global').get());
+    });
+    await runTest('banned member CANNOT write records/global', async () => {
+      await withBan(BANNED, { reason: 'test' });
+      const db = authenticatedAs(BANNED);
+      await assertFails(db.collection('records').doc('global').set({ longestDrive: { distance: 1 } }, { merge: true }));
+    });
+  });
+
+  // ─────────────────────────────────────────────────────────────────
   // LEAGUES/{id}/joinRequests (Gap 8 preserved from v7.9.5)
   // ─────────────────────────────────────────────────────────────────
 

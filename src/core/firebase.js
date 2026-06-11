@@ -727,6 +727,7 @@ function startLeagueDataSync() {
   loadActiveLeagueName();
   loadRoundsFromFirestore();
   startRoundsListener(); // real-time listener keeps rounds in sync across devices
+  if (typeof startRecordsListener === "function") startRecordsListener(); // v8.24.79 — hydrate records/Ace Wall (was never read back)
 }
 if (typeof window !== "undefined") window.startLeagueDataSync = startLeagueDataSync;
 
