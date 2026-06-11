@@ -33,3 +33,6 @@
 [aggregate-architecture-review] OK status=yellow findings=3 pending_recs=0 write=False (skip-idempotent-grace-content-unchanged-13110s)
 
 --- scripts/aggregate-fiq-status.py ---
+[aggregate-fiq-status] OK status=green declared=26 deployed=26 write=False (skip-idempotent-grace-content-unchanged-102514s)
+
+--- scripts/aggregate-self-tests.py ---
