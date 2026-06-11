@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-11T21:09:57.407954Z",
+  "generated_at": "2026-06-11T21:11:29.940879Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 87.7,
   "overall_grade": "A-",
@@ -991,11 +991,11 @@
     "A12_operational": {
       "score": 90,
       "status": "green",
-      "label": "pipeline=green · 4 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=green · 3 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "4 of last 10 cron watcher runs hit skip-dirty",
+          "what": "3 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -1024,17 +1024,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "578e60e8",
-    "subject": "fix(security): username immutable via client rules (v8.24.91, page-sweep #12)",
-    "committed_at": "2026-06-11T17:09:33-04:00",
-    "trigger": "app-commit",
-    "is_app_commit": true,
-    "app_files_touched": [
-      "public/sw.js",
-      "src/core/utils.js",
-      "src/pages/caddynotes.js"
-    ],
-    "total_files_touched": 7
+    "sha": "4ac2cbe5",
+    "subject": "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)",
+    "committed_at": "2026-06-11T17:11:03-04:00",
+    "trigger": "cron",
+    "is_app_commit": false,
+    "app_files_touched": [],
+    "total_files_touched": 4
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
