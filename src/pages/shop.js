@@ -90,6 +90,67 @@ var COSMETICS_CATALOG = [
   {id:"title_commissioner",  cat:"title", name:"The Commissioner",    price:0,   desc:"Reserved, league commissioner only",             css:"", preview:"var(--gold)", reserved:true}
 ];
 
+// ══ THE PRO SHOP CATALOG (v8.24.50, founder-approved PC-01..PC-25) ══════
+// Objects with stories, not paint. tier: range|proshop|locker|cabinet|commem.
+// arriving:true = on the shelf, visibly desired, not yet purchasable (its
+// render surface ships next; we never sell what doesn't render — P9).
+// earnedBy = Trophy Cabinet (never for sale). PC-23 Crest Foundry ships with
+// its editor (deferred — not listed until it works).
+var PRO_SHOP_CATALOG = [
+  // A · Avatar rings — ornamental, render via ringClass (live now)
+  {id:"pc01_gallery_rope", cat:"border", tier:"proshop", name:"The Gallery Rope", price:400, ringClass:"ring-gallery-rope", preview:"#b8a87e", desc:"Braided cream rope with brass stanchions at the compass points. You're the one they came to watch."},
+  {id:"pc02_fescue",       cat:"border", tier:"locker",  name:"Fescue",          price:600, ringClass:"ring-fescue", preview:"#b9a04b", desc:"Wispy golden fescue grows around the bottom arc, swaying slow. Links golf, in a circle."},
+  {id:"pc03_fried_egg",    cat:"border", tier:"proshop", name:"Fried Egg",       price:300, ringClass:"ring-fried-egg", preview:"#d9c389", desc:"Half-buried in bunker sand, a lip of splash frozen mid-blast. Own your lies."},
+  {id:"pc04_claret",       cat:"border", tier:"cabinet", name:"The Claret",      price:1500, ringClass:"ring-claret", preview:"#cfd2d6", desc:"Engraved trophy silver with a jug-handle flourish; a light sweep crosses the engraving."},
+  // B · Nameplates — NEW surface, arriving (renders next ship)
+  {id:"pc05_locker_brass", cat:"nameplate", tier:"locker", name:"Locker Brass", price:500, arriving:true, preview:"#caa75c", desc:"Brushed brass behind your name, engraved serif, two screw heads. Your locker, everywhere."},
+  {id:"pc06_yardage_book", cat:"nameplate", tier:"proshop", name:"The Yardage Book", price:350, arriving:true, preview:"#d8d2c0", desc:"Graph paper, a hand-sketched green contour, a penciled carry number fading behind your name."},
+  {id:"pc07_leaderboard_sunday", cat:"nameplate", tier:"locker", name:"Leaderboard Sunday", price:750, arriving:true, preview:"#1d3a2a", desc:"Hand-set white letters on deep green; your score-to-par renders red or green, pulled live."},
+  // C · Scorecard skins — render via getPlayerCardCss (live now)
+  {id:"pc08_pencil_parchment", cat:"card", tier:"proshop", name:"Pencil & Parchment", price:400, preview:"#cabd98", css:"border:1px solid #c2b48c;border-left:4px solid #b3a378;background:linear-gradient(0deg,rgba(202,189,152,.12),rgba(232,224,196,.16)),repeating-linear-gradient(0deg,transparent 0 7px,rgba(150,135,95,.07) 7px 8px)", desc:"Vintage paper stock, dot-grid rules, your numbers in pencil grey."},
+  {id:"pc09_member_guest", cat:"card", tier:"locker", name:"The Member-Guest", price:500, preview:"#e9dfc4", css:"border-top:3px double rgba(180,137,62,.85);border-bottom:3px double rgba(180,137,62,.85);background:linear-gradient(180deg,rgba(244,238,220,.16),rgba(233,223,196,.1))", desc:"Cream card, double brass rules, your league's name as a pale watermark."},
+  {id:"pc10_major_sunday", cat:"card", tier:"locker", name:"Major Sunday", price:900, preview:"#0d2818", css:"border-left:6px solid #0d2818;background:linear-gradient(90deg,rgba(13,40,24,.2),rgba(13,40,24,.05) 55%,transparent)", desc:"Broadcast lower-third styling: deep-green chyron bars. Your 92 never looked so televised."},
+  // D · Feed flair — NEW surface, arriving
+  {id:"pc11_tap_in_tip",   cat:"flair", tier:"proshop", name:"Tap-In Tip", price:300, arriving:true, preview:"#caa75c", desc:"Your reactions land as a brass ball-marker stamp with a tiny press."},
+  {id:"pc12_birdie_drop",  cat:"flair", tier:"locker", name:"Birdie Drop", price:600, arriving:true, preview:"#3f7d4e", desc:"Under-par rounds: a ball drops into the cup on your feed card. One bounce, rattle, done."},
+  {id:"pc13_gallery_roar", cat:"flair", tier:"locker", name:"The Gallery Roar", price:750, arriving:true, preview:"#b4893e", desc:"Personal bests: a hat-tip ripple and a short polite-applause burst on first view."},
+  // E · Titles + the Engraving (plate renders live now)
+  {id:"pc14_engraving",    cat:"title", tier:"proshop", name:"The Engraving", price:400, plate:true, preview:"#caa75c", desc:"Your equipped title renders as a small engraved brass plate instead of italic text. Applies to any title you own."},
+  {id:"pc15_cart_path",    cat:"title", tier:"range", name:"Cart Path Only", price:250, preview:"#8a8674", desc:"For the member whose ball has seen more concrete than fairway. Worn with pride or not at all."},
+  {id:"pc16_postman",      cat:"title", tier:"proshop", name:"The Postman", price:400, preview:"#b4893e", desc:"Posts every round. Rain, shame, or triple bogey — always delivers."},
+  // F · Tee markers — NEW surface, arriving
+  {id:"pc17_brass_acorn",  cat:"teemarker", tier:"range", name:"Brass Acorn", price:200, arriving:true, preview:"#caa75c", desc:"The classic club tee marker, polished. Says you've been here a while."},
+  {id:"pc18_rubber_duck",  cat:"teemarker", tier:"proshop", name:"Rubber Duck", price:350, arriving:true, preview:"#e8c84a", desc:"A small yellow duck. For the member with a documented relationship with water."},
+  {id:"pc19_persimmon",    cat:"teemarker", tier:"proshop", name:"Persimmon", price:350, arriving:true, preview:"#7a4a28", desc:"A tiny persimmon driver head, brass sole plate, whipping and all. Feel player."},
+  {id:"pc20_parbaugh_marker", cat:"teemarker", tier:"locker", name:"The Parbaugh", price:500, arriving:true, preview:"#b4893e", desc:"The league crest cast as a founding-gold marker. Fly the flag."},
+  // G · Caddy voice packs — NEW, arriving
+  {id:"pc21_old_tom",      cat:"voice", tier:"locker", name:"Old Tom", price:800, arriving:true, preview:"#6f6a5b", desc:"Gruff links wisdom. \"Aye. Intae the wind, that's a three-club day. Swing easy.\""},
+  {id:"pc22_bag_room",     cat:"voice", tier:"locker", name:"Bag Room Guy", price:800, arriving:true, preview:"#6f6a5b", desc:"The heckling friend. \"Big number brewing on 14? Prove me wrong, I'd love that.\""},
+  // I · Trophy Cabinet — commemorative, never for sale
+  {id:"pc24_green_jacket", cat:"border", tier:"commem", name:"The Green Jacket", price:0, earnedBy:"Season champion only", ringClass:"", preview:"#1d3a2a", desc:"Deep-green wool ring, three small brass buttons, your championship year engraved at six o'clock."},
+  {id:"pc25_ace_marker",   cat:"teemarker", tier:"commem", name:"Ace Marker", price:0, earnedBy:"Hole-in-one only", preview:"#e9d9ae", desc:"A gold ball on a brass pedestal, date engraved. There is no second way to get this, and everyone knows it."}
+];
+// Legacy items kept ON SALE in the Paint Locker (the best ~15); every other
+// legacy item is retired from sale. Owned items are grandfathered forever —
+// ownership and equip are untouched by retirement.
+var PAINT_LOCKER_KEEP = ["border_pulse_gold","border_shimmer","border_rainbow_shift","border_neon_green","border_crimson_ember","banner_classic","banner_camo_pair","banner_masters_pair","banner_azalea_pair","banner_usga_pair","banner_dark_pair","banner_light_pair","banner_champ_pair","card_gold_foil","card_vintage"];
+var PRO_SHOP_TIERS = {
+  range:   {label:"Range Bucket"},
+  proshop: {label:"Pro Shop"},
+  locker:  {label:"Member's Locker"},
+  cabinet: {label:"Champion's Cabinet"},
+  commem:  {label:"Commemorative"}
+};
+var PRO_SHOP_SHELVES = [
+  {cat:"border",    title:"Rings",          meta:"Worn on your avatar, everywhere"},
+  {cat:"nameplate", title:"Nameplates",     meta:"Behind your name on every board — arriving"},
+  {cat:"card",      title:"Scorecard Skins",meta:"Real materials on your round cards"},
+  {cat:"flair",     title:"Feed Flair",     meta:"Moments of glory, once per card — arriving"},
+  {cat:"title",     title:"Titles",         meta:"Under your name, in your voice"},
+  {cat:"teemarker", title:"Tee Markers",    meta:"Your totem on live rounds — arriving"},
+  {cat:"voice",     title:"The Caddy",      meta:"His tone, your pick — arriving"}
+];
+
 var COSMETIC_CATS = {
   border: {label: "Rings",    icon: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/></svg>'},
   banner: {label: "Banners",  icon: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M2 8h20"/></svg>'},
@@ -97,6 +158,17 @@ var COSMETIC_CATS = {
   name:   {label: "Names",    icon: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>'},
   title:  {label: "Titles",   icon: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 15l-2 5h4l-2-5z"/><path d="M6.5 10L12 3l5.5 7h-11z"/></svg>'}
 };
+
+// Retirement pass (v8.24.50): legacy items off the sale floor unless kept in
+// the Paint Locker. Owned items stay owned + equippable forever (grandfathered).
+COSMETICS_CATALOG.forEach(function(c) {
+  if (c.price > 0 && !c.reserved && PAINT_LOCKER_KEEP.indexOf(c.id) === -1) c.retired = true;
+});
+// Purchase/equip share one lookup across both catalogs.
+function shopFindItem(id) {
+  return COSMETICS_CATALOG.find(function(c) { return c.id === id; })
+      || PRO_SHOP_CATALOG.find(function(c) { return c.id === id; });
+}
 
 var _shopCat = "border";
 
@@ -123,8 +195,8 @@ Router.register("shop", function() {
   h += '<div class="roster-masthead">';
   // v8.24.40 — ParCoin is a platform wallet, not a league ledger; name the
   // platform, not the founding league (wrong label for every other league).
-  h += '<div class="roster-eyebrow">THE SHOP · PARBAUGHS</div>';
-  h += '<h1 class="roster-headline">What you\'ve got.</h1>';
+  h += '<div class="roster-eyebrow">THE PRO SHOP · PARBAUGHS</div>';
+  h += '<h1 class="roster-headline">Spend it like you earned it.</h1>';
   h += '</div>';
 
   // 3m.A Wallet hero — brass double-rule balance card
@@ -142,100 +214,117 @@ Router.register("shop", function() {
   h += '<div id="shopLedger" class="shop-ledger__body"><div class="shop-ledger__loading">Loading activity</div></div>';
   h += '</section>';
 
-  // 3m.B Cosmetics section
-  h += '<section class="shop-cosmetics" id="shopCosmetics" tabindex="-1" aria-label="Cosmetics">';
-  h += '<div class="shop-sec-head"><h2 class="shop-sec-title">Make your shelf yours.</h2></div>';
-  h += '<div class="shop-sec-sub">Earned Parcoin, spent on looks. Rings, banners, card skins, name effects, and titles.</div>';
+  // ══ THE PRO SHOP floor (v8.24.50) ══
+  h += '<section class="shop-cosmetics" id="shopCosmetics" tabindex="-1" aria-label="The Pro Shop">';
 
-  // Category tabs
-  h += '<div class="toggle-bar shop-tabs" id="shop-tabs">';
-  Object.keys(COSMETIC_CATS).forEach(function(catKey) {
-    var cat = COSMETIC_CATS[catKey];
-    var isActive = catKey === _shopCat;
-    h += '<button' + (isActive ? ' class="a"' : '') + ' onclick="_shopCat=\'' + catKey + '\';Router.go(\'shop\',{},true)">' + cat.icon + ' ' + cat.label + '</button>';
-  });
-  h += '</div>';
-
-  // User's avatar and name for live previews
   var _myAvatar = currentProfile ? Router.getAvatar(currentProfile) : '';
   var _myName = currentProfile ? (currentProfile.username || currentProfile.name || 'You') : 'You';
+  var equippedMap = (currentProfile && currentProfile.equippedCosmetics) || {};
 
-  // Animated ring ID → CSS animation mapping
-  var _ringAnimMap = {
-    'border_pulse_gold': 'ringPulse 2s ease-in-out infinite',
-    'border_shimmer': 'ringShimmer 2s linear infinite',
-    'border_rainbow_shift': 'ringRainbow 3s linear infinite',
-    'border_neon_green': 'ringNeonGreen 1.8s ease-in-out infinite',
-    'border_crimson_ember': 'ringEmber 1.2s ease-in-out infinite'
-  };
-
-  // Name effect ID → CSS class mapping
-  var _nameClassMap = {
-    'name_gold_shimmer': 'name-gold-shimmer',
-    'name_rainbow': 'name-rainbow',
-    'name_glow_green': 'name-glow-green',
-    'name_fire_text': 'name-fire',
-    'name_ice_text': 'name-ice',
-    'name_shadow_depth': 'name-shadow-depth'
-  };
-
-  // Items grid
-  var items = COSMETICS_CATALOG.filter(function(c) { return c.cat === _shopCat; });
-  h += '<div class="shop-grid">';
-  items.forEach(function(item) {
-    var isOwned = owned.indexOf(item.id) !== -1 || item.price === 0;
+  // One item card — shared by Front Table, shelves, and the Paint Locker.
+  function _proShopCard(item, big) {
+    var isOwned = owned.indexOf(item.id) !== -1 || (item.price === 0 && !item.earnedBy);
     var canAfford = balance >= item.price;
-    var equipped = currentProfile && currentProfile.equippedCosmetics && currentProfile.equippedCosmetics[item.cat] === item.id;
-
-    h += '<div class="shop-item' + (equipped ? ' shop-item--equipped' : '') + '">';
-
-    // ── LIVE PREVIEW ──
-    if (item.cat === "border") {
-      // Ring preview: user's actual photo + live animation
-      var ringAnim = _ringAnimMap[item.id] || '';
-      var ringGlow = ringAnim ? '' : ';box-shadow:0 0 8px ' + item.preview + '50';
-      h += '<div style="width:56px;height:56px;border-radius:50%;border:' + item.css + ringGlow + ';margin:0 auto 8px;display:flex;align-items:center;justify-content:center;background:var(--bg3)' + (ringAnim ? ';animation:' + ringAnim : '') + '">' + (_myAvatar || '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--muted)" stroke-width="1.5"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>') + '</div>';
-    } else if (item.cat === "banner") {
-      // Banner: full width at profile-like size
-      h += '<div style="height:40px;border-radius:var(--radius);background:' + item.css + ';margin-bottom:8px;position:relative;overflow:hidden">';
-      h += '<div style="position:absolute;bottom:4px;left:50%;transform:translateX(-50%);font-size:8px;color:rgba(255,255,255,.5);letter-spacing:.5px">PREVIEW</div>';
-      h += '</div>';
-    } else if (item.cat === "card") {
-      // Card: mock feed card with live styling
-      h += '<div style="border-radius:var(--radius);background:var(--bg3);margin-bottom:8px;padding:8px 10px;text-align:left;' + item.css + '">';
-      h += '<div style="font-size:9px;font-weight:600;color:var(--cream)">' + escHtml(_myName) + '</div>';
-      h += '<div style="font-size:8px;color:var(--muted);margin-top:1px">Honey Run \u00b7 92</div>';
-      h += '</div>';
-    } else if (item.cat === "name") {
-      // Name effect: user's actual username with live CSS animation
-      var nameClass = _nameClassMap[item.id] || '';
-      h += '<div style="padding:6px 0 8px;font-size:16px;font-weight:700" class="' + nameClass + '">' + escHtml(_myName) + '</div>';
-    } else if (item.cat === "title") {
-      // Title: shown under username exactly as on profile
-      h += '<div style="padding:6px 0 8px;display:flex;flex-direction:column;align-items:center;gap:2px">';
-      h += '<div style="font-size:13px;font-weight:700;color:var(--cream)">' + escHtml(_myName) + '</div>';
-      h += '<div style="font-size:10px;color:' + item.preview + ';font-style:italic">' + item.name + '</div>';
-      h += '</div>';
+    var equipped = equippedMap[item.cat] === item.id || (item.plate && equippedMap.titleplate === item.id);
+    var tier = item.tier || (item.price >= 1200 ? 'cabinet' : item.price >= 600 ? 'locker' : item.price >= 300 ? 'proshop' : 'range');
+    var c = '<div class="shop-item shop-item--' + tier + (equipped ? ' shop-item--equipped' : '') + '"' + (big ? ' style="grid-row:span 1"' : '') + '>';
+    c += '<div class="shop-tier-chip shop-tier-chip--' + tier + '">' + (PRO_SHOP_TIERS[tier] ? PRO_SHOP_TIERS[tier].label : tier) + '</div>';
+    // preview
+    if (item.cat === 'border') {
+      var ringCss = item.ringClass ? '' : 'border:' + (item.css || '3px solid ' + item.preview);
+      c += '<div class="' + (item.ringClass || '') + '" style="width:56px;height:56px;border-radius:50%;' + ringCss + ';margin:0 auto 8px;display:flex;align-items:center;justify-content:center;background:var(--bg3);position:relative">' + (_myAvatar || '') + '</div>';
+    } else if (item.cat === 'nameplate') {
+      c += '<div style="height:34px;border-radius:6px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:' + (item.id === 'pc07_leaderboard_sunday' ? '#fff;background:#1d3a2a;font-family:var(--font-mono);letter-spacing:2px' : '#241c0c;background:linear-gradient(160deg,#caa75c,#9c7c38)') + '">' + escHtml(_myName) + '</div>';
+    } else if (item.cat === 'card') {
+      c += '<div style="border-radius:var(--radius);background:var(--bg3);margin-bottom:8px;padding:8px 10px;text-align:left;' + (item.css || '') + '"><div style="font-size:9px;font-weight:600;color:var(--cream)">' + escHtml(_myName) + '</div><div style="font-size:8px;color:var(--muted);margin-top:1px">Honey Run · 92</div></div>';
+    } else if (item.cat === 'flair') {
+      c += '<div style="height:34px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:18px;color:' + item.preview + '"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M5 5l2.5 2.5M16.5 16.5L19 19M19 5l-2.5 2.5M7.5 16.5L5 19"/></svg></div>';
+    } else if (item.cat === 'teemarker') {
+      c += '<div style="height:34px;margin-bottom:8px;display:flex;align-items:center;justify-content:center"><span style="width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 30%,' + item.preview + ',rgba(0,0,0,.35));box-shadow:0 3px 4px -2px rgba(0,0,0,.5)"></span></div>';
+    } else if (item.cat === 'voice') {
+      c += '<div style="height:34px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:16px">⛳</div>';
+    } else if (item.cat === 'title') {
+      c += '<div style="padding:4px 0 8px;display:flex;flex-direction:column;align-items:center;gap:3px"><div style="font-size:12px;font-weight:700;color:var(--cream)">' + escHtml(_myName) + '</div>' + (item.plate ? '<span class="title-engraved">Grinder</span>' : '<div style="font-size:10px;color:' + item.preview + ';font-style:italic">' + item.name + '</div>') + '</div>';
     }
-
-    h += '<div class="shop-item__name">' + item.name + '</div>';
-    h += '<div class="shop-item__desc">' + item.desc + '</div>';
-
-    if (item.reserved) {
-      h += '<div class="shop-item__state shop-item__state--reserved">Reserved</div>';
+    c += '<div class="shop-item__name">' + item.name + '</div>';
+    c += '<div class="shop-item__desc">' + item.desc + '</div>';
+    if (item.earnedBy) {
+      c += '<div class="shop-cabinet__earn">' + item.earnedBy + '. Not for sale.</div>';
+    } else if (item.arriving) {
+      c += '<div class="shop-item__state shop-item__state--arriving">Arriving</div>';
     } else if (isOwned && equipped) {
-      h += '<div class="shop-item__state shop-item__state--equipped">Equipped</div>';
+      c += '<div class="shop-item__state shop-item__state--equipped">Equipped</div>';
     } else if (isOwned) {
-      h += '<button class="shop-item__equip" onclick="equipCosmetic(\'' + item.id + '\',\'' + item.cat + '\')">Equip</button>';
+      c += '<button class="shop-item__equip" onclick="equipCosmetic(\'' + item.id + '\',\'' + (item.plate ? 'titleplate' : item.cat) + '\')">Equip</button>';
     } else if (canAfford) {
-      h += '<button class="shop-item__buy" onclick="purchaseCosmetic(\'' + item.id + '\')">' + _shopCoinSvg + ' ' + item.price + '</button>';
+      c += '<button class="shop-item__buy" onclick="purchaseCosmetic(\'' + item.id + '\')">' + _shopCoinSvg + ' ' + item.price + '</button>';
     } else {
-      h += '<div class="shop-item__state shop-item__state--locked">' + item.price + ' · need ' + (item.price - balance) + ' more</div>';
+      c += '<div class="shop-item__state shop-item__state--locked">' + item.price + ' · need ' + (item.price - balance) + ' more</div>';
     }
+    c += '</div>';
+    return c;
+  }
 
-    h += '</div>';
+  // ── The Front Table — deterministic weekly rotation (ISO week) over the
+  //    purchasable new catalog; same table for every member all week.
+  var _sellable = PRO_SHOP_CATALOG.filter(function(i) { return !i.arriving && !i.earnedBy; });
+  var _now = new Date();
+  var _week = Math.floor((_now - new Date(_now.getFullYear(), 0, 1)) / 604800000);
+  var _heroIdx = _week % _sellable.length;
+  h += '<div class="shop-front-table"><div class="shop-front-table__eyebrow">The Front Table · this week</div><div class="shop-front-table__grid">';
+  h += _proShopCard(_sellable[_heroIdx], true);
+  h += '<div style="display:grid;gap:10px">';
+  for (var fp = 1; fp <= 2; fp++) h += _proShopCard(_sellable[(_heroIdx + fp) % _sellable.length]);
+  h += '</div></div></div>';
+
+  // ── Category shelves ──
+  PRO_SHOP_SHELVES.forEach(function(shelf) {
+    var items = PRO_SHOP_CATALOG.filter(function(i) { return i.cat === shelf.cat && !i.earnedBy; });
+    if (!items.length) return;
+    h += '<div class="shop-shelf"><div class="shop-shelf__head"><span class="shop-shelf__title">' + shelf.title + '</span><span class="shop-shelf__meta">' + shelf.meta + '</span></div>';
+    h += '<div class="shop-shelf__rail">';
+    items.forEach(function(item) { h += _proShopCard(item); });
+    // Titles shelf also carries the legacy purchasable titles (never retired from concept)
+    if (shelf.cat === 'title') {
+      COSMETICS_CATALOG.filter(function(c) { return c.cat === 'title' && !c.reserved && !c.retired; }).forEach(function(item) { h += _proShopCard(item); });
+    }
+    h += '</div></div>';
   });
-  h += '</div>';
+
+  // ── The Trophy Cabinet — earned-only, glass front, the earn condition is
+  //    the whole point (P10: every item states exactly how it's earned).
+  h += '<div class="shop-cabinet"><div class="shop-cabinet__eyebrow">The Trophy Cabinet</div><div class="shop-cabinet__title">Cannot be bought. That\'s the point.</div>';
+  h += '<div class="shop-shelf__rail">';
+  PRO_SHOP_CATALOG.filter(function(i) { return !!i.earnedBy; }).forEach(function(item) {
+    h += _proShopCard(item).replace('shop-item--commem', 'shop-item--commem');
+  });
+  // Reserved legacy titles live here now (they were always earned things)
+  COSMETICS_CATALOG.filter(function(c) { return c.reserved; }).forEach(function(item) {
+    h += '<div class="shop-item shop-item--commem"><div class="shop-tier-chip shop-tier-chip--commem">Commemorative</div>';
+    h += '<div style="padding:8px 0;font-size:11px;color:#cfe2d4;font-style:italic">' + item.name + '</div>';
+    h += '<div class="shop-item__name">' + item.name + '</div><div class="shop-item__desc">' + item.desc + '</div>';
+    h += '<div class="shop-cabinet__earn">' + item.desc.replace(/^Reserved, /, '') + '. Not for sale.</div></div>';
+  });
+  h += '</div></div>';
+
+  // ── The Paint Locker — the best of the old catalog, still on sale ──
+  var _paint = COSMETICS_CATALOG.filter(function(c) { return !c.retired && !c.reserved && c.price > 0 && c.cat !== 'title'; });
+  if (_paint.length) {
+    h += '<div class="shop-shelf"><div class="shop-shelf__head"><span class="shop-shelf__title">The Paint Locker</span><span class="shop-shelf__meta">The classics that earned their hooks</span></div>';
+    h += '<div class="shop-shelf__rail">';
+    _paint.forEach(function(item) { h += _proShopCard(item); });
+    h += '</div></div>';
+  }
+
+  // ── Your Locker — owned items, equip management in one place ──
+  var _ownedItems = owned.map(shopFindItem).filter(Boolean);
+  if (_ownedItems.length) {
+    h += '<div class="shop-shelf"><div class="shop-shelf__head"><span class="shop-shelf__title">Your Locker</span><span class="shop-shelf__meta">' + _ownedItems.length + ' owned · grandfathered forever</span></div>';
+    h += '<div class="shop-shelf__rail">';
+    _ownedItems.forEach(function(item) { h += _proShopCard(item); });
+    h += '</div></div>';
+  }
+
   h += '</section>';
 
   // 3m.D The Economy — entry cards to live feature pages
@@ -324,8 +413,12 @@ function _renderShopLedger(uid) {
 function purchaseCosmetic(itemId) {
   if (!currentUser || !db) { Router.toast("Sign in required"); return; }
   if (!requireVerified("buy cosmetics")) return;
-  var item = COSMETICS_CATALOG.find(function(c) { return c.id === itemId; });
+  var item = shopFindItem(itemId);
   if (!item) return;
+  // v8.24.50 — never sell what doesn't render yet, never sell the earned.
+  if (item.arriving) { Router.toast("Arriving soon — not on sale yet"); return; }
+  if (item.earnedBy) { Router.toast(item.earnedBy + ". Not for sale."); return; }
+  if (item.retired && owned === undefined) {} // (retired items simply aren't rendered with buy buttons)
 
   var balance = getParCoinBalance(currentUser.uid);
   if (balance < item.price) { Router.toast("Not enough ParCoins"); return; }
@@ -356,7 +449,7 @@ function purchaseCosmetic(itemId) {
 function equipCosmetic(itemId, cat) {
   if (!currentUser || !db) return;
   var equipped = (currentProfile && currentProfile.equippedCosmetics) || {};
-  var item = COSMETICS_CATALOG.find(function(c) { return c.id === itemId; });
+  var item = shopFindItem(itemId);
   if (equipped[cat] === itemId) {
     // Unequip
     equipped[cat] = null;

@@ -234,8 +234,8 @@ function playerFrameColor(p) {
   if (!p) return '#B4893E';
   // Cosmetic ring override (from shop purchase)
   if (p.equippedCosmetics && p.equippedCosmetics.border && p.equippedCosmetics.border !== "theme-default") {
-    var cosm = typeof COSMETICS_CATALOG !== "undefined" ? COSMETICS_CATALOG : [];
-    var equipped = cosm.find(function(c) { return c.id === p.equippedCosmetics.border; });
+    var equipped = (typeof shopFindItem === "function") ? shopFindItem(p.equippedCosmetics.border)
+      : (typeof COSMETICS_CATALOG !== "undefined" ? COSMETICS_CATALOG : []).find(function(c) { return c.id === p.equippedCosmetics.border; });
     if (equipped) return equipped.preview;
   }
   // Default: Clubhouse brass for all members
@@ -281,6 +281,11 @@ function playerRingClass(p) {
   if (b === 'border_rainbow_shift') return 'ring-rainbow-shift';
   if (b === 'border_neon_green') return 'ring-neon-green';
   if (b === 'border_crimson_ember') return 'ring-crimson-ember';
+  // v8.24.50 — Pro Shop ornamental rings (class-drawn, not border colors)
+  if (b === 'pc01_gallery_rope') return 'ring-gallery-rope';
+  if (b === 'pc02_fescue') return 'ring-fescue';
+  if (b === 'pc03_fried_egg') return 'ring-fried-egg';
+  if (b === 'pc04_claret') return 'ring-claret';
   return '';
 }
 // ── Cosmetic helpers ──

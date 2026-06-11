@@ -61,6 +61,9 @@ function renderMemberDetailWithData(p) {
   var frameColor = playerFrameColor(p);
   var ringStyle = typeof playerRingStyle === "function" ? playerRingStyle(p) : "border:3px solid " + frameColor;
   var activeTitle = p.equippedTitle || p.title || "Member";
+  // v8.24.50 — The Engraving (PC-14): owned+equipped, the title renders as a
+  // brass plate (class title-engraved) instead of italic text.
+  var titleIsPlate = !!(p.equippedCosmetics && p.equippedCosmetics.titleplate === "pc14_engraving");
   var isBeta = PB.getPlayers().indexOf(p) < 30;
   var isOwnProfile = currentUser && (pid === currentUser.uid || (currentProfile && pid === currentProfile.claimedFrom));
   var canEditPhoto = isOwnProfile;
@@ -108,8 +111,15 @@ function renderMemberDetailWithData(p) {
   h += '<div class="pf-av__lvl">' + lvl.level + '</div>';
   h += '</div>';
   h += '<div class="pf-id">';
-  h += '<div class="roster-eyebrow">' + escHtml(String(activeTitle).toUpperCase()) + ' · SINCE ' + escHtml(String(p.joinDate || "2026")) + '</div>';
+  // v8.24.50 — The Engraving: the title leaves the eyebrow and renders as a
+  // brass plate under the name; the eyebrow keeps the member-since line.
+  if (titleIsPlate) {
+    h += '<div class="roster-eyebrow">MEMBER · SINCE ' + escHtml(String(p.joinDate || "2026")) + '</div>';
+  } else {
+    h += '<div class="roster-eyebrow">' + escHtml(String(activeTitle).toUpperCase()) + ' · SINCE ' + escHtml(String(p.joinDate || "2026")) + '</div>';
+  }
   h += '<h1 class="roster-headline pf-headline">' + renderUsername(p, '', false) + '</h1>';
+  if (titleIsPlate) h += '<div style="margin:4px 0 2px"><span class="title-engraved">' + escHtml(activeTitle) + '</span></div>';
   if (p.username && p.name && p.username !== p.name) h += '<div class="pf-realname">' + escHtml(p.name) + '</div>';
   var metaParts = [];
   if (p.homeCourse) metaParts.push(escHtml(p.homeCourse));

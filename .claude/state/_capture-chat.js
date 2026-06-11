@@ -30,20 +30,16 @@ const OUT = path.resolve(__dirname, 'main-flows-v2');
     const page = await ctx.newPage();
     await auth.loginReal(page, DEV_URL);
     if (label === 'mobile') {
-      await page.evaluate(() => {
-        return db.collection("chat").add(leagueDoc("chat", {
-          id: genId(), type: "round_chip",
-          text: "84 at Honey Run Golf Club",
-          roundId: "smoke-round-test",
-          authorId: currentUser.uid,
-          authorName: PB.getDisplayName(currentProfile),
-          createdAt: fsTimestamp()
-        }));
-      });
-      await page.evaluate(() => Router.go('chat'));
-      await page.waitForTimeout(2500);
-      await page.screenshot({ path: path.join(OUT, 'roundchip-chat.png') });
-      console.log('captured round chip');
+      await page.evaluate(() => Router.go('shop'));
+      await page.waitForTimeout(2200);
+      await page.screenshot({ path: path.join(OUT, 'proshop-top.png') });
+      await page.evaluate(() => window.scrollTo(0, 1400));
+      await page.waitForTimeout(500);
+      await page.screenshot({ path: path.join(OUT, 'proshop-shelves.png') });
+      await page.evaluate(() => window.scrollTo(0, 3400));
+      await page.waitForTimeout(500);
+      await page.screenshot({ path: path.join(OUT, 'proshop-cabinet.png') });
+      console.log('captured proshop');
     }
     await ctx.close();
   }

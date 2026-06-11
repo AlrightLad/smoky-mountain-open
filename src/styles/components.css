@@ -4719,3 +4719,66 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 /* Escrow notes (Nassau / Beat Their Score) + fine print under submit. */
 .wg-note{display:none;padding:10px 12px;background:rgba(var(--cb-brass-rgb),.06);border:1px solid rgba(var(--cb-brass-rgb),.12);border-radius:var(--radius);font-size:11px;color:var(--cb-mute);line-height:1.5;margin-bottom:12px}
 .wg-fine{font-size:10px;color:var(--cb-mute);text-align:center;line-height:1.5;margin-top:10px}
+
+/* ══ THE PRO SHOP (v8.24.50) — tier materials, ornamental rings, vitrines ══
+   Rarity is felt before it's read: Range Bucket on card stock, Pro Shop on
+   linen, Member's Locker on leather with brass corners, Champion's Cabinet
+   in a framed vitrine, Commemorative behind glass (never for sale). */
+.shop-item--range{background:var(--cb-paper)}
+.shop-item--proshop{background:linear-gradient(135deg,var(--cb-paper),rgba(var(--cb-brass-rgb),.04));border-color:rgba(var(--cb-brass-rgb),.25)}
+.shop-item--locker{background:linear-gradient(160deg,#241c14,#2e251a);border:1px solid rgba(var(--cb-brass-rgb),.45);position:relative}
+.shop-item--locker .shop-item__name{color:#e8dcc0}
+.shop-item--locker .shop-item__desc{color:#a89878}
+.shop-item--locker::before,.shop-item--locker::after{content:"";position:absolute;width:6px;height:6px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#d8b66a,#8a6a2e);top:6px}
+.shop-item--locker::before{left:6px}
+.shop-item--locker::after{right:6px}
+.shop-item--cabinet{background:linear-gradient(170deg,#14100a,#1d1812);border:3px double rgba(var(--cb-brass-rgb),.7);box-shadow:inset 0 0 24px rgba(0,0,0,.5),0 4px 16px rgba(0,0,0,.25)}
+.shop-item--cabinet .shop-item__name{color:#e9d9ae;font-family:var(--font-display)}
+.shop-item--cabinet .shop-item__desc{color:#9c8d6c}
+.shop-item--commem{background:linear-gradient(170deg,#101713,#16201a);border:1px solid rgba(255,255,255,.14);box-shadow:inset 0 0 30px rgba(0,0,0,.45)}
+.shop-item--commem .shop-item__name{color:#cfe2d4;font-family:var(--font-display)}
+.shop-item--commem .shop-item__desc{color:#8aa392}
+.shop-tier-chip{display:inline-block;font-size:8px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;padding:2px 7px;border-radius:3px;margin-bottom:6px}
+.shop-tier-chip--range{background:rgba(var(--cb-brass-rgb),.1);color:var(--cb-mute)}
+.shop-tier-chip--proshop{background:rgba(var(--cb-brass-rgb),.16);color:var(--cb-brass)}
+.shop-tier-chip--locker{background:rgba(216,182,106,.18);color:#d8b66a}
+.shop-tier-chip--cabinet{background:rgba(233,217,174,.2);color:#e9d9ae}
+.shop-tier-chip--commem{background:rgba(207,226,212,.16);color:#cfe2d4}
+
+/* Front Table — the weekly vitrine */
+.shop-front-table{border:3px double rgba(var(--cb-brass-rgb),.55);border-radius:14px;padding:18px 16px 14px;margin:0 0 18px;background:linear-gradient(170deg,var(--cb-paper),rgba(var(--cb-brass-rgb),.05))}
+.shop-front-table__eyebrow{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass);text-align:center;margin-bottom:10px}
+.shop-front-table__grid{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:560px){.shop-front-table__grid{grid-template-columns:1.4fr 1fr}}
+
+/* Shelf rails — each category sits on a thin wooden baseline */
+.shop-shelf{margin:0 0 6px;padding-bottom:16px;border-bottom:3px solid rgba(110,80,42,.35);border-radius:0 0 2px 2px}
+.shop-shelf__head{display:flex;align-items:baseline;justify-content:space-between;margin:18px 0 10px}
+.shop-shelf__title{font-family:var(--font-display);font-size:17px;color:var(--cb-ink)}
+.shop-shelf__meta{font-size:10px;color:var(--cb-mute);letter-spacing:.5px}
+.shop-shelf__rail{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(150px,180px);gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:2px 2px 8px}
+
+/* Trophy Cabinet — glass front, never a buy button */
+.shop-cabinet{border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:16px;margin:18px 0;background:linear-gradient(170deg,#0f1511,#141b16);box-shadow:inset 0 0 40px rgba(0,0,0,.5)}
+.shop-cabinet__eyebrow{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9fc0aa;margin-bottom:4px}
+.shop-cabinet__title{font-family:var(--font-display);font-size:18px;color:#e6f0e9;margin-bottom:10px}
+.shop-cabinet__earn{font-size:9px;color:#9fc0aa;letter-spacing:.4px;margin-top:6px;font-style:italic}
+
+/* Arriving state — visible, desired, not yet purchasable */
+.shop-item__state--arriving{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cb-mute);padding:8px 0;border-top:1px dashed var(--cb-mute-3)}
+
+/* ── Ornamental rings (Discord-decoration style, not flat color) ── */
+.ring-gallery-rope{border:3px solid #e7dcc3!important;box-shadow:0 0 0 1px #b8a87e,inset 0 0 0 1px #b8a87e}
+.ring-gallery-rope::after{content:"";position:absolute;inset:-7px;border-radius:50%;background:radial-gradient(circle at 50% 0%,#9a7c3a 2.5px,transparent 3px),radial-gradient(circle at 100% 50%,#9a7c3a 2.5px,transparent 3px),radial-gradient(circle at 50% 100%,#9a7c3a 2.5px,transparent 3px),radial-gradient(circle at 0% 50%,#9a7c3a 2.5px,transparent 3px);pointer-events:none}
+.ring-fescue{border:3px solid #b9a04b!important;position:relative}
+.ring-fescue::after{content:"";position:absolute;left:8%;right:8%;bottom:-4px;height:38%;border-radius:0 0 50% 50%;background:repeating-linear-gradient(100deg,transparent 0 2px,rgba(202,170,72,.85) 2px 3.2px,transparent 3.2px 6px);mask:linear-gradient(to top,#000 30%,transparent);-webkit-mask:linear-gradient(to top,#000 30%,transparent);animation:fescueSway 3.4s ease-in-out infinite;pointer-events:none}
+@keyframes fescueSway{0%,100%{transform:skewX(-3deg)}50%{transform:skewX(3deg)}}
+.ring-fried-egg{border:4px solid #d9c389!important;box-shadow:0 0 0 2px #c4ab6c,0 6px 10px -4px rgba(160,130,60,.7);position:relative}
+.ring-fried-egg::after{content:"";position:absolute;left:-9px;top:55%;width:10px;height:7px;border-radius:60% 40% 50% 50%;background:#d9c389;transform:rotate(-24deg);pointer-events:none}
+.ring-claret{border:3px solid #cfd2d6!important;box-shadow:0 0 0 1px #9aa0a8,inset 0 0 6px rgba(154,160,168,.5);position:relative;overflow:visible}
+.ring-claret::before{content:"";position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 78%,rgba(255,255,255,.75) 86%,transparent 94%);animation:claretSweep 4.5s linear infinite;pointer-events:none}
+.ring-claret::after{content:"";position:absolute;top:8%;right:-7px;width:9px;height:13px;border:2.5px solid #cfd2d6;border-left:none;border-radius:0 8px 8px 0;pointer-events:none}
+@keyframes claretSweep{to{transform:rotate(360deg)}}
+
+/* Title plate (PC-14) — equipped title as engraved brass under the name */
+.title-engraved{display:inline-block;background:linear-gradient(160deg,#caa75c,#9c7c38);color:#241c0c!important;font-style:normal!important;font-weight:700;font-size:9px!important;letter-spacing:1.4px;text-transform:uppercase;padding:3px 10px;border-radius:3px;box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 1px 2px rgba(0,0,0,.35)}
