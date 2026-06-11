@@ -25,13 +25,13 @@ const OUT = path.resolve(__dirname, 'main-flows-v2');
 (async () => {
   const PAGES = ['feed', 'standings', 'richlist', 'merch', 'drills'];
   const browser = await chromium.launch();
-  const ctx = await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:2});
+  const ctx = await browser.newContext({viewport:{width:1440,height:900},deviceScaleFactor:1});
   const page = await ctx.newPage();
   await auth.loginReal(page, DEV_URL);
   await page.waitForTimeout(1500);
-  await page.evaluate(() => Router.go('records'));
-  await page.waitForTimeout(1200);
-  await page.screenshot({ path: path.join(OUT, 'records-brass.png') });
+  await page.evaluate(() => Router.go('standings'));
+  await page.waitForTimeout(1500);
+  await page.screenshot({ path: path.join(OUT, 'standings-rail-fixed.png') });
   await ctx.close();
   await browser.close();
   return;
