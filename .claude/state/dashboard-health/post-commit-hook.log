@@ -10,3 +10,8 @@
 [aggregate] events=31505 handoffs=1 bubbles=7 proposals_pending=0
 
 --- scripts/ingest-session-transcripts.py ---
+[ingest-session-transcripts] scanned 14b32e71-e98c-4be1-819e-5288e4bfd93c.jsonl: +48 new entries (offset 68466515\u219269087245)
+[ingest-session-transcripts] scanned 307 JSONL file(s), found 48 new assistant turns
+[ingest-session-transcripts] wrote session-transcript-summary.json (374 buckets, 16580309765 total tokens, 313 sessions) [write-content-changed]
+
+--- scripts/aggregate-token-usage.py ---
