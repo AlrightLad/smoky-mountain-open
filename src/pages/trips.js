@@ -27,7 +27,7 @@ Router.register("trips", function(params) {
     return !activeTrips.find(function(a) { return a.id === t.id; });
   }).reverse(); // most recent first
 
-  var h = '<div class="sh"><h2>Events</h2><button class="btn-sm green" onclick="Router.go(\'trips\',{create:true})">+ New event</button></div>';
+  var h = '<div class="sh"><h2>Events</h2><button class="btn-sm green" onclick="Router.go(\'trips\',{create:true})">+ New Event</button></div>';
 
   // Commissioner-only tournament CTA — revealed async after the league-doc
   // commissioner cache warms (see reveal block after innerHTML below).

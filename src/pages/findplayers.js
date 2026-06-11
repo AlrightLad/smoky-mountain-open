@@ -133,7 +133,9 @@ function filterPlayers() {
     if (mutualLeagues > 0) meta.push(mutualLeagues + " mutual league" + (mutualLeagues > 1 ? "s" : ""));
     h += meta.join(" \u00b7 ") || "Member";
     h += '</div></div>';
-    if (isPublic) h += '<div style="font-size:8px;color:var(--birdie);font-weight:600;letter-spacing:.5px">PUBLIC</div>';
+    if (isPublic) h += '<div style="font-size:8px;color:var(--birdie);font-weight:600;letter-spacing:.5px;margin-right:6px">PUBLIC</div>';
+    // v8.24.60 — affordance: a chevron so the card reads as tappable (was a silent nav).
+    h += '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--cb-mute-3)" stroke-width="2" style="flex-shrink:0"><path d="M9 18l6-6-6-6"/></svg>';
     h += '</div></div>';
   });
   h += '</div>';
