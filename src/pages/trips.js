@@ -187,7 +187,7 @@ function showTripCourseSearch(input) {
   if (!results.length) { container.innerHTML = ""; return; }
   var h = '';
   results.forEach(function(c) {
-    h += '<div class="search-item" onclick="addTripCourse(\'' + c.id + '\',\'' + c.name.replace(/'/g, "\\'") + '\',' + c.rating + ',' + c.slope + ',' + c.par + ');document.getElementById(\'tc-course-search\').value=\'\';document.getElementById(\'search-tc-course\').innerHTML=\'\'">' + c.name + ' <span style="color:var(--muted);font-size:11px">' + c.loc + ' · ' + c.rating + '/' + c.slope + '</span></div>';
+    h += '<div class="search-item" onclick="addTripCourse(\'' + c.id + '\',\'' + c.name.replace(/'/g, "\\'") + '\',' + c.rating + ',' + c.slope + ',' + c.par + ');document.getElementById(\'tc-course-search\').value=\'\';document.getElementById(\'search-tc-course\').innerHTML=\'\'">' + escHtml(c.name) + ' <span style="color:var(--muted);font-size:11px">' + escHtml(c.loc) + ' · ' + c.rating + '/' + c.slope + '</span></div>';
   });
   container.innerHTML = h;
 }
@@ -212,7 +212,7 @@ function renderTripCourseList() {
   var h = '';
   tripCreateState.courses.forEach(function(c, idx) {
     h += '<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:8px">';
-    h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-size:13px;font-weight:600">' + c.name + '</div>';
+    h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div style="font-size:13px;font-weight:600">' + escHtml(c.name) + '</div>';
     h += '<div style="cursor:pointer;color:var(--red);font-weight:700;font-size:14px" onclick="removeTripCourse(' + idx + ')">×</div></div>';
     h += '<div style="font-size:11px;color:var(--muted);margin-bottom:8px">Rating: ' + c.rating + ' · Slope: ' + c.slope + '</div>';
     h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">';

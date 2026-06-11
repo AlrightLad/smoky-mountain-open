@@ -129,7 +129,7 @@ function filterPlayers() {
     h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">';
     var meta = [];
     if (hcap !== null) meta.push("Hcap " + hcap);
-    if (p.homeCourse) meta.push(p.homeCourse);
+    if (p.homeCourse) meta.push(escHtml(p.homeCourse));
     if (mutualLeagues > 0) meta.push(mutualLeagues + " mutual league" + (mutualLeagues > 1 ? "s" : ""));
     h += meta.join(" \u00b7 ") || "Member";
     h += '</div></div>';

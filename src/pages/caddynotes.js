@@ -22,6 +22,7 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">June 2026 · The polish pass</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    { item: "More security hardening: a second audit pass found a few more spots that showed member-typed text without escaping — custom drill names, home course, head-to-head player names, the Events course search, and ace photos. All locked down. Invisible to you; nothing can inject into another member's screen.", tag: "FIXED" },
     { item: "The newest Pro Shop pieces now wear a small NEW badge so you can spot fresh arrivals on the shelves at a glance.", tag: "IMPROVED" },
     { item: "The Parbaughs tee-marker now shows a crisp engraved P on the brass disc (it used to be an unreadable letter at small size), with a struck-metal sheen. Small thing, but the founding marker should look minted.", tag: "IMPROVED" },
     { item: "The Pro Shop now shows you HOW to earn ParCoins — a \"Ways to earn\" board right under your wallet: log a round (+50), set a personal best (+100), hit the range, win a wager, sign in daily, each tapping straight to where you do it. And a reminder that the best pieces (a hole-in-one marker, the season crown, closest-to-the-pin) can't be bought at all — you earn those on the course. ParCoins are play-earned, never real money.", tag: "NEW" },

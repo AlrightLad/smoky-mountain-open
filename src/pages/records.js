@@ -155,7 +155,7 @@ Router.register("records", function() {
       var total = h2h.p1wins + h2h.p2wins + h2h.ties;
       if (total > 0) {
         var leader = h2h.p1wins > h2h.p2wins ? players[i].name : h2h.p2wins > h2h.p1wins ? players[j].name : "Tied";
-        h2hContent += '<div class="hof-row"><span class="hof-label">' + players[i].name + ' vs ' + players[j].name + '</span><span class="hof-val">' + h2h.p1wins + '-' + h2h.p2wins + (h2h.ties ? '-' + h2h.ties + 'T' : '') + '</span></div>';
+        h2hContent += '<div class="hof-row"><span class="hof-label">' + escHtml(players[i].name) + ' vs ' + escHtml(players[j].name) + '</span><span class="hof-val">' + h2h.p1wins + '-' + h2h.p2wins + (h2h.ties ? '-' + h2h.ties + 'T' : '') + '</span></div>';
       }
     }
   }
@@ -209,7 +209,7 @@ Router.register("records", function() {
       if (scrambleBests[2]) extras.push('2m: ' + scrambleBests[2].score);
       if (scrambleBests[3]) extras.push('3m: ' + scrambleBests[3].score);
       if (scrambleBests[4]) extras.push('4m: ' + scrambleBests[4].score);
-      courseContent += '<div class="hof-row"><span class="hof-label">' + c.name + '</span><span class="hof-val">' + (bestSolo ? bestSolo.score + ' (' + bestSolo.playerName + ')' : '—') + (extras.length ? ' · ' + extras.join(' · ') : '') + '</span></div>';
+      courseContent += '<div class="hof-row"><span class="hof-label">' + escHtml(c.name) + '</span><span class="hof-val">' + (bestSolo ? bestSolo.score + ' (' + escHtml(bestSolo.playerName) + ')' : '—') + (extras.length ? ' · ' + extras.join(' · ') : '') + '</span></div>';
     });
   } else {
     courseContent = '<div class="hof-row"><span class="hof-label">No course records</span><span class="hof-val">Log rounds to populate</span></div>';

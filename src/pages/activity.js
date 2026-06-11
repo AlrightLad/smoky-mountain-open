@@ -122,7 +122,7 @@ function renderActivityRange() {
     h += '<div class="card" style="border-color:rgba(var(--pink-rgb),.4)"><div style="display:flex;justify-content:space-between;align-items:flex-start">';
     h += '<div><div style="font-size:12px;font-weight:600;color:var(--cream);display:flex;align-items:center;gap:4px">' + s.durationMin + ' min ' + feelIcon + '</div>';
     h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + fmtDate + '</div>';
-    if (drillNames.length) h += '<div style="font-size:10px;color:var(--muted);margin-top:3px">' + drillNames.join(", ") + '</div>';
+    if (drillNames.length) h += '<div style="font-size:10px;color:var(--muted);margin-top:3px">' + escHtml(drillNames.join(", ")) + '</div>';
     h += '</div>';
     h += '<div style="font-size:11px;font-weight:600;color:var(--gold)">+' + getRangeSessionXP(s) + ' XP</div>';
     h += '</div></div>';

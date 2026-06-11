@@ -29,7 +29,7 @@ function renderAceList() {
 
       h += '<div class="card" onclick="Router.go(\'aces\',{id:' + realIdx + '})" style="cursor:pointer">';
       if (ace.photo) {
-        h += '<div style="height:180px;overflow:hidden"><img alt="" src="' + ace.photo + '" style="width:100%;height:100%;object-fit:cover"></div>';
+        h += '<div style="height:180px;overflow:hidden"><img alt="" src="' + escHtml(ace.photo) + '" style="width:100%;height:100%;object-fit:cover"></div>';
       }
       h += '<div style="padding:14px 16px">';
       h += '<div style="display:flex;justify-content:space-between;align-items:flex-start">';
@@ -68,7 +68,7 @@ function renderAceList() {
     var byPlayer = {};
     aces.forEach(function(a) { byPlayer[a.by] = (byPlayer[a.by] || 0) + 1; });
     var mostAces = Object.keys(byPlayer).sort(function(a, b) { return byPlayer[b] - byPlayer[a]; })[0];
-    h += '<div class="hof-row"><span class="hof-label">Most aces</span><span class="hof-val">' + mostAces + ' (' + byPlayer[mostAces] + ')</span></div>';
+    h += '<div class="hof-row"><span class="hof-label">Most aces</span><span class="hof-val">' + escHtml(mostAces) + ' (' + byPlayer[mostAces] + ')</span></div>';
     // Unique courses
     var uniqueAceCourses = {};
     aces.forEach(function(a) { uniqueAceCourses[a.course] = 1; });
@@ -92,7 +92,7 @@ function renderAceDetail(idx) {
 
   // Hero photo
   if (ace.photo) {
-    h += '<div style="margin:0 16px;border-radius:var(--radius);overflow:hidden;max-height:300px"><img alt="" src="' + ace.photo + '" style="width:100%;display:block"></div>';
+    h += '<div style="margin:0 16px;border-radius:var(--radius);overflow:hidden;max-height:300px"><img alt="" src="' + escHtml(ace.photo) + '" style="width:100%;display:block"></div>';
   }
 
   // Player and details
