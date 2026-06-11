@@ -1,5 +1,5 @@
 ---
-status: open
+status: closed
 severity: yellow
 priority: LOW
 founder_action_required: true
@@ -84,3 +84,7 @@ Resolves automatically once the decision is recorded. To check:
 ```
 powershell -ExecutionPolicy Bypass -File scripts/founder-mark-complete.ps1 chat-reading-order-taste-call
 ```
+
+
+---
+**CLOSED 2026-06-11:** Decided + shipped — newest-first chat order live; decision recorded in founder-decisions 2026-06-09.

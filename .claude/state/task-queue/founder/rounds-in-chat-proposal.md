@@ -1,3 +1,6 @@
+---
+status: closed
+---
 # Proposal: round results in the Clubhouse chat (brief action #5)
 
 **Status:** AWAITING FOUNDER taste call · written 2026-06-11 · AMD-015 propose-first
@@ -35,3 +38,7 @@ proves itself.
 
 **Reply with:** "rounds-in-chat: A / B / C" (one word is enough) and the
 team builds it next cycle.
+
+
+---
+**CLOSED 2026-06-11:** Founder chose B 2026-06-11 — quiet league-optional round chips in chat. Build queued (agent work).

@@ -1,5 +1,5 @@
 ---
-status: open
+status: closed
 severity: yellow
 priority: HIGH
 authored_at: 2026-05-29T11:05:00Z
@@ -135,3 +135,7 @@ App Store requirement and the user-facing promise.
   verification passes, OR
 - The Founder explicitly defers (members keep seeing the support-path
   message until then).
+
+
+---
+**CLOSED 2026-06-11:** Merged into course-autocreate-server-key-deploy.md — ONE deploy command now ships both functions. Follow that walkthrough instead.

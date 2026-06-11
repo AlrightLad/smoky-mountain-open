@@ -1,11 +1,10 @@
 # The Free-Forever Core — written governance
 
-**Status:** Draft for Founder ratification · authored 2026-06-11 (strategy
+**Status:** RATIFIED by the Founder 2026-06-11 ("free-forever: ratified") · authored 2026-06-11 (strategy
 brief action #4: "codify free-forever core as written governance before any
 monetization work").
 **Authority:** This document binds product decisions once the Founder
-ratifies it. Until then it is the working draft the orchestration team
-builds against.
+ratifies it. This is binding product governance.
 
 ## The promise
 

@@ -1,5 +1,5 @@
 ---
-status: open
+status: closed
 severity: yellow
 priority: MEDIUM
 authored_at: 2026-05-30T15:10:00Z
@@ -115,3 +115,7 @@ application, which are the 2nd-dev-onboarding inputs.
 
 No gate-10 (domain/DNS) action is taken now. Nothing is deployed. Reversible:
 re-opens the moment a second dev needs access.
+
+
+---
+**CLOSED 2026-06-11:** Superseded — the ratified pattern is local serving (npm run hq); dashboards are always-current via post-commit regen. Reopen only if remote access is ever wanted.

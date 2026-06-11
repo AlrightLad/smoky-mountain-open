@@ -1,55 +1,81 @@
-# Course auto-create — one env var + one deploy (joins the deleteMyAccount deploy)
+---
+status: open
+severity: yellow
+priority: HIGH
+founder_action_required: true
+gate: AMD-018 gate 1 (Cloud Functions deploy) — session classifier walls `firebase deploy`
+execute_by: founder
+verify_command: "curl -s 'https://us-central1-parbaughs.cloudfunctions.net/searchCourses?q=pebble'"
+verify_expected: "JSON course list (not an error about a key)"
+---
 
-**Status:** WAITING ON FOUNDER · written 2026-06-10 (v8.24.42)
-**Gate:** AMD-018 gate 1 (Cloud Functions deploy) + session classifier walls `firebase deploy`
+# THE ONE DEPLOY — full walkthrough (~5 minutes, 3 steps)
 
-## What shipped already (no action needed)
+One PowerShell session ships two waiting features: **course search for all
+members** (no personal API keys) and **in-app account deletion**
+(App-Store requirement). Every command below is copy-paste ready.
 
-v8.24.42 made every "add a course" path in the app try GolfCourseAPI FIRST —
-real rating/slope/par/tee data instead of guessed 72/113/72 — falling back to
-an honestly-labeled provisional stub only when the API has no match. This
-works TODAY on any device that has a personal API key saved (yours). For the
-other 19 members it silently falls back to the stub, because the deployed
-`searchCourses` function still REQUIRES a key from the caller.
+## Before you start
 
-The function code in the repo (functions/index.js + functions/lib/validators.js)
-already accepts key-less calls and falls back to a server-held key. It just
-needs YOUR key in the function's environment and one deploy.
+Open **PowerShell** and go to the repo:
 
-## Why this is safe
+```powershell
+cd C:\Users\Zach\smoky-mountain-open
+```
 
-- The key never appears in the app bundle or any client code — it lives in
-  the Cloud Function's environment only.
-- The function already rate-limits by IP (60/min) and rejects foreign origins,
-  so the platform key can't be farmed from outside the app.
-- GolfCourseAPI free tier is generous; 20 members adding courses is nowhere
-  near it.
+## Step 1 — Find your GolfCourseAPI key (1 min)
 
-## Your steps (PowerShell, in the repo folder)
+Your key lives in your browser on the device where course search already
+works for you. Two ways to get it — use whichever is easier:
 
-1. Put the key into a gitignored env file the deploy reads
-   (REPLACE `YOUR_KEY_HERE` with the GolfCourseAPI key — the same one in
-   your device's Settings → it shows under localStorage `golfcourse_api_key`):
+**Way A (your phone or desktop app):** Settings → scroll to the Course
+Data / API section — the key field shows your saved key. Copy it.
 
-   ```powershell
-   Set-Content -Path functions\.env -Value "GOLFCOURSE_API_KEY=YOUR_KEY_HERE" -Encoding ascii
-   ```
+**Way B (desktop browser console):** open the app in the browser you use,
+press F12, click "Console", paste this and press Enter — it prints the key:
 
-   (`functions/.env` is the standard Gen1 env-file mechanism and is already
-   gitignored — verify with `git check-ignore functions/.env` → it should
-   print the path.)
+```js
+localStorage.getItem("golfcourse_api_key")
+```
 
-2. Deploy BOTH waiting functions in one shot:
+(If both come up empty, get a fresh free key at
+https://golfcourseapi.com — sign up, copy the key from the dashboard.)
 
-   ```powershell
-   firebase deploy --only functions:searchCourses,functions:deleteMyAccount --project parbaughs --force
-   ```
+## Step 2 — Put the key in the function's env file (1 min)
 
-3. Tell the agent "searchCourses deployed" (or just leave this file's status
-   line edited to DONE) — the agent will then verify with a key-less curl and
-   close task #26, and #24 (deleteMyAccount) closes with it.
+Back in PowerShell, run this — **replace `PASTE_KEY_HERE` with the key**
+(keep the quotes):
 
-## What happens after
+```powershell
+Set-Content -Path functions\.env -Value "GOLFCOURSE_API_KEY=PASTE_KEY_HERE" -Encoding ascii
+```
 
-Every member's "Add course" gets real course data automatically. The
-provisional-stub path remains only for courses GolfCourseAPI doesn't know.
+Sanity checks (both should print without error; the second MUST print the
+path, proving git will never commit the key):
+
+```powershell
+Get-Content functions\.env
+git check-ignore functions\.env
+```
+
+## Step 3 — Deploy both functions (2-3 min)
+
+```powershell
+firebase deploy --only functions:searchCourses,functions:deleteMyAccount --project parbaughs --force
+```
+
+Wait for `Deploy complete!`. If it asks you to log in first, run
+`firebase login`, finish in the browser, and re-run the command.
+
+## Step 4 — Tell the agent
+
+Say **"deploy done"** in the chat (or anything similar). The agent then:
+verifies course search works key-less from a clean curl, verifies
+deleteMyAccount answers, flips this file to closed, and closes tasks
+#24 + #26.
+
+## If anything goes wrong
+
+Copy the red error text into the chat — the agent diagnoses from there.
+Nothing in this procedure can break the live app: a failed deploy leaves
+the current functions running untouched.

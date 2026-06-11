@@ -1,5 +1,5 @@
 ---
-status: open
+status: closed
 severity: yellow
 priority: LOW
 founder_action_required: true
@@ -83,3 +83,7 @@ powershell -ExecutionPolicy Bypass -File scripts/founder-mark-complete.ps1 smoke
 
 The verify prints the project id of the key now on disk and passes only if it
 reads `parbaughs` (not `parbaughs-staging`).
+
+
+---
+**CLOSED 2026-06-11:** Optional by its own admission and not needed — the smoke suite is 28/28 green via browser-path seeding without the SA. Reopen only if deeper seed-based scenarios are wanted.

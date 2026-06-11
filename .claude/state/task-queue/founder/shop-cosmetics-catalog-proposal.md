@@ -1,5 +1,5 @@
 ---
-status: open
+status: closed
 severity: green
 priority: HIGH
 authored_at: 2026-06-10T16:00:00Z
@@ -181,3 +181,7 @@ Layout, top to bottom:
 - [Cosmetic purchase-motivation research (Wiley, 2025)](https://onlinelibrary.wiley.com/doi/10.1002/cb.2490) · [Skin-pricing psychology](https://www.alibaba.com/product-insights/why-are-skins-in-games-so-expensive-the-psychology-of-microtransactions.html) · [Game-economy design handbook](https://medium.com/@wiserax2037/i-designed-economies-for-150m-games-heres-my-ultimate-handbook-de6212e95759)
 
 **Codebase grounding:** `C:\Users\Zach\smoky-mountain-open\src\pages\shop.js` (current 74-item catalog + page) · `C:\Users\Zach\smoky-mountain-open\src\core\parcoins.js` (PARCOIN_RATES, awardCoins/deductCoins) · `C:\Users\Zach\smoky-mountain-open\src\core\router.js` (playerFrameColor / playerRingClass / getPlayerBannerCss / getPlayerCardCss / getPlayerNameClass / renderAvatar / renderUsername) · `src\pages\members-detail.js` (displayBadges, 3 slots).
+
+
+---
+**CLOSED 2026-06-11:** APPROVED by Founder 2026-06-11. Store redesign + catalog build is now agent work; no further founder action.

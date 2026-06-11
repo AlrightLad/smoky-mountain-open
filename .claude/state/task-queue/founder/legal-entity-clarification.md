@@ -1,5 +1,5 @@
 ---
-status: open
+status: closed
 severity: yellow
 priority: MEDIUM
 founder_action_required: true
@@ -69,3 +69,7 @@ Resolves automatically once your decision is recorded. To check:
 ```
 powershell -ExecutionPolicy Bypass -File scripts/founder-mark-complete.ps1 legal-entity-clarification
 ```
+
+
+---
+**CLOSED 2026-06-11:** Recorded — Parbaughs treated as business entity per governance commit 132942b9 (task #22).

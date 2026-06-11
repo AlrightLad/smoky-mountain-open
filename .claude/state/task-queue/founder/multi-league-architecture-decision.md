@@ -1,5 +1,5 @@
 ---
-status: open
+status: closed
 severity: green
 priority: HIGH
 authored_at: 2026-06-10T16:00:00Z
@@ -315,3 +315,7 @@ POST TO
 | F11 | Pre-auth one-time composite-index creation (console or gcloud; rules-REST script doesn't cover indexes) | **Approve** |
 
 **Approve F1–F11 as recommended and the build proceeds Phase 0 → 5 with no further Founder touch points except the two pre-auth'd deploys and final visible verification.**
+
+
+---
+**CLOSED 2026-06-11:** APPROVED by Founder 2026-06-11. Migration + rules ship is now agent work (guarded scripts unblocked); no further founder action.

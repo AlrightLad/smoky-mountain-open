@@ -1,5 +1,5 @@
 ---
-status: open
+status: closed
 severity: green
 priority: LOW
 authored_at: 2026-05-30T00:00:00Z
@@ -103,3 +103,7 @@ touching the real-time live-round render path. Per our workflow, copy
 and taste are your call and live-scoring code is changed carefully, so
 I'm surfacing the wording first rather than guessing it. The screen is
 fully functional and on-brand in the meantime.
+
+
+---
+**CLOSED 2026-06-11:** Default-approved per AMD-015 after 12 days without objection (LOW, copy-only, $0). The proposed copy is what ships; say the word and it changes.

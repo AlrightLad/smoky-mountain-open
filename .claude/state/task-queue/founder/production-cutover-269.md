@@ -1,5 +1,5 @@
 ---
-status: open
+status: closed
 severity: yellow
 priority: HIGH
 founder_action_required: true
@@ -147,3 +147,7 @@ verify above). To check:
 ```
 powershell -ExecutionPolicy Bypass -File scripts/founder-mark-complete.ps1 production-cutover-269
 ```
+
+
+---
+**CLOSED 2026-06-11:** Complete — prod is live and current (v8.24.46); founder-decisions/production-cutover-DONE.md exists (the item’s own verify_command passes).

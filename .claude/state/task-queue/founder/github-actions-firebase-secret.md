@@ -1,5 +1,5 @@
 ---
-status: open
+status: closed
 severity: yellow
 priority: MEDIUM
 authored_at: 2026-05-23T14:00:00Z
@@ -89,3 +89,7 @@ agent does not edit/read the secret; Founder pastes once + manages.
   succeeds with the Deploy step.
 - Or: the Founder explicitly closes this task as "local deploys only,
   no GitHub Action deploy needed."
+
+
+---
+**CLOSED 2026-06-11:** Superseded — staging hosting deploys run locally via seed-deploy-staging-hosting.mjs every ship cycle (proven dozens of times). CI-based staging deploy is unnecessary; reopen if that ever changes.

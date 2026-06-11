@@ -1,5 +1,5 @@
 ---
-status: open
+status: closed
 severity: yellow
 priority: HIGH
 authored_at: 2026-06-10T17:00:00Z
@@ -36,3 +36,7 @@ Open **claude.ai/admin-settings/usage** and raise (or schedule a raise of) the
 monthly limit if you want parallel orchestration back before the monthly reset.
 If you prefer to ride out the month inline, reply **deny + "ride it out"** and
 I'll plan single-threaded until reset.
+
+
+---
+**CLOSED 2026-06-11:** Founder decision 2026-06-11: do not limit — usage caps stop the agent naturally as needed. Fan-out re-enabled.

@@ -1,5 +1,5 @@
 ---
-status: open
+status: closed
 severity: yellow
 priority: MEDIUM
 authored_at: 2026-05-29T12:30:00Z
@@ -109,3 +109,7 @@ Ship-as-is is correct for now (guideline satisfied, zero gated deploy).
 Schedule Phase 2 when you next batch a reviewed Firestore rules deploy,
 so the blocked member also cannot generate unseen content aimed at the
 blocker.
+
+
+---
+**CLOSED 2026-06-11:** Shipped — member blocking is server-enforced in firestore.rules, deployed to prod (task #20).

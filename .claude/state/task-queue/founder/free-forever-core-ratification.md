@@ -1,3 +1,6 @@
+---
+status: closed
+---
 # Ratify the Free-Forever Core (governance, 2 minutes)
 
 **Status:** AWAITING FOUNDER · written 2026-06-11 · strategy brief action #4
@@ -22,3 +25,7 @@ Read `docs/FREE-FOREVER-CORE.md` (about a 2-minute read). Then either:
 
 Nothing ships differently until you ratify; this only sets the fence
 before anyone is tempted to move it.
+
+
+---
+**CLOSED 2026-06-11:** RATIFIED by Founder 2026-06-11 ("free-forever: ratified"). docs/FREE-FOREVER-CORE.md status flipped to Ratified; now binding product governance.
