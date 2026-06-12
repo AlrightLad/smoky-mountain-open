@@ -56,7 +56,7 @@ await page.waitForFunction(() => { var m = document.getElementById('mainApp'); r
 // would surface any onboarding overlay overlapping the swing.
 if (WITH_INTRO) {
   let prev = 0;
-  for (const at of [200, 1100, 2200, 3300, 4400, 5300]) {
+  for (const at of [200, 2300, 2700, 3100, 3600, 4200]) {
     await page.waitForTimeout(at - prev); prev = at;
     await page.screenshot({ path: `${OUT}/${LABEL}-swing-${String(at).padStart(4, '0')}ms.png`, fullPage: true });
   }
