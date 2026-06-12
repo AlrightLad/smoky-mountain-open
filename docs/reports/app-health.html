@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-12T18:58:41.519344Z",
+  "generated_at": "2026-06-12T19:04:19.332579Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 85.6,
   "overall_grade": "A-",
@@ -1001,11 +1001,11 @@
     "A12_operational": {
       "score": 60,
       "status": "yellow",
-      "label": "pipeline=red · 6 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=red · 7 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "6 of last 10 cron watcher runs hit skip-dirty",
+          "what": "7 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -1024,7 +1024,7 @@
       "dimension": "A5_code_quality"
     },
     {
-      "what": "6 of last 10 cron watcher runs hit skip-dirty",
+      "what": "7 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
@@ -1039,16 +1039,16 @@
       "dimension": "A5_code_quality"
     },
     {
-      "what": "6 of last 10 cron watcher runs hit skip-dirty",
+      "what": "7 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "89ca4843",
-    "subject": "chore(tooling): authenticated staging capture for per-page UI review (#41)",
-    "committed_at": "2026-06-12T14:58:07-04:00",
+    "sha": "1ff59580",
+    "subject": "chore: gitignore local authed UI-review captures (.claude/state/cap-*)",
+    "committed_at": "2026-06-12T15:03:57-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
