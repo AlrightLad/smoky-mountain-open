@@ -47,5 +47,7 @@ module.exports = [
   require('./s30-xss-escaping.js'),
   // v8.25.0 — onboarding walkthrough (FTUE): 5-beat spine + demo-hole win + teardown.
   require('./s31-onboarding-walkthrough.js'),
+  // v8.25.5 — P0 regression guard: rounds dedup (the duplicate-rounds 7-0 fix).
+  require('./s32-rounds-dedup.js'),
   require('./s11-logout-cleanup.js')
 ];
