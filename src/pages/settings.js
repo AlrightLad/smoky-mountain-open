@@ -153,6 +153,34 @@ Router.register("settings", function(params) {
   try { _sunlightActive = localStorage.getItem('pb_sunlight') === '1'; } catch (e) {}
   disp += '<div class="set-row" style="margin-top:6px"><div class="set-row__main"><div class="set-row__label">Sunlight mode</div><div class="set-row__desc">High-contrast outdoor mode. Bumps contrast for glare-readable screens, removes shadows, outlines cards. Toggle on when the sun is winning.</div></div>';
   disp += '<button type="button" id="sunlight-toggle" class="set-switch" role="switch" aria-checked="' + (_sunlightActive ? 'true' : 'false') + '" aria-label="Sunlight mode" onclick="toggleSunlightMode()"></button></div>';
+
+  // ── Your Caddie (v8.25.6) — pick the guiding voice. Founder: "add somewhere
+  // where users can change their caddie." The Caddy / Old Tom / Birdie are free;
+  // Bag Room Guy unlocks from the Pro Shop. Help is identical across all four —
+  // only the voice changes (the Duolingo Lily/Oscar/Eddy model).
+  var _caddieRoster = (typeof window !== "undefined" && window.pbCaddies) ? window.pbCaddies : [];
+  if (_caddieRoster.length) {
+    var _curCaddie = (currentProfile && currentProfile.walkthrough && currentProfile.walkthrough.caddieVoice) || "caddy";
+    var _ownedCos = (currentProfile && currentProfile.ownedCosmetics) || [];
+    disp += '<div class="set-row" style="margin-top:14px"><div class="set-row__main"><div class="set-row__label">Your caddie</div><div class="set-row__desc">Pick the voice that guides you through the app — same help, four personalities. Switch anytime; your pick follows you to every device.</div></div></div>';
+    disp += '<div role="radiogroup" aria-label="Caddie" style="display:flex;flex-direction:column;gap:8px">';
+    _caddieRoster.forEach(function(cad) {
+      var owned = !cad.locked || _ownedCos.indexOf(cad.sku) !== -1;
+      var isActive = (cad.id === _curCaddie);
+      var border = isActive ? cad.accent : 'var(--cb-line)';
+      disp += '<button type="button" class="pb-caddie-row" role="radio" aria-checked="' + (isActive ? 'true' : 'false') + '" data-caddie-id="' + cad.id + '" data-accent="' + cad.accent + '" data-owned="' + (owned ? '1' : '0') + '" onclick="' + (owned ? 'settingsPickCaddie' : 'settingsCaddieLockedHint') + '(\'' + cad.id + '\')" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:11px 13px;border-radius:var(--radius,10px);border:1.5px solid ' + border + ';background:var(--card,var(--cb-canvas));cursor:pointer;min-height:44px' + (owned ? '' : ';opacity:.72') + '">';
+      disp += '<span style="width:26px;height:26px;border-radius:50%;background:' + cad.accent + ';flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px">' + escHtml((cad.name || "?").charAt(0)) + '</span>';
+      disp += '<span style="flex:1;min-width:0"><span style="display:block;font-weight:600;font-size:13px;color:var(--ink,var(--cb-ink))">' + escHtml(cad.name) + (cad.locked ? ' <span style="font-size:8.5px;letter-spacing:.6px;color:var(--cb-mute,var(--muted));font-weight:700">· PRO SHOP</span>' : '') + '</span><span style="display:block;font-size:11px;color:var(--muted,var(--cb-mute));margin-top:2px;line-height:1.35">' + escHtml(cad.blurb || '') + '</span></span>';
+      if (owned) {
+        disp += '<span class="pb-caddie-check" style="flex-shrink:0;color:' + cad.accent + ';visibility:' + (isActive ? 'visible' : 'hidden') + '"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 4"/></svg></span>';
+      } else {
+        disp += '<span style="flex-shrink:0;color:var(--cb-mute,var(--muted))"><svg viewBox="0 0 12 12" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M3 5V3a3 3 0 116 0v2h.5a.5.5 0 01.5.5v5a.5.5 0 01-.5.5h-7a.5.5 0 01-.5-.5v-5a.5.5 0 01.5-.5H3zm1 0h4V3a2 2 0 10-4 0v2z"/></svg></span>';
+      }
+      disp += '</button>';
+    });
+    disp += '</div>';
+  }
+
   secs.push({ key: "display", label: "Display", html: disp });
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -549,6 +577,43 @@ function settingsPickTheme(id) {
 
 function settingsThemeLockedHint(id) {
   Router.toast(_THEME_LOCK_HINTS[id] || "This one is earned, not picked. Keep teeing it up.");
+}
+
+// ── Caddie picker (v8.25.6) — change the guiding voice anytime. Persists to
+// members/{uid}.walkthrough.caddieVoice (the same field the FTUE writes), so
+// the choice follows the member across devices and into every coachmark. In-
+// place radio update mirrors settingsPickTheme (no Router.go re-render).
+function settingsPickCaddie(id) {
+  var cad = null;
+  (window.pbCaddies || []).forEach(function (c) { if (c.id === id) cad = c; });
+  if (!cad) return;
+  var owned = !cad.locked || (((currentProfile && currentProfile.ownedCosmetics) || []).indexOf(cad.sku) !== -1);
+  if (!owned) { settingsCaddieLockedHint(id); return; }
+  if (typeof currentProfile !== "undefined" && currentProfile) {
+    currentProfile.walkthrough = Object.assign({}, currentProfile.walkthrough || {}, { caddieVoice: id });
+  }
+  var uid = (typeof currentUser !== "undefined" && currentUser) ? currentUser.uid : null;
+  if (uid && typeof db !== "undefined" && db) {
+    db.collection("members").doc(uid).update({ "walkthrough.caddieVoice": id })
+      .then(function () { Router.toast(cad.name + " is your caddie now."); })
+      .catch(function () { Router.toast(cad.name + " set on this device — we'll sync it everywhere next time you're online."); });
+  } else {
+    Router.toast(cad.name + " is your caddie now.");
+  }
+  document.querySelectorAll('.pb-caddie-row[role="radio"]').forEach(function (el) {
+    var active = el.getAttribute('data-caddie-id') === id && el.getAttribute('data-owned') === '1';
+    el.setAttribute('aria-checked', active ? 'true' : 'false');
+    el.style.borderColor = active ? (el.getAttribute('data-accent') || 'var(--cb-brass)') : 'var(--cb-line)';
+    var check = el.querySelector('.pb-caddie-check');
+    if (check) check.style.visibility = active ? 'visible' : 'hidden';
+  });
+}
+
+function settingsCaddieLockedHint(id) {
+  var cad = null;
+  (window.pbCaddies || []).forEach(function (c) { if (c.id === id) cad = c; });
+  var nm = cad ? cad.name : "That caddie";
+  Router.toast(nm + " unlocks in the Pro Shop — same help, just a sharper tongue.");
 }
 
 // Sunlight Mode toggle (W1.S1 / CLUBHOUSE_SPEC §6.2) — manual setting

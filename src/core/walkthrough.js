@@ -151,12 +151,14 @@
   // tap (not select-and-jump), confirm with "Start playing". Defaults to The Caddy.
   function _beatPickCaddie() {
     var roster = window.pbCaddies || [{ id: "caddy", name: "The Caddy" }];
-    var thumbs = '<div style="display:flex;gap:8px;margin-bottom:10px">';
+    // 2×2 grid — four voices now (The Caddy / Old Tom / Birdie free, Bag Room
+    // Guy earned). A 1×4 row crowded the longer names on a phone-width card.
+    var thumbs = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">';
     roster.forEach(function (c) {
       var lockNote = c.locked ? '<div style="font-size:9px;color:var(--cb-mute);margin-top:3px">Earned later</div>' : '';
       thumbs += '<button class="pbw-caddie-pick" data-id="' + c.id + '" ' + (c.locked ? "disabled" : "") +
-        ' style="flex:1;min-height:58px;border:1px solid var(--border);background:var(--cb-paper);border-radius:10px;cursor:' + (c.locked ? "not-allowed" : "pointer") + ';opacity:' + (c.locked ? ".5" : "1") + ';padding:8px 4px">' +
-        '<div style="font-family:var(--font-ui);font-weight:700;font-size:12px;color:var(--cb-ink)">' + esc(c.name) + '</div>' + lockNote + '</button>';
+        ' style="min-height:54px;border:1px solid var(--border);background:var(--cb-paper);border-radius:10px;cursor:' + (c.locked ? "not-allowed" : "pointer") + ';opacity:' + (c.locked ? ".5" : "1") + ';padding:8px 6px">' +
+        '<div style="font-family:var(--font-ui);font-weight:700;font-size:12.5px;color:var(--cb-ink)">' + esc(c.name) + '</div>' + lockNote + '</button>';
     });
     thumbs += '</div>';
     thumbs += '<div id="pbw-caddie-preview" style="min-height:36px;font-family:var(--font-display);font-style:italic;font-size:14px;line-height:1.4;color:var(--cb-ink);background:var(--cb-chalk-2);border-radius:8px;padding:9px 11px;margin-bottom:12px">Tap a caddy to hear how they talk.</div>';
