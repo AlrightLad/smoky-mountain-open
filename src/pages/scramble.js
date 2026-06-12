@@ -22,10 +22,16 @@ function renderTeamList() {
       var members = team.members.map(function(id) { return PB.getPlayer(id); }).filter(Boolean);
       var captain = team.captain ? PB.getPlayer(team.captain) : null;
       // team.matches[] is the authoritative team-scoped store (written by
-      // addScrambleMatch + finishScrambleLive, both keyed to this team). Do NOT
-      // merge the rounds collection by member overlap: two teams sharing a
-      // member would each absorb the other's rounds.
+      // addScrambleMatch + finishScrambleLive, both keyed to this team). We do
+      // NOT merge by single-member overlap. But v8.25.9 surfaces founding
+      // scramble rounds (the SMO Sequoyah scramble) that were logged as
+      // individual scramble round docs and never as a team match — derived
+      // ONLY when every member shares a course+date, so no cross-team bleed
+      // (Founder: "scramble teams are still showing no score").
       var allMatches = (team.matches || []).slice();
+      if (typeof _deriveTeamScrambleRounds === "function") {
+        _deriveTeamScrambleRounds(team).forEach(function(dr){ if (!allMatches.some(function(m){return m.course===dr.course && m.date===dr.date;})) allMatches.push(dr); });
+      }
       var scored = allMatches.filter(function(m){return m.score;}).sort(function(a,b){return a.score-b.score;});
       var best = scored.length ? scored[0].score : null;
       var last3 = allMatches.slice(-3).reverse();

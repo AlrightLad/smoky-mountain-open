@@ -278,7 +278,15 @@ function renderMemberDetailWithData(p) {
   // .stat-val div (the count-up animation target). The prior <span> wrapper
   // was destroyed by initCountAnimations setting textContent on it, which
   // wiped the inner stat-box entirely — v7.8.4 regression of v7.8.0's hook.
-  h += '<div class="stat-box"><div class="stat-val" data-stat="round-count" data-count="' + rounds.length + '">0</div><div class="stat-label">' + plur(rounds.length, "Round") + '</div></div>';
+  // v8.25.9 — the Rounds count navigates to the member's full round history
+  // (Founder: "clicking rounds where it shows 8 should take me to all rounds,
+  // not load all rounds under the Last 3 section"). Same scoped {player} view
+  // the "View all rounds →" link uses; tappable only when there's history.
+  if (rounds.length > 0) {
+    h += '<div class="stat-box stat-box--link" onclick="Router.go(\'rounds\',{player:\'' + pid + '\'})"><div class="stat-val" data-stat="round-count" data-count="' + rounds.length + '">0</div><div class="stat-label">' + plur(rounds.length, "Round") + ' <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M3 9l6-6M5 3h4v4"/></svg></div></div>';
+  } else {
+    h += '<div class="stat-box"><div class="stat-val" data-stat="round-count" data-count="0">0</div><div class="stat-label">' + plur(0, "Round") + '</div></div>';
+  }
   // Courses stat is clickable — drops to Our Courses view (best rounds per course).
   // Same pattern as M3 (standings Courses button).
   var coursesIsNum = !isNaN(parseFloat(unique)) && isFinite(unique) && unique !== "—";
@@ -748,18 +756,16 @@ function renderMemberDetailWithData(p) {
   if (playerTeams.length) {
     playerTeams.forEach(function(t) {
       var matches = (t.matches || []).slice();
-      // Also count scramble rounds from rounds collection
-      var memberIds = t.members;
-      var roundsCol = PB.getRounds().filter(function(r) {
-        return (r.format === "scramble" || r.format === "scramble4") && memberIds.indexOf(r.player) !== -1;
-      });
-      var matchKeys = {};
-      matches.forEach(function(m) { matchKeys[(m.course||"") + "|" + (m.date||"")] = true; });
-      roundsCol.forEach(function(r) {
-        var key = (r.course||"") + "|" + (r.date||"");
-        if (!matchKeys[key]) { matches.push({ course: r.course, date: r.date, score: r.score, format: r.format }); matchKeys[key] = true; }
-      });
-      // Deduplicate by course+date (scramble rounds are per-player, count as 1 team round)
+      // v8.25.9 — derive founding scramble rounds (logged as individual scramble
+      // round docs, never as a team match) using the SHARED all-members-present
+      // rule, unified with the team detail / list / league-records surfaces. The
+      // prior any-member merge here could bleed a scramble onto a team where only
+      // one member happened to play it; requiring every member share the
+      // course+date uniquely identifies a real team scramble.
+      if (typeof _deriveTeamScrambleRounds === "function") {
+        _deriveTeamScrambleRounds(t).forEach(function(dr){ if (!matches.some(function(m){return m.course===dr.course && m.date===dr.date;})) matches.push(dr); });
+      }
+      // Deduplicate by course+date (a team scramble counts as one team round)
       var uniqueRounds = {};
       matches.forEach(function(m) { if (m.course && m.date) uniqueRounds[(m.course||"") + "|" + (m.date||"")] = m; });
       var teamRoundCount = Object.keys(uniqueRounds).length;

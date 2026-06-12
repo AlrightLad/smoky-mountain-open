@@ -177,10 +177,20 @@ Router.register("records", function() {
         return bw - aw;
       });
       sorted.forEach(function(t) {
-        var w = (t.matches || []).filter(function(m) { return m.result === "win"; }).length;
-        var l = (t.matches || []).filter(function(m) { return m.result === "loss"; }).length;
-        var bestScore = t.matches && t.matches.length ? Math.min.apply(null, t.matches.filter(function(m){return m.score}).map(function(m){return m.score})) : null;
-        scrambleContent += '<div class="hof-row"><span class="hof-label">' + t.name + '</span><span class="hof-val">' + w + '-' + l + (bestScore ? ' · Best: ' + bestScore : '') + '</span></div>';
+        // v8.25.9 — combine team.matches with derived founding-scramble rounds
+        // so a team that played but logged no H2H match still shows its score
+        // here, not a blank 0-0 (Founder: scramble teams must track in league).
+        var combined = (t.matches || []).slice();
+        if (typeof _deriveTeamScrambleRounds === "function") {
+          _deriveTeamScrambleRounds(t).forEach(function(dr){ if (!combined.some(function(m){return m.course===dr.course && m.date===dr.date;})) combined.push(dr); });
+        }
+        var w = combined.filter(function(m) { return m.result === "win"; }).length;
+        var l = combined.filter(function(m) { return m.result === "loss"; }).length;
+        var scoredM = combined.filter(function(m){ return m.score; });
+        var bestScore = scoredM.length ? Math.min.apply(null, scoredM.map(function(m){return m.score})) : null;
+        // Show W-L when there are head-to-head matches, else a rounds-played count.
+        var recStr = (w + l > 0) ? (w + '-' + l) : (scoredM.length ? (scoredM.length + (scoredM.length === 1 ? ' round' : ' rounds')) : '—');
+        scrambleContent += '<div class="hof-row"><span class="hof-label">' + escHtml(t.name) + '</span><span class="hof-val">' + recStr + (bestScore ? ' · Best: ' + bestScore : '') + '</span></div>';
       });
     });
   } else {

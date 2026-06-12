@@ -30,9 +30,13 @@ var THEMES = {
   clubhouse:       { id: "clubhouse",       name: "Clubhouse",       availability: "default", order: 1 },
   twilight_links:  { id: "twilight_links",  name: "Twilight Links",  availability: "default", order: 2 },
   linen_draft:     { id: "linen_draft",     name: "Linen Draft",     availability: "default", order: 3 },
-  champion_sunday: { id: "champion_sunday", name: "Champion Sunday", availability: "unlock",  order: 4, hidden_until_unlocked: true },
+  // v8.25.9 — all three unlockables now show in the picker as locked teasers
+  // ("not all themes are showing" — Founder wants the full "3 ready, 3 to earn"
+  // set visible, the copy already promises six). hidden_until_unlocked dropped
+  // so Champion Sunday + Course Record join Bourbon Room as visible-but-locked.
+  champion_sunday: { id: "champion_sunday", name: "Champion Sunday", availability: "unlock",  order: 4, hidden_until_unlocked: false, preview_progress: true },
   bourbon_room:    { id: "bourbon_room",    name: "Bourbon Room",    availability: "unlock",  order: 5, hidden_until_unlocked: false, preview_progress: true },
-  course_record:   { id: "course_record",   name: "Course Record",   availability: "unlock",  order: 6, hidden_until_unlocked: true }
+  course_record:   { id: "course_record",   name: "Course Record",   availability: "unlock",  order: 6, hidden_until_unlocked: false, preview_progress: true }
 };
 
 var DEFAULT_THEME_ID = "clubhouse";

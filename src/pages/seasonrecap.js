@@ -20,7 +20,9 @@ Router.register("seasonrecap", function(params) {
   h += '<div style="font-family:var(--font-display);font-size:24px;color:var(--gold);font-weight:700">' + year + ' Season Recap</div>';
   h += '<div style="font-size:11px;color:var(--muted);margin-top:6px">March 1 – September 30</div>';
   // v8.24.44 — Wrapped entry (growth #2): the story-format personal recap.
-  h += '<button class="btn-sm green" style="margin-top:14px;min-height:44px;padding:0 22px" onclick="Router.go(\'wrapped\')">▶ Play your Wrapped</button>';
+  // v8.25.9 — SVG play glyph, not the ▶ emoji (Founder: "we do not do emojis,
+  // they feel cheap and gross — we do SVG icons").
+  h += '<button class="btn-sm green" style="margin-top:14px;min-height:44px;padding:0 22px;display:inline-flex;align-items:center;gap:7px" onclick="Router.go(\'wrapped\')"><svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M4.5 3.2v9.6a.6.6 0 00.92.5l7.2-4.8a.6.6 0 000-1l-7.2-4.8a.6.6 0 00-.92.5z"/></svg>Play your Wrapped</button>';
   h += '</div>';
   
   // Overall stats
