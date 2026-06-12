@@ -30,6 +30,7 @@ finish.
 - [ ] #57 onboarding senior pass — my design call (no Figma needed); polish flow + visuals.
 - [ ] parcoin hardening + stage-2 build (parcoin-hardening.md, parcoin-stage2-build-plan.md).
 - [ ] store-app-icons (store-app-icons.md).
+- [ ] Scroll flicker — investigate + fix flicker/repaint while scrolling (likely a listener-triggered home re-render mid-scroll, or backdrop-blur/sticky repaint). Founder-reported 2026-06-12.
 - [ ] tee-time scheduler — coordination-first model OR confirm researched-deferred + close.
 - [ ] Lottie swing character swap IF a fetchable/authored asset is obtained (else the cinematic-FX swing stands).
 - [x] Onboarding-replay ParCoin farm exploit — fixed v8.25.33 (durable rookieRewarded flag).
