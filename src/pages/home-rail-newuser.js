@@ -291,7 +291,10 @@ function _renderFirstWeekChecklist(ctx) {
     : ["profile", "round", "course", "handicap"];
   var items = order.map(function (k) { return ITEM[k]; });
   var doneCount = items.filter(function (i) { return i.done; }).length;
-  if (doneCount >= items.length) return "";   // all done → retire the card
+  // Retire when all done OR the member is past their first week (5+ rounds) — a
+  // veteran with a computed handicap shouldn't see a "first week" card just
+  // because they never set a profile photo (critique 2026-06-12).
+  if (doneCount >= items.length || rounds >= 5) return "";
 
   var h = '<div style="background:var(--cb-paper);border:1px solid var(--border);border-radius:var(--r-3);padding:16px 16px 12px;box-shadow:var(--el-1)">';
   h += '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px">';
@@ -303,7 +306,7 @@ function _renderFirstWeekChecklist(ctx) {
     if (it.done) {
       h += '<div style="display:flex;align-items:center;gap:10px;padding:7px 0">';
       h += '<span style="flex:none;width:18px;height:18px;border-radius:50%;background:var(--cb-brass);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="var(--cb-paper)" stroke-width="2.4"><path d="M3 8.5l3.2 3L13 5"/></svg></span>';
-      h += '<span style="font-family:var(--font-ui);font-size:13px;color:var(--cb-mute);text-decoration:line-through">' + escHtml(it.label) + '</span></div>';
+      h += '<span style="font-family:var(--font-ui);font-size:13px;color:var(--cb-charcoal)">' + escHtml(it.label) + '</span></div>';
     } else {
       h += '<div onclick="Router.go(\'' + it.go + '\')" role="button" tabindex="0" style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;cursor:pointer;min-height:44px">';
       h += '<span style="flex:none;width:18px;height:18px;border-radius:50%;border:2px solid var(--cb-brass);margin-top:1px"></span>';

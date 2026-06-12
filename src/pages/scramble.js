@@ -65,8 +65,10 @@ function renderTeamList() {
         if (best !== null) h += '<div style="font-size:10px;color:var(--muted2)">Best: ' + best + '</div>';
       } else if (best !== null) {
         h += '<div style="font-size:28px;font-weight:800;color:var(--gold);line-height:1">' + best + '</div>';
-        h += '<div style="font-size:10px;color:var(--muted);margin-bottom:4px">Best score</div>';
-        if (last3.filter(function(m){return m.score;}).length) {
+        h += '<div style="font-size:10px;color:var(--muted);margin-bottom:4px">' + (scored.length === 1 ? 'Score' : 'Best score') + '</div>';
+        // Only show the recent-scores strip when there's MORE than the single
+        // best — otherwise it just repeats the same number ("77 / 77 Last 1").
+        if (scored.length > 1 && last3.filter(function(m){return m.score;}).length) {
           h += '<div style="font-size:10px;color:var(--muted2)">';
           last3.filter(function(m){return m.score;}).forEach(function(m,i) {
             var d = m.score - 72;

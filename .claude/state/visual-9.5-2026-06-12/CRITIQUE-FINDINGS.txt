@@ -1,0 +1,130 @@
+PAGES: 16
+=== SCORES (low to high) ===
+  5.5  home
+  6.2  trophyroom
+  6.3  courses  [NO DATA]
+  6.4  awards
+  6.4  richlist
+  6.4  calendar
+  6.8  scramble
+  7.4  rounds
+  7.4  records
+  7.4  teetimes
+  7.4  settings
+  8.1  feed
+  8.1  challenges
+  8.4  standings
+  8.4  shop
+  8.7  more
+
+=== CRITICAL (10) ===
+* [home/data-truthfulness] More than half the home page is unevaluable because the intro.js tee-shot splash overlay is painted over it. The capture was taken before sessionStora
+   FIX: Recapture: in the Playwright/intro flow, set sessionStorage 'pb_intro_seen'='1' (or localStorage 'pb_intro_enabled'='0') before navigating to home, OR
+* [home/color & contrast] The completed checklist items render as line-through text in --cb-mute on the cream --cb-paper surface ('Log your first round', 'Add your home course'
+   FIX: Drop the line-through. Render completed items in --cb-charcoal (or full --cb-ink at reduced weight) with the brass check disc as the only 'done' signa
+* [trophyroom/information density & whitespace] The page is a single 42,501px monolithic scroll — roughly 20+ iPhone screens. It renders the COMPLETE achievement catalog inline: the full 34-item 'Th
+   FIX: Introduce progressive disclosure. (1) Split into segmented tabs or anchored sections: 'Earned' (default) / 'Records' / 'All Trophies' / 'Levels'. (2) 
+* [trophyroom/color & contrast] Every muted/locked label is tan-on-tan at roughly 1.1:1 contrast (measured: glyph luminance ~195 against background ~207, a delta of ~12). This affect
+   FIX: Raise muted-text token to meet at least 4.5:1 against the cream surface (target a brass/ink at ~#6b5e3f or darker, luminance ~110-130 on the ~207 bg).
+* [courses/data-truthfulness] The 'All Courses' tab shows an empty state ('Your directory is quiet.') for a member with 8 rounds played. The empty-state copy itself promises access
+   FIX: Diagnose the courses query first (P5 diagnostic-first): confirm whether 'All Courses' is meant to read the global GolfCourseAPI/seed catalog or only l
+* [awards/data-truthfulness] Two headline GOLD awards — Player of the Year and Scoring Champion — are completely missing from the rendered page, yet raw round data clearly exists 
+   FIX: Diagnose why getSeasonStandings(2026) returns an empty standings array while getPlayerRounds returns rounds (likely a leagueId / season-window or stan
+* [richlist/visual hierarchy] The fixed bottom navigation bar (Home/Play/Courses/Events/More) overlaps the scrolling content. Rank 7 ('highelson89', balance 52) is rendered HALF-CL
+   FIX: Ensure the page scroll container reserves bottom space equal to the nav height. Add padding-bottom to the page body equal to the nav bar height plus s
+* [calendar/taste/polish] The fixed bottom tab bar (Home/Play/Courses/Events/More) overlaps and bisects the calendar grid. The entire bottom week (21, 22, 23, 24, 25, 26, 27) i
+   FIX: Add bottom padding to the scrollable page content equal to the nav bar height plus iOS safe-area: padding-bottom: calc(var(--tabbar-height) + env(safe
+* [teetimes/color & contrast] Both brass CTA buttons render their label in cream, not white. The screenshot looks like white text but the code uses color:var(--bg) which is --cb-ca
+   FIX: Change green-button label color to a true high-contrast value. Either use pure white (#FFFFFF on #B4893E ≈ 2.7:1 — still short, so also darken the bra
+* [settings/data-truthfulness] The Email row renders the label "Email" with no value beneath it — the value slot is blank. Source settings.js:33 emits escHtml(currentUser.email) int
+   FIX: Never render a value-row with an empty value. If currentUser.email is falsy, either (a) omit the Email value row entirely and surface only an explicit
+
+=== HIGH (44) ===
+* [home/visual hierarchy] The 'Your First Week' checklist is clipped at the top of the visible cream area — its eyebrow header ('Your First Week'), the '3 of 4' progress count,
+   FIX: Same root cause as the capture issue — once the intro is dismissed before capture, the full card (header + 'N of 4' + all 4 rows) will be visible. Ver
+* [home/taste/polish] Logic/copy mismatch on the checklist for an 8-round veteran. This member has 8 rounds and a computed handicap (20.9 shown), yet the 'first week' onboa
+   FIX: Add an auto-retire when totalRounds exceeds a veteran threshold (e.g. rounds >= 5) regardless of remaining items, OR rename the card from 'Your First 
+* [feed/information density & whitespace] Card monotony: every round in the stream is rendered with the identical full-fat template — 40px avatar, name, timestamp, large brass score, +N badge,
+   FIX: Introduce two density tiers. Render only the most recent / notable round as the full card; collapse the rest into compact rows (avatar + name + score 
+* [feed/data-truthfulness] Stat chips render 'FIR 0/13', 'FIR 0/14', 'GIR 0/18', 'PUTTS 5' that read as broken or fabricated data to a user even though they trace to real arrays
+   FIX: Only surface a stat chip when tracking coverage is meaningful (e.g. firData/girData has data for >=50% of eligible holes, puttsData covers all played 
+* [rounds/data-truthfulness] The hero handicap card says "8 ROUNDS" but the Round History header says "25 total" on the same member's page, with no explanation. A member reading t
+   FIX: Make the two counts unambiguously distinct. Either (a) relabel the history header to its true scope, e.g. "25 across the league" / "League rounds · 25
+* [rounds/component-consistency] The Scramble card (Birdie Bros · Scramble, score 81) is the only history row that renders NO "to par" delta, while every individual round shows "+26 t
+   FIX: In the scramble branch (rounds.js ~line 181) compute and render the same par-relative delta the individual branch uses: derive rPar via roundParTotal(
+* [rounds/visual-hierarchy] The Round History list is hierarchically flat: every card has identical weight, padding, and a full-size "Share" button on every single row. The repea
+   FIX: Demote per-row Share to a low-chrome icon-only affordance (or reveal on tap/long-press / move into the round detail), removing the repeated full outli
+* [records/visual hierarchy] Seven full-width collapsed accordion cards (Event champions, All-time records, Log a record, Scramble team records, Best scores by course, Handicap le
+   FIX: Differentiate the sections. (1) Add a small brass/muted SVG icon to the left of each hofCard title (trophy=Event champions, target=All-time, flag=Scra
+* [records/information density & whitespace] The page is almost entirely empty signifiers below the fold: 7 collapsed cards consume the full viewport while conveying zero record data. For a membe
+   FIX: Surface real values without a tap. Inline the top All-time record (Best 18 + Best 9 holder) directly under that card's title, and render Handicap-lead
+* [standings/visual-hierarchy] The empty state communicates 'no rounds yet' THREE separate times: the masthead deck ('No rounds logged yet this Summer 2026. Log a round to open the 
+   FIX: Collapse to ONE empty-state owner. Keep the centered std-empty block as the single hero CTA and demote/remove the redundant deck sentence, OR keep the
+* [standings/color-contrast] Multiple muted-tan-on-tan text runs are below WCAG AA 4.5:1. The footer 'THE PARBAUGHS · EST 2026 · LIVE' is faint gray-tan on the beige felt; the 'JU
+   FIX: Audit every muted text token against the beige background and raise to >=4.5:1 (or >=3:1 only if >=18.66px bold). Bump the --text-muted / footer token
+* [standings/taste-polish] The bottom tab bar appears to overlap/clip a section labeled 'SEASON ARCHIVE' — the eyebrow text is half-cut by the Home/Play/Courses/Events/More nav.
+   FIX: Add bottom padding/safe-area inset to the scroll container equal to the nav height + env(safe-area-inset-bottom) so no content ever renders beneath th
+* [scramble/data-truthfulness] The 'The Parbaughs' card shows '77' as Best score in the top-right and '77 / Last 1' immediately below it — the same number twice, which reads as a re
+   FIX: When scored.length === 1, collapse the right rail to a single stat: show '77' with label 'First round' (or just 'Score') and drop the redundant 'Last 
+* [scramble/information density & whitespace] The bottom ~55% of the viewport (from below the second card down to the tab bar) is empty cream space with only one faint centered line 'THE PARBAUGHS
+   FIX: Use the space: add a 'Recent scramble activity' or 'Head-to-head standings' section, or a compact leaderboard of all teams by best score, or an empty-
+* [scramble/taste/polish] Member avatars render as a row of nearly identical dark-brown/near-black discs with gold rings. There is no initials/letter fallback, no per-member co
+   FIX: Give the default/empty avatar a visible initial: render the member's first initial in brass on the felt-green disc (font-weight:700, centered) instead
+* [shop/data-truthfulness] The section title renders as 'Ways to' with the word 'earn' clipped off. Source code (src/pages/shop.js:259) emits the heading 'Ways to earn', but the
+   FIX: Stop the title from sharing a tight flex row with the note. Either (a) give .shop-sec-title flex: 0 0 auto / flex-shrink: 0 and let .shop-earn__note w
+* [shop/component-consistency] Two visually distinct card languages coexist with no explanation. 'Pro Shop' items are light (cream chalk background, dark serif title, brass eyebrow)
+   FIX: Define and document the dark-vs-light rule in one place, then make it consistent and self-evident. Recommended: dark walnut = 'rarer / locker / commem
+* [shop/taste-polish] Horizontal shelf carousels give almost no scroll affordance. Each row (Rings, Nameplates, Ball Markers, Tee Markers, The Caddy, The Paint Locker) show
+   FIX: Add a clear horizontal-scroll affordance: (1) tune peek so the next card shows ~30-40% (clear 'more →' cue) rather than a thin slice; (2) add a right-
+* [trophyroom/visual hierarchy] Six top-level sections ('Recently earned', 'Roll of Honor', 'Records', 'The wall', 'League trophies', 'Titles') all render at near-identical visual we
+   FIX: Establish a clear weight ladder: make the Level/XP hero + Records the visual peak (larger type, stronger surface, maybe a subtle brass border), step d
+* [trophyroom/component consistency] Two different visual languages represent the same concept (achievements). 'The wall' uses large 2-column trophy CARDS with icon, name, description, XP
+   FIX: Unify the unlock-progression pattern: pick one card or one row component and reuse it for both trophies and titles, or clearly differentiate them by P
+* [courses/data-truthfulness] No loading or error state is distinguishable from the empty state. If the Firestore/GolfCourseAPI fetch fails or is mid-flight, the user sees the iden
+   FIX: Introduce three explicit render branches: (1) loading -> skeleton list rows or a spinner; (2) error -> an actionable error card with WHAT/WHERE/ACTION
+* [courses/visual hierarchy] Three competing primary calls-to-action fight for attention: the top-right '+ Add' brass button, the in-card '+ Add a course' brass button, and the se
+   FIX: Pick one primary action per state. In the empty/search state, make the search field the hero (it is the path to 'thousands worldwide') and demote the 
+* [courses/component consistency] Three different type families are visible in UI chrome: serif display ('Course directory', 'Your directory is quiet.'), monospace ('All Courses', 'Our
+   FIX: Reserve monospace (if intentional) for a single deliberate role (e.g. the small-caps footer 'EST. 2026' tagline only) and switch tab labels, button la
+* [courses/color & contrast] Multiple WCAG concerns. (1) The inactive 'Our Courses' tab label is light-brown monospace on the cream toggle track — likely below 4.5:1. (2) The bras
+   FIX: Run each pair through a contrast checker and bring body/label text to >=4.5:1 (>=3:1 only for large/bold >=18.66px). Darken inactive tab label to a re
+* [awards/taste/polish] Every award card reserves a 36px-wide icon column (font-size:36px, flex-shrink:0) plus a 16px flex gap, but the icon string is hardcoded to '' for all
+   FIX: Add real SVG medal/trophy icons per tier (gold/silver/bronze) into the 36px slot — e.g., a filled trophy for gold-tier, laurel/medal for silver, ribbo
+* [awards/information density & whitespace] The entire lower half of the screen below the nav and tagline is empty beige with nothing in it — the page content (3 cards) ends, the nav bar sits mi
+   FIX: Either render more of the available awards (the code computes up to 8; only 3 show) or restructure so the content fills the fold: add a short ceremony
+* [awards/data-truthfulness] Iron Man shows '16 rounds played' for Mr Parbaugh, but the task brief states this member has 8 rounds. Iron Man counts allRounds (line 56), which incl
+   FIX: Verify the true round count for the member against Firestore. If 16 includes scramble/partial rounds, label it accurately ('16 rounds incl. scrambles'
+* [awards/visual hierarchy] All three cards are visually identical in weight, color, and border despite the code assigning tiers (Round of the Year = gold, Iron Man/Explorer = si
+   FIX: Make tier differentiation legible: give gold-tier cards a stronger brass border (rgba gold .4+), a subtle inner glow or a small 'GOLD' / star marker, 
+* [richlist/color & contrast] Brass-on-brass monochrome destroys the value hierarchy. The headline number (.lb-pts) is var(--gold)/brass, the 1st-place medal is --medal-gold (also 
+   FIX: Differentiate by role, not just by all-brass. Keep the big VALUE in brass (--gold) as the hero, but render rank medals in a NON-brass treatment: e.g. 
+* [richlist/data-truthfulness] The large right-hand number is UNLABELED on the card. It is parcoinsLifetime ('lifetime earned'), but the only label is a tiny 11px centered subtitle 
+   FIX: Add a micro-label and the coin glyph beside/under the headline number, e.g. a stacked unit: the number in --font-display + a 9px uppercase 'LIFETIME' 
+* [richlist/visual hierarchy] Tie handling is invisible and the ordering looks arbitrary/buggy. Rank 7 (highelson89, 52), rank 8 (cut off), and rank 9 (Lieph, 52) — multiple member
+   FIX: Compute dense/standard competition ranking so equal parcoinsLifetime share the same rank (e.g. both '8th', skip 9), and add a secondary deterministic 
+* [challenges/color & contrast] Body/explanatory copy ('Challenge a friend to a head-to-head match...') is rendered in --muted (a mid-tan) directly on the tan page canvas. Visually t
+   FIX: Move primary explanatory copy to --cb-ink-faint (5.09:1, AA-safe on canvas per base.css) or darker, and reserve --muted/--muted2 only for true tertiar
+* [challenges/visual hierarchy] Two competing 'create a challenge' affordances are on screen simultaneously: the header '+ New' button (top-right) and the in-body brass 'Start a Chal
+   FIX: On the empty state, drop the header '+ New' entirely (or render it only as a back-adjacent affordance) so the in-body 'Start a Challenge' is the sole,
+* [challenges/taste/polish] The three 'Challenge Ideas' chips look tappable (paper cards, bullet, hover-ish affordance) but are inert static text. This is a classic affordance-li
+   FIX: Make each idea chip a real action: onclick routes to Router.go('challenges',{create:true}) and pre-fills the stakes field with the idea's coin amount 
+* [calendar/typography] Three competing type systems on one page. (1) Display serif A — a Playfair-style high-contrast italic — sets 'June 2026.' and 'The course is quiet.'. 
+   FIX: Collapse to one display serif and one supporting family. Pick the Playfair-style italic serif as the single display face (it's the brand voice) and ap
+* [calendar/component consistency] The '+ NEW EVENT' primary action appears three times in close proximity: a brass-outline button in the toolbar (top), a dark-filled button inside the 
+   FIX: Keep ONE primary '+ NEW EVENT' as the filled button inside the empty-state card (it's contextually anchored to the empty grid). Demote the toolbar ins
+* [calendar/visual hierarchy] The status legend ('● SCHEDULED ● ROUND PLAYED ● RANGE') is orphaned: it sits far below the grid, after the empty-state card and the tee-time buttons,
+   FIX: Move the legend directly beneath the calendar grid header or footer so it's adjacent to the thing it describes. On an empty month, either hide the leg
+* [teetimes/color & contrast] The 'EXAMPLE TEE TIMES' eyebrow label is nearly invisible. It uses --muted2 (--cb-mute-2 = #A8A395), a token whose own definition in base.css line 77 
+   FIX: Switch the eyebrow to --cb-mute (#656259, verified AA 4.63:1 on canvas) or --cb-ink-faint (#5F5C50, 5.09:1). Keep the uppercase/letterspacing treatmen
+* [teetimes/data-truthfulness] The three 'EXAMPLE TEE TIMES' cards (Honey Run · Saturday 8:30 AM · 2 spots open, Out Door CC · Sunday 7:00 AM · Need 3 more, Heritage Hills · Friday 
+   FIX: Make the sample affordance unmistakable: reduce opacity to ~0.55, remove any hover/active affordance, add a small 'Sample' pill on each row, or render
+* [teetimes/visual hierarchy] Two competing primary actions for the exact same task. The brass '+ Post' button sits in the top-right header AND the brass 'Post a Tee Time' hero but
+   FIX: In the empty state, demote the header '+ Post' to a quieter treatment (outline or ghost) so the hero CTA is the unambiguous primary, OR drop the heade
+* [settings/visual-hierarchy] The lower ~60% of the page is a flat stack of ~10 visually identical all-caps brass-outline buttons spanning navigation (Privacy Policy, Terms, Replay
+   FIX: Establish three button tiers using the existing token system: primary/filled for the one main action per section, ghost/text-link weight for pure navi
+* [settings/taste-polish] Destructive and irreversible actions are under-differentiated. "Sign Out", "Reset Local Data", and "Delete Account" carry only a faint desaturated-red
+   FIX: Group all destructive operations into a visually distinct "Danger zone" block at the very bottom (red-tinted container, divider, smaller muted intro c
+* [more/visual hierarchy] The fixed bottom nav (Home/Play/Courses/Events/More) has no elevation or separation from the page. Its background is var(--bg) — the identical flat ta
+   FIX: Give the bottom nav genuine elevation: add a translucent backdrop blur and a top shadow, e.g. background:rgba(var(--bg-rgb),.82); -webkit-backdrop-fil
+* [more/information density & whitespace] Every row across all ~24 entries is the exact same height (62px), same 14px/600 label + 11px/muted sub, same 36px tile. With six stacked groups the pa
+   FIX: Introduce rhythm and lift the priority rows: (a) strengthen the accent rowBg to ~.10-.12 and add a 2-3px brass left-edge accent bar so revenue/growth 

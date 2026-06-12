@@ -4049,6 +4049,7 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
   margin: 0 0 4px;
 }
 .shop-sec-title {
+  flex-shrink: 0;
   font-family: var(--font-display);
   font-style: italic;
   font-weight: 700;
@@ -4086,7 +4087,7 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 
 /* v8.24.84 — Ways to earn (Founder ask: surface earn incentives) */
 .shop-earn { margin: 0 0 36px; }
-.shop-earn__note { font-family: var(--font-mono); font-size: 10px; letter-spacing: .5px; color: var(--cb-mute); }
+.shop-earn__note { font-family: var(--font-mono); font-size: 10px; letter-spacing: .5px; color: var(--cb-mute); flex: 1 1 auto; min-width: 0; text-align: right; }
 .shop-earn__grid { margin-top: 10px; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; }
 .shop-earn__row { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; min-height: 44px; padding: 10px 14px; border: 1px solid var(--cb-line); border-radius: var(--radius); background: var(--cb-paper); cursor: pointer; text-align: left; transition: border-color .12s ease, transform .12s ease; }
 .shop-earn__row:hover { border-color: rgba(var(--cb-brass-rgb), .45); transform: translateY(-1px); }
