@@ -231,3 +231,6 @@ docs/reports/sessions.html
 /.claude/state/visual-9.5-2026-06-12/verify-v15/
 /.claude/state/visual-9.5-2026-06-12/verify-v16/
 /.claude/state/onboarding-rebuild-2026-06-12/
+
+# Local authed UI-review captures (per-page critique, #41)
+.claude/state/cap-*/
