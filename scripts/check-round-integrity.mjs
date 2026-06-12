@@ -19,7 +19,11 @@ import os from 'os';
 import path from 'path';
 
 const PROJECT = process.argv[2] || 'parbaughs';
-const REQUIRED = ['player', 'date', 'score', 'leagueId', 'leagueIds', 'timestamp', 'createdAt', 'visibility'];
+// `id` is REQUIRED: loadRoundsFromFirestore filters `if (d && d.id)` on the
+// id FIELD (not the Firestore doc-id), so a round lacking the id field is
+// silently skipped on load — invisible to profile/pulse/everything (the
+// FatalBert recovery bug, 2026-06-12). Every surface query also needs the rest.
+const REQUIRED = ['id', 'player', 'date', 'score', 'leagueId', 'leagueIds', 'timestamp', 'createdAt', 'visibility'];
 
 function httpsReq(opts, data) {
   return new Promise((resolve, reject) => {
