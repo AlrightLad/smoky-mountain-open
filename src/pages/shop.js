@@ -337,6 +337,13 @@ Router.register("shop", function() {
     }
     c += '<div class="shop-item__name">' + item.name + '</div>';
     c += '<div class="shop-item__desc">' + item.desc + '</div>';
+    // v8.25.8 — "Try it on" (Founder: "shop should allow for preview as well").
+    // Opens a full-size preview of the piece applied to the member's own avatar /
+    // name / card before any coins are spent. Shown for everything with a real
+    // preview (skip earned-only honors — they're not browseable purchases).
+    if (!item.earnedBy) {
+      c += '<button type="button" class="shop-item__tryon" onclick="shopPreviewCosmetic(\'' + item.id + '\')" aria-label="Preview ' + escHtml(item.name) + ' on your profile" style="background:none;border:none;color:var(--cb-brass,var(--gold));font-size:10px;font-weight:600;letter-spacing:.4px;cursor:pointer;padding:0 0 6px;text-decoration:underline;text-underline-offset:2px">Try it on</button>';
+    }
     if (item.earnedBy) {
       c += '<div class="shop-cabinet__earn">' + item.earnedBy + '. Not for sale.</div>';
     } else if (item.arriving) {
@@ -558,4 +565,90 @@ function equipCosmetic(itemId, cat) {
   Router.toast(equipped[cat] ? "Equipped!" : "Unequipped");
   updateProfileBar();
   Router.go("shop", {}, true);
+}
+
+// ── Try-it-on preview (v8.25.8) ─────────────────────────────────────────────
+// Founder: "shop should allow for preview as well." A full-size, branded
+// preview of a cosmetic applied to the member's OWN avatar / name / card, with
+// the Buy or Equip action inline — see-before-you-spend. Appends a dismissable
+// overlay to <body> (above the shop page, like pbConfirm).
+function shopClosePreview() {
+  var ov = document.getElementById("shopPreviewOverlay");
+  if (ov) ov.remove();
+}
+function shopPreviewCosmetic(itemId) {
+  var item = (typeof shopFindItem === "function") ? shopFindItem(itemId) : null;
+  if (!item) return;
+  var prof = (typeof currentProfile !== "undefined") ? currentProfile : null;
+  var myAvatar = (prof && typeof Router !== "undefined" && Router.getAvatar) ? Router.getAvatar(prof) : '';
+  var myName = prof ? (prof.username || prof.name || "You") : "You";
+  var uid = (typeof currentUser !== "undefined" && currentUser) ? currentUser.uid : null;
+  var balance = (uid && typeof getParCoinBalance === "function") ? getParCoinBalance(uid) : 0;
+  var owned = (prof && prof.ownedCosmetics) || [];
+  var isOwned = owned.indexOf(item.id) !== -1 || (item.price === 0 && !item.earnedBy);
+  var equippedMap = (prof && prof.equippedCosmetics) || {};
+  var equipped = equippedMap[item.cat] === item.id || (item.plate && equippedMap.titleplate === item.id);
+
+  // Full-size stage, per category — applied to the member's own identity.
+  var stage = '';
+  if (item.cat === 'border') {
+    var ring = item.css || ('3px solid ' + (item.preview || 'var(--cb-brass)'));
+    stage = '<div class="' + (item.ringClass || '') + '" style="width:118px;height:118px;border-radius:50%;border:' + ring + ';margin:0 auto;display:flex;align-items:center;justify-content:center;background:var(--bg3,var(--cb-canvas))">' + myAvatar + '</div>';
+  } else if (item.cat === 'banner') {
+    stage = '<div style="border-radius:14px;overflow:hidden;border:1px solid var(--cb-mute-3)">'
+      + '<div style="height:92px;background:' + (item.css || 'var(--gold)') + '"></div>'
+      + '<div style="padding:0 14px 14px;margin-top:-30px;text-align:center"><div style="width:60px;height:60px;border-radius:50%;margin:0 auto;border:2px solid var(--cb-paper);background:var(--bg3);overflow:hidden">' + myAvatar + '</div>'
+      + '<div style="font-weight:700;font-size:14px;color:var(--cb-ink);margin-top:7px">' + escHtml(myName) + '</div></div></div>';
+  } else if (item.cat === 'card') {
+    stage = '<div style="border-radius:var(--radius,12px);background:var(--bg3,var(--cb-canvas));padding:14px 16px;text-align:left;' + (item.css || '') + '"><div style="font-size:13px;font-weight:700;color:var(--cream,var(--cb-ink))">' + escHtml(myName) + '</div><div style="font-size:11px;color:var(--muted,var(--cb-mute));margin-top:3px">Honey Run Golf Club · 92</div></div>';
+  } else if (item.cat === 'voice') {
+    var cad = (window.pbCaddies || []).filter(function (c) { return c.sku === item.id; })[0];
+    var line = (cad && window.pbVoices) ? window.pbVoices.line('frame', cad.id) : '';
+    stage = '<div style="text-align:center"><div style="font-size:34px">⛳</div><div style="font-weight:700;font-size:15px;color:var(--cb-ink);margin-top:6px">' + escHtml(cad ? cad.name : item.name) + '</div>'
+      + (line ? '<div style="font-family:var(--font-display);font-style:italic;font-size:14px;color:var(--cb-ink);background:var(--cb-chalk-2);border-radius:10px;padding:10px 12px;margin-top:10px;line-height:1.4">“' + escHtml(line) + '”</div>' : '') + '</div>';
+  } else if (item.cat === 'title' || item.cat === 'nameplate') {
+    var titleEl = item.plate
+      ? '<span class="' + (item.id === 'pc36_member_tag' ? 'title-tag-leather' : 'title-engraved') + '">' + escHtml(item.id === 'pc36_member_tag' ? 'Member No. 7' : 'Grinder') + '</span>'
+      : '<span class="title-plain" style="--ti:' + (item.preview || 'var(--cb-brass)') + '">' + escHtml(item.name) + '</span>';
+    stage = '<div style="text-align:center;display:flex;flex-direction:column;align-items:center;gap:9px"><div style="font-size:16px;font-weight:700;color:var(--cb-ink)">' + escHtml(myName) + '</div>' + titleEl + '</div>';
+  } else {
+    var glyph = (typeof pbMarkerGlyph === 'function') ? pbMarkerGlyph(item.id, 72) : '';
+    stage = '<div style="text-align:center;color:' + (item.preview || 'var(--cb-brass)') + '">' + (glyph || '<div style="width:52px;height:52px;border-radius:50%;margin:0 auto;background:' + (item.preview || 'var(--cb-brass)') + '"></div>') + '</div>';
+  }
+
+  // Inline action — buy / equip / state — mirroring the card's logic.
+  var esc2 = function (s) { return String(s).replace(/'/g, "\\'"); };
+  var action;
+  if (item.arriving) {
+    action = '<div style="text-align:center;font-size:12px;color:var(--cb-mute);font-weight:600">Arriving soon</div>';
+  } else if (isOwned && equipped) {
+    action = '<div style="text-align:center;font-size:12px;color:var(--cb-felt,var(--success));font-weight:700">Equipped</div>';
+  } else if (isOwned) {
+    action = '<button type="button" onclick="equipCosmetic(\'' + esc2(item.id) + '\',\'' + (item.plate ? 'titleplate' : item.cat) + '\');shopClosePreview()" style="width:100%;min-height:46px;background:var(--cb-felt);border:none;border-radius:10px;color:var(--cb-chalk);font-weight:700;font-size:14px;cursor:pointer">Equip it</button>';
+  } else if (balance >= item.price) {
+    action = '<button type="button" onclick="purchaseCosmetic(\'' + esc2(item.id) + '\');shopClosePreview()" style="width:100%;min-height:46px;background:var(--cb-brass,var(--gold));border:none;border-radius:10px;color:#2A2822;font-weight:700;font-size:14px;cursor:pointer">Buy · ' + item.price + ' ParCoins</button>';
+  } else {
+    action = '<div style="text-align:center;font-size:12px;color:var(--cb-mute);font-weight:600">' + item.price + ' ParCoins · you need ' + (item.price - balance) + ' more</div>';
+  }
+
+  var ov = document.createElement('div');
+  ov.id = "shopPreviewOverlay";
+  ov.setAttribute("role", "dialog");
+  ov.setAttribute("aria-modal", "true");
+  ov.setAttribute("aria-label", "Preview " + item.name);
+  ov.style.cssText = "position:fixed;inset:0;z-index:10000;background:var(--scrim, rgba(20,19,15,.42));display:flex;align-items:center;justify-content:center;padding:24px";
+  ov.innerHTML = '<div style="background:var(--cb-paper);border:1px solid var(--cb-mute-3);border-radius:16px;max-width:330px;width:100%;padding:20px 18px;box-shadow:var(--el-4,0 12px 32px rgba(0,0,0,.18))">'
+    + '<div style="font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-brass,var(--gold));text-align:center;margin-bottom:14px">Try it on</div>'
+    + '<div style="margin-bottom:14px">' + stage + '</div>'
+    + '<div style="text-align:center;font-weight:700;font-size:15px;color:var(--cb-ink)">' + escHtml(item.name) + '</div>'
+    + '<div style="text-align:center;font-size:11.5px;color:var(--cb-mute);line-height:1.45;margin:4px 0 16px">' + escHtml(item.desc || '') + '</div>'
+    + action
+    + '<button type="button" id="shopPreviewClose" style="width:100%;min-height:40px;margin-top:8px;background:none;border:none;color:var(--cb-mute);font-size:12px;font-weight:600;cursor:pointer">Close</button>'
+    + '</div>';
+  function onKey(e) { if (e.key === "Escape") shopClosePreview(); }
+  ov.addEventListener("click", function (e) { if (e.target === ov) shopClosePreview(); });
+  document.addEventListener("keydown", onKey, { once: true });
+  document.body.appendChild(ov);
+  var closeBtn = document.getElementById("shopPreviewClose");
+  if (closeBtn) closeBtn.onclick = shopClosePreview;
 }
