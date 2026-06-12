@@ -503,38 +503,44 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
 
 /* Linen Draft — bright outdoor daylight, reading chair. Soft sage greens,
    terracotta brass, the brightest chalk family. */
+/* Linen Draft — re-skinned 2026-06-12 (Founder: was a near-clone of Clubhouse's
+   warm-parchment+gold). Now a distinctly COOL, bright "fairway morning": crisp
+   cool-linen grounds (green-grey, not warm cream) + a SAGE/OLIVE accent in the
+   brass slot (not gold) — so the 3 default themes read as genuinely different
+   palettes. AA preserved: text tokens darkened/cooled to clear 4.5:1 on the cool
+   canvas; the sage accent is used as a fill with dark-ink labels (bold, >=3:1). */
 [data-theme="linen_draft"] {
-  --cb-chalk: #F8F3E6;
-  --cb-chalk-2: #EDE4CE;
-  --cb-chalk-3: #DCCFB4;
-  --cb-canvas: #E8DEC5;
-  --cb-paper: #FDFAF1;
-  --cb-green: #2B3A2E;
-  --cb-green-2: #1D2A20;
-  --cb-green-3: #52623E;
-  --cb-felt: #19241B;
-  --cb-ink: #2B3A2E;
-  --cb-ink-2: #3F4B3D;
-  --cb-ink-soft: #495545;
-  --cb-charcoal: #56604F;
-  --cb-ink-link: #5C3A1D;
-  --cb-mute: #626152;           /* AA 4.68:1 on canvas (was #8A8974, 2.65 FAIL) */
-  --cb-mute-1: #5C5B4D;
-  --cb-ink-faint: #5C5B4D;
-  --cb-mute-2: #A69F89;
-  --cb-mute-3: #C8BDA4;
-  --cb-mute-faint: #B7AE97;
-  --cb-brass: #B8743A;
-  --cb-brass-2: #D08342;
-  --cb-brass-3: #EF974B;
-  --cb-brass-deep: #8C582C;
-  --cb-ink-rgb: 43, 58, 46;
-  --cb-brass-rgb: 184, 116, 58;
-  --cb-chalk-rgb: 248 243 230;
-  --cb-green-ink-rgb: 28 37 29;
-  --bg-rgb: 248, 243, 230;
-  --cream-rgb: 43, 58, 46;
-  --gold-rgb: 184, 116, 58;
+  --cb-chalk: #EDEFE6;
+  --cb-chalk-2: #DFE3D5;
+  --cb-chalk-3: #C7CDBA;
+  --cb-canvas: #DBE0CE;
+  --cb-paper: #F6F8EF;
+  --cb-green: #24332A;
+  --cb-green-2: #18241C;
+  --cb-green-3: #4B5D3B;
+  --cb-felt: #1B3024;
+  --cb-ink: #222F27;
+  --cb-ink-2: #34453A;
+  --cb-ink-soft: #43513E;
+  --cb-charcoal: #4E5A48;
+  --cb-ink-link: #3C5A32;       /* deep sage for links — AA-safe on the cool ground */
+  --cb-mute: #585E4D;           /* AA >=4.6:1 on the cool canvas */
+  --cb-mute-1: #535949;
+  --cb-ink-faint: #535949;
+  --cb-mute-2: #9AA189;
+  --cb-mute-3: #BFC6B0;
+  --cb-mute-faint: #AEB59B;
+  --cb-brass: #6E7C3F;          /* SAGE-OLIVE accent (distinct from Clubhouse gold) */
+  --cb-brass-2: #7E8E48;
+  --cb-brass-3: #95A857;
+  --cb-brass-deep: #515D2F;
+  --cb-ink-rgb: 34, 47, 39;
+  --cb-brass-rgb: 110, 124, 63;
+  --cb-chalk-rgb: 237 239 230;
+  --cb-green-ink-rgb: 24 36 28;
+  --bg-rgb: 237, 239, 230;
+  --cream-rgb: 34, 47, 39;
+  --gold-rgb: 110, 124, 63;
 }
 
 /* Champion Sunday (unlock) — tournament-program burgundy, worn after a win.
