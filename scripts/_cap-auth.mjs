@@ -28,6 +28,10 @@ async function shoot(tag, deviceOpts) {
     await page.waitForFunction(() => { var m = document.getElementById('mainApp'); return m && !m.classList.contains('hidden'); }, { timeout: 20000 });
   } catch (e) { console.log(tag + ' sign-in note:', e.message.slice(0, 100)); }
   await page.waitForTimeout(1200);
+  // Dismiss the tee-shot intro overlay (a real sign-in re-arms it by design, so
+  // it covers the page in a full-page capture). Tear it down before navigating.
+  await page.evaluate(() => { try { if (window.pbTeeIntro && window.pbTeeIntro.skip) window.pbTeeIntro.skip(); var el = document.getElementById('pbIntro'); if (el) el.remove(); } catch (e) {} });
+  await page.waitForTimeout(500);
   if (THEME) { await page.evaluate((t) => { if (window.applyTheme) window.applyTheme(t); }, THEME); await page.waitForTimeout(400); }
   await page.evaluate((r) => { if (window.Router && window.Router.go) window.Router.go(r); }, ROUTE);
   await page.waitForTimeout(3500);
