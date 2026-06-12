@@ -20,7 +20,11 @@
 (function () {
   var ROOKIE_COINS = 100;          // Founder-approved Rookie completion grant
   var TOTAL_STEPS = 8;             // welcome + calibrate + 4 tour beats + win + caddy
-  var _root = null, _voice = "caddy", _calib = null, _step = 0, _onKey = null, _stage = null, _focusReturn = null;
+  var _root = null, _voice = "caddy", _calib = null, _step = 0, _onKey = null, _stage = null, _focusReturn = null, _spotPlace = null;
+  // Tear down the live spotlight's resize/scroll re-anchor listeners (set in
+  // spotlight()). Called before every new beat + on teardown so they never leak
+  // or fire against a stale target.
+  function _clearSpot() { if (_spotPlace) { window.removeEventListener("resize", _spotPlace); window.removeEventListener("scroll", _spotPlace, true); _spotPlace = null; } }
 
   function _profile() { return (typeof currentProfile !== "undefined" && currentProfile) || {}; }
   function _wt() { return _profile().walkthrough || {}; }
@@ -44,6 +48,7 @@
     document.addEventListener("keydown", _onKey);
   }
   function _teardown() {
+    _clearSpot();
     if (_onKey) { document.removeEventListener("keydown", _onKey); _onKey = null; }
     if (window.pbCaddy && window.pbCaddy.destroy) { try { window.pbCaddy.destroy(); } catch (e) {} }
     if (_root && _root.parentNode) _root.parentNode.removeChild(_root);
@@ -67,6 +72,7 @@
   // opts: { eyebrow, body, pose, primaryLabel, onPrimary, extraHtml, stepIdx, choices }
   function _stageCard(opts) {
     if (!_root) _mount();
+    _clearSpot();
     var choicesHtml = "";
     if (opts.choices) {
       choicesHtml = '<div style="display:flex;gap:10px;margin-bottom:12px">';
@@ -106,16 +112,16 @@
   function spotlight(selector, opts) {
     opts = opts || {};
     if (!_root) _mount();
+    _clearSpot();
     var target = selector ? document.querySelector(selector) : null;
     if (!target) { // degrade gracefully — never point at empty space
       _stageCard({ eyebrow: opts.eyebrow, body: opts.body, pose: "point", primaryLabel: opts.primaryLabel || "Got it", onPrimary: opts.onPrimary || function () {}, stepIdx: opts.stepIdx });
       return;
     }
     try { target.scrollIntoView({ block: "center", behavior: "auto" }); } catch (e) {}
-    var r = target.getBoundingClientRect(), pad = 6;
     _root.innerHTML =
       '<button class="pbw-skip pbw-skip-tr" id="pbw-skip">Skip the tour</button>' +
-      '<div class="pbw-spotlight" style="top:' + (r.top - pad) + 'px;left:' + (r.left - pad) + 'px;width:' + (r.width + pad*2) + 'px;height:' + (r.height + pad*2) + 'px"></div>' +
+      '<div class="pbw-spotlight" id="pbw-spot"></div>' +
       '<div class="pbw-coach" id="pbw-coach"></div>';
     _scrimTapToSkip();
     document.getElementById("pbw-skip").onclick = skip;
@@ -123,12 +129,29 @@
     coach.innerHTML =
       (opts.eyebrow ? '<div class="pbw-eyebrow">' + esc(opts.eyebrow) + '</div>' : "") +
       '<div class="pbw-body" style="font-size:15px;margin-bottom:10px">' + esc(opts.body) + '</div>' +
+      (opts.stepIdx != null ? _dots(opts.stepIdx) : "") +
       '<div class="pbw-actions"><button class="primary" id="pbw-primary">' + esc(opts.primaryLabel || "Got it") + '</button></div>';
-    // place the coachmark below the target (or above if no room)
-    var below = (r.bottom + 150) < window.innerHeight;
-    coach.style.left = Math.max(12, Math.min(window.innerWidth - coach.offsetWidth - 12, r.left)) + "px";
-    coach.style.top = (below ? r.bottom + 14 : r.top - coach.offsetHeight - 14) + "px";
     document.getElementById("pbw-primary").onclick = opts.onPrimary || function () {};
+    // Position the ring over the live target + float the coach bubble clear of it,
+    // and RE-ANCHOR on resize/scroll so both track the element (bottom-nav targets
+    // sit at screen bottom, so the bubble must render ABOVE and be clamped into
+    // the viewport — a raw r.top - height went negative for short top targets).
+    _spotPlace = function () {
+      var t = document.querySelector(selector), spot = document.getElementById("pbw-spot"), co = document.getElementById("pbw-coach");
+      if (!t || !spot || !co) return;
+      var r = t.getBoundingClientRect(), pad = 6;
+      spot.style.top = (r.top - pad) + "px"; spot.style.left = (r.left - pad) + "px";
+      spot.style.width = (r.width + pad * 2) + "px"; spot.style.height = (r.height + pad * 2) + "px";
+      var below = (r.bottom + co.offsetHeight + 28) < window.innerHeight;
+      var top = below ? (r.bottom + 14) : (r.top - co.offsetHeight - 14);
+      top = Math.max(12, Math.min(window.innerHeight - co.offsetHeight - 12, top));
+      co.style.left = Math.max(12, Math.min(window.innerWidth - co.offsetWidth - 12, r.left)) + "px";
+      co.style.top = top + "px";
+    };
+    _spotPlace();
+    requestAnimationFrame(_spotPlace);   // re-place once the bubble has measured its height
+    window.addEventListener("resize", _spotPlace);
+    window.addEventListener("scroll", _spotPlace, true);
   }
 
   // ── the 5-beat FTUE spine ────────────────────────────────────────────────────
@@ -136,14 +159,17 @@
 
   function _beat(n) {
     _step = n;
-    if (n === 0) return _beatFrame();          // welcome
+    if (n === 0) return _beatFrame();          // brief welcome
     if (n === 1) return _beatCalibrate();      // solo vs crew
-    if (n === 2) return _beatTour(2, { eyebrow: "Play", selector: '[data-walk="play-cta"]', body: "This is home base. Tap Play to start a round and score it hole by hole — fairways, greens, putts, the works." });
-    if (n === 3) return _beatTour(3, { eyebrow: "The Feed", body: "Your crew's rounds land in the Feed — give kudos, talk trash, and read the Caddy's weekly report. It's the group chat for your golf." });
-    if (n === 4) return _beatTour(4, { eyebrow: "Standings", selector: '[data-walk="standings-link"]', body: "The season race lives here — your rank, the title chase, and who's right on your heels." });
-    if (n === 5) return _beatTour(5, { eyebrow: "Earn & spend", body: "Every round earns ParCoins. Spend them in the Pro Shop on rings, tee markers and nameplates — and wager friends in Bounties." });
-    if (n === 6) return _beatWin();            // the un-losable demo hole
-    if (n === 7) return _beatPickCaddie();     // LAST — explained + previewable
+    // Beats 2-5 SPOTLIGHT the real bottom-nav buttons — point at WHERE each thing
+    // lives (dim the app, ring the live tab, anchored coach bubble), not a
+    // centered card that only describes it. data-walk hooks are on #bottomNav.
+    if (n === 2) return _beatTour(2, { eyebrow: "Play", selector: '[data-walk="nav-play"]', body: "Tap Play to start a round — you'll score it hole by hole, fairways to putts." });
+    if (n === 3) return _beatTour(3, { eyebrow: "Home & Feed", selector: '[data-walk="nav-home"]', body: "Home is base. Your crew's rounds land in the feed here — kudos, trash talk, the Caddy's weekly report." });
+    if (n === 4) return _beatTour(4, { eyebrow: "Courses", selector: '[data-walk="nav-courses"]', body: "Find and track any course here — every round ties back to where you played it." });
+    if (n === 5) return _beatTour(5, { eyebrow: "Everything else", selector: '[data-walk="nav-more"]', body: "Standings, the Pro Shop, bounties and your settings all live under More." });
+    if (n === 6) return _beatWin();            // the un-losable demo hole (kept — the WIN)
+    if (n === 7) return _beatPickCaddie();     // LAST — meet your caddy (kept)
     return _complete("done");
   }
 
@@ -305,7 +331,13 @@
       return "deferred";
     }
     var wt = _wt();
-    if (wt.ftueState == null && _uid()) {
+    // Fire the FTUE for brand-new members (no ftueState) OR for anyone whose stored
+    // ftueVersion predates the current WALKTHROUGH_MAJOR — a MAJOR bump (1->2 in
+    // utils.js for the from-scratch onboarding rebuild) re-shows the tour for ALL
+    // existing users exactly once. route() previously only checked ftueState==null,
+    // so a MAJOR bump alone never re-fired (the gap this closes).
+    var major = (typeof WALKTHROUGH_MAJOR !== "undefined") ? WALKTHROUGH_MAJOR : 1;
+    if ((wt.ftueState == null || (wt.ftueVersion || 0) < major) && _uid()) {
       try { sessionStorage.setItem("pb_wt_routed", "1"); } catch (e) {}
       runFtue(0); return "ftue";
     }

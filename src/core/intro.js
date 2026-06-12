@@ -23,7 +23,7 @@
 
 (function() {
   var DUR = 2500;
-  var _raf = null, _root = null, _started = false, _t0 = 0;
+  var _raf = null, _root = null, _started = false, _done = false, _t0 = 0, _safety = null;
 
   var C = {
     skyTop: "#0c2c20", skyMid: "#1a4636", glow: "#caa04a", glowHot: "#f0d488",
@@ -127,7 +127,7 @@
       '<div style="font-family:var(--font-display);font-style:italic;font-weight:700;font-size:30px;color:' + C.glowHot + ';letter-spacing:-.5px;text-shadow:0 1px 12px rgba(0,0,0,.3)">Parbaughs.</div>' +
       _scene() +
       '<div id="pbi-hint" style="font-family:var(--font-mono);font-size:10.5px;font-weight:700;letter-spacing:2.5px;color:' + C.sun + ';opacity:.7;text-transform:uppercase">Tap to tee off</div>';
-    _root.addEventListener("click", function() { _started ? skip() : swing(); });
+    _root.addEventListener("click", function() { if (_done) _enter(); else if (_started) _fastForward(); else swing(); });
     document.addEventListener("keydown", _onKey);
     document.body.appendChild(_root);
   }
@@ -242,9 +242,24 @@
       var t = Math.min(1, (now - _t0) / DUR);
       _apply(t);
       if (t < 1) { _raf = requestAnimationFrame(frame); }
-      else { setTimeout(_teardown, 480); }
+      else { _finishHold(); }
     })(_t0);
   }
+
+  // After the ball flies, HOLD on a "tap to enter" gate rather than auto-closing:
+  // the tap is what opens the app + queues the onboarding (the Founder's flow —
+  // "click the page, that queues the app opening on the landing page"). A generous
+  // safety timer still advances so a non-tapper is never trapped (and the FTUE,
+  // armed on teardown via the cold-open bridge, always eventually fires).
+  function _finishHold() {
+    _done = true;
+    var hint = document.getElementById("pbi-hint");
+    if (hint) { hint.textContent = "Tap to enter the Clubhouse"; hint.style.opacity = "0.95"; }
+    if (_safety) clearTimeout(_safety);
+    _safety = setTimeout(_teardown, 8000);
+  }
+  function _enter() { if (_safety) { clearTimeout(_safety); _safety = null; } _teardown(); }
+  function _fastForward() { if (_raf) { cancelAnimationFrame(_raf); _raf = null; } _apply(1); _finishHold(); }
 
   function skip() { _teardown(); }
 
@@ -252,14 +267,23 @@
   function _teardown() {
     if (_raf) cancelAnimationFrame(_raf);
     _raf = null;
+    if (_safety) { clearTimeout(_safety); _safety = null; }
+    _done = false;
     document.removeEventListener("keydown", _onKey);
+    _started = false;
+    // Fire the cold-open bridge callback (the onboarding FTUE) ONLY AFTER #pbIntro
+    // is actually removed from the DOM. Firing it during the 420ms fade let
+    // walkthrough.js route() still find #pbIntro and re-defer to setOnTeardown
+    // forever — so the FTUE never started (caught in V1 capture v8.25.17). Now the
+    // element is gone first, so route() falls through and runs the tour.
+    function _fireBridge() { if (typeof _onTeardown === "function") { var cb = _onTeardown; _onTeardown = null; cb(); } }
     if (_root) {
       _root.style.opacity = "0";
       var r = _root; _root = null;
-      setTimeout(function() { if (r && r.parentNode) r.parentNode.removeChild(r); }, 420);
+      setTimeout(function() { if (r && r.parentNode) r.parentNode.removeChild(r); _fireBridge(); }, 420);
+    } else {
+      _fireBridge();
     }
-    _started = false;
-    if (typeof _onTeardown === "function") { var cb = _onTeardown; _onTeardown = null; cb(); }
   }
 
   function maybeShow() {

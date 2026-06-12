@@ -4,13 +4,13 @@
    ================================================ */
 
 // ── App version — single source of truth ──
-var APP_VERSION = "8.25.16";
+var APP_VERSION = "8.25.17";
 
 // ── Onboarding walkthrough (FTUE) — foundation constants/helpers ──
 // WALKTHROUGH_MAJOR is decoupled from APP_VERSION so a patch bump never
 // re-fires the first-time tour (the Clippy regression). Bump to 2 only on a
 // breaking FTUE change. members/{uid}.walkthrough.ftueVersion is compared to it.
-var WALKTHROUGH_MAJOR = 1;
+var WALKTHROUGH_MAJOR = 2;
 
 // Whole-day gap between two YYYY-MM-DD local-date strings (0 if either missing
 // or unparseable). Used to detect a 30+ day lapse for the "while you were gone"

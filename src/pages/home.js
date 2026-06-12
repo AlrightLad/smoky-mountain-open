@@ -85,7 +85,16 @@ Router.register("home", function() {
   // First-run: fire the Caddy walkthrough once home has painted. pbWalk.route()
   // self-gates on members/{uid}.walkthrough.ftueState — it runs the FTUE once for
   // a brand-new member, then never again (and no-ops if already running).
-  try { if (window.pbWalk && window.pbWalk.route) setTimeout(function () { window.pbWalk.route(); }, 700); } catch (e) {}
+  // Cold open: play the tee-shot swing first, THEN the onboarding walkthrough.
+  // maybeShow() mounts #pbIntro synchronously; route() then sees the live intro
+  // and arms the FTUE for ITS teardown (the user's tap-to-enter), so onboarding
+  // never paints over the swing. Both anchored here so new + returning users get
+  // the same sequence (the intro was previously fired from firebase.js on a
+  // different timer — that cross-file race is what let the walkthrough overlap).
+  try {
+    if (typeof pbTeeIntro !== "undefined" && pbTeeIntro && pbTeeIntro.maybeShow) pbTeeIntro.maybeShow();
+    if (window.pbWalk && window.pbWalk.route) setTimeout(function () { window.pbWalk.route(); }, 300);
+  } catch (e) {}
   var ctx = _buildHomeContext();
   var w = window.innerWidth;
   var pageEl = document.querySelector('[data-page="home"]');

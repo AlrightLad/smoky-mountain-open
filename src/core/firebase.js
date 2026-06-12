@@ -761,12 +761,11 @@ function enterApp() {
     Router.go("onboarding");
   } else {
     Router.go("home");
-    // v8.24.80 — tee-shot welcome intro (dawn pro-golfer silhouette swing).
-    // ON by default now (was the bland stick figure, gated off); once/session,
-    // post-sign-in, reduced-motion-safe. Opt out via pb_intro_enabled='0'.
-    if (typeof pbTeeIntro !== "undefined" && pbTeeIntro && pbTeeIntro.maybeShow) {
-      setTimeout(function() { pbTeeIntro.maybeShow(); }, 400);
-    }
+    // v8.25.17 — the tee-shot swing intro AND the onboarding walkthrough now both
+    // fire from Router.register("home") (src/pages/home.js), anchored to the same
+    // home-painted moment for ALL users (new + returning). Firing the intro here
+    // too would double-mount #pbIntro and re-introduce the over-paint race the
+    // cold-open bridge (walkthrough.js route()) exists to prevent.
   }
 }
 
