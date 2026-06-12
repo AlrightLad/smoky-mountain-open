@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-12T15:04:41.348112Z",
+  "generated_at": "2026-06-12T15:09:51.509367Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 87.1,
   "overall_grade": "A-",
@@ -1001,11 +1001,11 @@
     "A12_operational": {
       "score": 90,
       "status": "green",
-      "label": "pipeline=green · 8 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=green · 7 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "8 of last 10 cron watcher runs hit skip-dirty",
+          "what": "7 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -1034,9 +1034,9 @@
     }
   ],
   "audit_trigger": {
-    "sha": "88b1f024",
-    "subject": "chore(dashboard): app-health regen post onboarding-rebuild ship",
-    "committed_at": "2026-06-12T11:03:26-04:00",
+    "sha": "f8099e96",
+    "subject": "chore(visual-audit): onboarding caddy persona capture scripts (reusable)",
+    "committed_at": "2026-06-12T11:09:29-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
