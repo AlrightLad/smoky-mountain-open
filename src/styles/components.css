@@ -4172,18 +4172,23 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 .shop-cosmetics { margin: 0 0 36px; }
 .shop-cosmetics:focus { outline: none; }
 .shop-tabs { margin: 0 0 14px; }
-.shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+/* v8.25.40 — equal, aligned cards: 14px gutters + flex-column items whose desc
+   flex-grows so the action row pins to the bottom of every card (grid rows are
+   already equal-height via stretch). Fixes the "not spaced equally / all over
+   the place" ragged grid (Founder 2026-06-12). */
+.shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: stretch; }
 @media (min-width: 560px) { .shop-grid { grid-template-columns: 1fr 1fr 1fr; } }
 /* v8.24.86 — NEW badge (curation cue on the latest-wave pieces) */
 .shop-item__new { position: absolute; top: 8px; right: 8px; font-family: var(--font-mono); font-size: 7.5px; font-weight: 700; letter-spacing: 1px; color: #241c0c; background: var(--cb-brass-3); padding: 2px 5px; border-radius: 3px; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
 .shop-item {
   position: relative;
+  display: flex;
+  flex-direction: column;
   background: var(--cb-chalk-2);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   padding: 14px 12px;
   text-align: center;
-  position: relative;
 }
 .shop-item--equipped { border-color: var(--cb-brass); box-shadow: 0 0 0 1px var(--cb-brass) inset; }
 .shop-item__name {
@@ -4192,6 +4197,11 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
   font-weight: 600;
   color: var(--cb-ink);
   margin-top: 2px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.3;
 }
 /* v8.25.27 — evocative item prose belongs in the body sans, not 9.5px
    monospace (which read "terminal/techy" and undercut the refined
@@ -4203,6 +4213,11 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
   color: var(--cb-mute);
   margin-top: 4px;
   line-height: 1.46;
+  flex-grow: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 .shop-item__state {
   margin-top: 10px;

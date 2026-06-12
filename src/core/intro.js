@@ -101,7 +101,11 @@
     if (_wantPlay) _play();   // swing() fired before the asset finished loading
   }
 
-  function _play() { _wantPlay = false; try { _anim.goToAndPlay(0, true); } catch (e) {} }
+  // The asset's native play is brisk (~1.3s); slow it to a deliberate, cinematic
+  // arrival tempo. setSpeed scales lottie's own clock, so 'complete' (→ the
+  // finish gate) lands at the stretched end — no separate timer needed.
+  var SWING_SPEED = 0.55;
+  function _play() { _wantPlay = false; try { _anim.setSpeed(SWING_SPEED); _anim.goToAndPlay(0, true); } catch (e) {} }
 
   function _onKey(e) {
     if (e.key === "Escape") { skip(); return; }
