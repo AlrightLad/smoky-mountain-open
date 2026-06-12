@@ -486,6 +486,13 @@ function renderMemberDetailWithData(p) {
       if (quip) last3Content += '<div class="rc-quip">' + quip + '</div>';
       last3Content += '</div></div>';
     });
+    // v8.25.6 — full round history was unreachable from a profile (Founder:
+    // "I can't view all rounds from my player account if I wanted"). The rounds
+    // page now accepts a {player} scope, so link to it once there's more than
+    // the three shown.
+    if (rounds.length > 3) {
+      last3Content += '<button class="btn full outline" style="margin-top:6px" onclick="Router.go(\'rounds\',{player:\'' + pid + '\'})">View all ' + rounds.length + ' rounds →</button>';
+    }
   } else {
     last3Content = pfEmpty(null, "No rounds logged yet");
   }

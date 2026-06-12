@@ -210,9 +210,19 @@ function renderTeamDetail(teamId) {
 
   var members = team.members.map(function(id) { return PB.getPlayer(id); }).filter(Boolean);
   var matches = (team.matches || []).slice();
-  // Team rounds come only from team.matches[] (team-scoped, set above). The
-  // rounds collection is NOT merged by member overlap — that bled rounds
-  // across teams sharing a member. See finishScrambleLive / submitLogTeamRound.
+  // Team rounds come from team.matches[] (team-scoped, set via Log team round /
+  // finishScrambleLive). We do NOT merge the rounds collection by single-member
+  // overlap — that bled rounds across teams sharing a member.
+  // v8.25.6 — but the FOUNDING scramble (e.g. the Smoky Mountain Open) was
+  // logged as individual scramble round docs per player, never as a team match,
+  // so the team showed "No rounds played yet" despite having played (Founder:
+  // "teams are showing no rounds ... it WAS displaying properly"). Derive those
+  // rounds safely: a scramble round counts for THIS team only when EVERY member
+  // has a scramble round at the same course+date — that uniquely identifies a
+  // real team scramble and can't bleed from a team that merely shares one member.
+  _deriveTeamScrambleRounds(team).forEach(function(dr) {
+    if (!matches.some(function(m){ return m.course === dr.course && m.date === dr.date; })) matches.push(dr);
+  });
   var captain = team.captain ? (PB.getPlayer(team.captain) || {name:team.captain}) : null;
   var scored = matches.filter(function(m){return m.score;}).sort(function(a,b){return a.score-b.score;});
   var coursePar = 72;
@@ -492,6 +502,42 @@ function submitLogTeamRound(teamId) {
 /* ================================================
    HEAD-TO-HEAD TRACKING
    ================================================ */
+
+// v8.25.6 — derive a team's scramble rounds from members' individual scramble
+// round docs, for teams whose play predates the "Log team round" flow (the
+// founding SMO scramble). A course|date group counts ONLY when every member is
+// present, so it uniquely identifies a true team scramble and never bleeds
+// across teams that merely share a member. Returns synthetic match objects
+// (result:null — they were rounds played, not head-to-head matches, so they
+// never touch the team's W-L record).
+function _deriveTeamScrambleRounds(team) {
+  var memberIds = (team && team.members) || [];
+  if (memberIds.length < 2 || typeof PB === "undefined" || !PB.getRounds) return [];
+  var allRounds = PB.getRounds();
+  var aliasByMember = memberIds.map(function(id) { return PB.getAllPlayerIds(id); });
+  var groups = {};
+  memberIds.forEach(function(mid, mi) {
+    var aliases = aliasByMember[mi];
+    allRounds.forEach(function(r) {
+      if (r.format !== "scramble" && r.format !== "scramble4") return;
+      if (aliases.indexOf(r.player) === -1) return;
+      var key = PB.normCourseName(r.course) + "|" + (r.date || "");
+      if (!groups[key]) groups[key] = { course: r.course, date: r.date, score: r.score, format: r.format, present: {} };
+      groups[key].present[mi] = true;
+      // In a scramble every member logs the same team score; min() is a safe
+      // tie-break if a stray differs.
+      if (r.score && (!groups[key].score || r.score < groups[key].score)) groups[key].score = r.score;
+    });
+  });
+  var out = [];
+  Object.keys(groups).forEach(function(k) {
+    var g = groups[k];
+    if (Object.keys(g.present).length === memberIds.length) {
+      out.push({ course: g.course, date: g.date, score: g.score, format: g.format, result: null });
+    }
+  });
+  return out;
+}
 
 function calcH2H(pid1, pid2) {
   var rounds = PB.getRounds();

@@ -146,7 +146,11 @@ function _renderWrappedSlide() {
   });
   h += '</div>';
   // close
-  h += '<button aria-label="Close Wrapped" onclick="event.stopPropagation();Router.go(\'seasonrecap\')" style="position:absolute;top:calc(16px + env(safe-area-inset-top));right:10px;background:none;border:none;color:' + mute + ';font-size:24px;font-weight:300;min-width:44px;min-height:44px;cursor:pointer;z-index:2">×</button>';
+  // v8.25.6 — close with Router.back, not Router.go. A forward go('seasonrecap')
+  // pushed a new history entry on top of wrapped, so the browser/OS back button
+  // then RE-ENTERED wrapped — the Founder-reported "back arrow loops" bug.
+  // back() pops the wrapped entry, so back from the recap lands on standings.
+  h += '<button aria-label="Close Wrapped" onclick="event.stopPropagation();Router.back(\'seasonrecap\')" style="position:absolute;top:calc(16px + env(safe-area-inset-top));right:10px;background:none;border:none;color:' + mute + ';font-size:24px;font-weight:300;min-width:44px;min-height:44px;cursor:pointer;z-index:2">×</button>';
   // content
   h += '<div style="flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:24px 28px;max-width:480px;margin:0 auto;width:100%">';
   h += '<div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold, #b58a3a);margin-bottom:14px">' + escHtml(s.eyebrow || "") + '</div>';
@@ -159,7 +163,7 @@ function _renderWrappedSlide() {
   if (s.cta) h += '<button class="btn full green" style="margin-top:22px;max-width:260px" onclick="event.stopPropagation();' + s.cta.action + '">' + escHtml(s.cta.label) + '</button>';
   if (s.finale) {
     h += '<button class="btn full green" style="margin-top:22px;max-width:280px" onclick="event.stopPropagation();shareWrapped()">Share your Wrapped</button>';
-    h += '<button style="margin-top:10px;background:none;border:none;color:' + mute + ';font-size:12px;cursor:pointer;min-height:44px" onclick="event.stopPropagation();Router.go(\'seasonrecap\')">Back to the recap</button>';
+    h += '<button style="margin-top:10px;background:none;border:none;color:' + mute + ';font-size:12px;cursor:pointer;min-height:44px" onclick="event.stopPropagation();Router.back(\'seasonrecap\')">Back to the recap</button>';
   }
   h += '</div>';
   // tap hint on first slide

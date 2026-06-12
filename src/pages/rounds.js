@@ -24,21 +24,40 @@ Router.register("rounds", function(params) {
     return renderRoundDetail(params.roundId);
   }
   if (params && params.action === "new") return renderRoundNewForm();
-  return renderRoundsList();
+  return renderRoundsList(params);
 });
 
 // List view — handicap header + scramble-grouped history + "Log a round"
 // CTA. Ports the renderActivityRounds() history-rendering pattern from
 // the legacy Activity Rounds tab so members lose nothing in the move.
-function renderRoundsList() {
-  var rounds = PB.getRounds();
+function renderRoundsList(params) {
+  var allRounds = PB.getRounds();
   var myId = currentUser ? currentUser.uid : null;
-  var myLocal = currentProfile ? currentProfile.claimedFrom : null;
-  var myRounds = rounds.filter(function(r) { return r.player === myId || r.player === myLocal || r.player === "zach"; });
+  // Alias-resolved self ids. v8.25.6 — replaces a hardcoded `|| r.player ===
+  // "zach"` that leaked the Founder's rounds into EVERY member's handicap +
+  // round history (every non-Zach member silently inherited his rounds).
+  var selfIds = myId ? PB.getAllPlayerIds(myId) : ((currentProfile && currentProfile.claimedFrom) ? [currentProfile.claimedFrom] : []);
+
+  // Scoped view — one player's FULL round history, reached via "View all
+  // rounds →" on a profile (Founder: "I can't view all rounds from my player
+  // account if I wanted"). Otherwise the league-wide history.
+  var scopePid = (params && params.player) ? params.player : null;
+  var scopeIds = scopePid ? PB.getAllPlayerIds(scopePid) : null;
+  var rounds = scopePid ? allRounds.filter(function(r) { return scopeIds.indexOf(r.player) !== -1; }) : allRounds;
+
+  // Focal rounds = whose handicap + PR the header reflects (the scoped player,
+  // else me). myRounds keeps its downstream meaning (PR star, handicap box).
+  var focalIds = scopePid ? scopeIds : selfIds;
+  var myRounds = allRounds.filter(function(r) { return focalIds.indexOf(r.player) !== -1; });
   var hcap = PB.calcHandicap(myRounds);
 
-  var h = '<div class="sh"><h2>Rounds</h2>';
-  h += '<button class="btn-sm green" onclick="Router.go(\'rounds\',{action:\'new\'})">+ Log a round</button>';
+  var scopePlayer = scopePid ? PB.getPlayer(scopePid) : null;
+  var scopeName = scopePlayer ? (scopePlayer.name || scopePlayer.username || "Player") : null;
+  var isSelfScope = scopePid && selfIds.indexOf(scopePid) !== -1;
+
+  var h = '<div class="sh"><h2>' + (scopePid ? escHtml((isSelfScope ? "My" : (scopeName + "’s")) + " rounds") : "Rounds") + '</h2>';
+  if (scopePid) h += '<button class="back" onclick="Router.back(\'rounds\')">← Back</button>';
+  else h += '<button class="btn-sm green" onclick="Router.go(\'rounds\',{action:\'new\'})">+ Log a round</button>';
   h += '</div>';
 
   // Handicap (mirrors the legacy activity.js:38-42 treatment so the
