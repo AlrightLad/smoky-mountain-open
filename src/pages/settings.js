@@ -88,7 +88,7 @@ Router.register("settings", function(params) {
   } else {
     locHtml += '<div class="set-row__desc" style="margin-bottom:var(--sp-4)">Your location is used only to show accurate weather. We don\'t share it, and we don\'t track your movements.</div>';
     locHtml += '<button type="button" id="loc-detect-btn" onclick="detectMyLocation()" class="set-btn set-btn--brass">';
-    locHtml += '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>';
+    locHtml += '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>';
     locHtml += 'Use my current location';
     locHtml += '</button>';
     locHtml += '<div id="loc-detect-error" style="display:none;font-family:var(--font-mono);font-size:11px;color:var(--cb-claret);margin-top:var(--sp-2);letter-spacing:0.3px"></div>';
@@ -108,13 +108,13 @@ Router.register("settings", function(params) {
   var notif = "";
   var permState = ('Notification' in window) ? Notification.permission : 'unsupported';
   if (permState === 'granted') {
-    notif += '<div class="set-note set-note--ok"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8l3 3 5-6"/></svg> Push notifications are enabled.</div>';
+    notif += '<div class="set-note set-note--ok"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 8l3 3 5-6"/></svg> Push notifications are enabled.</div>';
   } else if (permState === 'denied') {
     notif += '<div class="set-note set-note--mute">Notifications are blocked. Update this in your browser or device settings to re-enable them.</div>';
   } else if (permState === 'unsupported') {
     notif += '<div class="set-note set-note--mute">Push notifications are not supported on this browser.</div>';
   } else {
-    notif += '<button class="set-btn set-btn--brass" onclick="requestPushPermission()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg> Enable push notifications</button>';
+    notif += '<button class="set-btn set-btn--brass" onclick="requestPushPermission()"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 01-3.46 0"/></svg> Enable push notifications</button>';
     notif += '<div class="set-row__desc" style="text-align:center;margin-top:8px">Get notified about DMs, tee times, event results, and achievements.</div>';
   }
   secs.push({ key: "notifications", label: "Notifications", html: notif });
@@ -229,7 +229,7 @@ Router.register("settings", function(params) {
   var shopBalance = getParCoinBalance(currentUser ? currentUser.uid : null);
   coins += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Balance</div><div class="set-row__desc">Spend on cosmetics, rings, and name effects in the shop.</div></div>';
   coins += '<div class="set-coins"><span class="set-coins__num">' + shopBalance + '</span><span class="set-coins__lbl">coins</span></div></div>';
-  coins += '<div style="margin-top:14px"><button class="set-btn set-btn--brass" onclick="Router.go(\'shop\')"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7"/></svg> Cosmetics shop</button></div>';
+  coins += '<div style="margin-top:14px"><button class="set-btn set-btn--brass" onclick="Router.go(\'shop\')"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7"/></svg> Cosmetics shop</button></div>';
   secs.push({ key: "parcoins", label: "ParCoins", html: coins });
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -288,17 +288,17 @@ Router.register("settings", function(params) {
     var danger = "";
     danger += '<div class="set-row__desc" style="margin:-4px 0 14px;color:var(--cb-mute)">These actions are permanent or sign you out. There is no undo.</div>';
     danger += '<button class="set-danger-btn" onclick="doLogout()">';
-    danger += '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>';
+    danger += '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>';
     danger += '<span>Sign out</span></button>';
     danger += '<button class="set-danger-btn" onclick="document.getElementById(\'reset-confirm\').style.display=\'block\'">';
-    danger += '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2M19 6l-1 14a1 1 0 01-1 1H7a1 1 0 01-1-1L5 6"/></svg>';
+    danger += '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2M19 6l-1 14a1 1 0 01-1 1H7a1 1 0 01-1-1L5 6"/></svg>';
     danger += '<span>Reset local data</span></button>';
     danger += '<div id="reset-confirm" style="display:none;margin:12px 0 4px;padding:14px;background:rgba(var(--cb-claret-rgb),.05);border:1px solid rgba(var(--cb-claret-rgb),.25);border-radius:var(--radius-md);text-align:center">';
     danger += '<div style="font-family:var(--font-ui);font-size:12.5px;color:var(--cb-claret);margin-bottom:10px;font-weight:600">This will erase ALL local data. Are you sure?</div>';
     danger += '<div style="display:flex;gap:10px"><button class="set-btn" style="flex:1" onclick="document.getElementById(\'reset-confirm\').style.display=\'none\'">Cancel</button>';
     danger += '<button class="set-btn set-btn--claret" style="flex:1" onclick="PB.reset();Router.go(\'home\')">Erase everything</button></div></div>';
     danger += '<button class="set-danger-btn" onclick="deleteMyAccount()">';
-    danger += '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8M17 8l5 5M22 8l-5 5"/></svg>';
+    danger += '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8M17 8l5 5M22 8l-5 5"/></svg>';
     danger += '<span>Delete account</span></button>';
     danger += '<div class="set-row__desc" style="margin-top:6px">Deleting removes your profile, photos, and sign-in for good. This cannot be undone.</div>';
     secs.push({ key: "danger", label: "Danger zone", html: danger, danger: true });
@@ -376,7 +376,7 @@ Router.register("settings", function(params) {
 
 // Small right-chevron for Tier-2 navigation link rows (go-here affordance).
 function _setChevron() {
-  return '<svg class="set-linkrow__chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
+  return '<svg class="set-linkrow__chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
 }
 
 // Page-scoped CSS for the three button tiers + Danger zone. Lives here (not in
@@ -475,7 +475,7 @@ function _resetLocationDetectButton() {
   btn.disabled = false;
   btn.style.opacity = "1";
   btn.style.cursor = "pointer";
-  btn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>Use my current location';
+  btn.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>Use my current location';
 }
 
 function _saveLocation(loc) {

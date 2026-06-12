@@ -58,13 +58,13 @@ Router.register("seasonrecap", function(params) {
   // Best single round (individual only)
   var bestRound = null;
   indivRounds.forEach(function(r) { if (r.score && (!bestRound || r.score < bestRound.score)) bestRound = r; });
-  if (bestRound) awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1C6 4 4 5 4 8a4 4 0 008 0c0-2-1-3-2-4-.5 1-1 2-2 1 0-2 0-3 0-4z' fill='none' stroke='currentColor' stroke-width='1'/></svg>", title:"Low Round of the Season", winner: bestRound.playerName, detail: bestRound.score + " at " + bestRound.course});
+  if (bestRound) awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1C6 4 4 5 4 8a4 4 0 008 0c0-2-1-3-2-4-.5 1-1 2-2 1 0-2 0-3 0-4z' fill='none' stroke='currentColor' stroke-width='1.5'/></svg>", title:"Low Round of the Season", winner: bestRound.playerName, detail: bestRound.score + " at " + bestRound.course});
   
   // Most rounds played
   var roundCounts = {};
   allRounds.forEach(function(r) { roundCounts[r.playerName] = (roundCounts[r.playerName]||0) + 1; });
   var mostRounds = Object.entries(roundCounts).sort(function(a,b){return b[1]-a[1]});
-  if (mostRounds.length) awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><path d='M3 7h10M5 5v4M11 5v4M8 4v8'/></svg>", title:"Grinder Award", winner: mostRounds[0][0], detail: mostRounds[0][1] + " rounds played"});
+  if (mostRounds.length) awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.5'><path d='M3 7h10M5 5v4M11 5v4M8 4v8'/></svg>", title:"Grinder Award", winner: mostRounds[0][0], detail: mostRounds[0][1] + " rounds played"});
   
   // Most improved (biggest avg drop)
   if (season.standings.length >= 2) {
@@ -83,7 +83,7 @@ Router.register("seasonrecap", function(params) {
     });
     var mostImproved = lastStandings.sort(function(a,b){return (b._improvement||0)-(a._improvement||0)});
     if (mostImproved.length && mostImproved[0]._improvement > 0) {
-      awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><path d='M2 12l4-4 3 2 5-6'/><path d='M11 4h3v3'/></svg>", title:"Most Improved", winner: mostImproved[0].name||mostImproved[0].username, detail: "Improved " + Math.round(mostImproved[0]._improvement*10)/10 + " strokes"});
+      awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.5'><path d='M2 12l4-4 3 2 5-6'/><path d='M11 4h3v3'/></svg>", title:"Most Improved", winner: mostImproved[0].name||mostImproved[0].username, detail: "Improved " + Math.round(mostImproved[0]._improvement*10)/10 + " strokes"});
     }
   }
   
@@ -94,7 +94,7 @@ Router.register("seasonrecap", function(params) {
     courseCounts[r.playerName][r.course] = 1;
   });
   var roadWarriors = Object.entries(courseCounts).map(function(e){return [e[0], Object.keys(e[1]).length]}).sort(function(a,b){return b[1]-a[1]});
-  if (roadWarriors.length) awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><path d='M2 3l4 1 4-1 4 1v10l-4-1-4 1-4-1z'/><path d='M6 4v10M10 3v10'/></svg>", title:"Road Warrior", winner: roadWarriors[0][0], detail: roadWarriors[0][1] + " different courses", coins: 75});
+  if (roadWarriors.length) awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.5'><path d='M2 3l4 1 4-1 4 1v10l-4-1-4 1-4-1z'/><path d='M6 4v10M10 3v10'/></svg>", title:"Road Warrior", winner: roadWarriors[0][0], detail: roadWarriors[0][1] + " different courses", coins: 75});
 
   // Course Specialist (best avg at most-played course)
   var courseSpecData = [];
@@ -112,7 +112,7 @@ Router.register("seasonrecap", function(params) {
     if (best) courseSpecData.push({name:p.name||p.username, course:best.course, avg:Math.round(best.avg*10)/10, count:best.count});
   });
   courseSpecData.sort(function(a,b){return a.avg-b.avg});
-  if (courseSpecData.length) awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><path d='M4 15l8-12'/><path d='M4 3l8 4-8 4V3z'/></svg>", title:"Course Specialist", winner: courseSpecData[0].name, detail: courseSpecData[0].avg + " avg at " + courseSpecData[0].course + " (" + courseSpecData[0].count + " rounds)", coins: 100});
+  if (courseSpecData.length) awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.5'><path d='M4 15l8-12'/><path d='M4 3l8 4-8 4V3z'/></svg>", title:"Course Specialist", winner: courseSpecData[0].name, detail: courseSpecData[0].avg + " avg at " + courseSpecData[0].course + " (" + courseSpecData[0].count + " rounds)", coins: 100});
 
   // Rivalry Winner (best H2H record among players with 2+ H2H rounds)
   var h2hData = [];
@@ -131,7 +131,7 @@ Router.register("seasonrecap", function(params) {
     if (total >= 2) h2hData.push({name:p.name||p.username, wins:wins, total:total, pct:Math.round(wins/total*100)});
   });
   h2hData.sort(function(a,b){return b.pct-a.pct||b.wins-a.wins});
-  if (h2hData.length) awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><path d='M13 10V3L4 14h7v7l9-11h-7z'/></svg>", title:"Rivalry Winner", winner: h2hData[0].name, detail: h2hData[0].wins + " wins in " + h2hData[0].total + " H2H matches (" + h2hData[0].pct + "%)", coins: 100});
+  if (h2hData.length) awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.5'><path d='M13 10V3L4 14h7v7l9-11h-7z'/></svg>", title:"Rivalry Winner", winner: h2hData[0].name, detail: h2hData[0].wins + " wins in " + h2hData[0].total + " H2H matches (" + h2hData[0].pct + "%)", coins: 100});
 
   // Iron Will (most range sessions)
   if (typeof liveRangeSessions !== "undefined" && liveRangeSessions.length) {
@@ -143,7 +143,7 @@ Router.register("seasonrecap", function(params) {
       }
     });
     var topRange = Object.entries(rangeByPlayer).sort(function(a,b){return b[1]-a[1]});
-    if (topRange.length) awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><circle cx='8' cy='8' r='6'/><path d='M8 5v3l2 1.5'/></svg>", title:"Iron Will", winner: topRange[0][0], detail: topRange[0][1] + " range sessions", coins: 75});
+    if (topRange.length) awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.5'><circle cx='8' cy='8' r='6'/><path d='M8 5v3l2 1.5'/></svg>", title:"Iron Will", winner: topRange[0][0], detail: topRange[0][1] + " range sessions", coins: 75});
   }
 
   // Consistency king (lowest std dev — individual 18-hole rounds only)
@@ -160,7 +160,7 @@ Router.register("seasonrecap", function(params) {
   });
   if (consistencyData.length) {
     consistencyData.sort(function(a,b){return a.stdDev-b.stdDev});
-    awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.2'><circle cx='8' cy='8' r='6'/><circle cx='8' cy='8' r='3'/><circle cx='8' cy='8' r='.8' fill='currentColor'/></svg>", title:"Consistency King", winner: consistencyData[0].name, detail: "±" + Math.round(consistencyData[0].stdDev*10)/10 + " stroke variance"});
+    awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.5'><circle cx='8' cy='8' r='6'/><circle cx='8' cy='8' r='3'/><circle cx='8' cy='8' r='.8' fill='currentColor'/></svg>", title:"Consistency King", winner: consistencyData[0].name, detail: "±" + Math.round(consistencyData[0].stdDev*10)/10 + " stroke variance"});
   }
   
   awards.forEach(function(a) {

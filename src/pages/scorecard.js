@@ -85,7 +85,7 @@ function renderTripScorecard(trip, tripPlayers) {
     var skPlayer = PB.getPlayer(c.scorekeeper);
     var skName = skPlayer ? (skPlayer.name || skPlayer.username) : "Assigned";
     h += '<div style="padding:4px 16px 8px;font-size:10px;color:var(--muted);display:flex;align-items:center;gap:4px">';
-    h += '<svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M11 2l3 3-8 8H3v-3z"/></svg>';
+    h += '<svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 2l3 3-8 8H3v-3z"/></svg>';
     h += 'Scorekeeper: <span style="color:var(--gold);font-weight:600">' + escHtml(skName) + '</span>';
     if (isRoundFinished) h += ' <span style="color:var(--birdie);margin-left:6px"><svg viewBox="0 0 16 16" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l3 3 7-7"/></svg> Scores locked</span>';
     h += '</div>';
@@ -436,7 +436,7 @@ function renderTripPhotos(trip) {
     var allPhotos = photos.concat(localPhotos);
 
     if (!allPhotos.length) {
-      grid.innerHTML = '<div class="empty"><div class="empty-icon" style="font-size:14px;color:var(--muted)"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="2" y="4" width="12" height="9" rx="1"/><circle cx="8" cy="9" r="2.5"/><path d="M6 4l1-2h2l1 2"/></svg></div><div class="empty-text">No photos yet, add some from the trip!</div></div>';
+      grid.innerHTML = '<div class="empty"><div class="empty-icon" style="font-size:14px;color:var(--muted)"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="4" width="12" height="9" rx="1"/><circle cx="8" cy="9" r="2.5"/><path d="M6 4l1-2h2l1 2"/></svg></div><div class="empty-text">No photos yet, add some from the trip!</div></div>';
       return;
     }
 

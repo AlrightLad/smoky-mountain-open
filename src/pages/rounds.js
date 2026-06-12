@@ -36,7 +36,7 @@ Router.register("rounds", function(params) {
 // any smoke assertions on the affordance keep working.
 function _shareIconBtn(id) {
   return '<button class="rc-share-btn" aria-label="Share round" title="Share" onclick="event.stopPropagation();showRoundShareCard(\'' + id + '\')" style="display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:0;background:none;border:none;color:var(--cb-mute,var(--muted));cursor:pointer;flex-shrink:0;border-radius:8px;transition:color var(--duration-fast,.16s) var(--ease-default,ease),background var(--duration-fast,.16s) var(--ease-default,ease)" onmouseover="this.style.color=\'var(--gold,var(--cb-brass))\';this.style.background=\'var(--bg3)\'" onmouseout="this.style.color=\'var(--cb-mute,var(--muted))\';this.style.background=\'none\'">' +
-    '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>' +
+    '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>' +
     '</button>';
 }
 
@@ -663,7 +663,7 @@ function renderRoundDetail(roundId, prefetched) {
   h += '<div style="transform-origin:top left;pointer-events:none" id="rdSharePreviewInner"></div>';
   h += '</div>';
   h += '<div style="margin-top:12px">';
-  h += '<button class="rd-btn rd-btn--brass" onclick="captureShareCard()"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0" aria-hidden="true"><rect x="1" y="4" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="9" r="2.5" stroke="currentColor" stroke-width="1.3"/><path d="M5.5 4l1-2h3l1 2" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>Save image &amp; share</button>';
+  h += '<button class="rd-btn rd-btn--brass" onclick="captureShareCard()"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" style="flex-shrink:0" aria-hidden="true"><rect x="1" y="4" width="14" height="10" rx="2" stroke="currentColor" stroke-width="1.5"/><circle cx="8" cy="9" r="2.5" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 4l1-2h3l1 2" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Save image &amp; share</button>';
   h += '</div></div>';
 
   // v8.22.0 (Ship 5+7 Phase 4) — "Manage round" grouped section. Three-

@@ -112,7 +112,7 @@ function renderMemberDetailWithData(p) {
   h += '<div class="roster-masthead pf-masthead">';
   h += '<div class="pf-portrait">';
   h += '<div class="pf-av" style="width:104px;height:104px;font-size:40px;border:3px solid ' + _profColor + ';box-shadow:' + _profShadowCombined + _profAnimCss + '"' + (canEditPhoto ? ' onclick="uploadMemberPhoto(\'' + pid + '\')"' : '') + '>' + Router.getAvatar(p);
-  if (canEditPhoto) h += '<div class="pf-av__edit"><svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.3" style="vertical-align:middle"><path d="M11 2l3 3-8 8H3v-3z"/></svg></div>';
+  if (canEditPhoto) h += '<div class="pf-av__edit"><svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M11 2l3 3-8 8H3v-3z"/></svg></div>';
   h += '<div class="pf-av__lvl">' + lvl.level + '</div>';
   h += '</div>';
   h += '<div class="pf-id">';

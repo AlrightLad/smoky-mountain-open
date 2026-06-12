@@ -82,7 +82,7 @@ Router.register("records", function() {
   // Stroke-based 24x24 brass glyphs, one per section — gives each otherwise
   // identical accordion card a semantic signifier at a glance (no emoji).
   function recIcon(path) {
-    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="17" height="17" style="flex-shrink:0;color:var(--gold);opacity:.85">' + path + '</svg>';
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="17" height="17" style="flex-shrink:0;color:var(--gold);opacity:.85">' + path + '</svg>';
   }
   var REC_ICONS = {
     // trophy — event champions

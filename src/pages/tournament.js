@@ -485,7 +485,7 @@ function renderTournamentView(id) {
   // Champion band — only when the tournament is closed and a winner is recorded.
   if (closed && t.champion) {
     var champName = _tournResolveName(t.champion);
-    h += '<div class="tourn-champion"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 4h12v3a6 6 0 01-12 0V4z"/><path d="M6 5H4a2 2 0 002 4M18 5h2a2 2 0 01-2 4M9 18h6M10 18v-3M14 18v-3M8 21h8"/></svg>';
+    h += '<div class="tourn-champion"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 4h12v3a6 6 0 01-12 0V4z"/><path d="M6 5H4a2 2 0 002 4M18 5h2a2 2 0 01-2 4M9 18h6M10 18v-3M14 18v-3M8 21h8"/></svg>';
     h += '<span class="tourn-champion__label">' + escHtml(t.winnerTitle || "Champion") + '</span>';
     h += '<span class="tourn-champion__name">' + escHtml(champName) + '</span></div>';
   }
