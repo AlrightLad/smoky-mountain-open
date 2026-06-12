@@ -763,9 +763,11 @@ function enterApp() {
   if (typeof _patchFirestoreForLeague === "function") _patchFirestoreForLeague();
   initSync();
   preloadMemberPhotos();
-  syncCoursesFromFirestore();
   var _midOnboarding = currentProfile && !currentProfile.onboardingComplete;
-  if (!_midOnboarding) startLeagueDataSync();
+  // v8.25.29 — defer courses past onboarding too (#58). A mid-onboarding member
+  // isn't a confirmed league member yet, so even this global read was rules-denied
+  // ("Course sync failed" spam, page=onboarding); it wasn't loading then anyway.
+  if (!_midOnboarding) { syncCoursesFromFirestore(); startLeagueDataSync(); }
   loadCustomDrillsFromFirestore();
   // loadLiveState lives in the deferred page bundle (playnow.js, not CORE), so a
   // fast auth callback (returning member, persisted session, cold cache) can run

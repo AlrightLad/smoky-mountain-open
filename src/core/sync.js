@@ -255,7 +255,10 @@ function syncTrip(t) { if (!db||syncStatus==="offline") return; var d=JSON.parse
 
 // Pull trips from Firestore — league-scoped query so only current league's trips show.
 function syncTripsFromFirestore() {
-  if (!db) return;
+  // v8.25.29 — gate on a resolved active league (same #58 fix as scramble teams):
+  // no league → leagueQuery's sentinel query is rules-denied → "Trip sync failed"
+  // spam. Re-fires post-onboarding + on league switch.
+  if (!db || !getActiveLeague()) return;
   leagueQuery("trips").get().then(function(snap) {
     snap.forEach(function(doc) {
       var remote = doc.data();
@@ -413,7 +416,12 @@ function saveCustomDrillsToFirestore() {
 }
 
 function syncScrambleTeamsFromFirestore() {
-  if (!db) return;
+  // v8.25.29 — gate on a resolved active league. leagueQuery() falls back to a
+  // NONE_SHOULD_MATCH sentinel query when no league is set, which the rules deny
+  // → recurring "scrambleTeams read failed: insufficient permissions" spam on
+  // home/onboarding (#58, the #37 recurrence). Re-fires post-onboarding via
+  // startLeagueDataSync + on league switch (leagues.js), so members aren't starved.
+  if (!db || !getActiveLeague()) return;
   leagueQuery("scrambleTeams").get().then(function(snap) {
     var local = PB.getScrambleTeams();
     var remoteIds = {};
