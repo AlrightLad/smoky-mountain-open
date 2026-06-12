@@ -32,7 +32,7 @@ Router.register("more", function() {
   // sections. Rows stay above the 44pt floor: 13px pad x2 + 36px tile = 62px.
   function section(title, items) {
     var sh = '<div style="padding:0 16px;margin-bottom:13px">';
-    sh += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:6px;padding-left:2px">' + title + '</div>';
+    sh += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-eyebrow);margin-bottom:6px;padding-left:2px">' + title + '</div>';
     sh += '<div style="background:var(--cb-paper);border:1px solid var(--cb-mute-3);border-radius:10px;overflow:hidden">';
     items.forEach(function(l, i) {
       // Priority rows (revenue/growth) earn a stronger brass wash + a 3px

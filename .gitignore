@@ -227,3 +227,5 @@ docs/reports/sessions.html
 /.claude/state/visual-9.5-2026-06-12/verify/
 /.claude/state/visual-9.5-2026-06-12/*.png
 /.claude/state/visual-9.5-2026-06-12/devserver.log
+/.claude/state/visual-9.5-2026-06-12/verify-v14/
+/.claude/state/visual-9.5-2026-06-12/verify-v15/

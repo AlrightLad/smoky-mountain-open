@@ -63,6 +63,13 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --cb-ink-2: #2D2B24;
   --cb-charcoal: #4A4740;
   --cb-ink-link: #5A4318;       /* deep brass for link colors on chalk */
+  /* Eyebrow/label text on LIGHT grounds. Bright --cb-brass (#B4893E) on parchment
+     measures only ~1.9-4.0:1 (fails WCAG AA for small tracked-caps); this deep
+     antique-brass clears AA on every light ground + theme. Single knob: retune
+     here to adjust every on-light eyebrow at once. References --cb-ink-link so it
+     themes per-theme automatically (lazy var resolution). On-DARK eyebrows keep
+     --cb-brass (they pass on the dark card). v8.25.15. */
+  --cb-eyebrow: var(--cb-ink-link);
   /* WCAG AA guardrail (verified 2026-06-08/v8.23.98, scripts/visual-audit/contrast-check.mjs).
      Normal-text floor is 4.5:1. The page ground is --cb-canvas #E7E0CD (darker than
      chalk), so secondary-text tokens were darkened to clear AA on CANVAS (the worst case):
