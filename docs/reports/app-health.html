@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-12T03:43:47.628630Z",
+  "generated_at": "2026-06-12T03:55:47.841228Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 87.1,
   "overall_grade": "A-",
@@ -1001,11 +1001,11 @@
     "A12_operational": {
       "score": 90,
       "status": "green",
-      "label": "pipeline=green · 4 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=green · 3 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "4 of last 10 cron watcher runs hit skip-dirty",
+          "what": "3 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -1034,9 +1034,9 @@
     }
   ],
   "audit_trigger": {
-    "sha": "b31a10a9",
-    "subject": "chore(dashboard): app-health regen post v8.25.9 ship",
-    "committed_at": "2026-06-11T23:42:38-04:00",
+    "sha": "dfccc5ef",
+    "subject": "docs(research+loops): shop purchasables brief + hibernation-cron contract",
+    "committed_at": "2026-06-11T23:55:24-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
