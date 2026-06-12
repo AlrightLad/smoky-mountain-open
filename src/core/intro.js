@@ -113,6 +113,7 @@
       '<path d="M0 392 Q 240 374 480 388 L480 460 L0 460 Z" fill="' + C.ground + '"/>' +
       '<line id="pbi-tee" x1="286" y1="390" x2="286" y2="381" stroke="' + C.ground + '" stroke-width="3" stroke-linecap="round"/>' +
       '<path id="pbi-trail" d="" fill="none" stroke="rgba(' + C.trail + ',0)" stroke-width="3.5" stroke-linecap="round"/>' +
+      '<circle id="pbi-flash" cx="286" cy="376" r="2" fill="' + C.sun + '" opacity="0"/>' +   // impact bloom
       '<circle id="pbi-ball" cx="286" cy="376" r="5.5" fill="' + C.ball + '"/>' +
       '<path id="pbi-smear" d="" fill="none" stroke="rgba(' + C.trail + ',.4)" stroke-width="9" stroke-linecap="round" opacity="0"/>' +
       '<g id="pbi-burst" opacity="0">' +
@@ -276,23 +277,39 @@
     _set("pbi-shoe-trail-sole", { x1: tFootX-2, y1: tFootY+3, x2: tFootX+11, y2: tFootY+3 - p.heel*0.18 });
     _set("pbi-shoe-lead-sole",  { x1: lFootX-2, y1: lFootY+3, x2: lFootX+13, y2: lFootY+3 });
 
-    // ball flight: launches toward the target (RIGHT) at impact (~0.66)
+    // ── Cinematic camera: a subtle push-in toward impact (anchored near the
+    //    ball/sun so the eye lands on contact), settling back on the finish.
+    var svg = document.getElementById("pbi-svg");
+    if (svg) {
+      var push = t < 0.5 ? 1 : (t < 0.66 ? 1 + 0.07 * ((t - 0.5) / 0.16) : 1.07 - 0.07 * Math.min(1, (t - 0.66) / 0.34));
+      svg.style.transformOrigin = "60% 80%";
+      svg.style.transform = "scale(" + push.toFixed(3) + ")";
+    }
+    // ball flight: launches toward the target (RIGHT) at impact (~0.66) with a
+    // long comet trail + a shrink-with-distance — the satisfying contact moment.
     var ball = document.getElementById("pbi-ball"), trail = document.getElementById("pbi-trail");
     if (ball) {
-      if (t < 0.66) { _set("pbi-ball", { cx: 286, cy: 376, opacity: 1 }); if (trail) trail.setAttribute("opacity", "0"); }
+      if (t < 0.66) { _set("pbi-ball", { cx: 286, cy: 376, opacity: 1, r: 5.5 }); if (trail) trail.setAttribute("opacity", "0"); }
       else {
-        var f = Math.min(1, (t - 0.66) / 0.32);
-        var bx = 286 + 250 * f;                          // toward target (right)
-        var by = 376 - (250 * f - 180 * f * f);          // parabola
-        _set("pbi-ball", { cx: bx, cy: by, opacity: (f >= 1 ? 0 : 1) });
+        var f = Math.min(1, (t - 0.66) / 0.34);
+        var bx = 286 + 300 * f;                          // farther toward target
+        var by = 376 - (300 * f - 210 * f * f);          // higher, more dramatic parabola
+        _set("pbi-ball", { cx: bx, cy: by, opacity: (f >= 1 ? 0 : 1), r: (5.5 - 1.6 * f).toFixed(1) });
         if (trail) {
-          var tf = Math.max(0, f - 0.10);
-          var txb = 286 + 250 * tf, tyb = 376 - (250 * tf - 180 * tf * tf);
+          var tf = Math.max(0, f - 0.30);                // long comet tail
+          var txb = 286 + 300 * tf, tyb = 376 - (300 * tf - 210 * tf * tf);
           trail.setAttribute("d", "M " + txb + " " + tyb + " L " + bx + " " + by);
-          trail.setAttribute("stroke", "rgba(" + C.trail + "," + (0.55 * (1 - f)) + ")");
+          trail.setAttribute("stroke", "rgba(" + C.trail + "," + (0.7 * (1 - f)).toFixed(2) + ")");
+          trail.setAttribute("stroke-width", (6 - 3 * f).toFixed(1));
           trail.setAttribute("opacity", f >= 1 ? "0" : "1");
         }
       }
+    }
+    // impact bloom: a bright flash blooming outward at contact
+    var flash = document.getElementById("pbi-flash");
+    if (flash) {
+      if (t >= 0.655 && t <= 0.745) { var ff = (t - 0.655) / 0.09; flash.setAttribute("r", (4 + 30 * ff).toFixed(1)); flash.setAttribute("opacity", (0.75 * (1 - ff)).toFixed(2)); }
+      else flash.setAttribute("opacity", "0");
     }
     // downswing smear: a brass arc tracing the clubhead path through the fast zone
     var smear = document.getElementById("pbi-smear");
