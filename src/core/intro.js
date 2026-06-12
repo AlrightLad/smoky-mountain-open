@@ -248,6 +248,7 @@
 
   function skip() { _teardown(); }
 
+  var _onTeardown = null;  // cold-open bridge: the onboarding FTUE arms on intro finish
   function _teardown() {
     if (_raf) cancelAnimationFrame(_raf);
     _raf = null;
@@ -258,6 +259,7 @@
       setTimeout(function() { if (r && r.parentNode) r.parentNode.removeChild(r); }, 420);
     }
     _started = false;
+    if (typeof _onTeardown === "function") { var cb = _onTeardown; _onTeardown = null; cb(); }
   }
 
   function maybeShow() {
@@ -268,5 +270,5 @@
     return true;
   }
 
-  window.pbTeeIntro = { maybeShow: maybeShow, show: function() { if (!_root) { _mount(); _apply(0); } }, skip: skip, _applyAt: _apply };
+  window.pbTeeIntro = { maybeShow: maybeShow, show: function() { if (!_root) { _mount(); _apply(0); } }, skip: skip, _applyAt: _apply, setOnTeardown: function(fn) { _onTeardown = fn; } };
 })();

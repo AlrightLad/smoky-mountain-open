@@ -280,6 +280,14 @@
     // smoke/E2E suppression hook (the harness presets it so the overlay never
     // blocks scenario interactions — mirrors the tee-intro's pb_intro_seen).
     try { if (sessionStorage.getItem("pb_wt_routed") === "1") return null; } catch (e) {}
+    // Cold-open bridge: if the tee-shot intro is still playing, arm the FTUE for
+    // ITS teardown instead of popping over it — removes the home.js 700ms timer
+    // race. If the intro isn't showing (already done / disabled / reduced-motion),
+    // fall straight through and fire now.
+    if (document.getElementById("pbIntro") && window.pbTeeIntro && typeof window.pbTeeIntro.setOnTeardown === "function") {
+      try { window.pbTeeIntro.setOnTeardown(function () { route(); }); } catch (e) {}
+      return "deferred";
+    }
     var wt = _wt();
     if (wt.ftueState == null && _uid()) {
       try { sessionStorage.setItem("pb_wt_routed", "1"); } catch (e) {}
