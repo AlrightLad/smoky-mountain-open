@@ -36,3 +36,36 @@
 [aggregate-fiq-status] OK status=green declared=26 deployed=26 write=False (skip-idempotent-grace-content-unchanged-25979s)
 
 --- scripts/aggregate-self-tests.py ---
+[aggregate-self-tests] starting D40 parity checks across 5 aggregators
+  [aggregate-test-health] PASS status=green age=25744s
+  [aggregate-security-health] PASS status=yellow age=48809s
+  [aggregate-approvals-pipeline] PASS status=green age=-1s
+  [aggregate-architecture-review] PASS status=yellow age=47911s
+  [aggregate-fiq-status] PASS status=green age=25979s
+[aggregate-self-tests] OK all 5 aggregators pass parity
+
+--- scripts/inject-health-banners.py ---
+[inject-health-banners] banner-architecture      already-present
+[inject-health-banners] banner-approvals         already-present
+[inject-health-banners] banner-security          already-present
+[inject-health-banners] banner-test              already-present
+[inject-health-banners] detail-architecture      already-present
+[inject-health-banners] detail-approvals         already-present
+[inject-health-banners] detail-security          already-present
+[inject-health-banners] detail-test              already-present
+
+--- scripts/regen-proposals.py ---
+[regen-proposals] running shipped-scan first...
+  [scan] [scan-shipped] approved/ is empty; nothing to scan
+[regen-proposals] OK   proposals.html
+[regen-proposals] counts: pending=0 approved=0 deferred=0 shipped=8 rejected=0
+
+--- scripts/regen-amendments.py ---
+[regen-amendments] OK   amendments.html
+[regen-amendments] counts: pending=0 approved=0 deferred=0 applied=28 rejected=0
+
+--- scripts/regen-escalations.py ---
+[regen-escalations] OK   escalations.html
+[regen-escalations] pending=0 approved=0 applied=3 deferred=0 rejected=0
+
+--- scripts/regen-dashboard.py ---
