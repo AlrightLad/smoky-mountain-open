@@ -444,6 +444,10 @@
         "hooks": [
           {
             "type": "command",
+            "command": "bash .claude/hooks/stop-continue.sh"
+          },
+          {
+            "type": "command",
             "command": "bash .claude/hooks/stop-verification.sh",
             "blocking": false
           }
