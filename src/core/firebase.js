@@ -750,7 +750,15 @@ function enterApp() {
   // via addInitScript, so this skips the clear there and its intro suppression
   // stays intact (a real user has neither preset at app entry). The onboarding tour
   // stays once (version-gated) — only the swing re-arms here.
-  try { if (sessionStorage.getItem("pb_wt_routed") !== "1") sessionStorage.removeItem("pb_intro_seen"); } catch (e) {}
+  try {
+    // Re-arm on every REAL sign-in. Skip ONLY the test harnesses: the smoke
+    // (?smoke=1) presets pb_intro_seen via addInitScript to suppress the overlay,
+    // and the ?emulator=1 capture manages its own state. The previous pb_wt_routed
+    // gate was fragile (a real user who'd already routed the tour this session kept
+    // it set, blocking the re-arm) — the URL check is unambiguous.
+    var _qs = (window.location && window.location.search) || "";
+    if (_qs.indexOf("smoke=1") === -1 && _qs.indexOf("emulator=1") === -1) sessionStorage.removeItem("pb_intro_seen");
+  } catch (e) {}
   PB.load();
   if (typeof _patchFirestoreForLeague === "function") _patchFirestoreForLeague();
   initSync();

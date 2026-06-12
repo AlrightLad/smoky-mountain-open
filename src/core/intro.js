@@ -363,9 +363,22 @@
   }
 
   function maybeShow() {
-    if (!_enabled() || _seen() || _reduced() || _root) return false;
+    // reduce-motion no longer SUPPRESSES the swing — the Founder wants the arrival
+    // moment on EVERY sign-in. Only an explicit opt-out (pb_intro_enabled='0'),
+    // already-seen-this-session, or a live overlay short-circuits. (Reduce-motion
+    // was the likely reason it "wasn't playing" on a real device while it always
+    // played in the no-reduce-motion capture browser.)
+    if (!_enabled() || _seen() || _root) return false;
     _markSeen();
     _mount();
+    if (_reduced()) {
+      // Reduced motion: present the FINISHED scene + "tap to enter" with NO
+      // animation (no rAF, no vestibular motion) — the golfer still appears as
+      // the arrival moment, then the tap opens the app. Accessible AND present.
+      _apply(1);
+      _finishHold();
+      return true;
+    }
     _apply(0);
     // Auto-play: tee off on its own after a short beat so it ACTUALLY animates
     // without requiring a tap (the long-promised "plays on its own"). A tap still
