@@ -303,7 +303,15 @@ function syncTripsFromFirestore() {
   }).catch(function(e) {
     // v8.24.31 — a read denied because the user signed out mid-flight is
     // expected, not actionable; only log while a user is actually signed in.
-    if (typeof currentUser !== "undefined" && currentUser) pbWarn("[Sync] Trip sync failed:", e.message);
+    if (typeof currentUser === "undefined" || !currentUser) return;
+    // v8.25.36 — the cold-sign-in rules-context race: the active league resolves
+    // before Firestore's rules see our membership, so the first read is denied,
+    // then self-heals (data renders; re-fires on league switch + via the rounds
+    // listener). Console-only for that transient so it stops spamming the prod
+    // errors collection (pbWarn logs permission-denied there); genuine non-perm
+    // failures still pbWarn.
+    if (/permission|insufficient/i.test((e && e.message) || "")) { pbLog("[Sync] Trip sync transient perm race (self-heals):", e.message); return; }
+    pbWarn("[Sync] Trip sync failed:", e.message);
   });
 
   // Also pull FIR/GIR data from tripscores collection
@@ -455,7 +463,12 @@ function syncScrambleTeamsFromFirestore() {
     });
     if (merged > 0) pbLog("[Sync] Merged", merged, "scramble teams from Firestore");
   }).catch(function(err) {
-    if (typeof currentUser !== "undefined" && currentUser) pbWarn("[Sync] scrambleTeams read failed:", err.message);
+    if (typeof currentUser === "undefined" || !currentUser) return;
+    // v8.25.36 — same self-healing cold-sign-in rules-context race as syncTrips:
+    // console-only for the transient permission-denied (data renders + re-fires on
+    // league switch), prod-log genuine non-perm failures.
+    if (/permission|insufficient/i.test((err && err.message) || "")) { pbLog("[Sync] scrambleTeams transient perm race (self-heals):", err.message); return; }
+    pbWarn("[Sync] scrambleTeams read failed:", err.message);
   });
 }
 
