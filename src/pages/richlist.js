@@ -85,22 +85,18 @@ Router.register("richlist", function() {
 // so the big right-hand number reads as ParCoins, not an unlabeled score.
 var _richCoinSvg = '<svg viewBox="0 0 20 20" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.7" style="flex-shrink:0;vertical-align:middle"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7.5 7.5h4a1.8 1.8 0 010 3.6H7.5"/></svg>';
 
-// Rank chip — DELIBERATELY non-brass so rank and value don't compete. The brass
-// stays reserved for the hero lifetime number (.lb-pts) + the GOLD badge. Rank is
-// a structural slate chip: filled for the top 3 (medal hierarchy via opacity), an
-// outlined slate disc for 4+. Shape + neutral hue carry the rank, not color-vs-gold.
+// Rank chip — a warm brass PODIUM for the top 3 (a leaderboard's whole job is to
+// celebrate rank), then a clean slate outline for 4+. Every numeral is chosen for
+// WCAG AA against its OWN disc fill: rank 1 = dark ink on solid brass (5.87:1),
+// ranks 2-3 = deep-brass (--cb-ink-link) on light brass tints, 4+ = ink-faint on
+// the page ground. Tokens only (the old hardcoded slate ramp left ranks 2-3 cream
+// numerals at 1.56-2.34:1 — illegible; fixed 2026-06-12). Themes across all looks.
 function _rankChip(rank) {
-  if (rank <= 3) {
-    // Top-3 medal hierarchy expressed through fill strength, all on the same
-    // non-brass slate so it never reads as a second gold accent.
-    var fill = rank === 1 ? '.92' : rank === 2 ? '.60' : '.34';
-    return '<span style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;'
-      + 'background:rgba(90,107,120,' + fill + ');color:var(--cb-chalk);'
-      + 'font-family:var(--font-display);font-weight:800;font-size:13px;line-height:1;letter-spacing:-.5px">' + rank + '</span>';
-  }
-  return '<span style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;'
-    + 'border:1.5px solid rgba(90,107,120,.32);color:var(--cb-slate);'
-    + 'font-family:var(--font-display);font-weight:700;font-size:12px;line-height:1;letter-spacing:-.5px">' + rank + '</span>';
+  var base = 'display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-family:var(--font-display);line-height:1;letter-spacing:-.5px;';
+  if (rank === 1) return '<span style="' + base + 'font-weight:800;font-size:13px;background:var(--cb-brass);color:var(--cb-ink)">' + rank + '</span>';
+  if (rank === 2) return '<span style="' + base + 'font-weight:800;font-size:13px;background:rgba(var(--cb-brass-rgb),.20);border:1.5px solid var(--cb-brass);color:var(--cb-ink-link)">' + rank + '</span>';
+  if (rank === 3) return '<span style="' + base + 'font-weight:800;font-size:13px;background:rgba(var(--cb-brass-rgb),.12);border:1px solid rgba(var(--cb-brass-rgb),.55);color:var(--cb-ink-link)">' + rank + '</span>';
+  return '<span style="' + base + 'font-weight:700;font-size:12px;border:1.5px solid var(--cb-mute-3);color:var(--cb-ink-faint)">' + rank + '</span>';
 }
 
 function _renderRichRow(p, i) {

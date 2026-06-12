@@ -71,13 +71,23 @@ Router.register("awards", function(params) {
     .filter(function(s){return s.rounds >= 3 && s.avg != null && !isNaN(s.avg);})
     .sort(function(a,b){return a.avg-b.avg});
   if (scoringChamp.length) {
-    ceremonyAwards.push({title: "Scoring Champion", winner: scoringChamp[0].name||scoringChamp[0].username, detail: "Average: " + (+scoringChamp[0].avg).toFixed(1), tier: "gold"});
+    ceremonyAwards.push({title: "Scoring Champion", winner: scoringChamp[0].name||scoringChamp[0].username, detail: (+scoringChamp[0].avg).toFixed(1) + " scoring avg", tier: "gold"});
   }
-  
-  // 3. Round of the Year
+
+  // 3. Round of the Year — lowest 18-hole INDIVIDUAL round, shown to-par so the
+  // value is self-evidently a full round. Ranking allRounds by raw score let a
+  // 9-hole card (e.g. a "44") masquerade as the year's best; restrict to confident
+  // 18-hole individual rounds (explicit holesPlayed>=18, or an untracked round
+  // whose score is in 18-hole range) and surface the to-par delta for legibility.
+  var royRounds = indivAwardRounds.filter(function(r){ return r.score && (r.holesPlayed >= 18 || (!r.holesPlayed && r.score >= 60)); });
   var bestRound = null;
-  allRounds.forEach(function(r) { if (r.score && (!bestRound || r.score < bestRound.score)) bestRound = r; });
-  if (bestRound) ceremonyAwards.push({title: "Round of the Year", winner: bestRound.playerName, detail: bestRound.score + " at " + bestRound.course, tier: "gold"});
+  royRounds.forEach(function(r) { if (!bestRound || r.score < bestRound.score) bestRound = r; });
+  if (bestRound) {
+    var royPar = 72;
+    try { var royC = PB.getCourseByName && PB.getCourseByName(bestRound.course); if (royC && royC.par) royPar = royC.par; } catch (e) {}
+    var royDelta = bestRound.score - royPar;
+    ceremonyAwards.push({title: "Round of the Year", winner: bestRound.playerName, detail: bestRound.score + " (" + (royDelta >= 0 ? "+" : "") + royDelta + " to par) at " + bestRound.course, tier: "gold"});
+  }
   
   // 4. Iron Man (most rounds)
   // Counts EVERY round in the window — scrambles + partials + 18-hole, all

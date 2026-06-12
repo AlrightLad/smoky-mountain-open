@@ -46,7 +46,7 @@ Router.register("more", function() {
       sh += '<div role="button" tabindex="0" onkeydown="if(event.key===\'Enter\')Router.go(\'' + l.page + '\')" onclick="Router.go(\'' + l.page + '\')" style="cursor:pointer;' + rowBg + (i > 0 ? 'border-top:1px solid var(--cb-mute-3);' : '') + '-webkit-tap-highlight-color:transparent">';
       sh += '<div style="' + rowPad + 'display:flex;align-items:center;gap:13px">';
       sh += '<div style="width:36px;height:36px;border-radius:10px;background:' + (l.accent ? 'rgba(var(--cb-brass-rgb),.12)' : 'var(--cb-chalk-2)') + ';color:' + (l.accent ? 'var(--cb-brass-deep)' : 'var(--cb-ink-2)') + ';display:flex;align-items:center;justify-content:center;flex-shrink:0">' + l.icon + '</div>';
-      sh += '<div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:' + (l.accent ? 'var(--cb-brass-deep)' : 'var(--cb-ink)') + '">' + l.label + '</div>';
+      sh += '<div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:' + (l.accent ? '700' : '600') + ';color:var(--cb-ink)">' + l.label + '</div>';
       if (l.sub) sh += '<div style="font-size:11px;color:var(--cb-mute);margin-top:1px">' + l.sub + '</div>';
       sh += '</div>';
       sh += chev('var(--cb-mute-2)');

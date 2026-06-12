@@ -133,7 +133,13 @@ var Router = (function() {
     setTimeout(function() { el.classList.remove("show"); }, 2200);
   }
 
-  var STOCK_AVATARS = ["stock_profile_gold.jpg","stock_profile_green.jpg","stock_profile_navy.jpg","stock_profile_charcoal.jpg","stock_profile_red.jpg","stock_profile_teal.jpg"];
+  // Per-member default avatar — when a member has NO uploaded photo (and hasn't
+  // explicitly picked a stock avatar), render a distinct initial-on-disc instead
+  // of a name-hashed stock JPG. The old stock-JPG default produced "rows of
+  // identical dark discs" across feed/members/rosters/home (critique 2026-06-12).
+  // Disc tint is hashed to one of five on-brand solid tokens so adjacent members
+  // never read identically; the cream initial stays AA on every tint + theme.
+  var AVATAR_DISCS = ['var(--cb-felt)', 'var(--cb-brass-deep)', 'var(--cb-moss)', 'var(--cb-claret)', 'var(--cb-charcoal)'];
 
   function getAvatar(player, fallback) {
     var imgSrc = '';
@@ -149,14 +155,16 @@ var Router = (function() {
       imgSrc = player.photo;
     } else if (player.stockAvatar) {
       imgSrc = player.stockAvatar;
-    } else {
-      var hash = 0;
-      for (var i = 0; i < (player.username||player.name).length; i++) hash = ((hash << 5) - hash) + (player.username||player.name).charCodeAt(i);
-      var idx = Math.abs(hash) % STOCK_AVATARS.length;
-      imgSrc = STOCK_AVATARS[idx];
     }
-    var initial = (player.username||player.name).charAt(0).toUpperCase();
-    return '<img alt="" src="' + imgSrc + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'" style="width:100%;height:100%;object-fit:cover;border-radius:inherit"><div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;color:var(--gold);font-weight:700;font-size:18px;background:var(--bg3);border-radius:inherit">' + initial + '</div>';
+    // (no else) — no photo on file falls through to the initial disc below.
+    var nm = player.username || player.name || '?';
+    var initial = nm.charAt(0).toUpperCase();
+    var hash = 0;
+    for (var i = 0; i < nm.length; i++) hash = ((hash << 5) - hash) + nm.charCodeAt(i);
+    var disc = AVATAR_DISCS[Math.abs(hash) % AVATAR_DISCS.length];
+    var discDiv = '<div style="display:' + (imgSrc ? 'none' : 'flex') + ';width:100%;height:100%;align-items:center;justify-content:center;color:var(--cb-chalk);font-weight:700;font-size:18px;background:' + disc + ';border-radius:inherit">' + initial + '</div>';
+    if (!imgSrc) return discDiv;
+    return '<img alt="" src="' + imgSrc + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">' + discDiv;
   }
 
   function handlePhotoUpload(callback, maxW, maxH, quality) {
