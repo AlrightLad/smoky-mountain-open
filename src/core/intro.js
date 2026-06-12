@@ -267,6 +267,10 @@
     _markSeen();
     _mount();
     _apply(0);
+    // Auto-play: tee off on its own after a short beat so it ACTUALLY animates
+    // without requiring a tap (the long-promised "plays on its own"). A tap still
+    // fires it immediately; swing() guards against a double-start.
+    setTimeout(function() { if (_root && !_started) swing(); }, 1100);
     return true;
   }
 

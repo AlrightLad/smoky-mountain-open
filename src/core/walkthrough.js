@@ -19,7 +19,7 @@
 
 (function () {
   var ROOKIE_COINS = 100;          // Founder-approved Rookie completion grant
-  var TOTAL_STEPS = 5;             // truthful denominator (no +1 profile padding)
+  var TOTAL_STEPS = 8;             // welcome + calibrate + 4 tour beats + win + caddy
   var _root = null, _voice = "caddy", _calib = null, _step = 0, _onKey = null, _stage = null, _focusReturn = null;
 
   function _profile() { return (typeof currentProfile !== "undefined" && currentProfile) || {}; }
@@ -136,59 +136,73 @@
 
   function _beat(n) {
     _step = n;
-    if (n === 0) return _beatPickCaddie();
-    if (n === 1) return _beatFrame();
-    if (n === 2) return _beatCalibrate();
-    if (n === 3) return _beatDemonstrate();
-    if (n === 4) return _beatWin();
+    if (n === 0) return _beatFrame();          // welcome
+    if (n === 1) return _beatCalibrate();      // solo vs crew
+    if (n === 2) return _beatTour(2, { eyebrow: "Play", selector: '[data-walk="play-cta"]', body: "This is home base. Tap Play to start a round and score it hole by hole — fairways, greens, putts, the works." });
+    if (n === 3) return _beatTour(3, { eyebrow: "The Feed", body: "Your crew's rounds land in the Feed — give kudos, talk trash, and read the Caddy's weekly report. It's the group chat for your golf." });
+    if (n === 4) return _beatTour(4, { eyebrow: "Standings", selector: '[data-walk="standings-link"]', body: "The season race lives here — your rank, the title chase, and who's right on your heels." });
+    if (n === 5) return _beatTour(5, { eyebrow: "Earn & spend", body: "Every round earns ParCoins. Spend them in the Pro Shop on rings, tee markers and nameplates — and wager friends in Bounties." });
+    if (n === 6) return _beatWin();            // the un-losable demo hole
+    if (n === 7) return _beatPickCaddie();     // LAST — explained + previewable
     return _complete("done");
   }
 
-  // Beat 0 — pick your caddie (opt-in; defaults to The Caddy)
+  // Beat 7 (LAST) — meet your caddy: explain WHAT it is, PREVIEW each voice on
+  // tap (not select-and-jump), confirm with "Start playing". Defaults to The Caddy.
   function _beatPickCaddie() {
     var roster = window.pbCaddies || [{ id: "caddy", name: "The Caddy" }];
-    var thumbs = '<div style="display:flex;gap:8px;margin-bottom:14px">';
+    var thumbs = '<div style="display:flex;gap:8px;margin-bottom:10px">';
     roster.forEach(function (c) {
-      var lockNote = c.locked ? '<div style="font-size:9px;color:var(--cb-mute);margin-top:3px">Unlock in the Pro Shop</div>' : '';
+      var lockNote = c.locked ? '<div style="font-size:9px;color:var(--cb-mute);margin-top:3px">Earned later</div>' : '';
       thumbs += '<button class="pbw-caddie-pick" data-id="' + c.id + '" ' + (c.locked ? "disabled" : "") +
-        ' style="flex:1;min-height:64px;border:1px solid var(--border);background:var(--cb-paper);border-radius:10px;cursor:' + (c.locked ? "not-allowed" : "pointer") + ';opacity:' + (c.locked ? ".5" : "1") + ';padding:8px 4px">' +
+        ' style="flex:1;min-height:58px;border:1px solid var(--border);background:var(--cb-paper);border-radius:10px;cursor:' + (c.locked ? "not-allowed" : "pointer") + ';opacity:' + (c.locked ? ".5" : "1") + ';padding:8px 4px">' +
         '<div style="font-family:var(--font-ui);font-weight:700;font-size:12px;color:var(--cb-ink)">' + esc(c.name) + '</div>' + lockNote + '</button>';
     });
     thumbs += '</div>';
+    thumbs += '<div id="pbw-caddie-preview" style="min-height:36px;font-family:var(--font-display);font-style:italic;font-size:14px;line-height:1.4;color:var(--cb-ink);background:var(--cb-chalk-2);border-radius:8px;padding:9px 11px;margin-bottom:12px">Tap a caddy to hear how they talk.</div>';
     _stageCard({
-      eyebrow: "Your caddie",
-      body: "Pick who shows you around. You can change this any time.",
-      pose: "tipCap", extraHtml: thumbs, stepIdx: 0
+      eyebrow: "Meet your caddy",
+      body: "Last thing. Your caddy is your guide here — a voice that calls out your moments and keeps you company on the course. Tap each to preview, then pick your favorite. You can change it any time.",
+      pose: "tipCap", extraHtml: thumbs, primaryLabel: "Start playing", onPrimary: function () { _complete("done"); }, stepIdx: 7
     });
+    var preview = document.getElementById("pbw-caddie-preview");
     Array.prototype.forEach.call(_root.querySelectorAll(".pbw-caddie-pick"), function (btn) {
       if (btn.disabled) return;
-      btn.onclick = function () { _voice = btn.getAttribute("data-id"); _beat(1); };
+      btn.onclick = function () {
+        var id = btn.getAttribute("data-id");
+        _voice = id; // tentative; confirmed on "Start playing"
+        Array.prototype.forEach.call(_root.querySelectorAll(".pbw-caddie-pick"), function (b2) { b2.style.borderColor = "var(--border)"; b2.style.background = "var(--cb-paper)"; });
+        btn.style.borderColor = "var(--cb-brass)"; btn.style.background = "var(--cb-chalk-2)";
+        if (preview && window.pbVoices) { preview.textContent = "“" + window.pbVoices.line("frame", id) + "”"; }
+        if (window.pbCaddy) { try { window.pbCaddy.setPose("tipCap"); } catch (e) {} }
+      };
     });
   }
 
   function _beatFrame() {
-    _stageCard({ eyebrow: "Welcome to the Clubhouse", body: _voiceLine("frame"), pose: "tipCap",
-      primaryLabel: "Show me around", onPrimary: function () { _beat(2); }, stepIdx: 1 });
+    _stageCard({ eyebrow: "Welcome to the Clubhouse", body: "Welcome to Parbaughs — your crew's private golf league. Quick 60-second tour of where everything lives.", pose: "tipCap",
+      primaryLabel: "Show me around", onPrimary: function () { _beat(1); }, stepIdx: 0 });
   }
 
   function _beatCalibrate() {
     _stageCard({
-      eyebrow: "Quick question", body: _voiceLine("calibrate"), pose: "nod", stepIdx: 2,
+      eyebrow: "Quick question", body: "How do you play most — on your own, or with your crew? It tailors your first week.", pose: "nod", stepIdx: 1,
       choices: [
-        { label: "Just me", onPick: function () { _calib = "solo"; _beat(3); } },
-        { label: "With my crew", onPick: function () { _calib = "crew"; _beat(3); } }
+        { label: "Just me", onPick: function () { _calib = "solo"; _beat(2); } },
+        { label: "With my crew", onPick: function () { _calib = "crew"; _beat(2); } }
       ]
     });
   }
 
-  function _beatDemonstrate() {
-    // crew → point at standings/feed; solo → point at the Play CTA / scorecard.
-    var sel = _calib === "crew" ? '[data-walk="standings-link"]' : '[data-walk="play-cta"]';
-    var body = _calib === "crew"
-      ? "Here's your crew's board — this is the race you're in."
-      : "Here's where you start a round and log your score, hole by hole.";
-    spotlight(sel, { eyebrow: _calib === "crew" ? "Standings" : "Play", body: body, primaryLabel: "Got it",
-      onPrimary: function () { _beat(4); }, stepIdx: 3 });
+  // Feature-tour beat — spotlights the real control if it's on the page, else a
+  // stage card (the engine degrades gracefully). Teaches WHERE each feature lives.
+  function _beatTour(n, cfg) {
+    var next = function () { _beat(n + 1); };
+    if (cfg.selector && document.querySelector(cfg.selector)) {
+      spotlight(cfg.selector, { eyebrow: cfg.eyebrow, body: cfg.body, primaryLabel: "Got it", onPrimary: next, stepIdx: n });
+    } else {
+      _stageCard({ eyebrow: cfg.eyebrow, body: cfg.body, pose: "point", primaryLabel: "Got it", onPrimary: next, stepIdx: n });
+    }
   }
 
   // Beat 4 — the un-losable sandboxed demo hole (the WIN). Never writes /rounds.
@@ -207,7 +221,7 @@
         chips +
         '<div id="pbw-demo-msg" aria-live="polite" style="font-family:var(--font-ui);font-size:12px;color:var(--cb-mute);text-align:center">Tap your score — just once, to feel it.</div>' +
       '</div>';
-    _stageCard({ eyebrow: "Your first card", body: _voiceLine("demoHole"), pose: "tipCap", extraHtml: card, stepIdx: 4 });
+    _stageCard({ eyebrow: "Your first card", body: _voiceLine("demoHole"), pose: "tipCap", extraHtml: card, stepIdx: 6 });
     var fired = false;
     Array.prototype.forEach.call(_root.querySelectorAll(".pbw-demo-score"), function (btn) {
       btn.onclick = function () {
@@ -219,9 +233,9 @@
         if (msg) { msg.textContent = _voiceLine("win"); msg.style.color = "var(--cb-ink)"; msg.style.fontWeight = "600"; }
         if (window.pbCaddy) { try { window.pbCaddy.setPose("pump"); } catch (e) {} }
         if (window.pbCelebrate) { try { window.pbCelebrate({ key: "ftue-demo" }); } catch (e) {} }
-        var prim = '<div class="pbw-actions" style="margin-top:12px"><button class="primary" id="pbw-finish">Start my first real round</button></div>';
+        var prim = '<div class="pbw-actions" style="margin-top:12px"><button class="primary" id="pbw-finish">One more thing — meet your caddy</button></div>';
         document.getElementById("pbw-demo-card").insertAdjacentHTML("afterend", prim);
-        document.getElementById("pbw-finish").onclick = function () { _complete("done"); };
+        document.getElementById("pbw-finish").onclick = function () { _beat(7); };
       };
     });
   }
