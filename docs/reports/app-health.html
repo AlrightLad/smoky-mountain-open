@@ -822,9 +822,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-12T04:22:29.595565Z",
+  "generated_at": "2026-06-12T04:53:36.607259Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 87.1,
+  "overall_score": 87.6,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -838,9 +838,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 92.1,
+    "pre_deduction_score": 92.6,
     "deduction": 5,
-    "post_deduction_score": 87.1
+    "post_deduction_score": 87.6
   },
   "dimensions": {
     "A1_roadmap": {
@@ -999,17 +999,11 @@
       "weak_points": []
     },
     "A12_operational": {
-      "score": 90,
+      "score": 100,
       "status": "green",
-      "label": "pipeline=green · 3 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=green · 2 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
-      "weak_points": [
-        {
-          "what": "3 of last 10 cron watcher runs hit skip-dirty",
-          "where": "scripts/cron/logs/*-downloads-watcher.log",
-          "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
-        }
-      ],
+      "weak_points": [],
       "details": {
         "watcher_last_status": "PASS",
         "watcher_exit_reason": "no-new-files"
@@ -1034,9 +1028,9 @@
     }
   ],
   "audit_trigger": {
-    "sha": "df62e089",
-    "subject": "docs(audit): ParCoin economy verified clean (P9) â€” balance traces to source",
-    "committed_at": "2026-06-12T00:21:54-04:00",
+    "sha": "879406ca",
+    "subject": "docs(audit): visual-loop unblock runbook + emulator state (auth 9099 down, smoke uses prod)",
+    "committed_at": "2026-06-12T00:53:12-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
