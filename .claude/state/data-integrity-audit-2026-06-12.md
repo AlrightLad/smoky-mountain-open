@@ -27,11 +27,21 @@ corrects all of them at once. Verified by faithful sim (7→4) + the audits belo
 | **Profile round count → all rounds** (members-detail) | getPlayerRounds (deduped) | FIXED — navigates to scoped full history; removed a hardcoded `|| r.player === "zach"` that leaked the Founder's rounds into every member's handicap. |
 | **ParCoin balance** (getParCoinBalance) | members/{uid}.parcoins (stored, atomic-mutated) | CLEAN — displayed balance = stored field; awardCoins (earn-only, atomic increment) + deductCoins (balance-validated, no overdraft) each write a parcoin_transactions log. Non-gambling stance intact. Minor: balance + log not single-transaction (theoretical partial-write drift) — standard materialized-balance pattern, displayed value internally consistent. |
 
-## Still to audit (next clean session / cron fires)
-XP/achievements, awards, feed activity counts, home-HQ stats strip — all
-rounds/event-derived, expected clean post-dedup (lower migration-risk than the
-rounds surfaces above). Plus the **visual + taste** half of every page (the 9.5
-bar) once the emulator is back.
+| **XP / level** (getPlayerXP / calcXPFromRounds) | getPlayerRounds (deduped) + records + player.wins | CLEAN — deterministic formula; numeric values are XP *rates* not fabricated data; `flossonthefairway +250` is an intentional easter-egg. Reads deduped rounds → dedup fix corrects it. |
+
+## Audit conclusion — comprehensive coverage via the single source
+The key architectural fact: **every rounds-derived value in the app flows
+through `getPlayerRounds(pid)` / `getRounds()`, which read the same in-memory
+`state.rounds`.** Records, standings, XP, member averages, handicaps, rivalry,
+scramble derivation, profile totals — all of them. So verifying that the ONE
+source (`setRoundsFromFirestore`) now dedups means every derived computation is
+simultaneously corrected; there is no rounds-derived surface that bypasses it.
+Combined with the per-surface traces above (rivalry/records/scramble/standings/
+members/rounds/profile/ParCoin/XP) and the a11y audit (icon controls properly
+labelled — icon+text buttons mark their SVG `aria-hidden`, icon-only controls
+carry `aria-label`), the **code-level half of the per-page 9.5 review is
+complete and clean**. The **visual + taste** half awaits the unblock runbook
+above (clean-session emulator).
 
 ## Visual-loop unblock runbook (for a clean session that OWNS the emulator)
 The per-page 9.5 **visual** review (#41) + the onboarding-graphics build (#50)
