@@ -519,11 +519,26 @@ function purchaseCosmetic(itemId) {
   // v8.24.50 — never sell what doesn't render yet, never sell the earned.
   if (item.arriving) { Router.toast("Arriving soon — not on sale yet"); return; }
   if (item.earnedBy) { Router.toast(item.earnedBy + ". Not for sale."); return; }
-  if (item.retired && owned === undefined) {} // (retired items simply aren't rendered with buy buttons)
 
   var balance = getParCoinBalance(currentUser.uid);
   if (balance < item.price) { Router.toast("Not enough ParCoins"); return; }
 
+  // v8.25.26 — two-click buy: the click that reaches here SELECTS the item; the
+  // branded confirm below is the second, deliberate click that actually spends
+  // ParCoins. "See-before-you-spend" — never deduct on a single tap. The ParCoin
+  // pack purchase (when its IAP UI ships) routes through the same confirm pattern.
+  pbConfirm({
+    title: "Buy " + item.name + "?",
+    message: "Spends " + item.price + " ParCoins — you'll have " + (balance - item.price) + " left.",
+    confirmLabel: "Buy · " + item.price,
+    cancelLabel: "Not yet"
+  }).then(function(ok) { if (ok) _doPurchaseCosmetic(item); });
+}
+
+// Actual ParCoin deduction + ownership grant. Reached only after the buyer
+// confirms in purchaseCosmetic()'s dialog (the second, deliberate click).
+function _doPurchaseCosmetic(item) {
+  var itemId = item.id;
   // Deduct coins
   db.collection("members").doc(currentUser.uid).update({
     parcoins: firebase.firestore.FieldValue.increment(-item.price),
