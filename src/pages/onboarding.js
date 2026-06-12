@@ -57,6 +57,13 @@ function renderOnboardingStep() {
     }
   ];
 
+  // v8.25 — the 5 lecture screens are RETIRED. The Caddy-guided FTUE walkthrough
+  // (window.pbWalk, fired on first home arrival) is now the sole teaching surface,
+  // so onboarding keeps ONLY the profile form (name/handle/avatar) — this avoids
+  // the 10-beats-back-to-back double-education the design flagged. The lecture
+  // content above is preserved in git history if it's ever wanted back.
+  steps = [];
+
   if (_onboardingStep >= steps.length) {
     renderProfileSetup();
     return;

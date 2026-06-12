@@ -143,7 +143,7 @@ async function runOnBrowser(browserName, runDir) {
   // full-screen overlay post-sign-in (waits for a tap). In the smoke that
   // would block every scenario's interaction, so mark it seen before any
   // page load. S27 resets this itself to validate the gate.
-  await page.addInitScript(function() { try { sessionStorage.setItem('pb_intro_seen', '1'); } catch (e) {} });
+  await page.addInitScript(function() { try { sessionStorage.setItem('pb_intro_seen', '1'); sessionStorage.setItem('pb_wt_routed', '1'); } catch (e) {} });
   var capture = makeCapture(page, runDir, browserName);
 
   var results = [];

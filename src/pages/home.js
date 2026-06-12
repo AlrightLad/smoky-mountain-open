@@ -82,6 +82,10 @@ function _bindHQResize() {
 
 Router.register("home", function() {
   _bindHQResize();
+  // First-run: fire the Caddy walkthrough once home has painted. pbWalk.route()
+  // self-gates on members/{uid}.walkthrough.ftueState — it runs the FTUE once for
+  // a brand-new member, then never again (and no-ops if already running).
+  try { if (window.pbWalk && window.pbWalk.route) setTimeout(function () { window.pbWalk.route(); }, 700); } catch (e) {}
   var ctx = _buildHomeContext();
   var w = window.innerWidth;
   var pageEl = document.querySelector('[data-page="home"]');

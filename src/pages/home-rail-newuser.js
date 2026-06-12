@@ -222,7 +222,7 @@ function _renderStartFirstRoundPanel(ctx) {
   var h = '<div style="background:var(--cb-green);border-radius:var(--r-4);padding:var(--sp-6);color:var(--cb-chalk)">';
   h += '<div style="font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2px;color:var(--cb-brass);text-transform:uppercase;margin-bottom:18px">FIRST MOVE</div>';
   // Primary CTA — brass-on-chalk
-  h += '<div onclick="Router.go(\'playnow\')" style="background:var(--cb-chalk);color:var(--cb-ink);height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:var(--sp-2);cursor:pointer;margin-bottom:10px">';
+  h += '<div data-walk="play-cta" onclick="Router.go(\'playnow\')" style="background:var(--cb-chalk);color:var(--cb-ink);height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;gap:var(--sp-2);cursor:pointer;margin-bottom:10px">';
   h += '<span style="font-family:var(--font-ui);font-size:14px;font-weight:600">Start a round</span>';
   h += '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--cb-brass)" stroke-width="2"><path d="M5 4l4 4-4 4"/></svg>';
   h += '</div>';

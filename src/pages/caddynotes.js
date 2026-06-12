@@ -22,6 +22,7 @@ Router.register("caddynotes", function() {
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">June 2026 · The polish pass</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
+    { item: "A guided welcome. The first time you walk into the Clubhouse, a caddy now shows you around — pick your caddy, answer one quick question, then play an un-losable practice hole that ends in confetti before you're turned loose on your first real round. Skippable from any step.", tag: "NEW" },
     { item: "Six Clubhouse looks. Settings → Display lets you dress the app your way — three to choose from today and three you unlock by playing. Pick your vibe; it follows you to every device you sign into.", tag: "NEW" },
     { item: "The Pro Shop is open. Spend your ParCoins on rings, nameplates, tee markers, card skins, and titles that ride along next to your name all over the club. The rarest pieces — a hole-in-one marker, the Green Jacket — can't be bought at any price; you earn those on the course.", tag: "NEW" },
     { item: "Parbaughs Wrapped. From the Season Recap, tap Play your Wrapped and your year in golf unfolds story-style — your rounds, your best 18, your home course, where you finished — ending in a link to your highlights you can share with anyone.", tag: "NEW" },

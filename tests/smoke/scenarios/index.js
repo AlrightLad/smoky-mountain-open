@@ -45,5 +45,7 @@ module.exports = [
   require('./s28-growth-trilogy.js'),
   require('./s29-rivalry-route.js'),
   require('./s30-xss-escaping.js'),
+  // v8.25.0 — onboarding walkthrough (FTUE): 5-beat spine + demo-hole win + teardown.
+  require('./s31-onboarding-walkthrough.js'),
   require('./s11-logout-cleanup.js')
 ];
