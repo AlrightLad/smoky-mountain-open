@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-12T15:58:21.183867Z",
+  "generated_at": "2026-06-12T16:04:48.406701Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 85.6,
   "overall_grade": "A-",
@@ -1001,18 +1001,18 @@
     "A12_operational": {
       "score": 60,
       "status": "yellow",
-      "label": "pipeline=red · 5 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=red · 6 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "5 of last 10 cron watcher runs hit skip-dirty",
+          "what": "6 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
       ],
       "details": {
         "watcher_last_status": "PASS",
-        "watcher_exit_reason": "skip-dirty"
+        "watcher_exit_reason": "skip-dirty-post-commit"
       }
     }
   },
@@ -1024,7 +1024,7 @@
       "dimension": "A5_code_quality"
     },
     {
-      "what": "5 of last 10 cron watcher runs hit skip-dirty",
+      "what": "6 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
@@ -1039,20 +1039,25 @@
       "dimension": "A5_code_quality"
     },
     {
-      "what": "5 of last 10 cron watcher runs hit skip-dirty",
+      "what": "6 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "8723df38",
-    "subject": "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)",
-    "committed_at": "2026-06-12T11:57:55-04:00",
-    "trigger": "cron",
-    "is_app_commit": false,
-    "app_files_touched": [],
-    "total_files_touched": 4
+    "sha": "998c9b6c",
+    "subject": "fix(onboarding): \"Replay the welcome tour\" now runs the tour (was the profile form) (v8.25.21)",
+    "committed_at": "2026-06-12T12:04:20-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "public/sw.js",
+      "src/core/utils.js",
+      "src/core/walkthrough.js",
+      "src/pages/settings.js"
+    ],
+    "total_files_touched": 6
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
