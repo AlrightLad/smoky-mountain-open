@@ -596,12 +596,46 @@ exports.onMemberRoleChange = functions
 // (cascade most, orphan moderation_log).
 // ══════════════════════════════════════════════════════════════════════
 
+// F10b (multi-league decision 2026-06-11) — 'rounds' is DELIBERATELY NOT in this
+// list. A round is a member's PERSONAL golf history (it feeds global handicap,
+// PRs, the profile round list) — deleting it when a league folds destroys data
+// the member earned, not the league's. Instead onLeagueDelete arrayRemoves the
+// leagueId from each round's leagueIds[] (preserveRoundsOnLeagueDelete below):
+// the round survives as a personal / other-league round. The other collections
+// here have no meaning outside their league, so they cascade.
 const CASCADE_DELETE_COLLECTIONS = [
-  'rounds', 'chat', 'teetimes', 'wagers', 'bounties',
+  'chat', 'teetimes', 'wagers', 'bounties',
   'scrambleTeams', 'calendar_events', 'scheduling_chat',
   'trips', 'tripscores', 'partygames', 'social_actions',
   'syncrounds', 'liverounds', 'rangeSessions',
 ];
+
+// Preserve rounds when their league is deleted: strip the leagueId from
+// leagueIds[] (the multi-league array) AND clear the legacy scalar leagueId when
+// it points at the now-deleted league, so the round becomes personal-only (or
+// stays in whatever other leagues it was published to). Paginated batch update.
+async function preserveRoundsOnLeagueDelete(leagueId) {
+  let touched = 0;
+  while (true) {
+    const snapshot = await db.collection('rounds')
+      .where('leagueId', '==', leagueId)
+      .limit(400).get();
+    if (snapshot.empty) break;
+    const batch = db.batch();
+    snapshot.docs.forEach(d => {
+      const data = d.data() || {};
+      const update = { leagueIds: FieldValue.arrayRemove(leagueId) };
+      // The scalar still drives today's readers; null it so the orphaned round
+      // isn't queried by a (now-gone) league and reads as personal history.
+      if (data.leagueId === leagueId) update.leagueId = null;
+      batch.update(d.ref, update);
+    });
+    await batch.commit();
+    touched += snapshot.size;
+    if (snapshot.size < 400) break;
+  }
+  return touched;
+}
 
 async function deleteByLeagueId(collName, leagueId) {
   let total = 0;
@@ -644,6 +678,15 @@ exports.onLeagueDelete = functions
         console.error(`[LeagueDelete] Failed sweeping ${collName}:`, err.message);
         // Keep going — other collections may still be cleanable.
       }
+    }
+
+    // 1b. F10b — PRESERVE rounds (personal golf history): strip this league from
+    // their leagueIds[] instead of deleting them. See preserveRoundsOnLeagueDelete.
+    try {
+      const n = await preserveRoundsOnLeagueDelete(leagueId);
+      if (n > 0) console.log(`[LeagueDelete]   rounds: ${n} preserved (leagueId stripped, not deleted)`);
+    } catch (err) {
+      console.error(`[LeagueDelete] Failed preserving rounds:`, err.message);
     }
 
     // 2. Delete joinRequests subcollection (ephemeral, no audit value).
