@@ -218,3 +218,6 @@ docs/reports/sessions.html
 /wg-*.png
 .claude/state/backups/
 .claude/state/sentry/events-*.json
+
+# Local visual-critique screenshots (kept local per artifacts-local rule)
+.claude/state/onboarding-critique-2026-06-12/*.png
