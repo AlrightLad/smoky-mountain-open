@@ -33,7 +33,25 @@ rounds/event-derived, expected clean post-dedup (lower migration-risk than the
 rounds surfaces above). Plus the **visual + taste** half of every page (the 9.5
 bar) once the emulator is back.
 
+## Visual-loop unblock runbook (for a clean session that OWNS the emulator)
+The per-page 9.5 **visual** review (#41) + the onboarding-graphics build (#50)
+are gated on the Firebase emulator. Overnight state (2026-06-12): a full suite
+is running (hub 4400, UI 4000, firestore 8080 + rules) but the **auth emulator
+(9099) is DOWN** and `emulator-data/` is empty — and that process isn't this
+session's to restart (only-kill-what-you-own). Smoke is unaffected throughout
+(it uses `?smoke=1` → **production**, not the emulator). To unblock cleanly:
+1. Stop any emulator you own, then `npm run emulator:start` (brings up auth 9099
+   + firestore 8080 + rules from `--import=./emulator-data`).
+2. Seed a capture user with prod-shape data (profile + a few rounds for
+   `test_zach_uid_01`) via admin SDK against `FIRESTORE_EMULATOR_HOST=127.0.0.1:8080`
+   — emulator-data is empty, so pages render blank without this.
+3. `node scripts/visual-audit/capture-critique-2026-05-29.mjs` (mints a custom
+   token, signs in via the auth emulator, walks ALL_PAGES, screenshots). Run it
+   at `CAPTURE_DEVICE="iPhone 14 Pro"` + `"Pixel 7"` + desktop (PWA is mobile-first).
+4. Read each PNG → critique vs the 9.5 bar + peer refs → fix → re-capture.
+
 ## Net
 No new data-integrity failures found beyond the rivalry P0 (fixed + shipped) and
 the benign duplicate member (logged for the Founder). The migration's only live
 fallout was the client-state round duplication, now neutralized at the source.
+The visual half of the per-page review awaits the runbook above (clean session).
