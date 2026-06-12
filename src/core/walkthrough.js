@@ -348,5 +348,16 @@
     return null;
   }
 
-  window.pbWalk = { runFtue: runFtue, route: route, coachmark: coachmark, spotlight: spotlight, skip: skip, _complete: _complete };
+  // Explicit user-triggered replay (Settings → "Replay the welcome tour"). The
+  // settings button previously routed to Router.go('onboarding'), which renders
+  // the PROFILE-SETUP form (the lecture screens were retired) — NOT this tour, so
+  // "replay" never showed the walkthrough (Founder: "onboarding not playing").
+  // Go to home first so the bottom-nav spotlight anchors exist, then run the FTUE
+  // from beat 0, bypassing route()'s once-per-session + version gates.
+  function replay() {
+    try { if (typeof Router !== "undefined" && Router.go) Router.go("home"); } catch (e) {}
+    setTimeout(function () { runFtue(0); }, 450);
+  }
+
+  window.pbWalk = { runFtue: runFtue, route: route, coachmark: coachmark, spotlight: spotlight, skip: skip, replay: replay, _complete: _complete };
 })();

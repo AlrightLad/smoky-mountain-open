@@ -272,7 +272,7 @@ Router.register("settings", function(params) {
   // v8.24.13 — baseline first-run fix: "Skip" on the welcome tour used to be
   // unrecoverable. The tour can now be replayed any time from here.
   about += '<div class="set-linklist">';
-  about += '<button type="button" class="set-linkrow" onclick="Router.go(\'onboarding\')"><span>Replay the welcome tour</span>' + _setChevron() + '</button>';
+  about += '<button type="button" class="set-linkrow" onclick="if(window.pbWalk&&window.pbWalk.replay){window.pbWalk.replay()}else{Router.go(\'home\')}"><span>Replay the welcome tour</span>' + _setChevron() + '</button>';
   about += '<button type="button" class="set-linkrow" onclick="window.open(\'privacy.html\',\'_blank\',\'noopener\')"><span>Privacy policy</span>' + _setChevron() + '</button>';
   about += '<button type="button" class="set-linkrow" onclick="window.open(\'terms.html\',\'_blank\',\'noopener\')"><span>Terms of service</span>' + _setChevron() + '</button>';
   about += '</div>';
