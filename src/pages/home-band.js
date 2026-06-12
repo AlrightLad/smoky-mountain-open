@@ -102,7 +102,8 @@ function _renderActivityFeedCompact(ctx, limit) {
         // revert state. Uses `data-likes-count` (not `data-count`) to avoid
         // collision with src/core/animate.js initCountAnimations.
         b += '<button data-action="kudos" data-i-liked="' + (iLikedR ? '1' : '0') + '" data-likes-count="' + rLikes.length + '" type="button" class="hq-feed-card__action" onclick="event.stopPropagation();feedToggleLike(\'' + it.roundId + '\')" style="color:' + rLikeColor + '"><svg viewBox="0 0 16 16" width="11" height="11" fill="' + (iLikedR ? "currentColor" : "none") + '" stroke="currentColor" stroke-width="1.3"><path d="M8 14s-5.5-3.5-5.5-7A3.5 3.5 0 018 4a3.5 3.5 0 015.5 3c0 3.5-5.5 7-5.5 7z"/></svg><span>' + rLikeLabel + '</span></button>';
-        b += '<button data-action="teetap" data-i-tapped="' + (iTappedR ? '1' : '0') + '" data-tap-count="' + rTeeTaps.length + '" aria-pressed="' + (iTappedR ? 'true' : 'false') + '" type="button" class="hq-feed-card__action" onclick="event.stopPropagation();feedToggleTeeTap(\'' + it.roundId + '\')" style="color:' + rTapColor + '"><svg viewBox="0 0 16 16" width="11" height="11" fill="' + (iTappedR ? "currentColor" : "none") + '" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="4.5" r="2.6"/><path d="M8 7.1V12M5.8 12.5h4.4"/></svg><span>' + rTapLabel + '</span></button>';
+        // v8.25.34 — Tee Tap removed from League Pulse too: one appreciation
+        // reaction (Kudos) app-wide (Founder 2026-06-12). rTeeTaps/rTapLabel inert.
         // v8.21.0 (Ship 5+6 Phase 5 / H1): Comment button opens inline input
         // on this card via feedShowCommentInput. Members no longer leave the
         // page to comment.
