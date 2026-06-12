@@ -21,15 +21,33 @@ authed app stayed gated. Screenshots: `ftue-1-welcome.png`, `ftue-2-calibrate.pn
   Hits **every** Founder concern: last beat ✓, explains what it is ✓, previewable
   ✓, changeable ✓, four caddies ✓.
 
-### The gap — the caddy FIGURE
-A crude dark stick-figure (tipCap pose). It's the brand mascot/guide but reads as
-a basic SVG, not a charming character — this is the "graphics suck" call. It also
-floats in ~40% empty card space on the shorter beats. Two notes:
-- The fix is the **graphics leap (#50)** — a polished Lottie caddy. Founder's lane
-  pick A/B/C (plan: `task-queue/founder/onboarding-graphics-PLAN-2026-06-12.md`).
-- The figure isn't built to recolor per-caddy (body is fixed `--cb-felt`; only the
-  cap-button + clubs use the accent), so a per-caddy **visual** preview also rides
-  the #50 rebuild rather than being a clean tweak.
+### The caddy FIGURE — corrected assessment (close-up: ftue-figure-closeup.png)
+**Correction:** an earlier note called it a "crude stick figure" — that was an
+over-harsh read from a small mobile shot. The close-up shows a **competent,
+deliberate filled caddy silhouette**: tapered torso (real mass, not a stick),
+billed cap with a brass button, legs with a slight stance, a 2-segment gesturing
+arm, and a **golf bag with three brass club-heads fanned up + a chest strap**.
+It IS on-brand and reads as a caddy.
+
+**The one genuine, objective issue** (not subjective taste): in the `tipCap`
+pose the raised gesturing arm crosses up-left and **clusters/overlaps with the
+bag body + the fanned club-heads**, so that corner of the silhouette reads as a
+tangle rather than a clean "tipping the cap." It floats with some whitespace on
+the shorter beats. This is a **pose-geometry refinement** (adjust tipCap's
+armDeg/lagDeg so the arm clears the bag) — deliberately NOT attempted
+autonomously overnight: tuning the rig coordinates blind to Founder taste, in a
+long session, risks making it worse over several iterations. Best done in a
+visual-iteration session.
+
+**Implication for the lane decision (#50):** because the SVG figure is already
+competent, **Lane C (polish the SVG)** is more viable than my first note implied
+— a focused pose declutter + the per-caddy accent may get it to the bar without
+a full Lottie rebuild. The figure isn't currently built to recolor per-caddy
+(body fixed `--cb-felt`; only cap-button + clubs use the accent), so a per-caddy
+visual preview needs either that rig change (Lane C+) or the Lottie path (A/B).
+NOTE: the Founder's "graphics suck" likely also targets the **sign-in tee-shot
+swing** (`intro.js`), which plays POST-AUTH and was NOT capturable here — that's
+the unseen piece, reviewable only with the emulator/clean-session.
 
 ### Bonus — P0 confirmed live
 The home-screen background behind the FTUE shows "RIVALRY · You own Nick, 4-0" —
