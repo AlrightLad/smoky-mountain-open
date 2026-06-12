@@ -15,3 +15,15 @@
 [ingest-session-transcripts] wrote session-transcript-summary.json (376 buckets, 18479298946 total tokens, 314 sessions) [write-content-changed]
 
 --- scripts/aggregate-token-usage.py ---
+[aggregate-token] real_events=377 estimated_events=18742 manual_entries=0
+[aggregate-token] all-time: real=18479400946 estimated=19578080 manual=0
+[aggregate-token] snapshot write=True (write-content-changed) -> .claude\state\telemetry\aggregates\token-usage-snapshot.json
+[aggregate-token] cursor   write=True (write-content-changed) -> .claude\state\telemetry\aggregates\.token-usage-cursor.json
+
+--- scripts/aggregate-test-health.py ---
+[aggregate-test-health] OK status=green timestamp=2026-06-12T12:40:49Z write=False (skip-idempotent-grace-content-unchanged-22445s)
+
+--- scripts/aggregate-security-health.py ---
+[aggregate-security-health] OK status=yellow cred_leaks=0 vuln_deps=1 write=False (skip-idempotent-grace-content-unchanged-45514s)
+
+--- scripts/aggregate-approvals-pipeline.py ---
