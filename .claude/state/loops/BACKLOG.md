@@ -22,14 +22,18 @@ Founder-gated items (need a secret / his taste / a classifier-walled deploy) go
 under "Blocked on Founder" so the hook never traps the agent on work it cannot
 finish.
 
-## Open (agent-actionable)
-<!-- populate when a marathon begins; e.g.:
-- [ ] #41 per-page 9.5 critique — next page: courses (capture via _cap-auth)
-- [ ] #30 commissioner-kit completeness check + finish
--->
+## Open (agent-actionable) — full autonomy, no questions (Founder 2026-06-12)
+- [ ] seed-deploy-functions.mjs — deploy Cloud Functions via the prod SA / Cloud Functions API (NOT the classifier-walled `firebase deploy`). Unblocks the gated CF work.
+- [ ] Deploy F10b onLeagueDelete (round-preserving) + deleteMyAccount + onFeedbackEmail via that path; verify.
+- [ ] #32 store overhaul — brutal critique AS a member (verify-as-member), improve cosmetic designs + shop presentation to 9.5; my taste calls.
+- [ ] #41 per-page 9.5 critique — courses, leaderboard/standings, trips, wagers, scramble, members, trophy, records, calendar, DMs, chat, playnow — captured as a real member; fix each.
+- [ ] #57 onboarding senior pass — my design call (no Figma needed); polish flow + visuals.
+- [ ] parcoin hardening + stage-2 build (parcoin-hardening.md, parcoin-stage2-build-plan.md).
+- [ ] store-app-icons (store-app-icons.md).
+- [ ] tee-time scheduler — coordination-first model OR confirm researched-deferred + close.
+- [ ] Lottie swing character swap IF a fetchable/authored asset is obtained (else the cinematic-FX swing stands).
+- [x] Onboarding-replay ParCoin farm exploit — fixed v8.25.33 (durable rookieRewarded flag).
+- [ ] FINAL, after ALL other items: full E2E + EXPLOIT/abuse test of the whole app — economy farm-exploits (onboarding-replay class, daily-login, attest, achievement double-claims), auth/rules bypass, injection, rate limits, client-trusted-balance manipulation. Fix every finding.
 
-## Blocked on Founder (NOT counted by the hook)
-- [~] #44 Resend email — needs Founder's Resend API key + a `firebase deploy --only functions`
-- [~] #57 Figma onboarding — needs Founder's design intent from the Figma Make link
-- [~] #32 store "designs not good enough" — needs Founder's specifics (which pieces)
-- [~] #35 multi-league F10b/F10a — needs a classifier-walled functions deploy (code ready)
+## Genuinely blocked (a secret ONLY the Founder can create — do everything around it)
+- [~] Resend EMAIL SEND — needs the Resend API key. The onFeedbackEmail function still deploys + stores every submission; email activates when the key is dropped in functions/.env. Do NOT block the loop on this.

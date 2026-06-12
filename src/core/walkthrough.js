@@ -276,6 +276,13 @@
   function _complete(state) {
     var uid = _uid();
     if (uid && typeof db !== "undefined" && db) {
+      // v8.25.33 — EXPLOIT FIX: the Rookie grant must be once-EVER, not once-per-
+      // completion. awardCoins' dedup is in-memory (per session), so replaying the
+      // onboarding across reloads farmed ROOKIE_COINS infinitely (Founder-reported
+      // 2026-06-12). Gate on a DURABLE member-doc flag (walkthrough.rookieRewarded)
+      // written in the SAME patch as the grant, so a replay never re-awards.
+      var alreadyRewarded = !!(currentProfile && currentProfile.walkthrough && currentProfile.walkthrough.rookieRewarded);
+      var grantRookie = (state === "done" && !alreadyRewarded);
       var patch = {
         "walkthrough.ftueState": state,
         "walkthrough.ftueVersion": (typeof WALKTHROUGH_MAJOR !== "undefined" ? WALKTHROUGH_MAJOR : 1),
@@ -284,13 +291,14 @@
         "walkthrough.calibrationProfile": _calib,
         "walkthrough.ftueCompletedAt": (typeof fsTimestamp === "function" ? fsTimestamp() : new Date().toISOString())
       };
+      if (grantRookie) patch["walkthrough.rookieRewarded"] = true;
       try {
-        if (currentProfile) { currentProfile.walkthrough = Object.assign({}, currentProfile.walkthrough || {}, { ftueState: state, ftueVersion: patch["walkthrough.ftueVersion"], caddieVoice: _voice, calibrationProfile: _calib }); }
+        if (currentProfile) { currentProfile.walkthrough = Object.assign({}, currentProfile.walkthrough || {}, { ftueState: state, ftueVersion: patch["walkthrough.ftueVersion"], caddieVoice: _voice, calibrationProfile: _calib }); if (grantRookie) currentProfile.walkthrough.rookieRewarded = true; }
         db.collection("members").doc(uid).update(patch).catch(function () {});
       } catch (e) {}
-      // Rookie grant only on a genuine completion (not a skip). dedupKey makes it idempotent.
-      if (state === "done" && typeof awardCoins === "function") {
-        try { awardCoins(uid, ROOKIE_COINS, "onboarding", "Rookie — finished the walkthrough", "rookie_ftue_v" + patch["walkthrough.ftueVersion"]); } catch (e) {}
+      // Rookie grant: ONCE ever (first genuine completion), durable-flag-gated.
+      if (grantRookie && typeof awardCoins === "function") {
+        try { awardCoins(uid, ROOKIE_COINS, "onboarding", "Rookie — finished the walkthrough", "rookie_ftue_once"); } catch (e) {}
       }
     }
     _teardown();
