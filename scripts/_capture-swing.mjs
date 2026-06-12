@@ -9,9 +9,12 @@ if (!existsSync(OUT)) mkdirSync(OUT, { recursive: true });
 
 const FRAMES = [0, 0.25, 0.45, 0.53, 0.62, 0.66, 0.69, 0.82, 1.0];
 const b = await chromium.launch();
-const ctx = await b.newContext({ viewport: { width: 430, height: 760 }, deviceScaleFactor: 2 });
+const ctx = await b.newContext({ viewport: { width: 430, height: 760 }, deviceScaleFactor: 2, serviceWorkers: 'block' });
 const page = await ctx.newPage();
-await page.goto('https://parbaughs-staging.web.app/', { waitUntil: 'domcontentloaded' });
+// Suppress the auto-play swing (maybeShow returns early when seen) so the rAF
+// doesn't fight our static _applyAt poses; we then drive frames manually.
+await page.addInitScript(() => { try { sessionStorage.setItem('pb_intro_seen', '1'); } catch (e) {} });
+await page.goto('https://parbaughs-staging.web.app/?nocache=' + Date.now(), { waitUntil: 'domcontentloaded' });
 await page.waitForTimeout(2500);
 const hasIntro = await page.evaluate(() => typeof window.pbTeeIntro !== 'undefined');
 console.log('window.pbTeeIntro present:', hasIntro);

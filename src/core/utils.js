@@ -4,7 +4,7 @@
    ================================================ */
 
 // ── App version — single source of truth ──
-var APP_VERSION = "8.25.27";
+var APP_VERSION = "8.25.28";
 
 // ── Onboarding walkthrough (FTUE) — foundation constants/helpers ──
 // WALKTHROUGH_MAJOR is decoupled from APP_VERSION so a patch bump never
@@ -437,9 +437,29 @@ function toggleSection(id) {
 
 // ========== PWA SERVICE WORKER ==========
 if ('serviceWorker' in navigator) {
+  // v8.25.28 — fresh-code delivery fix. The SW skipWaiting()s + clients.claim()s,
+  // so a new version ACTIVATES on deploy — but the already-open page kept running
+  // the STALE bundle until a manual reload. That is why shipped fixes (e.g. the
+  // tee-shot swing) kept looking unchanged on the installed PWA: the home-screen
+  // app rarely fully closes, so the old JS lingered for days. Now:
+  //   1. controllerchange → reload ONCE so the page picks up the new code. Guarded
+  //      to only fire when a controller already existed (skips the first-visit
+  //      initial-claim, which would otherwise reload an already-fresh first load).
+  //   2. reg.update() on load + every 30 min so long-lived PWA sessions discover
+  //      new versions without waiting for a full app close.
+  var _swReloading = false;
+  if (navigator.serviceWorker.controller) {
+    navigator.serviceWorker.addEventListener('controllerchange', function() {
+      if (_swReloading) return;
+      _swReloading = true;
+      window.location.reload();
+    });
+  }
   window.addEventListener('load', function() {
     navigator.serviceWorker.register((window.__PB_BASE__ || '/') + 'sw.js').then(function(reg) {
       pbLog('[SW] Registered:', reg.scope);
+      try { reg.update(); } catch (e) {}
+      setInterval(function() { try { reg.update(); } catch (e) {} }, 30 * 60 * 1000);
     }).catch(function(err) {
       pbWarn('[SW] Registration failed:', err);
     });
