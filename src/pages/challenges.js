@@ -45,12 +45,12 @@ function renderChallengeList() {
     });
   } else {
     h += '<div style="padding:24px 16px;text-align:center">';
-    h += '<div style="margin-bottom:12px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5"><path d="M14 34l10-10 10 10"/><path d="M14 24l10-10 10 10"/><circle cx="14" cy="14" r="4"/><circle cx="34" cy="14" r="4"/></svg></div>';
+    h += '<div style="margin-bottom:14px"><svg viewBox="0 0 48 48" width="60" height="60" fill="none" stroke="var(--gold)" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M14 34l10-10 10 10"/><path d="M14 24l10-10 10 10"/><circle cx="14" cy="14" r="4"/><circle cx="34" cy="14" r="4"/></svg></div>';
     h += '<div style="font-family:var(--font-display);font-size:18px;color:var(--gold);margin-bottom:6px">No Active Challenges</div>';
     h += '<div style="font-size:12px;color:var(--cb-ink-faint);line-height:1.5;max-width:280px;margin:0 auto 16px">Challenge a friend to a head-to-head match. Bet coins on who shoots lower, who hits more fairways, or who survives the back nine.</div>';
     h += '<button class="btn full green" onclick="Router.go(\'challenges\',{create:true})" style="max-width:240px;margin:0 auto;font-size:13px;padding:14px">Start a Challenge</button>';
     h += '<div style="margin-top:20px;text-align:left">';
-    h += '<div style="font-size:9px;color:var(--cb-mute);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;text-align:center">Challenge Ideas \u00b7 tap to start</div>';
+    h += '<div style="font-size:9px;color:var(--cb-eyebrow);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;text-align:center">Challenge Ideas \u00b7 tap to start</div>';
     // v8.24.89 \u2014 the idea chips are real actions, not decorative text. Each one
     // routes into the create flow and pre-fills the Stakes field (page-sweep:
     // they looked tappable as paper cards but were inert \u2014 an affordance lie).
@@ -68,7 +68,11 @@ function renderChallengeList() {
       // the apostrophe in "buddy's" and any future punctuation without breaking
       // out of the attribute). escHtml then guards the resulting attribute value.
       var _arg = escHtml(JSON.stringify(ex.stakes));
-      h += '<button type="button" class="ch-idea" onclick=\'Router.go("challenges",{create:true,stakes:' + _arg + '})\' style="display:flex;align-items:center;gap:9px;width:100%;text-align:left;padding:13px;margin-bottom:6px;background:var(--cb-paper);border:1px solid var(--border);border-radius:var(--r-2);font-size:12px;color:var(--cb-ink);min-height:44px;cursor:pointer;font-family:inherit;transition:border-color .15s ease,background .15s ease" onmouseover="this.style.borderColor=\'var(--gold)\'" onmouseout="this.style.borderColor=\'var(--border)\'"><span style="width:6px;height:6px;border-radius:50%;background:var(--gold);flex:none"></span><span style="flex:1">' + escHtml(ex.label) + '</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--cb-mute)" stroke-width="2" style="flex:none"><path d="M9 6l6 6-6 6"/></svg></button>';
+      // v8.25.20 — chips are deliberately SECONDARY to the filled-brass "Start a
+      // Challenge" CTA above (page-critique MED #1: a bright paper fill + filled
+      // CTA read as two competing primaries). Transparent ground + hairline border
+      // = quiet outline affordance; hover warms to paper so they still feel tappable.
+      h += '<button type="button" class="ch-idea" onclick=\'Router.go("challenges",{create:true,stakes:' + _arg + '})\' style="display:flex;align-items:center;gap:9px;width:100%;text-align:left;padding:13px;margin-bottom:6px;background:transparent;border:1px solid var(--border);border-radius:var(--r-2);font-size:12px;color:var(--cb-ink-faint);min-height:44px;cursor:pointer;font-family:inherit;transition:border-color .15s ease,background .15s ease,color .15s ease" onmouseover="this.style.borderColor=\'var(--gold)\';this.style.background=\'var(--cb-paper)\';this.style.color=\'var(--cb-ink)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.background=\'transparent\';this.style.color=\'var(--cb-ink-faint)\'"><span style="width:6px;height:6px;border-radius:50%;background:var(--gold);flex:none"></span><span style="flex:1">' + escHtml(ex.label) + '</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--cb-mute)" stroke-width="2" style="flex:none"><path d="M9 6l6 6-6 6"/></svg></button>';
     });
     h += '</div></div>';
   }

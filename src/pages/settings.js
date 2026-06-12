@@ -35,13 +35,21 @@ Router.register("settings", function(params) {
     if (currentUser.email) {
       acc += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Email</div></div><div class="set-row__value set-row__value--mono">' + escHtml(currentUser.email) + '</div></div>';
     } else {
-      acc += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Email</div></div><div class="set-row__value" style="color:var(--cb-mute);font-size:13px">Not on file</div></div>';
+      // Empty state reads in the same mono value column as a filled email,
+      // just muted — so the row is consistent whether or not an email exists.
+      acc += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Email</div></div><div class="set-row__value set-row__value--mono" style="color:var(--cb-mute)">Not on file</div></div>';
     }
+    // Verification state reconciled to the ledger row (was the only boxed card
+    // in the group): label in the main column, "Send verification" as the
+    // mono set-link action that matches every other inline action on the page.
     if (!currentUser.emailVerified) {
-      acc += '<div class="set-note set-note--mute" style="margin:10px 0 4px;display:flex;justify-content:space-between;align-items:center;gap:10px"><span>Your email is not verified yet.</span><button class="set-link" onclick="sendVerificationEmail()">Send verification</button></div>';
+      acc += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Email verification</div><div class="set-row__desc">Your email is not verified yet.</div></div><button class="set-link" onclick="sendVerificationEmail()">Send verification</button></div>';
     }
     acc += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Username</div></div><div class="set-row__value">' + escHtml(currentProfile ? (currentProfile.username || currentProfile.name) : "—") + '</div></div>';
     acc += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Role</div></div><div class="set-row__value">' + escHtml(currentProfile ? (currentProfile.role || "Member") : "—") + '</div></div>';
+    // Sync is a live status string (online/offline) — kept in the mono value
+    // column like Email + App version (the house pattern for machine values),
+    // tinted moss/claret to read at a glance.
     acc += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Sync</div></div><div class="set-row__value set-row__value--mono" style="color:' + (syncStatus === "online" ? "var(--cb-moss)" : "var(--cb-claret)") + '">' + escHtml(String(syncStatus)) + '</div></div>';
   } else {
     acc += '<div class="set-row__desc">You are not signed in.</div>';
@@ -378,6 +386,15 @@ function _setChevron() {
 // states need real CSS, so a single scoped <style> beats inline styles.
 function _settingsScopedCss() {
   return '<style>' +
+    // Vertical rhythm (MED): even the gap from the "Settings." rule → first
+    // section "Account" → first ledger row. The masthead rule already carries
+    // its own 4px bottom margin; pin the first section flush to the grid so the
+    // distance rule→head matches head→first-row (both ~14px), giving the page a
+    // single consistent first-screen cadence.
+    '.set-wrap .set-grid{margin-top:14px}' +
+    '.set-detail .set-section:first-child{margin-top:0}' +
+    '.set-detail .set-section:first-child .set-section__head{margin-top:0}' +
+    '.set-detail .set-section:first-child .set-row:first-of-type{padding-top:0}' +
     // Tier 2 — navigation link rows: text weight, no heavy outline, chevron.
     '.set-linklist{display:flex;flex-direction:column;margin:2px 0 0}' +
     '.set-linkrow{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:46px;padding:11px 2px;background:transparent;border:0;border-bottom:1px solid var(--cb-chalk-3);cursor:pointer;font-family:var(--font-ui);font-size:13.5px;font-weight:600;color:var(--cb-ink);text-align:left;transition:color .15s ease,padding-left .15s ease}' +

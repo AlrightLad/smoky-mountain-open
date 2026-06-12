@@ -79,14 +79,23 @@ function renderRoundsList(params) {
   // beneath the headline numeral — total rounds + last-round date.
   // Stripe-pattern: every headline needs a comparative annotation.
   if (hcap !== null) {
-    h += '<div class="hcap-box"><div class="hcap-val" data-count="' + (+hcap).toFixed(1) + '" data-count-decimals="1">0.0</div><div class="hcap-label">Your handicap index</div>';
+    // MED-1 (design-pass 2026-06-12): the hero numeral and the league round-
+    // card scores share the same display-serif brass treatment, so "20.9" (an
+    // index) and "84" (a score) read as the same kind of number. An eyebrow
+    // tag above the numeral anchors THIS one as a handicap index — the round
+    // cards below carry no eyebrow, so the surface is now self-disambiguating.
+    // --cb-eyebrow is the WCAG-AA on-light eyebrow token (deep brass on the
+    // chalk hero ground); --font-mono matches the existing sub-line treatment.
+    h += '<div class="hcap-box"><div style="font-family:var(--font-mono);font-size:9.5px;font-weight:700;letter-spacing:2px;color:var(--cb-eyebrow);text-transform:uppercase;margin-bottom:6px">Handicap Index</div><div class="hcap-val" data-count="' + (+hcap).toFixed(1) + '" data-count-decimals="1">0.0</div><div class="hcap-label">Your playing index</div>';
     // Sub-line: rounds count + last-round date
     var lastRound = myRounds.slice().sort(function(a,b){return (b.timestamp||0)-(a.timestamp||0);})[0];
     var subBits = [];
+    var staleDays = null;
     subBits.push(myRounds.length + ' round' + (myRounds.length === 1 ? '' : 's'));
     if (lastRound && lastRound.date) {
       var dt = new Date(lastRound.date + "T00:00:00");
       var days = Math.floor((Date.now() - dt.getTime()) / 86400000);
+      staleDays = days;
       if (days === 0) subBits.push('played today');
       else if (days === 1) subBits.push('played yesterday');
       else if (days < 7) subBits.push('played ' + days + ' days ago');
@@ -94,14 +103,30 @@ function renderRoundsList(params) {
       else subBits.push('last round ' + Math.floor(days / 30) + ' month' + (days < 60 ? '' : 's') + ' ago');
     }
     h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-top:8px">' + subBits.join(' · ') + '</div>';
+    // MED-4 (design-pass 2026-06-12): the "last round N weeks ago" sub-line
+    // dead-ended with no next step. When the viewer's own play has gone stale
+    // (14+ days since their last round), offer a gentle, in-context CTA to log
+    // one. Self-scope only (isSelfScope) or unscoped self — a "log a round"
+    // nudge on another player's history would be nonsensical. Brass link via
+    // --cb-ink-link (WCAG-AA on the light chalk ground); 44px tap target.
+    if (staleDays !== null && staleDays >= 14 && (!scopePid || isSelfScope)) {
+      h += '<button onclick="Router.go(\'rounds\',{action:\'new\'})" style="display:inline-flex;align-items:center;gap:5px;min-height:44px;margin-top:6px;padding:4px 0;background:none;border:none;color:var(--cb-ink-link);font-family:var(--font-ui);font-size:12.5px;font-weight:600;cursor:pointer">Been a while — Log a round<svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg></button>';
+    }
     h += '</div>';
   } else {
     // v8.24.67 — empty-state numeral muted + made a progress count (was a
     // full-gold "—", which reads as a broken/missing value per the P9/P10
     // dead-dash rule). The path-forward line carries the meaning.
     var nMore = Math.max(0, 3 - myRounds.length);
-    h += '<div class="hcap-box"><div class="hcap-val hcap-val--empty">' + (myRounds.length || 0) + '<span class="hcap-val__of">/3</span></div><div class="hcap-label">Rounds toward your index</div>';
+    h += '<div class="hcap-box"><div style="font-family:var(--font-mono);font-size:9.5px;font-weight:700;letter-spacing:2px;color:var(--cb-eyebrow);text-transform:uppercase;margin-bottom:6px">Handicap Index</div><div class="hcap-val hcap-val--empty">' + (myRounds.length || 0) + '<span class="hcap-val__of">/3</span></div><div class="hcap-label">Rounds toward your index</div>';
     h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-top:8px">' + (nMore > 0 ? nMore + ' more to unlock your handicap' : 'log one more to refresh') + '</div>';
+    // MED-4 (design-pass 2026-06-12): low-activity empty state gets a gentle
+    // in-context CTA so the path-forward line is actionable, not just
+    // informational. Self-scope only (a nudge on another player's empty
+    // history would be nonsensical). --cb-ink-link is WCAG-AA on chalk; 44px.
+    if (!scopePid || isSelfScope) {
+      h += '<button onclick="Router.go(\'rounds\',{action:\'new\'})" style="display:inline-flex;align-items:center;gap:5px;min-height:44px;margin-top:6px;padding:4px 0;background:none;border:none;color:var(--cb-ink-link);font-family:var(--font-ui);font-size:12.5px;font-weight:600;cursor:pointer">Log a round<svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 3l5 5-5 5"/></svg></button>';
+    }
     h += '</div>';
   }
 
@@ -188,12 +213,18 @@ function renderRoundsList(params) {
 
         h += '<div class="card"><div class="round-card"><div class="rc-top"><div onclick="Router.go(\'rounds\',{roundId:\'' + r.id + '\'})" style="cursor:pointer;flex:1"><div class="rc-course">' + escHtml(r.course);
         if (isPR) {
-          h += ' <span title="Personal best" style="display:inline-flex;align-items:center;gap:3px;font-family:var(--font-mono);font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--gold, var(--cb-brass));background:rgba(201,169,97,0.16);padding:2px 6px;border-radius:3px;vertical-align:middle">★ PR</span>';
+          // MED-3 (design-pass 2026-06-12): the badge read "★ PR" — ambiguous
+          // (PR = personal record? press release?). Spelled out to "Best" with
+          // a star marker so it's unmistakable in golf context. title preserved.
+          h += ' <span title="Personal best" style="display:inline-flex;align-items:center;gap:3px;font-family:var(--font-mono);font-size:8.5px;font-weight:700;letter-spacing:1.2px;color:var(--gold, var(--cb-brass));background:rgba(201,169,97,0.16);padding:2px 6px;border-radius:3px;vertical-align:middle">★ BEST</span>';
         }
         h += '</div><div class="rc-date">' + r.date + ' · ' + escHtml(r.playerName||"") + (histTee ? ' · ' + histTee : '') + (r.holesPlayed && r.holesPlayed <= 9 ? (r.holesMode === "back9" ? ' · Back 9' : ' · Front 9') : '') + fmtLabel + '</div></div>';
         h += '<div style="display:flex;align-items:center;gap:6px"><div style="text-align:right"><div class="rc-score">' + r.score + '</div>';
         if (vsParStr) {
-          h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:600;color:' + vsParColor + ';letter-spacing:0.5px;margin-top:2px;line-height:1">' + vsParStr + ' to par</div>';
+          // MED-2 (design-pass 2026-06-12): delta moved off --font-mono onto the
+          // page font family (--font-ui) so it matches the rest of the row;
+          // tabular-nums keeps the digits aligned without the monospace face.
+          h += '<div style="font-family:var(--font-ui);font-variant-numeric:tabular-nums;font-size:10px;font-weight:600;color:' + vsParColor + ';letter-spacing:0.3px;margin-top:2px;line-height:1">' + vsParStr + ' to par</div>';
         }
         h += '</div>';
         h += _shareIconBtn(r.id);
@@ -217,7 +248,9 @@ function renderRoundsList(params) {
         h += '<div class="card"><div class="round-card"><div class="rc-top"><div style="flex:1"><div class="rc-course">' + escHtml(g.teamName) + ' · Scramble</div><div class="rc-date">' + escHtml(g.course) + ' · ' + g.date + (g.tee ? ' · ' + g.tee : '') + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(g.players.join(", ")) + '</div></div>';
         h += '<div style="display:flex;align-items:center;gap:6px"><div style="text-align:right"><div class="rc-score">' + g.score + '</div>';
         if (gVsParStr) {
-          h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:600;color:' + gVsParColor + ';letter-spacing:0.5px;margin-top:2px;line-height:1">' + gVsParStr + ' to par</div>';
+          // MED-2 (design-pass 2026-06-12): same delta-on-page-font treatment as
+          // the individual branch above, so a team round reads identically.
+          h += '<div style="font-family:var(--font-ui);font-variant-numeric:tabular-nums;font-size:10px;font-weight:600;color:' + gVsParColor + ';letter-spacing:0.3px;margin-top:2px;line-height:1">' + gVsParStr + ' to par</div>';
         }
         h += '</div>';
         h += _shareIconBtn(g.id);

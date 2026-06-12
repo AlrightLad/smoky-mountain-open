@@ -741,6 +741,16 @@ if (typeof window !== "undefined") window.startLeagueDataSync = startLeagueDataS
 function enterApp() {
   document.getElementById("authScreen").classList.add("hidden");
   document.getElementById("mainApp").classList.remove("hidden");
+  // Re-arm the tee-shot swing on EVERY app entry / sign-in (Founder: "the swing
+  // plays every single time the user signs back in"). pb_intro_seen is per-tab
+  // sessionStorage that otherwise survives a re-open / refresh / sign-in within a
+  // session and suppresses the replay — clearing it here makes the swing a true
+  // moment-of-arrival each entry (home.js then fires pbTeeIntro.maybeShow). GATED
+  // on pb_wt_routed: the smoke/E2E harness presets BOTH pb_intro_seen + pb_wt_routed
+  // via addInitScript, so this skips the clear there and its intro suppression
+  // stays intact (a real user has neither preset at app entry). The onboarding tour
+  // stays once (version-gated) — only the swing re-arms here.
+  try { if (sessionStorage.getItem("pb_wt_routed") !== "1") sessionStorage.removeItem("pb_intro_seen"); } catch (e) {}
   PB.load();
   if (typeof _patchFirestoreForLeague === "function") _patchFirestoreForLeague();
   initSync();

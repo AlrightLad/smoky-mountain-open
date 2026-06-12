@@ -584,7 +584,13 @@ function _renderStatsStrip(totalRounds, handicap, bestRound, bestRoundId, isNew)
   // opsz-60 tabular Fraunces numerals. Preserves data-stat/data-count so the
   // flow-04 layout regression test + readRoundCount helper keep matching.
   var h = '<div class="home-statline">';
-  h += '<div class="home-statline__eyebrow">By the Numbers</div>';
+  // Critique 2026-06-12 (MED2): the eyebrow sat 11px above the brass band, so
+  // "BY THE NUMBERS" read as an orphaned label rather than the band's caption.
+  // Inline-tighten the gap to 6px so the eyebrow + the first stat row read as
+  // one editorial unit (the band already carries its own --cb-chalk-2 surface +
+  // brass double-rule, so it does not dissolve into the page). Inline override
+  // keeps the shared .home-statline__eyebrow rule untouched (CSS is out of scope).
+  h += '<div class="home-statline__eyebrow" style="margin-bottom:6px">By the Numbers</div>';
   h += '<div class="home-statline__band">';
 
   // ROUNDS

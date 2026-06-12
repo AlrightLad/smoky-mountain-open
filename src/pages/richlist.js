@@ -102,7 +102,15 @@ function _rankChip(rank) {
 function _renderRichRow(p, i) {
   var isGold = (p.parcoinsLifetime || 0) >= GOLD_MEMBER_THRESHOLD;
   var goldBadge = isGold ? ' <span style="font-size:8px;background:rgba(var(--gold-rgb),.15);color:var(--gold);padding:2px 6px;border-radius:8px;font-weight:700;letter-spacing:.3px;vertical-align:middle">GOLD</span>' : '';
-  var h = '<div class="lb-card' + (i === 0 ? ' first' : '') + '" style="margin:0 16px 6px">';
+  // Rank-1 (the leader) earns a clearly distinct champion card: the shared .first
+  // class gives a subtle gradient + md shadow, but on its own the gold-tinted border
+  // reads faint. We layer a local brass-token treatment — a solid brass left rail,
+  // a stronger brass border, and a touch more lift — so the top of the leaderboard
+  // is unmistakably celebrated without going tacky. Tokens only (no hardcoded hex).
+  var topStyle = (i === 0)
+    ? 'margin:0 16px 8px;border:1.5px solid rgba(var(--cb-brass-rgb),.55);border-left:4px solid var(--cb-brass);box-shadow:var(--shadow-md),inset 0 0 0 1px rgba(var(--cb-brass-rgb),.10)'
+    : 'margin:0 16px 6px';
+  var h = '<div class="lb-card' + (i === 0 ? ' first' : '') + '" style="' + topStyle + '">';
   h += '<div class="lb-left"><div class="lb-medal" style="width:26px;color:inherit">' + _rankChip(p._rank) + '</div>';
   h += '<div><div class="lb-name">' + escHtml(p._displayName) + goldBadge + '</div>';
   h += '<div class="lb-detail">Balance: ' + (p.parcoins || 0).toLocaleString() + '</div></div></div>';

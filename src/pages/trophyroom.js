@@ -160,8 +160,12 @@ function _trRecentSec(achievements) {
     var recent = achievements.slice().sort(_trSortEarned).slice(0, 6);
     h += '<div class="tr-marquee">';
     recent.forEach(function(a) {
-      var earned = _trFmtEarned(a.earnedAt);
-      h += '<div class="tr-cell"><div class="tr-cell__emblem">' + a.icon + '</div><div class="tr-cell__name">' + escHtml(a.name) + '</div><div class="tr-cell__meta">' + (earned || "Unlocked") + '</div></div>';
+      // Supporting line: date earned when we have it, falling back to "Unlocked",
+      // plus the XP the trophy carried (both already on the achievement object —
+      // no fabricated values, P9). Two facts per card, never a bare icon+title.
+      var metaParts = [_trFmtEarned(a.earnedAt) || "Unlocked"];
+      if (a.xp > 0) metaParts.push("+" + a.xp + " XP");
+      h += '<div class="tr-cell"><div class="tr-cell__emblem">' + a.icon + '</div><div class="tr-cell__name">' + escHtml(a.name) + '</div><div class="tr-cell__meta">' + metaParts.join(" · ") + '</div></div>';
     });
     h += '</div>';
   } else {
@@ -262,8 +266,15 @@ function _trTitlesSec(lvl) {
 //    (#A8A395, ~1.x:1 — fails WCAG AA) is repainted in AA-safe --cb-mute /
 //    --cb-ink-faint so locked rows stay legible (ADA requirement).
 var _TR_STYLE = '<style id="tr-page-style">'
-  + '.tr-standing--hero{background:linear-gradient(135deg,rgba(var(--cb-brass-rgb),.08),var(--cb-chalk-2));border:1px solid rgba(var(--cb-brass-rgb),.45);box-shadow:var(--el-2);padding:20px 22px}'
-  + '.tr-standing--hero .tr-standing__rail{border-right-color:rgba(var(--cb-brass-rgb),.3)}'
+  + '.tr-standing--hero{background:linear-gradient(135deg,rgba(var(--cb-brass-rgb),.08),var(--cb-chalk-2));border:1px solid rgba(var(--cb-brass-rgb),.45);box-shadow:var(--el-2);padding:18px 22px;align-items:stretch}'
+  /* Hero balance — the single Level/number rail was vertically centered against
+     a tall four-row right column, stranding air above + below the "7". Stretch
+     the rail to the column height, center its content as one optical block, and
+     enlarge the numeral so its weight matches the dense column it sits beside. */
+  + '.tr-standing--hero .tr-standing__rail{border-right-color:rgba(var(--cb-brass-rgb),.3);justify-content:center;gap:2px}'
+  + '.tr-standing--hero .tr-standing__level{font-size:64px;line-height:.86}'
+  + '.tr-standing--hero .tr-standing__lvlcap{margin-bottom:1px}'
+  + '.tr-standing--hero .tr-standing__body{display:flex;flex-direction:column;justify-content:center}'
   + '.tr-tabs{margin:20px var(--tr-gutter) 4px;padding-bottom:2px;border-bottom:1px solid var(--cb-chalk-3);gap:20px;flex-wrap:wrap}'
   + '.tr-tabs .roster-tab{min-height:44px}'
   + '.tr-tabpanel>.tr-sec:first-child{margin-top:18px}'

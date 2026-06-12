@@ -256,7 +256,12 @@ Router.register("shop", function() {
     { label: 'Sign in each day', coins: '+1', route: 'home' }
   ];
   h += '<section class="shop-earn" aria-label="Ways to earn ParCoins">';
-  h += '<div class="shop-sec-head"><h2 class="shop-sec-title">Ways to earn</h2><span class="shop-earn__note">Play earns it — never real money</span></div>';
+  // v8.25.20 — bind "real money" with a non-breaking space so the note never
+  // wraps a lone "money" orphan onto a ragged tight second line at the right
+  // margin. The phrase wraps as a unit if space is tight (vs nowrap, which
+  // could overflow on narrow mobile beside the 30px serif title). A proper
+  // width/min-width tightening of .shop-earn__note belongs in shared CSS.
+  h += '<div class="shop-sec-head"><h2 class="shop-sec-title">Ways to earn</h2><span class="shop-earn__note">Play earns it — never real money</span></div>';
   h += '<div class="shop-earn__grid">';
   _earn.forEach(function(e) {
     h += '<button type="button" class="shop-earn__row" onclick="Router.go(\'' + e.route + '\')">' +

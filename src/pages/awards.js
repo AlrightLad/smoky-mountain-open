@@ -12,15 +12,25 @@ Router.register("awards", function(params) {
   // gold awards now see the same round set as the rest of the page.
   var season = PB.getSeasonStandings(year, "_year");
   var players = PB.getPlayers();
+
+  // Course names arrive title-cased upstream, which lowercases golf abbreviations
+  // ("Reems Creek GC" → "Reems Creek Gc" — reads as a typo). Re-uppercase the
+  // common club suffixes as whole words so "GC"/"CC"/"GCC"/"G&CC" stay correct.
+  function fixCourseAbbrev(name) {
+    return String(name || "").replace(/\b(gcc|g&cc|gc|cc)\b/gi, function(m) { return m.toUpperCase(); });
+  }
   
   var h = '<div class="sh"><h2>Awards Night</h2><button class="back" onclick="Router.back(\'standings\')">← Back</button></div>';
   
   h += '<div style="text-align:center;padding:30px 16px 24px;background:linear-gradient(180deg,var(--bg),var(--grad-hero),var(--bg));border-bottom:1px solid rgba(var(--gold-rgb),.15)">';
   h += '';
-  h += '<div style="font-family:var(--font-display);font-size:28px;color:var(--gold);font-weight:700;letter-spacing:1px">The ' + year + '</div>';
-  h += '<div style="font-family:var(--font-display);font-size:22px;color:var(--cream);font-weight:400;margin-top:2px">Parbaugh Awards</div>';
+  // Hero hierarchy: the award NAME leads (large Fraunces display), the year reads
+  // as a small brass eyebrow above it — so the page identifies itself as the
+  // Parbaugh Awards first, dated second (was inverted: a 28px year over a 22px name).
+  h += '<div style="font-family:var(--font-display);font-size:12px;color:var(--cb-eyebrow);font-weight:700;letter-spacing:2px;text-transform:uppercase">' + year + ' Season</div>';
+  h += '<div style="font-family:var(--font-display);font-size:30px;color:var(--cream);font-weight:700;letter-spacing:.5px;margin-top:3px">Parbaugh Awards</div>';
   if (!seasonOver) {
-    h += '<div style="display:inline-block;margin-top:14px;padding:5px 14px;background:rgba(var(--gold-rgb),.06);border:1px solid rgba(var(--gold-rgb),.12);border-radius:12px;font-size:10px;color:var(--gold);font-weight:600;letter-spacing:.5px">PROJECTED · SEASON IN PROGRESS</div>';
+    h += '<div style="display:inline-block;margin-top:14px;padding:5px 14px;background:rgba(var(--gold-rgb),.06);border:1px solid rgba(var(--gold-rgb),.18);border-radius:12px;font-size:10px;color:var(--cb-eyebrow);font-weight:700;letter-spacing:.5px">PROJECTED · SEASON IN PROGRESS</div>';
   }
   h += '</div>';
   
@@ -53,7 +63,7 @@ Router.register("awards", function(params) {
   // silver/bronze chips use the medal color as a faint outline rather than a
   // tinted fill (keeps everything theme-aware without new shared tokens).
   var TIER_STYLE = {
-    gold:   {border: "rgba(var(--cb-brass-rgb),.45)", bg: "linear-gradient(135deg,var(--grad-card),var(--card))", chipFill: "rgba(var(--cb-brass-rgb),.14)", chipBorder: "rgba(var(--cb-brass-rgb),.40)", chipColor: "var(--medal-gold)", label: "GOLD", star: true},
+    gold:   {border: "rgba(var(--cb-brass-rgb),.45)", bg: "linear-gradient(135deg,var(--grad-card),var(--card))", chipFill: "var(--cb-brass)", chipBorder: "var(--cb-brass)", chipColor: "var(--cb-ink)", label: "GOLD", star: true},
     silver: {border: "rgba(var(--cb-brass-rgb),.22)", bg: "var(--card)", chipFill: "transparent", chipBorder: "var(--medal-silver)", chipColor: "var(--medal-silver)", label: "SILVER", star: false},
     bronze: {border: "rgba(var(--cb-brass-rgb),.12)", bg: "var(--card)", chipFill: "transparent", chipBorder: "var(--medal-bronze)", chipColor: "var(--medal-bronze)", label: "BRONZE", star: false}
   };
@@ -86,7 +96,7 @@ Router.register("awards", function(params) {
     var royPar = 72;
     try { var royC = PB.getCourseByName && PB.getCourseByName(bestRound.course); if (royC && royC.par) royPar = royC.par; } catch (e) {}
     var royDelta = bestRound.score - royPar;
-    ceremonyAwards.push({title: "Round of the Year", winner: bestRound.playerName, detail: bestRound.score + " (" + (royDelta >= 0 ? "+" : "") + royDelta + " to par) at " + bestRound.course, tier: "gold"});
+    ceremonyAwards.push({title: "Round of the Year", winner: bestRound.playerName, detail: bestRound.score + " (" + (royDelta >= 0 ? "+" : "") + royDelta + " to par) at " + fixCourseAbbrev(bestRound.course), tier: "gold"});
   }
   
   // 4. Iron Man (most rounds)

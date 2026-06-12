@@ -42,7 +42,12 @@ function renderTeamList() {
 
   if (teams.length) {
     if (teams.length >= 2) {
-      h += '<div style="padding:0 16px 12px"><button class="btn full outline" onclick="Router.go(\'scramble\',{match:true})">Log a match</button></div>';
+      // v8.25.20 — was a transparent outline pill that disappeared directly above
+      // the cream team cards (same fill, hairline border the only separation). The
+      // primary brass fill (.btn.green = brass ground, dark --cb-ink label, the
+      // dark-on-brass AA pairing) reads as a clear call-to-action distinct from the
+      // tappable cards below it, and matches the green CTAs used elsewhere on the page.
+      h += '<div style="padding:0 16px 12px"><button class="btn full green" onclick="Router.go(\'scramble\',{match:true})">Log a match</button></div>';
     }
     // v8.25.13 — collect every team's real rounds + matches into one timeline so
     // the page can show a "Recent scramble activity" feed below the cards (the
@@ -93,7 +98,13 @@ function renderTeamList() {
       if (captain) h += '<div style="font-size:10px;color:var(--muted)">Captain: <span style="color:var(--gold);font-weight:600">' + escHtml(captain.name) + '</span></div>';
       h += '</div>';
 
-      // Right — W-L if team has H2H matches, otherwise best score
+      // Right rail — a single unified shape across both card states (v8.25.20):
+      // a big brass metric numeral, a muted metric label, then exactly ONE quiet
+      // caption line. Previously the W-L card showed a one-line "Best: N" caption
+      // while the best-score card grew a taller two-row coloured score strip + its
+      // own "Last N" label — so the two cards' right rails read as different
+      // components. Now both are numeral / label / one caption: W-L → "Best N",
+      // best-score → "Last N · 77 75" recent-form line.
       var h2h = allMatches.filter(function(m) { return m.result === 'win' || m.result === 'loss' || m.result === 'tie'; });
       h += '<div style="text-align:right">';
       if (h2h.length > 0) {
@@ -101,26 +112,27 @@ function renderTeamList() {
         var losses = h2h.filter(function(m) { return m.result === "loss"; }).length;
         h += '<div style="font-size:28px;font-weight:800;color:var(--gold);line-height:1">' + wins + '-' + losses + '</div>';
         h += '<div style="font-size:10px;color:var(--muted);margin-bottom:4px">W-L</div>';
-        if (best !== null) h += '<div style="font-size:10px;color:var(--muted2)">Best: ' + best + '</div>';
+        if (best !== null) h += '<div style="font-size:10px;color:var(--muted)">Best ' + best + '</div>';
       } else if (best !== null) {
         h += '<div style="font-size:28px;font-weight:800;color:var(--gold);line-height:1">' + best + '</div>';
         h += '<div style="font-size:10px;color:var(--muted);margin-bottom:4px">' + (scored.length === 1 ? 'Score' : 'Best score') + '</div>';
-        // Only show the recent-scores strip when there's MORE than the single
-        // best — otherwise it just repeats the same number ("77 / 77 Last 1").
-        if (scored.length > 1 && last3.filter(function(m){return m.score;}).length) {
-          h += '<div style="font-size:10px;color:var(--muted2)">';
-          last3.filter(function(m){return m.score;}).forEach(function(m,i) {
+        // One caption line mirroring the W-L card's "Best N" — recent form as a
+        // single inline run, not a separate strip. Only when there's more than the
+        // single best (otherwise it just repeats the same number).
+        var recent = last3.filter(function(m){ return m.score; });
+        if (scored.length > 1 && recent.length) {
+          h += '<div style="font-size:10px;color:var(--muted)">Last ' + recent.length + ' · ';
+          recent.forEach(function(m,i) {
             var d = m.score - 72;
-            // Community-safe: under or at the team baseline reads quiet green, over stays
-            // neutral. Never alarm-red on a member's score, here or anywhere else.
+            // Community-safe: under or at the team baseline reads quiet green, over
+            // stays neutral muted. Never alarm-red on a member's score.
             var c = d <= 0 ? 'var(--birdie)' : 'var(--muted)';
-            h += '<span style="color:' + c + ';margin-left:' + (i?4:0) + 'px">' + m.score + '</span>';
+            h += '<span style="color:' + c + ';margin-left:' + (i?5:0) + 'px">' + m.score + '</span>';
           });
-          h += '<div style="font-size:9px;color:var(--muted2);margin-top:1px">Last ' + last3.filter(function(m){return m.score;}).length + '</div>';
           h += '</div>';
         }
       } else {
-        h += '<div style="font-size:12px;color:var(--muted2);margin-top:4px">No rounds</div>';
+        h += '<div style="font-size:12px;color:var(--muted);margin-top:4px">No rounds</div>';
       }
       h += '</div>';
 

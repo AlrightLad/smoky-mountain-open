@@ -38,18 +38,25 @@ Router.register("teetimes", function() {
     return t.status === "cancelled" && t.cancelledAt && t.cancelledAt >= threeDaysAgo && _canSeePrivate(t);
   });
 
-  // When the empty-state hero is shown it is the unambiguous primary action,
-  // so the header "+ Post" demotes to a quiet outline to avoid two competing
-  // brass CTAs for the same task. With tee times present, the header button is
-  // the primary and stays brass (dark ink label clears AA on the brass fill).
+  // Header CTA discipline: when the empty-state hero is on screen it is the
+  // single, unambiguous primary action, so the header carries ONLY "← Back" —
+  // dropping the redundant "+ Post" entirely avoids two controls for the same
+  // task sandwiching the Back button. Once tee times exist (no hero), the
+  // header "+ Post" becomes the page's primary and stays brass (dark ink label
+  // clears AA on the brass fill).
   var _postBtn = upcoming.length
     ? '<button class="btn-sm green" style="color:var(--cb-ink)" onclick="Router.go(\'tee-create\')">+ Post</button>'
-    : '<button class="btn-sm outline" onclick="Router.go(\'tee-create\')">+ Post</button>';
-  var h = '<div class="sh"><h2>Tee Times</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'home\')">← Back</button>' + _postBtn + '</div></div>';
+    : '';
+  var h = '<div class="sh"><h2>Tee Times</h2><div style="display:flex;gap:8px;align-items:center"><button class="back" onclick="Router.back(\'home\')">← Back</button>' + _postBtn + '</div></div>';
 
   if (!upcoming.length) {
     h += '<div style="text-align:center;padding:32px 16px">';
-    h += '<div style="margin-bottom:12px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5" opacity=".6"><circle cx="24" cy="24" r="18"/><path d="M24 14v10l7 4"/><path d="M38 10l-3 3M10 10l3 3"/></svg></div>';
+    // Clock icon, MED-3: was a faint --gold (~0.6 opacity) on the light canvas
+    // with two diagonal stubs (M38 10.. / M10 10..) that read as a broken/
+    // glitched icon. Restruck on deep-brass --cb-ink-link at full opacity with a
+    // rounded stroke; the loose diagonal stubs are replaced by clean 12/3/6/9
+    // tick marks just inside the rim so it reads unmistakably as a clock face.
+    h += '<div style="margin-bottom:12px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--cb-ink-link)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="18"/><path d="M24 13.5v10.5l6.5 3.5"/><path d="M24 7v3M24 38v3M41 24h-3M10 24H7"/></svg></div>';
     h += '<div style="font-family:var(--font-display);font-size:18px;color:var(--gold)">No Tee Times Posted</div>';
     h += '<div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-width:280px;margin-left:auto;margin-right:auto">Post a tee time and your crew can RSVP. Never wonder who\u2019s playing this weekend again.</div>';
     h += '<button class="btn full green" style="margin-top:16px;max-width:280px;margin-left:auto;margin-right:auto;color:var(--cb-ink)" onclick="Router.go(\'tee-create\')">Post a Tee Time</button>';
@@ -60,11 +67,17 @@ Router.register("teetimes", function() {
       "Out Door CC \u00b7 Sunday 7:00 AM \u00b7 Need 3 more",
       "Heritage Hills \u00b7 Friday 3:00 PM \u00b7 All welcome"
     ];
-    // Sample cards are illustrative, not real bookings: dimmed to ~0.55, tagged
-    // with a "Sample" pill, and made non-interactive (pointer-events:none) so
-    // they never read as tappable live data.
+    // Sample cards are illustrative, not real bookings: the CARD body stays
+    // visibly faded (so it never reads as tappable live data) and is made
+    // non-interactive (pointer-events:none). MED-2: the fade was previously a
+    // group `opacity:.55` on the whole row, which dragged the "SAMPLE" pill down
+    // to ~2.37:1 — and because group opacity composites the child too, a child
+    // `opacity:1` can't claw it back. So the fade is now applied per-element
+    // (faded body via --cb-mute on the row + muted dot) while the pill is a
+    // separate, full-strength chip: AA-legible --cb-mute-1 (5.09:1) ink on a
+    // solid paper fill so the SAMPLE label reads clearly.
     exTees.forEach(function(ex) {
-      h += '<div style="display:flex;align-items:center;gap:9px;padding:11px 13px;margin-bottom:6px;background:var(--cb-paper);border:1px dashed var(--border);border-radius:var(--r-2);font-size:12px;color:var(--cb-ink);opacity:.55;pointer-events:none;cursor:default" aria-hidden="true"><span style="width:6px;height:6px;border-radius:50%;background:var(--gold);flex:none"></span><span style="flex:1">' + ex + '</span><span style="flex:none;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--cb-mute);border:1px solid var(--border);border-radius:var(--r-5);padding:2px 7px">Sample</span></div>';
+      h += '<div style="display:flex;align-items:center;gap:9px;padding:11px 13px;margin-bottom:6px;background:var(--cb-paper);border:1px dashed var(--border);border-radius:var(--r-2);font-size:12px;pointer-events:none;cursor:default" aria-hidden="true"><span style="width:6px;height:6px;border-radius:50%;background:var(--cb-mute-2);flex:none"></span><span style="flex:1;color:var(--cb-mute-2)">' + ex + '</span><span style="flex:none;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--cb-mute-1);background:var(--cb-paper);border:1px solid var(--cb-mute-1);border-radius:var(--r-5);padding:2px 7px">Sample</span></div>';
     });
     h += '</div></div>';
   }

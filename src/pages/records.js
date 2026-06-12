@@ -27,13 +27,27 @@ Router.register("records", function() {
 
   function statCard(route, value, label, zeroHint, populatedHint) {
     var v = value || 0;
-    var cap = v > 0 ? populatedHint : zeroHint;
-    var capColor = v > 0 ? "var(--gold)" : "var(--muted)";
-    var s = '<div class="card" onclick="Router.go(\'' + route + '\')" style="cursor:pointer;margin-bottom:0"><div style="padding:14px 12px;text-align:center">';
+    var hasCount = v > 0;
+    var cap = hasCount ? populatedHint : zeroHint;
+    // v8.25.20 (records critique) — zero/CTA tiles use an AA-safe ink-faint
+    // caption (was --muted; ink-faint reads as deliberate prompt copy, AA on
+    // the card ground) so a count vs a prompt is legible. Live-count tiles keep
+    // the brass populated-hint.
+    var capColor = hasCount ? "var(--gold)" : "var(--cb-ink-faint)";
+    // v8.25.20 — visual distinction between live-count tiles and zero/CTA
+    // prompt tiles. A count tile is a solid filled card; a prompt tile drops the
+    // fill + shadow and gets a quieter dashed brass hairline, so a tap-to-act
+    // prompt reads at a glance without competing with a real number (AMD-026
+    // actionable surfacing).
+    var ctaStyle = hasCount ? '' :
+      'border-style:dashed;border-color:rgba(var(--gold-rgb),.22);background:transparent;box-shadow:none';
+    var s = '<div class="card" onclick="Router.go(\'' + route + '\')" style="cursor:pointer;margin-bottom:0;' + ctaStyle + '"><div style="padding:14px 12px;text-align:center">';
     // v8.24.67 — zero numeral muted (brass reserved for real values per the
     // brass-role rule; a gold "0" reads as a broken stat, P9/P10 dead-state).
-    s += '<div style="font-size:20px;font-family:var(--font-display);font-weight:700;color:' + (v > 0 ? 'var(--gold)' : 'var(--cb-mute-3)') + '">' + v + '</div>';
-    s += '<div style="font-size:10px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.8px">' + label + '</div>';
+    s += '<div style="font-size:20px;font-family:var(--font-display);font-weight:700;color:' + (hasCount ? 'var(--gold)' : 'var(--cb-mute-3)') + '">' + v + '</div>';
+    // Label stays AA (--cb-mute) on both tile kinds; on a prompt tile it reads
+    // as the thing-being-prompted, on a count tile as the stat name.
+    s += '<div style="font-size:10px;color:var(--cb-mute);margin-top:2px;text-transform:uppercase;letter-spacing:.8px">' + label + '</div>';
     if (cap) {
       s += '<div style="font-size:9px;color:' + capColor + ';margin-top:4px;letter-spacing:0.4px;line-height:1.3">' + cap + '</div>';
     }
@@ -48,7 +62,7 @@ Router.register("records", function() {
 
   // Ace Wall
   var aceCount = (rec.holeInOnes && rec.holeInOnes.length) || 0;
-  h += statCard("aces", aceCount, "Aces", "Awaiting the first", "Immortalized");
+  h += statCard("aces", aceCount, "Aces", "Tap to log the first", "Immortalized");
 
   // Teams
   var teamCount = PB.getScrambleTeams().length;

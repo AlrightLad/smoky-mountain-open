@@ -39,7 +39,11 @@ Router.register("calendar", function() {
 
   // ── Scope rail ──
   h += _calScopeHTML(todayStr);
-  h += '<div class="cal-meta" id="calMeta">' + _calMetaLine(_calMeta(todayStr)) + '</div>';
+  // Activity counts line — suppressed on an empty month (the subdeck already says
+  // "Nothing on the books yet this month"; a "0 · 0 · 0" strip is redundant noise).
+  var _mMeta = _calMeta(todayStr);
+  var _mEmpty = (_mMeta.monthScheduled === 0 && _mMeta.roundsThisMonth === 0 && _mMeta.next7 === 0 && _mMeta.upcoming === 0);
+  h += '<div class="cal-meta" id="calMeta"' + (_mEmpty ? ' hidden' : '') + '>' + (_mEmpty ? '' : _calMetaLine(_mMeta)) + '</div>';
 
   // ── Inline create form (hidden by default) ──
   h += _calCreateFormHTML(calSelectedDate || todayStr);
@@ -87,7 +91,12 @@ function _calScopeHTML(todayStr) {
   var s = '<div class="cal-scope">';
   s += '<div class="cal-monthnav">';
   s += '<button type="button" class="cal-navlink" aria-label="Previous month, ' + CAL_MONTHS[prevM] + '" onclick="calPrev()">← ' + CAL_MON3[prevM] + '</button>';
-  s += '<button type="button" class="cal-todaypill' + (onThisMonth ? ' cal-todaypill--on' : '') + '" onclick="calToday()">Today</button>';
+  // The "Today" pill's active state is a quiet brass-tinted outline (NOT a solid navy
+  // fill) so it doesn't shout against the solid-brass Grid|List segment beside it —
+  // two adjacent fully-filled controls competed. The toggle owns the one solid fill;
+  // the pill reads as a soft "you are here" marker. (See sharedCssNeeds for canonical
+  // home; _calTodayPillStyle keeps the render + in-place update in sync.)
+  s += '<button type="button" class="cal-todaypill' + (onThisMonth ? ' cal-todaypill--on' : '') + '"' + _calTodayPillStyle(onThisMonth) + ' onclick="calToday()">Today</button>';
   s += '<button type="button" class="cal-navlink" aria-label="Next month, ' + CAL_MONTHS[nextM] + '" onclick="calNext()">' + CAL_MON3[nextM] + ' →</button>';
   s += '</div>';
   s += '<div class="cal-viewtoggle" role="group" aria-label="View mode">';
@@ -100,6 +109,15 @@ function _calScopeHTML(todayStr) {
   s += '<button type="button" class="cal-qa" onclick="showCalEventForm()"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg> New event</button>';
   s += '</div>';
   return s;
+}
+
+// Quiet active-state for the "Today" pill: brass-tinted outline instead of a solid
+// navy fill, so it doesn't compete with the solid-brass Grid|List toggle (MED-2).
+// Inline because the canonical .cal-todaypill--on rule lives in shared components.css
+// (out of this page's edit scope) — see sharedCssNeeds.
+function _calTodayPillStyle(onThisMonth) {
+  if (!onThisMonth) return '';
+  return ' style="background:rgba(var(--cb-brass-rgb),.10);border-color:var(--cb-brass);color:var(--cb-brass-deep)"';
 }
 
 // ── Truthful activity counts (computed from source arrays, not the day-map) ──
@@ -216,7 +234,11 @@ function _calGridHTML(todayStr) {
     if (c % 7 === 0) s += '<tr role="row">';
     var cell = cells[c];
     if (cell.over) {
-      s += '<td role="gridcell" class="cal-cell cal-cell--over"><span class="cal-datenum">' + cell.n + '</span></td>';
+      // Leading/trailing out-of-month dates: bump from the very-light --cb-mute-faint
+      // placeholder to the more legible --cb-mute-2 (still clearly de-emphasised vs
+      // in-month days, but readable on felt). Local override of the shared
+      // .cal-cell--over .cal-datenum rule (see sharedCssNeeds for the canonical home).
+      s += '<td role="gridcell" class="cal-cell cal-cell--over"><span class="cal-datenum" style="color:var(--cb-mute-2)">' + cell.n + '</span></td>';
     } else {
       var isToday = cell.ds === todayStr;
       var isSel = cell.ds === calSelectedDate;
@@ -473,12 +495,29 @@ function _updateCalendarInPlace() {
   var subEl = document.getElementById("calSubdeck");
   if (subEl) subEl.innerHTML = _calSubdeck(meta);
   var metaEl = document.getElementById("calMeta");
-  if (metaEl) metaEl.textContent = _calMetaLine(meta);
+  if (metaEl) {
+    // Mirror the masthead suppression: hide the "0 · 0 · 0" strip on an empty month.
+    var metaEmpty = (meta.monthScheduled === 0 && meta.roundsThisMonth === 0 && meta.next7 === 0 && meta.upcoming === 0);
+    metaEl.hidden = metaEmpty;
+    metaEl.textContent = metaEmpty ? "" : _calMetaLine(meta);
+  }
 
   // Sync scope-rail toggle + today-pill state
   var onThisMonth = (todayStr.slice(0, 7) === _calDS(calYear, calMonth, 1).slice(0, 7));
   var pill = document.querySelector(".cal-todaypill");
-  if (pill) pill.classList.toggle("cal-todaypill--on", onThisMonth);
+  if (pill) {
+    pill.classList.toggle("cal-todaypill--on", onThisMonth);
+    // Keep the quiet brass-tinted active treatment (MED-2) in sync with month nav.
+    if (onThisMonth) {
+      pill.style.background = "rgba(var(--cb-brass-rgb),.10)";
+      pill.style.borderColor = "var(--cb-brass)";
+      pill.style.color = "var(--cb-brass-deep)";
+    } else {
+      pill.style.background = "";
+      pill.style.borderColor = "";
+      pill.style.color = "";
+    }
+  }
   var vg = document.getElementById("calVtGrid"), vl = document.getElementById("calVtList");
   if (vg) { vg.classList.toggle("cal-vt--on", calView === "grid"); vg.setAttribute("aria-pressed", calView === "grid"); }
   if (vl) { vl.classList.toggle("cal-vt--on", calView === "list"); vl.setAttribute("aria-pressed", calView === "list"); }

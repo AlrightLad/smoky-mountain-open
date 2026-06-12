@@ -508,7 +508,7 @@ function _renderLeadStory(item) {
   var roundClick = item.roundId ? "Router.go('rounds',{roundId:'" + item.roundId + "'})" : "";
   var headline = _feedLeadHeadline(item);
   var h = '<article class="feed-lead" role="article" aria-label="' + escHtml("Lead story: " + headline) + '">';
-  h += '<div class="feed-lead__kicker">The Back Nine · ' + escHtml(_feedLeadKicker(item.ts)) + '</div>';
+  h += '<div class="feed-lead__kicker">The Front Page · ' + escHtml(_feedLeadKicker(item.ts)) + '</div>';
   h += '<h2 class="feed-lead__headline"' + (roundClick ? ' role="button" tabindex="0" onclick="' + roundClick + '" onkeydown="if(event.key===\'Enter\'){' + roundClick + '}"' : '') + '>' + escHtml(headline) + '</h2>';
   h += '<div class="feed-lead__byline">' + renderAvatar(item.player, 28, true) + '<span class="feed-lead__by">' + renderUsername(item.player, "font-weight:600;", true) + '</span><span class="feed-lead__time">' + escHtml(feedTimeAgo(item.ts)) + '</span></div>';
   h += '<div class="feed-lead__scoreline">';

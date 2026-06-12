@@ -31,7 +31,6 @@ function courseThumbHTML(c, thumbSrc) {
 Router.register("courses", function(params) {
   if (params.add) { renderAddCourseForm(); return; }
   if (params.id) { renderCourseDetail(params.id); return; }
-  var courses = PB.getCourses();
   var showOurs = window._courseViewMode === "ours";
   // v8.24+ (design-pass): one primary CTA per state. The search field is the
   // hero path to "thousands worldwide"; the two +Add buttons that used to fight
@@ -39,16 +38,50 @@ Router.register("courses", function(params) {
   // manual-add affordance lives quietly under the search box (added below).
   var h = '<div class="sh"><h2>Course directory</h2><button class="back" onclick="Router.back(\'records\')">← Back</button></div>';
 
+  // v8.25.20 (design-pass) — compute "do we have any league courses?" up front so
+  // the All / Our toggle can be suppressed when there's nothing to scope to. An
+  // empty directory used to still float a two-option segmented control between
+  // the title and the search hero (detached, competing chrome); with no league
+  // rounds the "Our Courses" tab is dead. Detection mirrors the showOurs filter
+  // below (a course counts as "ours" once a league round has been logged there).
+  var allCourses = PB.getCourses();
+  var leagueRounds = PB.getRounds();
+  var leagueCoursePlays = {};
+  var leagueCourseBest = {};
+  var leagueCourseBestPlayer = {};
+  leagueRounds.forEach(function(r) {
+    if (!r.course || !r.score) return;
+    var cn = r.course;
+    leagueCoursePlays[cn] = (leagueCoursePlays[cn] || 0) + 1;
+    if (!leagueCourseBest[cn] || r.score < leagueCourseBest[cn]) {
+      leagueCourseBest[cn] = r.score;
+      leagueCourseBestPlayer[cn] = r.playerName || r.player;
+    }
+  });
+  var hasLeagueCourses = allCourses.some(function(c) { return leagueCoursePlays[c.name]; });
+  var courses = allCourses;
+
   // Toggle: All Courses / Our Courses
   // v8.24.26 — replaced the inline gold-pill one-off with the canonical
   // .chip-scope segmented control (same pattern as the Feed's scope toggle).
   // Tab labels render in the UI/sans family (font-family override) rather than
   // the shared class's monospace, so the page chrome uses a single sans+serif
   // pairing instead of three competing type families.
-  h += '<div style="display:flex;justify-content:center;padding:0 16px 10px"><div class="chip-scope" role="group" aria-label="Course directory scope">';
-  h += '<button class="chip-scope__seg" type="button" style="font-family:var(--font-ui)" aria-pressed="' + (!showOurs ? 'true' : 'false') + '" onclick="window._courseViewMode=undefined;Router.go(\'courses\',{},true)">All Courses</button>';
-  h += '<button class="chip-scope__seg" type="button" style="font-family:var(--font-ui)" aria-pressed="' + (showOurs ? 'true' : 'false') + '" onclick="window._courseViewMode=\'ours\';Router.go(\'courses\',{},true)">Our Courses</button>';
-  h += '</div></div>';
+  // v8.25.20 — only render when there ARE league courses; otherwise it's a
+  // detached, non-functional control that competes with the search hero. The
+  // bottom padding is tightened (10px -> 8px) so, when shown, the control reads
+  // as the lead-in to the search block rather than a floating row.
+  if (hasLeagueCourses) {
+    h += '<div style="display:flex;justify-content:center;padding:0 16px 8px"><div class="chip-scope" role="group" aria-label="Course directory scope">';
+    h += '<button class="chip-scope__seg" type="button" style="font-family:var(--font-ui)" aria-pressed="' + (!showOurs ? 'true' : 'false') + '" onclick="window._courseViewMode=undefined;Router.go(\'courses\',{},true)">All Courses</button>';
+    h += '<button class="chip-scope__seg" type="button" style="font-family:var(--font-ui)" aria-pressed="' + (showOurs ? 'true' : 'false') + '" onclick="window._courseViewMode=\'ours\';Router.go(\'courses\',{},true)">Our Courses</button>';
+    h += '</div></div>';
+  } else if (showOurs) {
+    // Defensive: URL/state asked for "ours" but nothing qualifies — fall back to
+    // All so the page never renders an empty Our-Courses view with no way out.
+    showOurs = false;
+    window._courseViewMode = undefined;
+  }
 
   // Search filter — the single primary CTA for the All-Courses state. Styled as
   // the hero affordance (larger field, search affordance icon, brass focus) so
@@ -67,21 +100,10 @@ Router.register("courses", function(params) {
   // Manual add prompt
   h += '<div id="dir-manual-add" style="display:none"></div>';
 
-  // For "Our Courses" mode, get league rounds and filter courses
-  var leagueRounds = PB.getRounds();
-  var leagueCoursePlays = {};
-  var leagueCourseBest = {};
-  var leagueCourseBestPlayer = {};
+  // For "Our Courses" mode, filter to courses with league play (the
+  // leagueCoursePlays / Best / BestPlayer maps were computed up front so the
+  // toggle could decide whether to render at all).
   if (showOurs) {
-    leagueRounds.forEach(function(r) {
-      if (!r.course || !r.score) return;
-      var cn = r.course;
-      leagueCoursePlays[cn] = (leagueCoursePlays[cn] || 0) + 1;
-      if (!leagueCourseBest[cn] || r.score < leagueCourseBest[cn]) {
-        leagueCourseBest[cn] = r.score;
-        leagueCourseBestPlayer[cn] = r.playerName || r.player;
-      }
-    });
     courses = courses.filter(function(c) { return leagueCoursePlays[c.name]; });
   }
 
@@ -188,25 +210,33 @@ Router.register("courses", function(params) {
     // engaging empty state instead of a bare "0 courses" footer. Per
     // peer-anchor (Linear empty-states + 18Birdies onboarding): the empty
     // moment is a teaching moment — explain what'll appear here + give a
-    // clear CTA. The CTA points back at the search hero (no competing +Add).
-    h += '<div style="margin:24px 16px;padding:32px 24px;text-align:center;background:var(--cb-paper);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-sm)">';
-    h += '<div style="margin-bottom:8px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M18 6v30"/><path d="M18 6l13 4-13 4"/><ellipse cx="22" cy="38" rx="14" ry="3.5"/></svg></div>';
-    h += '<div style="font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--cream);margin-bottom:6px">';
+    // clear CTA.
+    // v8.25.20 — (a) tighter vertical rhythm for iPhone: the icon->headline->
+    // body gaps were loose (32/8/6/16); pulled to a calmer 28/10/4/14 scale so
+    // the card reads as one composed unit, not four stacked rows. (b) the
+    // All-Courses state drops the empty-card button entirely: a "Search courses"
+    // button that merely re-focused the hero field directly above it was a
+    // second competing search affordance. The teaching copy already points at
+    // the hero ("Search above…") and the quiet add-by-hand link still sits under
+    // it, so the empty card is now purely a teaching panel — one primary search
+    // path, one secondary add path, no duplicate CTA.
+    h += '<div style="margin:24px 16px;padding:28px 24px;text-align:center;background:var(--cb-paper);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-sm)">';
+    h += '<div style="margin-bottom:10px"><svg viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M18 6v30"/><path d="M18 6l13 4-13 4"/><ellipse cx="22" cy="38" rx="14" ry="3.5"/></svg></div>';
+    h += '<div style="font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--cream);margin-bottom:4px">';
     h += showOurs ? "No league courses yet." : "Your directory is quiet.";
     h += '</div>';
-    h += '<div style="font-size:13px;color:var(--cb-mute);line-height:1.5;max-width:300px;margin:0 auto 16px">';
+    h += '<div style="font-size:13px;color:var(--cb-mute);line-height:1.5;max-width:300px;margin:0 auto 14px">';
     if (showOurs) {
       h += "Once league members log a round at a course, it shows up here with shared best-scores. Try All Courses to see the full directory.";
     } else {
       h += "Search above to find your course from thousands worldwide — it gets added the moment you pick it.";
     }
     h += '</div>';
+    // Only "Our Courses" carries a CTA here (a real navigation: jump to the
+    // full directory). The All-Courses empty card is teaching-only — its action
+    // is the hero search above, which the body copy already directs to.
     if (showOurs) {
       h += '<button class="btn-sm green" onclick="window._courseViewMode=undefined;Router.go(\'courses\',{},true)" style="font-size:12px;min-height:44px;padding:10px 20px">View all courses</button>';
-    } else {
-      // No-op affordance that nudges focus to the hero search rather than adding
-      // a fourth competing CTA — keeps one primary path in the empty state too.
-      h += '<button class="btn-sm green" onclick="var s=document.getElementById(\'dir-search\');if(s)s.focus()" style="font-size:12px;min-height:44px;padding:10px 20px">Search courses</button>';
     }
     h += '</div>';
   } else {
