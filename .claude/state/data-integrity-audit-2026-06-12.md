@@ -25,12 +25,13 @@ corrects all of them at once. Verified by faithful sim (7→4) + the audits belo
 | **Members** (prod collection) | Firestore members | CLEAN — 1 commissioner + 26 members; usernames unique except one benign duplicate (@middleagedgolfer ×2, display-deduped, logged task #56). |
 | **Rounds** (prod collection) | Firestore rounds | CLEAN — 27 docs, correct leagueId, zero duplicate docs (the 7-0 dup was client-state only). |
 | **Profile round count → all rounds** (members-detail) | getPlayerRounds (deduped) | FIXED — navigates to scoped full history; removed a hardcoded `|| r.player === "zach"` that leaked the Founder's rounds into every member's handicap. |
+| **ParCoin balance** (getParCoinBalance) | members/{uid}.parcoins (stored, atomic-mutated) | CLEAN — displayed balance = stored field; awardCoins (earn-only, atomic increment) + deductCoins (balance-validated, no overdraft) each write a parcoin_transactions log. Non-gambling stance intact. Minor: balance + log not single-transaction (theoretical partial-write drift) — standard materialized-balance pattern, displayed value internally consistent. |
 
 ## Still to audit (next clean session / cron fires)
-Home-HQ stats strip, feed activity counts, ParCoin balances, XP/achievements,
-awards — all rounds/event-derived, expected clean post-dedup but not yet traced.
-Plus the **visual + taste** half of every page (the 9.5 bar) once the emulator
-is back.
+XP/achievements, awards, feed activity counts, home-HQ stats strip — all
+rounds/event-derived, expected clean post-dedup (lower migration-risk than the
+rounds surfaces above). Plus the **visual + taste** half of every page (the 9.5
+bar) once the emulator is back.
 
 ## Net
 No new data-integrity failures found beyond the rivalry P0 (fixed + shipped) and
