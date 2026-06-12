@@ -314,20 +314,23 @@ Router.register("shop", function() {
       // ground, the SAME worn .ring-* class so the preview matches what you equip.
       c += '<div class="shop-ring-stage"><div class="' + (item.ringClass || '') + '" style="width:104px;height:104px;border-radius:50%;' + ringCss + ';display:flex;align-items:center;justify-content:center;position:relative">' + (_myAvatar ? '<div style="width:82px;height:82px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center">' + _myAvatar + '</div>' : '<div class="shop-ring-core"></div>') + '</div></div>';
     } else if (item.cat === 'nameplate') {
-      c += '<div style="height:34px;border-radius:6px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:' + (item.id === 'pc07_leaderboard_sunday' ? '#fff;background:#1d3a2a;font-family:var(--font-mono);letter-spacing:2px' : '#241c0c;background:linear-gradient(160deg,#caa75c,#9c7c38)') + '">' + escHtml(_myName) + '</div>';
+      // v8.25.43 — reuse the WORN .plate-* class (preview == worn), centered on a
+      // clean surface stage, instead of a hardcoded inline approximation.
+      var _npCls = { pc05_locker_brass: 'plate-locker-brass', pc06_yardage_book: 'plate-yardage', pc07_leaderboard_sunday: 'plate-sunday', pc29_stimp_13: 'plate-stimp' }[item.id] || 'plate-locker-brass';
+      c += '<div class="shop-surface-stage"><span class="shop-plate-name ' + _npCls + '">' + escHtml(_myName) + '</span></div>';
     } else if (item.cat === 'card') {
       c += '<div style="border-radius:var(--radius);background:var(--bg3);margin-bottom:8px;padding:8px 10px;text-align:left;' + (item.css || '') + '"><div style="font-size:9px;font-weight:600;color:var(--cream)">' + escHtml(_myName) + '</div><div style="font-size:8px;color:var(--muted);margin-top:1px">Honey Run · 92</div></div>';
     } else if (item.cat === 'flair') {
       // v8.24.68 — distinct golf-moment icon per flair (was one generic
       // sparkle for all). Flair stays "arriving" until its feed-card render
       // ships, but the shelf shouldn't look like six copies of one item.
-      c += '<div style="height:40px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;color:' + item.preview + '">' + _flairGlyph(item.id) + '</div>';
+      c += '<div class="shop-surface-stage"><span style="display:flex;align-items:center;justify-content:center;color:' + item.preview + ';font-size:30px">' + _flairGlyph(item.id) + '</span></div>';
     } else if (item.cat === 'teemarker' || item.cat === 'ball') {
       // v8.24.68 — render the real golf-art glyph (shared with the worn-on-
       // name render via pbMarkerGlyph), not a generic tinted dot. Falls back
       // to the dot only if an item has no art yet.
-      var _mg = (typeof pbMarkerGlyph === 'function') ? pbMarkerGlyph(item.id, 38) : '';
-      c += '<div style="height:46px;margin-bottom:8px;display:flex;align-items:center;justify-content:center">' + (_mg || '<span style="width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 30%,' + item.preview + ',rgba(0,0,0,.35));box-shadow:0 3px 4px -2px rgba(0,0,0,.5)"></span>') + '</div>';
+      var _mg = (typeof pbMarkerGlyph === 'function') ? pbMarkerGlyph(item.id, 56) : '';
+      c += '<div class="shop-surface-stage">' + (_mg || '<span style="width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,' + item.preview + ',rgba(0,0,0,.35));box-shadow:0 3px 4px -2px rgba(0,0,0,.5)"></span>') + '</div>';
     } else if (item.cat === 'voice') {
       c += '<div style="height:34px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:16px">⛳</div>';
     } else if (item.cat === 'title') {
