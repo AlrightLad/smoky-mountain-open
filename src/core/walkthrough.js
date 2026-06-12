@@ -165,7 +165,7 @@
     _stageCard({
       eyebrow: "Meet your caddy",
       body: "Last thing. Your caddy is your guide here — a voice that calls out your moments and keeps you company on the course. Tap each to preview, then pick your favorite. You can change it any time.",
-      pose: "tipCap", extraHtml: thumbs, primaryLabel: "Start playing", onPrimary: function () { _complete("done"); }, stepIdx: 7
+      pose: "leanBag", extraHtml: thumbs, primaryLabel: "Start playing", onPrimary: function () { _complete("done"); }, stepIdx: 7
     });
     var preview = document.getElementById("pbw-caddie-preview");
     Array.prototype.forEach.call(_root.querySelectorAll(".pbw-caddie-pick"), function (btn) {
@@ -182,7 +182,7 @@
   }
 
   function _beatFrame() {
-    _stageCard({ eyebrow: "Welcome to the Clubhouse", body: "Welcome to Parbaughs — your crew's private golf league. Quick 60-second tour of where everything lives.", pose: "tipCap",
+    _stageCard({ eyebrow: "Welcome to the Clubhouse", body: "Welcome to Parbaughs — your crew's private golf league. Quick 60-second tour of where everything lives.", pose: "leanBag",
       primaryLabel: "Show me around", onPrimary: function () { _beat(1); }, stepIdx: 0 });
   }
 
@@ -223,7 +223,7 @@
         chips +
         '<div id="pbw-demo-msg" aria-live="polite" style="font-family:var(--font-ui);font-size:12px;color:var(--cb-mute);text-align:center">Tap your score — just once, to feel it.</div>' +
       '</div>';
-    _stageCard({ eyebrow: "Your first card", body: _voiceLine("demoHole"), pose: "tipCap", extraHtml: card, stepIdx: 6 });
+    _stageCard({ eyebrow: "Your first card", body: _voiceLine("demoHole"), pose: "leanBag", extraHtml: card, stepIdx: 6 });
     var fired = false;
     Array.prototype.forEach.call(_root.querySelectorAll(".pbw-demo-score"), function (btn) {
       btn.onclick = function () {

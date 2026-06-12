@@ -33,11 +33,14 @@ It IS on-brand and reads as a caddy.
 pose the raised gesturing arm crosses up-left and **clusters/overlaps with the
 bag body + the fanned club-heads**, so that corner of the silhouette reads as a
 tangle rather than a clean "tipping the cap." It floats with some whitespace on
-the shorter beats. This is a **pose-geometry refinement** (adjust tipCap's
-armDeg/lagDeg so the arm clears the bag) — deliberately NOT attempted
-autonomously overnight: tuning the rig coordinates blind to Founder taste, in a
-long session, risks making it worse over several iterations. Best done in a
-visual-iteration session.
+the shorter beats. **FIXED (v8.25.11)** via safe pose *selection* (no geometry tuning): the three
+beats that used `tipCap` (welcome / caddy-pick / demo-win) now use **`leanBag`**,
+which rests the arm down at the right side while the bag sits on the left
+shoulder — arm and bag on opposite sides, no cluster. Verified by re-capture
+(`pose-leanBag.png`, `ftue-welcome-leanBag.png`) against the clustered `tipCap`
+(`ftue-figure-closeup.png`) and `idle` (also clustered). Did NOT touch the rig
+coordinates (armDeg/lagDeg) — that deeper tuning stays for a Founder-taste
+session if wanted.
 
 **Implication for the lane decision (#50):** because the SVG figure is already
 competent, **Lane C (polish the SVG)** is more viable than my first note implied
