@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-12T23:19:24.559297Z",
+  "generated_at": "2026-06-12T23:30:39.424002Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 87.1,
   "overall_grade": "A-",
@@ -1001,11 +1001,11 @@
     "A12_operational": {
       "score": 90,
       "status": "green",
-      "label": "pipeline=green · 9 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=green · 7 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "9 of last 10 cron watcher runs hit skip-dirty",
+          "what": "7 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -1034,13 +1034,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "820030d1",
-    "subject": "chore(verify): general swing-spanning capture frames + v41 intro artifacts",
-    "committed_at": "2026-06-12T19:19:03-04:00",
+    "sha": "4d77182a",
+    "subject": "docs(state): shop-art research â€” worn-render verified solid (v8.24.76), preview-elevation is the remaining work + harmonized plan",
+    "committed_at": "2026-06-12T19:30:17-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 15
+    "total_files_touched": 2
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
