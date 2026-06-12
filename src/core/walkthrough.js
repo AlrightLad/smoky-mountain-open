@@ -20,7 +20,7 @@
 (function () {
   var ROOKIE_COINS = 100;          // Founder-approved Rookie completion grant
   var TOTAL_STEPS = 5;             // truthful denominator (no +1 profile padding)
-  var _root = null, _voice = "caddy", _calib = null, _step = 0, _onKey = null, _stage = null;
+  var _root = null, _voice = "caddy", _calib = null, _step = 0, _onKey = null, _stage = null, _focusReturn = null;
 
   function _profile() { return (typeof currentProfile !== "undefined" && currentProfile) || {}; }
   function _wt() { return _profile().walkthrough || {}; }
@@ -32,6 +32,7 @@
   // ── overlay shell ──────────────────────────────────────────────────────────
   function _mount() {
     if (_root) return;
+    try { _focusReturn = document.activeElement; } catch (e) {}   // WCAG 2.4.3 — return focus on teardown
     _root = document.createElement("div");
     _root.id = "pbWalk";
     _root.className = "pbw-overlay";
@@ -47,6 +48,9 @@
     if (window.pbCaddy && window.pbCaddy.destroy) { try { window.pbCaddy.destroy(); } catch (e) {} }
     if (_root && _root.parentNode) _root.parentNode.removeChild(_root);
     _root = null; _stage = null;
+    // Return focus to the control the member was on (keyboard-nav doesn't drop to <body>).
+    if (_focusReturn && _focusReturn !== document.body && document.contains(_focusReturn)) { try { _focusReturn.focus(); } catch (e) {} }
+    _focusReturn = null;
   }
 
   function _dots(idx) {
@@ -194,14 +198,14 @@
     ];
     var chips = '<div style="display:flex;gap:8px;margin-bottom:6px">';
     scores.forEach(function (s) {
-      chips += '<button class="pbw-demo-score" data-v="' + s.v + '" style="flex:1;min-height:48px;border:1px solid var(--cb-brass);background:var(--cb-chalk-2);border-radius:8px;cursor:pointer;font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--cb-ink)">' + s.v + '<div style="font-family:var(--font-mono);font-size:8px;letter-spacing:.5px;text-transform:uppercase;color:var(--cb-mute);font-weight:700">' + s.label + '</div></button>';
+      chips += '<button class="pbw-demo-score" data-v="' + s.v + '" aria-label="' + s.label + ', ' + s.v + ' strokes" style="flex:1;min-height:48px;border:1px solid var(--cb-brass);background:var(--cb-chalk-2);border-radius:8px;cursor:pointer;font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--cb-ink)">' + s.v + '<div style="font-family:var(--font-mono);font-size:8px;letter-spacing:.5px;text-transform:uppercase;color:var(--cb-mute);font-weight:700">' + s.label + '</div></button>';
     });
     chips += '</div>';
     var card =
       '<div id="pbw-demo-card" style="background:var(--cb-paper);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:14px">' +
         '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-brass-deep);margin-bottom:8px">Sample · Hole 1 · Par 4</div>' +
         chips +
-        '<div id="pbw-demo-msg" style="font-family:var(--font-ui);font-size:12px;color:var(--cb-mute);text-align:center">Tap your score — just once, to feel it.</div>' +
+        '<div id="pbw-demo-msg" aria-live="polite" style="font-family:var(--font-ui);font-size:12px;color:var(--cb-mute);text-align:center">Tap your score — just once, to feel it.</div>' +
       '</div>';
     _stageCard({ eyebrow: "Your first card", body: _voiceLine("demoHole"), pose: "tipCap", extraHtml: card, stepIdx: 4 });
     var fired = false;

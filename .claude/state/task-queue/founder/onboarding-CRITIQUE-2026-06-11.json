@@ -1,0 +1,100 @@
+{
+  "summary": "Critique the BUILT + shipped Caddy onboarding walkthrough against the 9.5 bar -> ranked concrete enhancements",
+  "agentCount": 4,
+  "logs": [
+    "Critique scores: [8,8.3,7.2]"
+  ],
+  "result": {
+    "critiqueScores": [
+      8,
+      8.3,
+      7.2
+    ],
+    "backlog": {
+      "overallScore": 7.8,
+      "verdict": "Strong, ship-shaped FTUE engine with honest data and a11y bones, but unverified at the pixel level and missing the integration glue (intro bridge, calibration payoff, E2E) that separates \"built\" from \"shippable\" — two of the three critiques also flagged work that already exists in the tree.",
+      "topEnhancements": [
+        {
+          "rank": 1,
+          "title": "Author pbTeeIntro.onTeardown hook to enable the intro to walkthrough bridge morph",
+          "where": "src/core/intro.js:271 (window.pbTeeIntro export) + _teardown()",
+          "change": "Add module-scope `var _onTeardown = null;`. Inside the existing _teardown(), before returning, append: `if (typeof _onTeardown === 'function') { var cb = _onTeardown; _onTeardown = null; cb(); }`. Extend the export object (currently `{ maybeShow, show, skip, _applyAt }`) with `set onTeardown(fn) { _onTeardown = fn; }`. NOTE: the consumer is home.js:88 (which already calls pbWalk.route() on a 700ms timer), NOT firebase.js as the critiques claim — wire the bridge so the FTUE arms on intro finish, not a blind timer race.",
+          "impact": "Unblocks the cold-open caddy morph and removes the 700ms timer race between the tee-intro teardown and the FTUE mount. All 3 critiques flagged this as the #1 high-impact integration gap; it is genuinely absent from the tree.",
+          "effort": "S"
+        },
+        {
+          "rank": 2,
+          "title": "Write the walkthrough.spec.js E2E suite with the reduced-motion soft-lock assertion as the critical test",
+          "where": "tests/e2e/flows/walkthrough.spec.js (new file)",
+          "change": "Implement 10 Playwright tests against the emulator: (1) fresh unverified user runs 5 beats + demo hole, confetti fires, zero permission-denied; (2) skip at beat 0; (3) skip under prefers-reduced-motion; (4) Escape = skip; (5) scrim-tap = skip; (6) tap a real control through the spotlight cutout fires the underlying handler AND advances; (7) walkthrough.* merge writes are not rules-denied (regression guard); (8) CRITICAL: reduced-motion user reaches walkthrough.ftueState='done' (anti-soft-lock); (9) resize 320/768/1280 re-anchors spotlight; (10) axe-core zero serious/critical per beat. Only tests/smoke/scenarios/s31-onboarding-walkthrough.js exists today — there is no flows/ E2E spec.",
+          "impact": "This is the ship gate. The soft-lock test directly guards the documented reduced-motion-still-completes contract in walkthrough.js header; the rules-denied test guards the Firestore merge writes in _complete(). Flagged high by 2 of 3 critiques.",
+          "effort": "M"
+        },
+        {
+          "rank": 3,
+          "title": "Make calibration consequential or cut it: branch home-rail-newuser.js and demoHole voice by solo/crew",
+          "where": "src/pages/home-rail-newuser.js (new First-Week checklist component) + src/core/caddy-voices.js demoHole entry",
+          "change": "walkthrough.js:170-188 already branches the Demonstrate spotlight (solo→play-cta, crew→standings-link) and persists calibrationProfile, but there is no downstream payoff. Add a dismissible 'Your First Week' checklist to home-rail-newuser.js that auto-checks REAL state (photo+handle exist, firstRoundAt set, first chat doc, first teetimes RSVP) and reorders by calibration (solo: card/handicap first; crew: chat/RSVP/standings first). Persist dismissal in pb_checklist_dismissed. Also split caddy-voices.js demoHole into demoHole-solo/demoHole-crew and have _beatWin call _voiceLine('demoHole-' + (_calib||'solo')). PER BRIEF RULE: if the branches can't render a visibly different surface, delete the calibrate beat (theater = no-ship).",
+          "impact": "Calibration is currently asked-then-ignored beyond one spotlight target swap — the brief's own rule says cut-or-pay-off. Delivers the persistent first-week nudge that turns the demo win into real-round activation. Flagged high by 2 of 3 critiques.",
+          "effort": "L"
+        },
+        {
+          "rank": 4,
+          "title": "Capture 56px Caddy bust legibility proof across 9 persona×theme combos and add accent ring if needed",
+          "where": "src/core/caddy-figure.js:157 (bust viewBox '38 58 88 92') + src/styles components .pbw-bust + visual captures",
+          "change": "Bust mode already exists (opts.bust sets the cropped viewBox). Playwright-capture the 56px bust at 1:1 across all 6 themes × 3 personas (caddy/oldtom/bagroom). If the cap/pipe/towel persona tells blur at scale, add a 2px per-persona accent ring using the token already defined on each roster entry (caddy-voices.js CADDIES[].accent: --cb-brass / --cb-brass-deep / --cb-copper). Store PNGs under .claude/state/visual-captures/walkthrough/. AMD-028: agent self-rating hard-capped at 9.4 until Founder signs off on these captures.",
+          "impact": "The single biggest unverified visual risk and the AMD-028 gate to any 9.5 claim. Without proof the 3-persona differentiation may be an indistinguishable blob at corner-bust size. Flagged high by all 3 critiques.",
+          "effort": "M"
+        },
+        {
+          "rank": 5,
+          "title": "Restore focus to the originating control on teardown (keyboard-nav return)",
+          "where": "src/core/walkthrough.js:45 (_teardown) + _mount",
+          "change": "Add module-scope `var _focusReturn = null;`. In _mount(), before appending the overlay, capture `_focusReturn = document.activeElement;`. At the end of _teardown(), after removing _root: `if (_focusReturn && _focusReturn !== document.body && document.contains(_focusReturn)) { try { _focusReturn.focus(); } catch (e) {} } _focusReturn = null;`. Currently teardown removes the dialog with no focus restoration, dropping keyboard users to <body>.",
+          "impact": "WCAG 2.4.3 focus-order compliance; keyboard users land back on the Play CTA they were about to tap instead of page top. The overlay is role=dialog aria-modal with a focus trap, so the missing return is a real a11y regression.",
+          "effort": "S"
+        },
+        {
+          "rank": 6,
+          "title": "Implement runWelcomeBack() for lapsed members (daysSinceLast >= 30) with bounded queries",
+          "where": "src/core/walkthrough.js (new export) + home.js arm site",
+          "change": "Add runWelcomeBack(uid): gate on _daysBetween(lastLoginDate, today) >= 30 (helper already exists at utils.js:18). Build 2-3 P9-truthful STAGE beats from LIVE data with strictly bounded reads: single standings doc (who passed you), recent rounds .limit(10), active bounties indexed on the target field. Never a changelog redirect. Use the welcomeBack voice line (already present in caddy-voices.js:94 — keep single greeting, do NOT over-engineer an A/B split). Prove query cost/latency in the E2E run before any deploy (thousands-of-users ambition). Wire the arm point in home.js alongside the existing route() call.",
+          "impact": "Re-activation surface for the lapsed-user cohort; the data plumbing (_daysBetween, lastLoginDate, welcomeBack voice) is already staged, so this is assembly not greenfield. Note: critiques' A/B voice-split and 'add _daysBetween' sub-asks are dropped — helper and base line already exist.",
+          "effort": "M"
+        },
+        {
+          "rank": 7,
+          "title": "Wire coachmark() call-sites into the Tier-2 surfaces",
+          "where": "src/pages/{standings,feed,chat,teetimes,shop,wagers,bounties,richlist}.js — first render after data loads",
+          "change": "pbWalk.coachmark(surfaceKey, {selector}) is fully implemented (walkthrough.js:252) with voice lines already authored for all 8 surfaces (caddy-voices.js:54-93) and a once-per-user seenContextual guard — but NOTHING calls it. In each surface's mount/first-render, add one guarded call, e.g. standings.js after the ladder renders: `window.pbWalk && pbWalk.coachmark('standings', { selector: '[data-walk=standings-link]' })`. Confirm each target selector exists (the play-cta and standings-link data-walk hooks exist; the other 6 need verification or addition).",
+          "impact": "Activates the entire authored Tier-2 just-in-time coaching layer that is currently dead code — high leverage since the engine and copy already exist. Verify pointer-events pass-through on the spotlight cutout while wiring (covered by E2E test #6).",
+          "effort": "M"
+        },
+        {
+          "rank": 8,
+          "title": "Add aria-live to the demo-hole win announcement + aria-labels on score chips",
+          "where": "src/core/walkthrough.js:204 (#pbw-demo-msg) and :197 (.pbw-demo-score buttons)",
+          "change": "Add `aria-live=\"polite\" aria-atomic=\"true\"` to the #pbw-demo-msg div so the win line (set at line 215 via msg.textContent) is announced to screen readers without a focus change. Add `aria-label=\"Score \" + s.v + \" \" + s.label` to each .pbw-demo-score button so SR users hear '4 Par' not a bare numeral.",
+          "impact": "Screen-reader users currently get no announcement of the emotional win beat and hear context-free numbers. Small, self-contained a11y polish on the climax beat. Flagged by Critique 2.",
+          "effort": "S"
+        },
+        {
+          "rank": 9,
+          "title": "Clamp the spotlight coach bubble to the viewport top edge",
+          "where": "src/core/walkthrough.js:126",
+          "change": "The coach bubble left edge is already clamped (line 125: Math.max(12, Math.min(...))). The top is NOT: line 126 computes `(below ? r.bottom + 14 : r.top - coach.offsetHeight - 14)` which goes negative (off-screen) when the target is near the top and there's no room below. Wrap with Math.max(12, ...) and, when below is false but the above-position would clip, fall back to below-with-clamp. Re-measure offsetHeight after innerHTML is set (it currently reads before layout in some paths).",
+          "impact": "Prevents the coaching bubble from disappearing above the viewport on small screens / top-anchored targets (e.g., a header nav spotlight), which would strand the user with no visible primary button. Flagged by Critique 2.",
+          "effort": "S"
+        },
+        {
+          "rank": 10,
+          "title": "Add Settings replay + change-caddie controls and the caddieTrendAlerts 30-day suppression",
+          "where": "src/pages/settings.js (or menu surface) + src/core/caddie.js:219 (caddieTrendAlerts)",
+          "change": "Two parts. (a) Settings: add 'Caddy 101' replay -> window.pbWalk.runFtue(0) (bypasses the route() session gate, never re-arms auto-trigger) and 'Change your caddie' -> runFtue(0) into the Beat 0 picker. No user-visible onboarding toggle (walkthrough state is source of truth). (b) In caddieTrendAlerts(), before firing the gentle 14-day 'crew pulling ahead' nudge, guard `if (daysSinceLast >= 30) return;` so the 30+ day re-onboarding flow owns that threshold. Document the deliberate 14/30 split in Caddy Notes — do NOT delete caddieTrendAlerts.",
+          "impact": "Replay/change-caddie is table-stakes discoverability (the engine already supports runFtue(0) replay); the threshold guard prevents the gentle nudge and the welcome-back flow from co-firing. Both low-risk, low-effort cleanups. Flagged low by all 3 critiques.",
+          "effort": "S"
+        }
+      ]
+    }
+  }
+}
