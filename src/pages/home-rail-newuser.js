@@ -267,10 +267,70 @@ function _renderGhostedStatsQuartet(ctx) {
 
 // State 3 lead column composer — same component shapes work at Band B/C/D
 // because tokens drive size and flex-children stretch to column width.
+// "Your First Week" checklist — the calibration pay-off (onboarding critique #3).
+// Auto-checks REAL profile state (P9: never a fabricated tick), reorders +
+// reframes by the caddy walkthrough's solo/crew answer, dismissible, and retires
+// itself once everything's done. The solo path leads with the card/handicap; the
+// crew path leads with the group. Shown to new members until they're rolling.
+function _renderFirstWeekChecklist(ctx) {
+  if (typeof currentProfile === "undefined" || !currentProfile) return "";
+  try { if (localStorage.getItem("pb_checklist_dismissed") === "1") return ""; } catch (e) {}
+  var p = currentProfile;
+  var rounds = (p.totalRounds != null) ? p.totalRounds : ((ctx && ctx.myRounds) ? ctx.myRounds.length : 0);
+  var calib = (p.walkthrough && p.walkthrough.calibrationProfile) || "solo";
+
+  var ITEM = {
+    profile:  { label: "Set up your profile",   done: !!(p.photo && (p.username || p.name)), go: "profile-edit", tip: "Add a photo + handle so the crew knows you." },
+    round:    { label: "Log your first round",  done: rounds > 0,        go: "playnow",      tip: "Tap Play and score it hole by hole." },
+    course:   { label: "Add your home course",  done: !!p.homeCourse,    go: "profile-edit", tip: "Where you usually tee it up." },
+    handicap: { label: "Unlock your handicap",  done: rounds >= 3,       go: "playnow",      tip: "Three rounds in and it computes itself." }
+  };
+  // Solo leads with your own game; crew leads with getting onto the board.
+  var order = calib === "crew"
+    ? ["profile", "round", "handicap", "course"]
+    : ["profile", "round", "course", "handicap"];
+  var items = order.map(function (k) { return ITEM[k]; });
+  var doneCount = items.filter(function (i) { return i.done; }).length;
+  if (doneCount >= items.length) return "";   // all done → retire the card
+
+  var h = '<div style="background:var(--cb-paper);border:1px solid var(--border);border-radius:var(--r-3);padding:16px 16px 12px;box-shadow:var(--el-1)">';
+  h += '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px">';
+  h += '<span style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-brass-deep)">Your First Week</span>';
+  h += '<span style="display:flex;align-items:center;gap:8px"><span style="font-family:var(--font-mono);font-size:10px;color:var(--cb-mute)">' + doneCount + ' of ' + items.length + '</span>';
+  h += '<button onclick="dismissFirstWeek()" aria-label="Dismiss checklist" style="background:none;border:none;color:var(--cb-mute);font-size:15px;line-height:1;cursor:pointer;padding:0 2px;min-height:44px">&times;</button></span>';
+  h += '</div>';
+  items.forEach(function (it) {
+    if (it.done) {
+      h += '<div style="display:flex;align-items:center;gap:10px;padding:7px 0">';
+      h += '<span style="flex:none;width:18px;height:18px;border-radius:50%;background:var(--cb-brass);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="var(--cb-paper)" stroke-width="2.4"><path d="M3 8.5l3.2 3L13 5"/></svg></span>';
+      h += '<span style="font-family:var(--font-ui);font-size:13px;color:var(--cb-mute);text-decoration:line-through">' + escHtml(it.label) + '</span></div>';
+    } else {
+      h += '<div onclick="Router.go(\'' + it.go + '\')" role="button" tabindex="0" style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;cursor:pointer;min-height:44px">';
+      h += '<span style="flex:none;width:18px;height:18px;border-radius:50%;border:2px solid var(--cb-brass);margin-top:1px"></span>';
+      h += '<span style="flex:1"><span style="font-family:var(--font-ui);font-size:13px;font-weight:600;color:var(--cb-ink)">' + escHtml(it.label) + '</span>';
+      h += '<span style="display:block;font-family:var(--font-ui);font-size:11.5px;color:var(--cb-mute);margin-top:1px">' + escHtml(it.tip) + '</span></span>';
+      h += '<svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="var(--cb-brass)" stroke-width="2" style="flex:none;margin-top:4px"><path d="M5 4l4 4-4 4"/></svg></div>';
+    }
+  });
+  // calibration-specific next-step nudge
+  var cta = calib === "crew"
+    ? { label: "Meet the crew in the Clubhouse →", go: "chat" }
+    : { label: "See where you stand →", go: "standings" };
+  h += '<div onclick="Router.go(\'' + cta.go + '\')" role="link" tabindex="0" style="margin-top:8px;padding-top:10px;border-top:1px solid var(--border);font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--cb-brass-deep);cursor:pointer;min-height:44px;display:flex;align-items:center">' + escHtml(cta.label) + '</div>';
+  h += '</div>';
+  return h;
+}
+
+function dismissFirstWeek() {
+  try { localStorage.setItem("pb_checklist_dismissed", "1"); } catch (e) {}
+  if (typeof Router !== "undefined" && Router.go) Router.go("home");
+}
+
 function _renderHQLeadColumnNew(ctx) {
   var h = '<div style="display:flex;flex-direction:column;gap:var(--sp-6)">';
   h += _renderWelcomeHero(ctx);
   h += _renderStartFirstRoundPanel(ctx);
+  h += _renderFirstWeekChecklist(ctx);
   h += _renderGhostedStatsQuartet(ctx);
   h += '</div>';
   return h;

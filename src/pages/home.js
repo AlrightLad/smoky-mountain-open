@@ -209,6 +209,9 @@ function _renderMobileHome(ctx) {
     h += _renderReadyCTA();
   }
 
+  // "Your First Week" checklist (calibration pay-off) — self-gates: renders only
+  // while the new member has open items, retires once done or dismissed.
+  h += _renderFirstWeekChecklist(ctx);
   h += _renderStatsStrip(ctx.totalRounds, ctx.handicap, ctx.bestRound, ctx.bestRoundId, ctx.state === "new");
 
   if (ctx.state === "idle") {
