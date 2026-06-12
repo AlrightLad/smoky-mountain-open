@@ -66,6 +66,14 @@ await page.waitForTimeout(5000); // let league-scoped listeners hydrate
 await page.evaluate((r) => { if (window.Router && window.Router.go) window.Router.go(r); }, ROUTE);
 await page.waitForTimeout(3000);
 await page.screenshot({ path: `${OUT}/${LABEL}-${ROUTE}.png`, fullPage: true });
+// CAP_SELECTOR=".shop-item" → also grab a readable element-level shot (full-page
+// is too compressed to judge cosmetic/preview detail). Captures up to 4 matches.
+if (process.env.CAP_SELECTOR) {
+  const els = await page.$$(process.env.CAP_SELECTOR);
+  for (let i = 0; i < Math.min(els.length, 4); i++) {
+    try { await els[i].scrollIntoViewIfNeeded(); await els[i].screenshot({ path: `${OUT}/${LABEL}-el${i}.png` }); } catch (e) {}
+  }
+}
 
 const facts = await page.evaluate((uid) => {
   var o = {};
