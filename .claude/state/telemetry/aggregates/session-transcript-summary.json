@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-06-12T03:55:30.652227+00:00",
+  "generated_at": "2026-06-12T04:00:24.836379+00:00",
   "schema_version": 1,
   "source": "~/.claude/projects/C--Users-Zach-smoky-mountain-open/*.jsonl",
-  "session_count": 313,
-  "bucket_count": 375,
-  "all_time_total_tokens": 18118761381,
+  "session_count": 314,
+  "bucket_count": 376,
+  "all_time_total_tokens": 18128442018,
   "by_day_total": {
     "2026-04-17": 294853821,
     "2026-04-20": 362592283,
@@ -47,12 +47,12 @@
     "2026-06-09": 631825976,
     "2026-06-10": 837583343,
     "2026-06-11": 1452210982,
-    "2026-06-12": 434165795
+    "2026-06-12": 443846432
   },
   "by_model_total": {
     "claude-opus-4-7": 11336701903,
     "<synthetic>": 0,
-    "claude-opus-4-8": 5856891741,
+    "claude-opus-4-8": 5866572378,
     "claude-fable-5": 925167737
   },
   "buckets": {
@@ -4922,14 +4922,27 @@
       "session_id": "14b32e71-e98c-4be1-819e-5288e4bfd93c",
       "day": "2026-06-12",
       "model": "claude-opus-4-8",
-      "turn_count": 788,
-      "input_tokens": 362757,
-      "output_tokens": 1725338,
-      "cache_read_input_tokens": 429496237,
-      "cache_creation_input_tokens": 2581463,
-      "total": 434165795,
+      "turn_count": 804,
+      "input_tokens": 368147,
+      "output_tokens": 1756534,
+      "cache_read_input_tokens": 438652155,
+      "cache_creation_input_tokens": 2631349,
+      "total": 443408185,
       "first_ts": "2026-06-12T00:13:11.519Z",
-      "last_ts": "2026-06-12T03:55:21.485Z"
+      "last_ts": "2026-06-12T04:00:12.846Z"
+    },
+    "dff2267f-7291-4641-85aa-4b47ee229cec|2026-06-12|claude-opus-4-8": {
+      "session_id": "dff2267f-7291-4641-85aa-4b47ee229cec",
+      "day": "2026-06-12",
+      "model": "claude-opus-4-8",
+      "turn_count": 8,
+      "input_tokens": 20540,
+      "output_tokens": 4433,
+      "cache_read_input_tokens": 288692,
+      "cache_creation_input_tokens": 124582,
+      "total": 438247,
+      "first_ts": "2026-06-12T04:00:14.297Z",
+      "last_ts": "2026-06-12T04:00:21.330Z"
     }
   }
 }
