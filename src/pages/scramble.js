@@ -525,14 +525,17 @@ function calcH2H(pid1, pid2) {
   var p1rounds = rounds.filter(function(r) { return p1ids.indexOf(r.player) !== -1 && r.format !== "scramble" && r.format !== "scramble4"; });
   var p2rounds = rounds.filter(function(r) { return p2ids.indexOf(r.player) !== -1 && r.format !== "scramble" && r.format !== "scramble4"; });
 
+  var countedCourse = {}; // normCourse already settled via standalone round docs
   p1rounds.forEach(function(r1) {
     var match = p2rounds.find(function(r2) {
       return r2.date === r1.date && PB.normCourseName(r2.course) === PB.normCourseName(r1.course);
     });
     if (match) {
-      var key = PB.normCourseName(r1.course) + "|" + r1.date;
+      var nc = PB.normCourseName(r1.course);
+      var key = nc + "|" + r1.date;
       if (counted[key]) return;
       counted[key] = true;
+      countedCourse[nc] = true;
       if (r1.score < match.score) p1wins++;
       else if (r1.score > match.score) p2wins++;
       else ties++;
@@ -545,6 +548,11 @@ function calcH2H(pid1, pid2) {
     if (!tr.courses) return;
     tr.courses.forEach(function(crs) {
       if (crs.s) return; // Skip scramble courses
+      // v8.25.5 — a course already settled by a standalone round doc above is
+      // the SAME game as its trip scorecard; counting both double-counts the
+      // head-to-head (the trip key uses a day label like "Friday PM" while the
+      // round doc uses an ISO date, so the course|date keys never collide).
+      if (countedCourse[PB.normCourseName(crs.n || crs.key)]) return;
       // Try all possible IDs for each player
       var s1 = null, s2 = null;
       p1ids.forEach(function(id) { if (!s1 || !s1.length) s1 = PB.getScores(tr.id, crs.key, id); });

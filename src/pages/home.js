@@ -715,18 +715,35 @@ function renderRivalryDetail(p1id, p2id) {
   var p1rounds = PB.getPlayerRounds(p1id);
   var p2rounds = PB.getPlayerRounds(p2id);
   var matches = [];
-  var matchedKeys = {};
+  var matchedKeys = {};   // normCourse|date — one row per shared course/day
+  var matchedCourses = {}; // normCourse — guards the trip section from re-counting a course already shown
+  // v8.25.5 — exclude scramble (matches calcH2H, which the big score uses) and
+  // dedup by normalized course + date so duplicate round docs in client state
+  // can't add phantom rows. Without this the match list disagreed with the
+  // score and inflated the record (Founder-reported 7-0 vs a true 4-0).
   p1rounds.forEach(function(r1) {
-    var match = p2rounds.find(function(r2) { return r2.course === r1.course && r2.date === r1.date; });
+    if (r1.format === "scramble" || r1.format === "scramble4") return;
+    var nc = PB.normCourseName(r1.course);
+    var key = nc + "|" + r1.date;
+    if (matchedKeys[key]) return;
+    var match = p2rounds.find(function(r2) {
+      return r2.format !== "scramble" && r2.format !== "scramble4" &&
+             r2.date === r1.date && PB.normCourseName(r2.course) === nc;
+    });
     if (match) {
-      matchedKeys[r1.course + "|" + r1.date] = true;
+      matchedKeys[key] = true;
+      matchedCourses[nc] = true;
       matches.push({ date: r1.date, course: r1.course, p1score: r1.score, p2score: match.score, winner: r1.score < match.score ? p1id : match.score < r1.score ? p2id : "tie" });
     }
   });
-  // Also include trip scorecard rounds
+  // Also include trip scorecard rounds — but never a course already counted
+  // above (the standalone round doc and its trip scorecard are the same game).
   PB.getTrips().forEach(function(tr) {
     if (!tr.courses) return;
     tr.courses.forEach(function(crs) {
+      if (crs.s) return; // scramble courses aren't head-to-head
+      var nc = PB.normCourseName(crs.n || crs.key);
+      if (matchedCourses[nc]) return;
       var s1 = PB.getScores(tr.id, crs.key, p1id);
       var s2 = PB.getScores(tr.id, crs.key, p2id);
       if (!s1 || !s1.length || !s2 || !s2.length) return;
@@ -734,8 +751,7 @@ function renderRivalryDetail(p1id, p2id) {
       s1.forEach(function(v){if(v!==""&&v!==null&&v!==undefined){t1+=parseInt(v)||0;h1c++;}});
       s2.forEach(function(v){if(v!==""&&v!==null&&v!==undefined){t2+=parseInt(v)||0;h2c++;}});
       if(h1c===0||h2c===0||h1c!==h2c) return;
-      var key = (crs.n||crs.key)+"|"+(crs.d||tr.startDate||"");
-      if(matchedKeys[key]) return;
+      matchedCourses[nc] = true;
       matches.push({date:crs.d||tr.startDate||"",course:crs.n||crs.key,p1score:t1,p2score:t2,winner:t1<t2?p1id:t1>t2?p2id:"tie"});
     });
   });

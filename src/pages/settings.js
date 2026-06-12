@@ -519,9 +519,9 @@ var _THEME_TOASTS = {
   course_record:   "Course Record. The rarest page in the ledger."
 };
 var _THEME_LOCK_HINTS = {
-  bourbon_room:    "Bourbon Room pours for members with tenure. Keep showing up — it unlocks with time in the league.",
-  champion_sunday: "Champion Sunday is worn after a win. Take down an event and it's yours.",
-  course_record:   "Course Record opens for record-setters. Go put your name in the book."
+  bourbon_room:    "Bourbon Room unlocks with tenure — keep teeing it up.",
+  champion_sunday: "Champion Sunday is earned by winning an event.",
+  course_record:   "Course Record opens when you set one on a course."
 };
 
 function settingsPickTheme(id) {

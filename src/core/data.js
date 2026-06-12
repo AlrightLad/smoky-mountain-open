@@ -407,7 +407,32 @@ var PB = (function() {
   function setRoundsFromFirestore(fsRounds) {
     // Firestore is the sole source of truth for rounds.
     // No localStorage merging — rounds never live in localStorage.
-    state.rounds = fsRounds && fsRounds.length ? fsRounds : [];
+    //
+    // v8.25.5 — DEDUPE on the way in. A given game must appear exactly once;
+    // if it doesn't, every head-to-head, record, average, profile total and
+    // scramble stat that reads state.rounds double-counts it. Founder reported
+    // a 7-0 rivalry that the prod data + a faithful sim both prove is truly
+    // 4-0 — the extra 3 "wins" were the three Smoky-Mountain trip courses
+    // (Maggie / Springdale / Connestee) appearing twice in client state while
+    // the multi-league migration regenerated trip rounds under fresh doc-ids.
+    // Two independent guards, so neither failure mode survives:
+    //   (1) by round id        — collapses a duplicate snapshot delivery
+    //                            (offline-cache + server, or a transitional
+    //                             double-write during the league migration).
+    //   (2) by content signature — collapses the SAME game re-created under a
+    //                            new id (player|course|date|score|holes|format).
+    //                            Two genuinely-distinct rounds can't share all
+    //                            six fields, so this never drops real data.
+    if (!fsRounds || !fsRounds.length) { state.rounds = []; return; }
+    var byId = {}, bySig = {}, deduped = [];
+    fsRounds.forEach(function(r) {
+      if (!r || !r.id || byId[r.id]) return;
+      var sig = [r.player, normCourseName(r.course), r.date, r.score, (r.holesPlayed || ""), (r.format || "")].join("|");
+      if (bySig[sig]) return;
+      byId[r.id] = true; bySig[sig] = true;
+      deduped.push(r);
+    });
+    state.rounds = deduped;
     // Do NOT call save() — rounds are not persisted to localStorage
   }
 
