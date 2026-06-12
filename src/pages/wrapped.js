@@ -19,12 +19,16 @@ Router.register("wrapped", function(params) {
 });
 
 function _buildWrappedSlides(year) {
-  var season = PB.getSeasonStandings(year);
-  var label = season.seasonLabel || ("Season " + year);
+  // Wrapped covers the whole CALENDAR YEAR (Founder 2026-06-12) — Jan 1 to Dec 31,
+  // not the narrow golf sub-season. Round-derived slides filter on the year window
+  // below; the league-rank slide uses the full-year standings ("_year").
+  var season = PB.getSeasonStandings(year, "_year");
+  var label = String(year);
+  var yearStart = year + "-01-01", yearEnd = year + "-12-31";
   var myPid = (typeof currentProfile !== "undefined" && currentProfile) ? (currentProfile.claimedFrom || currentProfile.id) : null;
   var myName = (typeof currentProfile !== "undefined" && currentProfile) ? (PB.getDisplayName(currentProfile) || currentProfile.name || "You") : "You";
   var myRounds = myPid ? PB.getPlayerRounds(myPid).filter(function(r) {
-    return r.date && r.date >= season.seasonStart && r.date <= season.seasonEnd && r.visibility !== "private";
+    return r.date && r.date >= yearStart && r.date <= yearEnd && r.visibility !== "private";
   }) : [];
 
   // Not enough story yet — one warm card instead of an empty montage.
@@ -33,7 +37,7 @@ function _buildWrappedSlides(year) {
       bg: "felt",
       eyebrow: label,
       title: "Your story starts with a round.",
-      body: "Wrapped is built from the golf you log. Play a round this season and come back — the Caddy will have something to say.",
+      body: "Wrapped is built from the golf you log. Play a round this year and come back — the Caddy will have something to say.",
       cta: { label: "Start a round", action: "Router.go('playnow')" }
     }];
   }
@@ -78,7 +82,7 @@ function _buildWrappedSlides(year) {
   slides.push({
     bg: "felt", eyebrow: (window._activeLeagueName || "Parbaughs") + " · " + label,
     title: "Your " + label.toLowerCase() + ", wrapped.",
-    body: "Tap through. The Caddy kept notes all season."
+    body: "Tap through. The Caddy kept notes all year."
   });
   slides.push({
     bg: "paper", eyebrow: "The work",
@@ -89,7 +93,7 @@ function _buildWrappedSlides(year) {
     slides.push({
       bg: "paper", eyebrow: "The scoring",
       stat: String(best.score), statLabel: "your best 18",
-      body: "Shot at " + best.course + (best.date ? " on " + best.date : "") + (avg ? ". Season average: " + avg + "." : ".")
+      body: "Shot at " + best.course + (best.date ? " on " + best.date : "") + (avg ? ". Year average: " + avg + "." : ".")
     });
   } else if (best9) {
     slides.push({
@@ -109,12 +113,12 @@ function _buildWrappedSlides(year) {
     slides.push({
       bg: "felt", eyebrow: "The league",
       stat: "#" + myRank, statLabel: (myRow.points || 0) + " points",
-      body: myRank === 1 ? "Top of the board. Defend it." : ("Chasing " + (leaderName || "the leader") + ". The season isn't over.")
+      body: myRank === 1 ? "Top of the board. Defend it." : ("Chasing " + (leaderName || "the leader") + ". The year isn't over.")
     });
   }
   slides.push({
     bg: "felt", eyebrow: label,
-    title: "That's your season so far, " + myName.split(" ")[0] + ".",
+    title: "That's your year so far, " + myName.split(" ")[0] + ".",
     body: "Cut a public link and show the group chat that hasn't joined yet.",
     finale: true,
     shareRows: [
