@@ -161,7 +161,31 @@ function syncMember(m) { if (!db||syncStatus==="offline") return; var d=JSON.par
 // leagueIds[] array. Readers migrate per-surface later; the scalar retires
 // only in post-cutover cleanup. A round already carrying leagueIds (future
 // multi-publish UI) keeps its own list.
-function syncRound(r) { if (!db||syncStatus==="offline") return; var d=JSON.parse(JSON.stringify(r)); d.createdAt=fsTimestamp(); d.leagueId=getActiveLeague(); if (!Array.isArray(d.leagueIds) || !d.leagueIds.length) d.leagueIds = [d.leagueId]; db.collection("rounds").doc(r.id||genId()).set(d,{merge:true}).catch(function(){}); }
+// v8.25.27 — DATA-LOSS FIX. The old one-liner did `if (syncStatus==="offline")
+// return;` (the write never fired — not even after reconnect, since the early
+// return skips Firestore's own offline queue) plus a silent `.catch(){}` (rules
+// rejections vanished). A finished round could disappear with zero feedback —
+// exactly what swallowed FatalBert69420's 18-hole round on 2026-06-12 (the
+// liveround was marked "completed" but `rounds/{id}` was never written). Now:
+// (1) only gate on !db — always ATTEMPT so the SDK queues offline writes;
+// (2) never clobber a valid leagueId with a null active-league (orphans the
+//     round — invisible to leagueQuery + rejected by rules);
+// (3) retry once, then log failures via pbWarn so they surface in the errors
+//     collection instead of vanishing.
+function syncRound(r) {
+  if (!db) return;
+  var d = JSON.parse(JSON.stringify(r));
+  d.createdAt = fsTimestamp();
+  d.leagueId = getActiveLeague() || r.leagueId || null;
+  if (!Array.isArray(d.leagueIds) || !d.leagueIds.length) d.leagueIds = d.leagueId ? [d.leagueId] : [];
+  var id = r.id || genId();
+  (function attempt(retry) {
+    db.collection("rounds").doc(id).set(d, { merge: true }).catch(function(e) {
+      if (retry > 0) { setTimeout(function() { attempt(retry - 1); }, 1500); return; }
+      if (typeof pbWarn === "function") pbWarn("syncRound:write-failed", { id: id, leagueId: d.leagueId, err: e && e.message });
+    });
+  })(1);
+}
 
 // Compute and persist player stats to Firestore member doc after any round change.
 // IMPORTANT: Stats are GLOBAL — calculated from ALL rounds across ALL leagues.

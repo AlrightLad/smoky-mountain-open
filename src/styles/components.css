@@ -4186,12 +4186,16 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
   color: var(--cb-ink);
   margin-top: 2px;
 }
+/* v8.25.27 — evocative item prose belongs in the body sans, not 9.5px
+   monospace (which read "terminal/techy" and undercut the refined
+   country-club register on all 61 cards). Numerals/price/locked states stay
+   mono for tabular alignment; only the descriptive copy moves to Inter. */
 .shop-item__desc {
-  font-family: var(--font-mono);
-  font-size: 9.5px;
+  font-family: var(--font-ui);
+  font-size: 10.5px;
   color: var(--cb-mute);
-  margin-top: 3px;
-  line-height: 1.4;
+  margin-top: 4px;
+  line-height: 1.46;
 }
 .shop-item__state {
   margin-top: 10px;
