@@ -486,6 +486,13 @@ function doLogout(_confirmed) {
       .then(function(ok) { if (ok) doLogout(true); });
     return;
   }
+  // Replay the tee-shot swing on the NEXT sign-in. Founder spec: the swing plays
+  // every time you sign back in (a moment of arrival), while the onboarding tour
+  // stays once unless WALKTHROUGH_MAJOR bumps. pb_intro_seen is sessionStorage
+  // that otherwise survives a sign-out→sign-in within the same tab, suppressing
+  // the replay — clearing it here on the deliberate sign-out re-arms it. The
+  // smoke never calls doLogout, so its per-load intro suppression is untouched.
+  try { sessionStorage.removeItem("pb_intro_seen"); } catch (e) {}
   auth.signOut();
 }
 
