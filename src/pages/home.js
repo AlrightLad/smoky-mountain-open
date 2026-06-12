@@ -680,8 +680,8 @@ function _renderTeeTimesSection(upcoming) {
 // richlist, roundhistory, teetimes, trips, wagers.
 function renderPageFooter() {
   var d = "·";
-  var s = "font-size:11px;color:var(--muted2);cursor:pointer;letter-spacing:.5px";
-  var sm = "font-size:11px;color:var(--muted2)";
+  var s = "font-size:11px;color:var(--cb-mute);cursor:pointer;letter-spacing:.5px";
+  var sm = "font-size:11px;color:var(--cb-mute-2)";
   return '<div style="text-align:center;padding:20px 16px 8px;display:flex;justify-content:center;gap:var(--sp-3);flex-wrap:wrap">' +
     '<span style="' + s + '" onclick="Router.go(\'merch\')">Merch</span>' +
     '<span style="' + sm + '">' + d + '</span>' +

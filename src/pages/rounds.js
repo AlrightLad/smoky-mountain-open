@@ -214,7 +214,7 @@ function renderRoundsList(params) {
           else if (gVsPar === 0) { gVsParStr = "E"; }
           else                  { gVsParStr = "+" + gVsPar; }
         }
-        h += '<div class="card"><div class="round-card"><div class="rc-top"><div style="flex:1"><div class="rc-course" style="color:var(--gold)">' + escHtml(g.teamName) + ' · Scramble</div><div class="rc-date">' + escHtml(g.course) + ' · ' + g.date + (g.tee ? ' · ' + g.tee : '') + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(g.players.join(", ")) + '</div></div>';
+        h += '<div class="card"><div class="round-card"><div class="rc-top"><div style="flex:1"><div class="rc-course">' + escHtml(g.teamName) + ' · Scramble</div><div class="rc-date">' + escHtml(g.course) + ' · ' + g.date + (g.tee ? ' · ' + g.tee : '') + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(g.players.join(", ")) + '</div></div>';
         h += '<div style="display:flex;align-items:center;gap:6px"><div style="text-align:right"><div class="rc-score">' + g.score + '</div>';
         if (gVsParStr) {
           h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:600;color:' + gVsParColor + ';letter-spacing:0.5px;margin-top:2px;line-height:1">' + gVsParStr + ' to par</div>';
