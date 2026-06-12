@@ -12,7 +12,7 @@
 // the new SW never activated — browsers fell back to network on every request.
 // Install handler now uses Promise.all + per-asset cache.add().catch() (P22)
 // so future asset-list drift logs warnings instead of nuking the install.
-var CACHE_NAME = 'parbaughs-v8.25.37';
+var CACHE_NAME = 'parbaughs-v8.25.38';
 var STATIC_ASSETS = [
   '/smoky-mountain-open/',
   '/smoky-mountain-open/watermark.jpg',
@@ -23,7 +23,8 @@ var STATIC_ASSETS = [
   '/smoky-mountain-open/stock_profile_navy.jpg',
   '/smoky-mountain-open/stock_profile_charcoal.jpg',
   '/smoky-mountain-open/stock_profile_red.jpg',
-  '/smoky-mountain-open/stock_profile_teal.jpg'
+  '/smoky-mountain-open/stock_profile_teal.jpg',
+  '/smoky-mountain-open/lottie/golf-swing.json'
 ];
 
 self.addEventListener('install', function(event) {

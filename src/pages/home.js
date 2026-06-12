@@ -85,15 +85,24 @@ Router.register("home", function() {
   // First-run: fire the Caddy walkthrough once home has painted. pbWalk.route()
   // self-gates on members/{uid}.walkthrough.ftueState — it runs the FTUE once for
   // a brand-new member, then never again (and no-ops if already running).
-  // Cold open: play the tee-shot swing first, THEN the onboarding walkthrough.
-  // maybeShow() mounts #pbIntro synchronously; route() then sees the live intro
-  // and arms the FTUE for ITS teardown (the user's tap-to-enter), so onboarding
-  // never paints over the swing. Both anchored here so new + returning users get
-  // the same sequence (the intro was previously fired from firebase.js on a
-  // different timer — that cross-file race is what let the walkthrough overlap).
+  // Cold open: play the tee-shot swing FIRST, THEN the onboarding walkthrough.
+  // v8.25.38 — SYNC handoff (no timer race): maybeShow() returns whether the swing
+  // actually mounted. If it did, we arm the walkthrough to fire on the intro's
+  // teardown (the user's tap-to-enter) via setOnTeardown — so onboarding NEVER
+  // paints over the swing. The old 300ms setTimeout(route) was a cross-file race
+  // that let the two overlays render simultaneously on first startup (the
+  // Founder-reported "overlapping on first startup"). If the intro didn't show
+  // (returning user / opted out), run route() immediately (it self-gates anyway).
   try {
-    if (typeof pbTeeIntro !== "undefined" && pbTeeIntro && pbTeeIntro.maybeShow) pbTeeIntro.maybeShow();
-    if (window.pbWalk && window.pbWalk.route) setTimeout(function () { window.pbWalk.route(); }, 300);
+    if (typeof pbTeeIntro !== "undefined" && pbTeeIntro && pbTeeIntro.maybeShow) {
+      var introShowed = pbTeeIntro.maybeShow();
+      if (window.pbWalk && window.pbWalk.route) {
+        if (introShowed && pbTeeIntro.setOnTeardown) pbTeeIntro.setOnTeardown(function () { window.pbWalk.route(); });
+        else window.pbWalk.route();
+      }
+    } else if (window.pbWalk && window.pbWalk.route) {
+      window.pbWalk.route();
+    }
   } catch (e) {}
   var ctx = _buildHomeContext();
   var w = window.innerWidth;

@@ -19,6 +19,10 @@ const ROUTE = process.argv[3] || 'home';
 const LABEL = process.argv[4] || ('verify-' + (UID || 'x').slice(0, 6));
 const URL = process.env.VERIFY_URL || 'https://parbaughs-staging.web.app/';
 const SA_PATH = 'scripts/.secrets/prod-service-account.json';
+// CAP_WITH_INTRO=1 (or --with-intro): do NOT suppress the sign-in swing +
+// onboarding — capture them as a real first-run user sees them. Default (unset)
+// keeps the old behavior (skip the intro) so page captures are unobstructed.
+const WITH_INTRO = process.env.CAP_WITH_INTRO === '1' || process.argv.includes('--with-intro');
 
 if (!UID) { console.error('Usage: node scripts/verify-as-member.mjs <uid> [route] [label]'); process.exit(2); }
 if (!existsSync(SA_PATH)) {
@@ -37,12 +41,23 @@ if (!existsSync(OUT)) mkdirSync(OUT, { recursive: true });
 const b = await chromium.launch();
 const ctx = await b.newContext({ viewport: { width: 430, height: 900 }, serviceWorkers: 'block', deviceScaleFactor: 2 });
 const page = await ctx.newPage();
-await page.addInitScript(() => { try { sessionStorage.setItem('pb_intro_seen', '1'); sessionStorage.setItem('pb_wt_routed', '1'); } catch (e) {} });
+await page.addInitScript(({ skipIntro }) => { try { if (skipIntro) { sessionStorage.setItem('pb_intro_seen', '1'); sessionStorage.setItem('pb_wt_routed', '1'); } } catch (e) {} }, { skipIntro: !WITH_INTRO });
 await page.goto(URL + '?nocache=' + Date.now(), { waitUntil: 'domcontentloaded' });
 await page.waitForTimeout(1500);
 await page.waitForFunction(() => typeof window.auth !== 'undefined', { timeout: 12000 });
 await page.evaluate(async (t) => { await window.auth.signInWithCustomToken(t); }, token);
 await page.waitForFunction(() => { var m = document.getElementById('mainApp'); return m && !m.classList.contains('hidden'); }, { timeout: 20000 });
+// WITH_INTRO: capture the sign-in swing as a real first-run user sees it. The
+// Lottie auto-plays ~1100ms after sign-in and runs 4.0s (96f@24fps), so these
+// frames straddle the auto-play start, the full arc, and the finish gate — and
+// would surface any onboarding overlay overlapping the swing.
+if (WITH_INTRO) {
+  let prev = 0;
+  for (const at of [200, 1100, 2200, 3300, 4400, 5300]) {
+    await page.waitForTimeout(at - prev); prev = at;
+    await page.screenshot({ path: `${OUT}/${LABEL}-swing-${String(at).padStart(4, '0')}ms.png`, fullPage: true });
+  }
+}
 await page.evaluate(() => { try { window.pbTeeIntro && window.pbTeeIntro.skip && window.pbTeeIntro.skip(); } catch (e) {} });
 await page.waitForTimeout(5000); // let league-scoped listeners hydrate
 await page.evaluate((r) => { if (window.Router && window.Router.go) window.Router.go(r); }, ROUTE);

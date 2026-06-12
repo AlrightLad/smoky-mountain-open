@@ -78,6 +78,8 @@ html{background:var(--bg)!important}body{font-family:'Inter',system-ui,sans-seri
 <script type="module" src="/src/main.js"></script>
 <!-- html2canvas for share card image generation -->
 <script defer crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<!-- lottie-web for the tee-shot sign-in intro (cdnjs already in script-src CSP; defer keeps it off first paint, the intro fires post-sign-in) -->
+<script defer crossorigin="anonymous" src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.13.0/lottie.min.js"></script>
 <!-- Lighthouse-friendly resource hints -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
