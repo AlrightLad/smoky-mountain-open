@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-12T00:52:31.393781Z",
+  "generated_at": "2026-06-12T00:54:24.617570Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 86.7,
   "overall_grade": "A-",
@@ -1041,18 +1041,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "015f08d7",
-    "subject": "feat(onboarding): introâ†’Caddy cold-open bridge â€” critique enhancement #1 (v8.25.2)",
-    "committed_at": "2026-06-11T20:52:06-04:00",
-    "trigger": "app-commit",
-    "is_app_commit": true,
-    "app_files_touched": [
-      "public/sw.js",
-      "src/core/intro.js",
-      "src/core/utils.js",
-      "src/core/walkthrough.js"
-    ],
-    "total_files_touched": 6
+    "sha": "d63fdedd",
+    "subject": "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)",
+    "committed_at": "2026-06-11T20:53:34-04:00",
+    "trigger": "cron",
+    "is_app_commit": false,
+    "app_files_touched": [],
+    "total_files_touched": 4
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
