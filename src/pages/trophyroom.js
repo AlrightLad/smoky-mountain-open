@@ -140,7 +140,7 @@ function _trStandingSec(lvl) {
   var pct = xpNeeded > 0 ? Math.min(100, Math.round((xpInLevel / xpNeeded) * 100)) : 100;
   var atMax = lvl.level >= 100 || xpNeeded <= 0;
   var nextTitle = _trNextTitle(lvl.level);
-  var h = '<section class="tr-standing" aria-label="Current standing">';
+  var h = '<section class="tr-standing tr-standing--hero" aria-label="Current standing">';
   h += '<div class="tr-standing__rail"><div class="tr-standing__lvlcap">Level</div><div class="tr-standing__level" data-count="' + lvl.level + '">0</div></div>';
   h += '<div class="tr-standing__body">';
   h += '<div class="tr-standing__title">' + escHtml(lvl.name) + '</div>';
@@ -205,7 +205,7 @@ function _trRecordsSec(s) {
   var h = '<section class="tr-sec" aria-label="Records">';
   h += _trSecHead("The ledger", "Records", null);
   if (s.rounds.length || s.best || s.best9 || s.aceCount || s.unique) {
-    h += '<div class="tr-records">';
+    h += '<div class="tr-records tr-records--peak">';
     h += _trRecRow("Best round", s.best ? String(s.best.score) : "—", null, null);
     if (s.best9) h += _trRecRow("Best nine", String(s.best9.score), s.best9.holesMode === "back9" ? "Back 9" : "Front 9", null);
     h += _trRecRow("Rounds logged", String(s.rounds.length), null, null);
@@ -242,7 +242,7 @@ function _trTitlesSec(lvl) {
   _TR_TITLE_KEYS.forEach(function(lv) {
     var unlocked = lvl.level >= lv;
     var isCurrent = lvl.titleLevel === lv;
-    h += '<div class="title-row' + (unlocked ? '' : ' locked') + '">';
+    h += '<div class="title-row' + (unlocked ? '' : ' locked') + (isCurrent ? ' title-row--current' : '') + '">';
     h += '<div class="t-level">LV' + lv + '</div>';
     h += '<div class="t-name">' + escHtml(_TR_TITLES[lv]) + '</div>';
     if (isCurrent) h += '<div class="t-status t-status--current">Current</div>';
@@ -252,6 +252,89 @@ function _trTitlesSec(lvl) {
   });
   h += '</div>';
   return h + '</section>';
+}
+
+// Page-scoped styles (Fix 2 weight ladder + Fix 4 contrast). Kept INSIDE the
+// page so the structural Clubhouse pass needs no shared-CSS edit:
+//  · the Level/XP hero + Records read as the visual peak (brass border, lifted
+//    surface) while routine sections step down to the plain hairline treatment;
+//  · every locked/muted LABEL that was painted in the decorative --cb-mute-2
+//    (#A8A395, ~1.x:1 — fails WCAG AA) is repainted in AA-safe --cb-mute /
+//    --cb-ink-faint so locked rows stay legible (ADA requirement).
+var _TR_STYLE = '<style id="tr-page-style">'
+  + '.tr-standing--hero{background:linear-gradient(135deg,rgba(var(--cb-brass-rgb),.08),var(--cb-chalk-2));border:1px solid rgba(var(--cb-brass-rgb),.45);box-shadow:var(--el-2);padding:20px 22px}'
+  + '.tr-standing--hero .tr-standing__rail{border-right-color:rgba(var(--cb-brass-rgb),.3)}'
+  + '.tr-tabs{margin:20px var(--tr-gutter) 4px;padding-bottom:2px;border-bottom:1px solid var(--cb-chalk-3);gap:20px;flex-wrap:wrap}'
+  + '.tr-tabs .roster-tab{min-height:44px}'
+  + '.tr-tabpanel>.tr-sec:first-child{margin-top:18px}'
+  + '.tr-records--peak{border-color:rgba(var(--cb-brass-rgb),.4);box-shadow:var(--el-2)}'
+  + '.tr-tabpanel{animation:trFadeIn var(--duration-base,.24s) var(--ease-default,ease)}'
+  + '@keyframes trFadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}'
+  /* Fix 4 — AA-safe locked/muted labels (override decorative --cb-mute-2 text). */
+  + '.tr-titles .title-row.locked .t-level{color:var(--cb-mute)}'
+  + '.tr-titles .t-status--locked{color:var(--cb-mute)}'
+  /* Differentiate-by-purpose: the ladder is an ordered climb, so the current
+     rung gets a brass spine that ties it to the hero — rows stay rows, the
+     wall stays cards, and the divergence now reads as deliberate. */
+  + '.tr-titles .title-row--current{border-color:rgba(var(--cb-brass-rgb),.45);box-shadow:inset 3px 0 0 var(--cb-brass)}'
+  + '#trophyAchGrid .ach-card.locked .ach-xp{color:var(--cb-mute)}'
+  + '#trophyAchGrid .ach-card.locked .ach-icon{color:var(--cb-mute-1)}'
+  + '@media (prefers-reduced-motion:reduce){.tr-tabpanel{animation:none}}'
+  + '</style>';
+
+// Tabs realize the progressive-disclosure split (Fix 1): the masthead + Level/XP
+// hero stay pinned; everything else lives behind one segmented control so the
+// default view is two screens, not twenty. Every trophy/record still renders —
+// just on the tab that owns it.
+var _TR_TABS = [
+  { key: 'earned', label: 'Earned' },
+  { key: 'records', label: 'Records' },
+  { key: 'all', label: 'All Trophies' },
+  { key: 'levels', label: 'Levels' }
+];
+var trophyActiveTab = 'earned';
+var _trCtx = null; // { p, pid, lvl, achievements, stats } — for tab re-renders.
+
+function _trTabBar() {
+  var h = '<div class="roster-tabs tr-tabs" role="tablist" aria-label="Trophy room sections">';
+  _TR_TABS.forEach(function(t) {
+    var active = trophyActiveTab === t.key;
+    h += '<button type="button" role="tab" class="roster-tab' + (active ? ' roster-tab--active' : '') + '"'
+      + ' data-trtab="' + t.key + '" aria-selected="' + (active ? 'true' : 'false') + '"'
+      + ' onclick="trophySetTab(\'' + t.key + '\')">' + escHtml(t.label) + '</button>';
+  });
+  return h + '</div>';
+}
+
+// Build only the panel the active tab owns. Section builders are unchanged —
+// we just route them so the heavy catalog isn't in the first paint.
+function _trPanel(tab, ctx) {
+  var h = '<div class="tr-tabpanel" id="trTabPanel" role="tabpanel">';
+  if (tab === 'records') {
+    h += _trRecordsSec(ctx.stats);
+    h += _trLeagueSec();
+  } else if (tab === 'all') {
+    h += _trWallSec(ctx.pid);
+  } else if (tab === 'levels') {
+    h += _trTitlesSec(ctx.lvl);
+  } else { // earned (default)
+    h += _trRecentSec(ctx.achievements);
+    h += _trHonorSec();
+  }
+  return h + '</div>';
+}
+
+// Hydrate the async grids that the freshly-rendered panel exposes. Idempotent:
+// safe to call on every tab switch; no-ops when the target node is absent.
+// Entering the wall rebuilds the toggle in its "Earned only" off-state, so we
+// reset the filter to match — button and grid never disagree.
+function _trHydrateTab(tab, ctx) {
+  if (tab === 'all') {
+    trophyShowUnlockedOnly = false;
+    renderTrophyAchGrid(ctx.pid, false);
+  } else if (tab === 'records') {
+    renderTrophyCustomGrid(ctx.pid);
+  }
 }
 
 function renderTrophyRoom(p) {
@@ -268,22 +351,46 @@ function renderTrophyRoom(p) {
     aceCount: aceCount
   };
 
-  var h = '<div class="tr-wrap">';
+  trophyActiveTab = 'earned';
+  trophyShowUnlockedOnly = false;
+  _trCtx = { p: p, pid: pid, lvl: lvl, achievements: achievements, stats: stats };
+
+  var h = _TR_STYLE + '<div class="tr-wrap">';
+  // Always-visible peak: identity masthead + the Level/XP standing hero.
   h += _trMastheadSec(p, pid, lvl, achievements.length, aceCount);
   h += _trStandingSec(lvl);
-  h += _trRecentSec(achievements);
-  h += _trHonorSec();
-  h += _trRecordsSec(stats);
-  h += _trWallSec(pid);
-  h += _trLeagueSec();
-  h += _trTitlesSec(lvl);
+  // Progressive disclosure: segmented control + the active panel only.
+  h += _trTabBar();
+  h += _trPanel(trophyActiveTab, _trCtx);
   h += '</div>'; // .tr-wrap
 
   document.querySelector('[data-page="trophyroom"]').innerHTML = h;
-  trophyShowUnlockedOnly = false;
-  renderTrophyAchGrid(pid, false);
-  renderTrophyCustomGrid(pid);
+  _trHydrateTab(trophyActiveTab, _trCtx);
   setTimeout(initCountAnimations, 50);
+}
+
+// Tab switch — re-render just the panel area and hydrate its async grids.
+// Mirrors the roster tab pattern (members.js) for app-wide consistency.
+function trophySetTab(tab) {
+  if (!_trCtx) return;
+  trophyActiveTab = tab;
+  var bar = document.querySelector('.tr-tabs');
+  if (bar) {
+    var btns = bar.querySelectorAll('.roster-tab');
+    for (var i = 0; i < btns.length; i++) {
+      var on = btns[i].getAttribute('data-trtab') === tab;
+      btns[i].classList.toggle('roster-tab--active', on);
+      btns[i].setAttribute('aria-selected', on ? 'true' : 'false');
+    }
+  }
+  var panel = document.getElementById('trTabPanel');
+  if (panel) {
+    var wrap = panel.parentNode;
+    var fresh = document.createElement('div');
+    fresh.innerHTML = _trPanel(tab, _trCtx);
+    wrap.replaceChild(fresh.firstChild, panel);
+  }
+  _trHydrateTab(tab, _trCtx);
 }
 
 var trophyShowUnlockedOnly = false;

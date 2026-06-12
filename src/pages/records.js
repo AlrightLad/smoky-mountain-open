@@ -65,9 +65,46 @@ Router.register("records", function() {
 
   h += '</div>';
 
-  // Helper for collapsible hof card
-  function hofCard(id, title, content) {
-    return '<div class="hof-card"><div class="hof-title" onclick="toggleSection(\'rec-' + id + '\')" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center"><span>' + title + '</span><span id="rec-' + id + '-toggle" style="font-size:12px;color:var(--muted);display:inline-flex;transition:transform .2s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="transition:transform .2s;color:var(--muted)"><path d="M9 18l6-6-6-6"/></svg></span></div><div id="rec-' + id + '" style="display:none">' + content + '</div></div>';
+  // Stroke-based 24x24 brass glyphs, one per section — gives each otherwise
+  // identical accordion card a semantic signifier at a glance (no emoji).
+  function recIcon(path) {
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" width="17" height="17" style="flex-shrink:0;color:var(--gold);opacity:.85">' + path + '</svg>';
+  }
+  var REC_ICONS = {
+    // trophy — event champions
+    champions: recIcon('<path d="M6 4h12v3a6 6 0 0 1-12 0V4z"/><path d="M6 5H3v1a4 4 0 0 0 3 3.87"/><path d="M18 5h3v1a4 4 0 0 1-3 3.87"/><path d="M9 18h6"/><path d="M12 13v5"/>'),
+    // target — all-time records
+    alltime: recIcon('<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/>'),
+    // pencil — log a record
+    logrecord: recIcon('<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/>'),
+    // swords — head-to-head
+    h2h: recIcon('<path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6"/><path d="m16 16 4 4"/><path d="M19 21l2-2"/><path d="M9.5 17.5 21 6V3h-3L6.5 14.5"/><path d="m11 19-6-6"/><path d="m8 16-4 4"/><path d="M5 21l-2-2"/>'),
+    // flag — scramble teams
+    scramble: recIcon('<path d="M4 21V4"/><path d="M4 4h11l-1.5 3L15 10H4"/>'),
+    // bar chart — best scores by course
+    courses: recIcon('<path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6" rx="1"/><rect x="12" y="8" width="3" height="10" rx="1"/><rect x="17" y="5" width="3" height="13" rx="1"/>'),
+    // gauge — handicap leaderboard
+    hcap: recIcon('<path d="M12 14a4 4 0 0 0-3.46 6"/><path d="M15.46 20A4 4 0 0 0 12 14"/><path d="m13.5 12.5 2-2"/><path d="M5 18a9 9 0 1 1 14 0"/>'),
+    // users — member averages
+    avg: recIcon('<path d="M17 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="3.5"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>')
+  };
+
+  // Helper for collapsible hof card.
+  //  - `subtitle` (optional) surfaces a real value inline under the title so the
+  //    section conveys data before any tap (P10).
+  //  - `tier === "headline"` gives the two marquee record cards (champions,
+  //    all-time) a subtle brass left-rail + slightly heavier title, creating a
+  //    two-tier weight ladder instead of a flat identical stack. Done with an
+  //    inline override on the page's own element (no shared-CSS edit).
+  function hofCard(id, title, content, subtitle, tier) {
+    var icon = REC_ICONS[id] || '';
+    var isHeadline = tier === "headline";
+    var titleSize = isHeadline ? "font-size:var(--text-md);font-weight:800" : "";
+    var titleBlock = '<span style="display:flex;align-items:center;gap:8px;min-width:0">' + icon + '<span style="display:flex;flex-direction:column;min-width:0">' + '<span style="' + titleSize + '">' + title + '</span>' +
+      (subtitle ? '<span style="font-size:11px;font-weight:500;color:var(--cb-mute);margin-top:2px;letter-spacing:.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + subtitle + '</span>' : '') +
+      '</span></span>';
+    var cardStyle = isHeadline ? ' style="border-left:2px solid rgba(var(--gold-rgb),.45);padding-left:calc(var(--sp-4) - 2px)"' : '';
+    return '<div class="hof-card"' + cardStyle + '><div class="hof-title" onclick="toggleSection(\'rec-' + id + '\')" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px"><span style="min-width:0;display:flex">' + titleBlock + '</span><span id="rec-' + id + '-toggle" style="font-size:12px;color:var(--muted);display:inline-flex;transition:transform .2s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="transition:transform .2s;color:var(--muted)"><path d="M9 18l6-6-6-6"/></svg></span></div><div id="rec-' + id + '" style="display:none">' + content + '</div></div>';
   }
 
   // 1. Event Champions — collapsible hofCard matching all other sections
@@ -84,7 +121,17 @@ Router.register("records", function() {
       champContent += '<span class="hof-val" style="color:' + (isChamp ? 'var(--gold)' : 'var(--muted)') + '">' + escHtml(champName) + '</span>';
       champContent += '</div>';
     });
-    h += hofCard("champions", "Event champions", champContent);
+    // Surface the most recent crowned champion inline (P10); falls back to the
+    // count of events when none is crowned yet. Names are escaped (XSS).
+    var champPreview = '';
+    var crowned = trips.filter(function(t){ return t.champion; });
+    if (crowned.length) {
+      var latest = crowned[crowned.length - 1];
+      var latestChamp = PB.getPlayer(latest.champion);
+      var latestName = latestChamp ? (latestChamp.username || latestChamp.name) : "";
+      if (latestName) champPreview = escHtml(latestName) + ' · ' + escHtml(latest.name);
+    }
+    h += hofCard("champions", "Event champions", champContent, champPreview, "headline");
   }
 
   // 2. All-time records — with inline Log a record
@@ -125,7 +172,16 @@ Router.register("records", function() {
   recContent += '<div class="hof-row"><span class="hof-label">Longest hole out</span><span class="hof-val">' + (rec.longestHoleOut ? rec.longestHoleOut.distance + ' yds, ' + rec.longestHoleOut.by : "—") + '</span></div>';
   recContent += '<div class="hof-row"><span class="hof-label">Chip-ins</span><span class="hof-val">' + (rec.chipIns || 0) + '</span></div>';
   recContent += '<div class="hof-row" onclick="Router.go(\'aces\')" style="cursor:pointer"><span class="hof-label">Hole-in-ones</span><span class="hof-val" style="color:var(--gold)">' + (rec.holeInOnes && rec.holeInOnes.length ? rec.holeInOnes.length + ' → View Ace Wall' : 'View Ace Wall →') + '</span></div>';
-  h += hofCard("alltime", "All-time records", recContent);
+  // Inline the top record under the title so the section shows real data before
+  // any tap (P10). best18/best9 are var-hoisted from the block above; guard for
+  // the no-rounds case. Names are escaped (XSS) since they originate from data.
+  var alltimePreview = '';
+  if (best18) {
+    alltimePreview = 'Best 18: ' + best18.score + ' · ' + escHtml(best18.playerName);
+  } else if (best9) {
+    alltimePreview = 'Best 9: ' + best9.score + ' · ' + escHtml(best9.playerName);
+  }
+  h += hofCard("alltime", "All-time records", recContent, alltimePreview, "headline");
 
   // Log record — hofCard style, consistent with all other sections
   var logContent = '<div style="padding:4px 0">';
@@ -251,7 +307,10 @@ Router.register("records", function() {
   }).filter(Boolean).sort(function(a, b) { return a.hcap - b.hcap; });
   if (hcaps.length) { hcaps.forEach(function(x) { hcapContent += '<div class="hof-row"><span class="hof-label">' + escHtml(x.name) + '</span><span class="hof-val">' + x.hcap + '</span></div>'; }); }
   else hcapContent = '<div class="hof-row"><span class="hof-label">No handicaps yet</span><span class="hof-val">Log 3+ rounds</span></div>';
-  h += hofCard("hcap", "Handicap leaderboard", hcapContent);
+  // Inline the leader (lowest handicap — list is sorted ascending) under the
+  // title so the section conveys data before any tap (P10).
+  var hcapPreview = hcaps.length ? ('Leader: ' + escHtml(hcaps[0].name) + ' · ' + hcaps[0].hcap) : '';
+  h += hofCard("hcap", "Handicap leaderboard", hcapContent, hcapPreview);
 
   // 7. Member averages — use all known members (fbMemberCache has everyone)
   var avgContent = '';

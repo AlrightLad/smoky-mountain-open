@@ -30,16 +30,19 @@ Router.register("settings", function(params) {
   // ──────────────────────────────────────────────────────────────────────────
   var acc = "";
   if (currentUser) {
-    acc += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Email</div></div><div class="set-row__value set-row__value--mono">' + escHtml(currentUser.email) + '</div></div>';
+    // Guard (P10): never render a label with an empty value slot. A blank
+    // email surfaces as an explicit state instead of a dangling row.
+    if (currentUser.email) {
+      acc += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Email</div></div><div class="set-row__value set-row__value--mono">' + escHtml(currentUser.email) + '</div></div>';
+    } else {
+      acc += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Email</div></div><div class="set-row__value" style="color:var(--cb-mute);font-size:13px">Not on file</div></div>';
+    }
     if (!currentUser.emailVerified) {
       acc += '<div class="set-note set-note--mute" style="margin:10px 0 4px;display:flex;justify-content:space-between;align-items:center;gap:10px"><span>Your email is not verified yet.</span><button class="set-link" onclick="sendVerificationEmail()">Send verification</button></div>';
     }
     acc += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Username</div></div><div class="set-row__value">' + escHtml(currentProfile ? (currentProfile.username || currentProfile.name) : "—") + '</div></div>';
     acc += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Role</div></div><div class="set-row__value">' + escHtml(currentProfile ? (currentProfile.role || "Member") : "—") + '</div></div>';
     acc += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Sync</div></div><div class="set-row__value set-row__value--mono" style="color:' + (syncStatus === "online" ? "var(--cb-moss)" : "var(--cb-claret)") + '">' + escHtml(String(syncStatus)) + '</div></div>';
-    acc += '<div style="margin-top:18px"><button class="set-btn set-btn--claret" onclick="doLogout()">Sign out</button></div>';
-    acc += '<div style="text-align:center;margin-top:16px"><button class="set-link set-link--mute" onclick="deleteMyAccount()">Delete account</button>';
-    acc += '<div class="set-row__desc" style="margin-top:5px">Removes your profile, photos, and sign-in. This cannot be undone.</div></div>';
   } else {
     acc += '<div class="set-row__desc">You are not signed in.</div>';
   }
@@ -218,7 +221,7 @@ Router.register("settings", function(params) {
   var shopBalance = getParCoinBalance(currentUser ? currentUser.uid : null);
   coins += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Balance</div><div class="set-row__desc">Spend on cosmetics, rings, and name effects in the shop.</div></div>';
   coins += '<div class="set-coins"><span class="set-coins__num">' + shopBalance + '</span><span class="set-coins__lbl">coins</span></div></div>';
-  coins += '<div style="margin-top:14px"><button class="set-btn" onclick="Router.go(\'shop\')"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7"/></svg> Cosmetics shop</button></div>';
+  coins += '<div style="margin-top:14px"><button class="set-btn set-btn--brass" onclick="Router.go(\'shop\')"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7"/></svg> Cosmetics shop</button></div>';
   secs.push({ key: "parcoins", label: "ParCoins", html: coins });
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -240,16 +243,12 @@ Router.register("settings", function(params) {
   // DATA — backup / restore / reset
   // ──────────────────────────────────────────────────────────────────────────
   var data = "";
+  data += '<div class="set-row__desc" style="margin-bottom:14px">Your data lives in the cloud. A backup code lets you carry it to a new device, or restore it after a reset.</div>';
   data += '<button class="set-btn" onclick="doCopy()">Copy backup code</button>';
   data += '<button class="set-btn" onclick="doRestore()">Restore from backup</button>';
   if (_isFounder) {
     data += '<button class="set-btn" onclick="seedFirestore().then(function(){Router.toast(\'Firestore reseeded\')})">Reseed Firestore from local</button>';
   }
-  data += '<button class="set-btn set-btn--claret" onclick="document.getElementById(\'reset-confirm\').style.display=\'block\'">Reset local data</button>';
-  data += '<div id="reset-confirm" style="display:none;margin-top:12px;padding:14px;background:rgba(var(--cb-claret-rgb),.05);border:1px solid rgba(var(--cb-claret-rgb),.25);border-radius:var(--radius-md);text-align:center">';
-  data += '<div style="font-family:var(--font-ui);font-size:12.5px;color:var(--cb-claret);margin-bottom:10px;font-weight:600">This will erase ALL local data. Are you sure?</div>';
-  data += '<div style="display:flex;gap:10px"><button class="set-btn" style="flex:1" onclick="document.getElementById(\'reset-confirm\').style.display=\'none\'">Cancel</button>';
-  data += '<button class="set-btn set-btn--claret" style="flex:1" onclick="PB.reset();Router.go(\'home\')">Erase everything</button></div></div>';
   secs.push({ key: "data", label: "Data", html: data });
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -259,16 +258,47 @@ Router.register("settings", function(params) {
   about += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">App version</div></div><div class="set-row__value set-row__value--mono">v' + APP_VERSION + '</div></div>';
   about += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Founded</div></div><div class="set-row__value">2026 · York, PA</div></div>';
   about += '<div style="font-family:var(--font-display);font-style:italic;font-size:14px;color:var(--cb-mute);margin:14px 0 18px;line-height:1.5">The Parbaughs Golf Platform. Built by The Commissioner. Firebase-powered, real-time sync.</div>';
+  // Tier 2 (navigation) — pure links to other surfaces / docs read at
+  // text-link weight, not heavy brass-outline buttons. A chevron signals
+  // "go here". 44px row height clears the touch floor.
   // v8.24.13 — baseline first-run fix: "Skip" on the welcome tour used to be
   // unrecoverable. The tour can now be replayed any time from here.
-  about += '<button class="set-btn" onclick="Router.go(\'onboarding\')">Replay the welcome tour</button>';
-  about += '<button class="set-btn" onclick="window.open(\'privacy.html\',\'_blank\',\'noopener\')">Privacy policy</button>';
-  about += '<button class="set-btn" onclick="window.open(\'terms.html\',\'_blank\',\'noopener\')">Terms of service</button>';
+  about += '<div class="set-linklist">';
+  about += '<button type="button" class="set-linkrow" onclick="Router.go(\'onboarding\')"><span>Replay the welcome tour</span>' + _setChevron() + '</button>';
+  about += '<button type="button" class="set-linkrow" onclick="window.open(\'privacy.html\',\'_blank\',\'noopener\')"><span>Privacy policy</span>' + _setChevron() + '</button>';
+  about += '<button type="button" class="set-linkrow" onclick="window.open(\'terms.html\',\'_blank\',\'noopener\')"><span>Terms of service</span>' + _setChevron() + '</button>';
+  about += '</div>';
   about += '<div class="set-row__desc" style="text-align:center;margin-top:14px">Questions? <a href="mailto:support@parbaughs.golf" style="color:var(--cb-brass);font-weight:600">support@parbaughs.golf</a></div>';
   secs.push({ key: "about", label: "About", html: about });
 
+  // ──────────────────────────────────────────────────────────────────────────
+  // DANGER ZONE — irreversible / destructive actions, walled off at the very
+  // bottom in a red-tinted container so they never sit beside routine settings.
+  // Sign out / Reset local data / Delete account keep their original handlers.
+  // ──────────────────────────────────────────────────────────────────────────
+  if (currentUser) {
+    var danger = "";
+    danger += '<div class="set-row__desc" style="margin:-4px 0 14px;color:var(--cb-mute)">These actions are permanent or sign you out. There is no undo.</div>';
+    danger += '<button class="set-danger-btn" onclick="doLogout()">';
+    danger += '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>';
+    danger += '<span>Sign out</span></button>';
+    danger += '<button class="set-danger-btn" onclick="document.getElementById(\'reset-confirm\').style.display=\'block\'">';
+    danger += '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 6h18M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2M19 6l-1 14a1 1 0 01-1 1H7a1 1 0 01-1-1L5 6"/></svg>';
+    danger += '<span>Reset local data</span></button>';
+    danger += '<div id="reset-confirm" style="display:none;margin:12px 0 4px;padding:14px;background:rgba(var(--cb-claret-rgb),.05);border:1px solid rgba(var(--cb-claret-rgb),.25);border-radius:var(--radius-md);text-align:center">';
+    danger += '<div style="font-family:var(--font-ui);font-size:12.5px;color:var(--cb-claret);margin-bottom:10px;font-weight:600">This will erase ALL local data. Are you sure?</div>';
+    danger += '<div style="display:flex;gap:10px"><button class="set-btn" style="flex:1" onclick="document.getElementById(\'reset-confirm\').style.display=\'none\'">Cancel</button>';
+    danger += '<button class="set-btn set-btn--claret" style="flex:1" onclick="PB.reset();Router.go(\'home\')">Erase everything</button></div></div>';
+    danger += '<button class="set-danger-btn" onclick="deleteMyAccount()">';
+    danger += '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2M9 11a4 4 0 100-8 4 4 0 000 8M17 8l5 5M22 8l-5 5"/></svg>';
+    danger += '<span>Delete account</span></button>';
+    danger += '<div class="set-row__desc" style="margin-top:6px">Deleting removes your profile, photos, and sign-in for good. This cannot be undone.</div>';
+    secs.push({ key: "danger", label: "Danger zone", html: danger, danger: true });
+  }
+
   // ── Assemble ──────────────────────────────────────────────────────────────
   var h = '<div class="set-wrap">';
+  h += _settingsScopedCss();
   h += '<button class="set-back" onclick="Router.back(\'home\')">← Back</button>';
   h += '<div class="roster-masthead"><div class="roster-eyebrow">' + escHtml(_eyebrow) + '</div><h1 class="roster-headline">Settings.</h1></div>';
   h += '<div class="set-grid">';
@@ -283,7 +313,7 @@ Router.register("settings", function(params) {
   // Section detail (right / single column)
   h += '<div class="set-detail">';
   secs.forEach(function(s) {
-    h += '<section class="set-section" id="' + s.key + '-section">';
+    h += '<section class="set-section' + (s.danger ? ' set-section--danger' : '') + '" id="' + s.key + '-section">';
     h += '<div class="set-section__head"><span class="set-section__title">' + escHtml(s.label) + '</span></div>';
     h += s.html;
     h += '</section>';
@@ -335,6 +365,36 @@ Router.register("settings", function(params) {
     }).catch(function() { /* silent — older browsers reject the query */ });
   }
 });
+
+// Small right-chevron for Tier-2 navigation link rows (go-here affordance).
+function _setChevron() {
+  return '<svg class="set-linkrow__chev" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>';
+}
+
+// Page-scoped CSS for the three button tiers + Danger zone. Lives here (not in
+// components.css) because this page file is the only consumer and the scope
+// fence forbids touching shared CSS. Tokens only — no hardcoded hex; readable
+// text uses AA-safe tokens (--cb-ink / --cb-mute / --cb-claret). Hover/active
+// states need real CSS, so a single scoped <style> beats inline styles.
+function _settingsScopedCss() {
+  return '<style>' +
+    // Tier 2 — navigation link rows: text weight, no heavy outline, chevron.
+    '.set-linklist{display:flex;flex-direction:column;margin:2px 0 0}' +
+    '.set-linkrow{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:46px;padding:11px 2px;background:transparent;border:0;border-bottom:1px solid var(--cb-chalk-3);cursor:pointer;font-family:var(--font-ui);font-size:13.5px;font-weight:600;color:var(--cb-ink);text-align:left;transition:color .15s ease,padding-left .15s ease}' +
+    '.set-linklist .set-linkrow:last-child{border-bottom:0}' +
+    '.set-linkrow:hover{color:var(--cb-brass);padding-left:6px}' +
+    '.set-linkrow__chev{flex-shrink:0;color:var(--cb-mute);transition:color .15s ease,transform .15s ease}' +
+    '.set-linkrow:hover .set-linkrow__chev{color:var(--cb-brass);transform:translateX(3px)}' +
+    // Tier 3 — Danger zone: red-tinted container + claret-outline destructive buttons.
+    '.set-section--danger{padding:0 16px 16px;border:1px solid rgba(var(--cb-claret-rgb),.22);border-radius:var(--radius-md);background:rgba(var(--cb-claret-rgb),.035)}' +
+    '.set-section--danger .set-section__head{padding-top:14px;border-bottom-color:rgba(var(--cb-claret-rgb),.32)}' +
+    '.set-section--danger .set-section__title{color:var(--cb-claret)}' +
+    '.set-danger-btn{display:flex;align-items:center;gap:9px;width:100%;min-height:46px;padding:12px 14px;margin-top:10px;font-family:var(--font-mono);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;border-radius:var(--radius-md);cursor:pointer;border:1px solid rgba(var(--cb-claret-rgb),.4);background:transparent;color:var(--cb-claret);transition:background .15s ease,border-color .15s ease}' +
+    '.set-danger-btn:first-of-type{margin-top:0}' +
+    '.set-danger-btn:hover{background:rgba(var(--cb-claret-rgb),.08);border-color:rgba(var(--cb-claret-rgb),.6)}' +
+    '.set-danger-btn svg{flex-shrink:0}' +
+    '</style>';
+}
 
 // Smooth-scroll a section into view from the sticky nav (respects reduced motion).
 function settingsScrollToSection(key) {

@@ -33,18 +33,34 @@ Router.register("courses", function(params) {
   if (params.id) { renderCourseDetail(params.id); return; }
   var courses = PB.getCourses();
   var showOurs = window._courseViewMode === "ours";
-  var h = '<div class="sh"><h2>Course directory</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'records\')">← Back</button><button class="btn-sm green" onclick="promptAddCourse()">+ Add</button></div></div>';
+  // v8.24+ (design-pass): one primary CTA per state. The search field is the
+  // hero path to "thousands worldwide"; the two +Add buttons that used to fight
+  // it for attention are demoted — the top-right is dropped here, and the only
+  // manual-add affordance lives quietly under the search box (added below).
+  var h = '<div class="sh"><h2>Course directory</h2><button class="back" onclick="Router.back(\'records\')">← Back</button></div>';
 
   // Toggle: All Courses / Our Courses
   // v8.24.26 — replaced the inline gold-pill one-off with the canonical
   // .chip-scope segmented control (same pattern as the Feed's scope toggle).
+  // Tab labels render in the UI/sans family (font-family override) rather than
+  // the shared class's monospace, so the page chrome uses a single sans+serif
+  // pairing instead of three competing type families.
   h += '<div style="display:flex;justify-content:center;padding:0 16px 10px"><div class="chip-scope" role="group" aria-label="Course directory scope">';
-  h += '<button class="chip-scope__seg" type="button" aria-pressed="' + (!showOurs ? 'true' : 'false') + '" onclick="window._courseViewMode=undefined;Router.go(\'courses\',{},true)">All Courses</button>';
-  h += '<button class="chip-scope__seg" type="button" aria-pressed="' + (showOurs ? 'true' : 'false') + '" onclick="window._courseViewMode=\'ours\';Router.go(\'courses\',{},true)">Our Courses</button>';
+  h += '<button class="chip-scope__seg" type="button" style="font-family:var(--font-ui)" aria-pressed="' + (!showOurs ? 'true' : 'false') + '" onclick="window._courseViewMode=undefined;Router.go(\'courses\',{},true)">All Courses</button>';
+  h += '<button class="chip-scope__seg" type="button" style="font-family:var(--font-ui)" aria-pressed="' + (showOurs ? 'true' : 'false') + '" onclick="window._courseViewMode=\'ours\';Router.go(\'courses\',{},true)">Our Courses</button>';
   h += '</div></div>';
 
-  // Search filter
-  h += '<div style="padding:0 16px 10px"><input type="text" class="ff-input" id="dir-search" placeholder="Search courses..." style="font-size:12px" oninput="filterCourseDirectory(this.value)"></div>';
+  // Search filter — the single primary CTA for the All-Courses state. Styled as
+  // the hero affordance (larger field, search affordance icon, brass focus) so
+  // the path to the worldwide directory reads as THE action on the page.
+  h += '<div style="padding:0 16px 6px"><div style="position:relative">';
+  h += '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--cb-mute)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:13px;top:50%;transform:translateY(-50%);pointer-events:none"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.2-3.2"/></svg>';
+  h += '<input type="text" class="ff-input" id="dir-search" placeholder="Search courses worldwide…" style="font-size:14px;padding-left:38px;min-height:44px" oninput="filterCourseDirectory(this.value)"></div>';
+  // Quiet secondary: the only remaining manual-add entry point. Demoted to a
+  // text-link so it never competes with the search hero above it.
+  h += '<button type="button" onclick="promptAddCourse()" style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:6px 2px;min-height:36px;background:none;border:none;font:inherit;font-size:12px;color:var(--cb-mute);cursor:pointer">';
+  h += '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Can\'t find it? Add a course by hand</button>';
+  h += '</div>';
 
   // API results container (above local list)
   h += '<div id="dir-api-results"></div>';
@@ -136,32 +152,65 @@ Router.register("courses", function(params) {
     }
     h += '</div></div></div>';
   });
-  // v8.22+ (design-pass 2026-05-22): when the directory is empty, show an
-  // engaging empty state instead of a bare "0 courses" footer. Per
-  // peer-anchor (Linear empty-states + 18Birdies onboarding): the empty
-  // moment is a teaching moment — explain what'll appear here + give a
-  // clear CTA to seed the first course.
-  if (courses.length === 0) {
+  // v8.24+ (design-pass): three explicit render branches per P10 actionable
+  // surfacing — loading / error / empty are no longer indistinguishable.
+  //   LOADING  — Firestore handshake still in flight + nothing cached yet.
+  //   ERROR    — connection is offline + we have no courses to fall back on;
+  //              an actionable card (WHAT / WHERE / ACTION) instead of a silent
+  //              "directory is quiet" that hides a real connectivity failure.
+  //   EMPTY    — connected, just genuinely nothing to show (teaching moment).
+  // showOurs always has a real local fallback (league rounds), so its empty is
+  // never a connectivity failure — only the All-Courses branch can be loading/error.
+  var status = (typeof syncStatus !== "undefined") ? syncStatus : "online";
+  var isLoading = !showOurs && courses.length === 0 && status === "connecting";
+  var isError = !showOurs && courses.length === 0 && status === "offline";
+
+  if (isLoading) {
+    // Skeleton rows mirror the real course-row geometry so the swap is calm.
+    h += '<div aria-busy="true" aria-label="Loading course directory">';
+    for (var sk = 0; sk < 4; sk++) {
+      h += '<div class="card course-dir-item" aria-hidden="true"><div class="course-row">';
+      h += '<div class="c-thumb skeleton" style="border-radius:8px"></div>';
+      h += '<div class="c-info" style="flex:1"><div class="skeleton" style="height:14px;width:62%;border-radius:5px"></div>';
+      h += '<div class="skeleton" style="height:10px;width:42%;border-radius:5px;margin-top:8px"></div></div>';
+      h += '</div></div>';
+    }
+    h += '</div>';
+  } else if (isError) {
+    h += '<div role="alert" style="margin:24px 16px;padding:28px 24px;text-align:center;background:var(--cb-paper);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-sm)">';
+    h += '<div style="margin-bottom:10px"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="var(--alert)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 2 20h20L12 2Z"/><path d="M12 9v5"/><circle cx="12" cy="17.5" r=".6" fill="var(--alert)" stroke="none"/></svg></div>';
+    h += '<div style="font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--cream);margin-bottom:6px">Couldn’t load the directory.</div>';
+    h += '<div style="font-size:13px;color:var(--cb-mute);line-height:1.5;max-width:320px;margin:0 auto 16px">You’re offline, so the course list (stored in the cloud) can’t be reached. Reconnect to the internet, then retry.</div>';
+    h += '<button type="button" class="btn-sm green" onclick="Router.go(\'courses\',{},true)" style="min-height:44px;padding:10px 22px">Retry</button>';
+    h += '</div>';
+  } else if (courses.length === 0) {
+    // v8.22+ (design-pass 2026-05-22): when the directory is empty, show an
+    // engaging empty state instead of a bare "0 courses" footer. Per
+    // peer-anchor (Linear empty-states + 18Birdies onboarding): the empty
+    // moment is a teaching moment — explain what'll appear here + give a
+    // clear CTA. The CTA points back at the search hero (no competing +Add).
     h += '<div style="margin:24px 16px;padding:32px 24px;text-align:center;background:var(--cb-paper);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-sm)">';
     h += '<div style="margin-bottom:8px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M18 6v30"/><path d="M18 6l13 4-13 4"/><ellipse cx="22" cy="38" rx="14" ry="3.5"/></svg></div>';
     h += '<div style="font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--cream);margin-bottom:6px">';
     h += showOurs ? "No league courses yet." : "Your directory is quiet.";
     h += '</div>';
-    h += '<div style="font-size:12px;color:var(--muted);line-height:1.5;max-width:300px;margin:0 auto 16px">';
+    h += '<div style="font-size:13px;color:var(--cb-mute);line-height:1.5;max-width:300px;margin:0 auto 16px">';
     if (showOurs) {
       h += "Once league members log a round at a course, it shows up here with shared best-scores. Try All Courses to see the full directory.";
     } else {
-      h += "Search the box above to find your course from thousands worldwide, or tap +Add to enter one by hand.";
+      h += "Search above to find your course from thousands worldwide — it gets added the moment you pick it.";
     }
     h += '</div>';
     if (showOurs) {
-      h += '<button class="btn-sm green" onclick="window._courseViewMode=undefined;Router.go(\'courses\',{},true)" style="font-size:11px;padding:8px 18px">View all courses</button>';
+      h += '<button class="btn-sm green" onclick="window._courseViewMode=undefined;Router.go(\'courses\',{},true)" style="font-size:12px;min-height:44px;padding:10px 20px">View all courses</button>';
     } else {
-      h += '<button class="btn-sm green" onclick="promptAddCourse()" style="font-size:11px;padding:8px 18px">+ Add a course</button>';
+      // No-op affordance that nudges focus to the hero search rather than adding
+      // a fourth competing CTA — keeps one primary path in the empty state too.
+      h += '<button class="btn-sm green" onclick="var s=document.getElementById(\'dir-search\');if(s)s.focus()" style="font-size:12px;min-height:44px;padding:10px 20px">Search courses</button>';
     }
     h += '</div>';
   } else {
-    h += '<div style="text-align:center;padding:12px;font-size:10px;color:var(--muted2)">' + courses.length + (showOurs ? ' league' : '') + ' course' + (courses.length !== 1 ? 's' : '') + '</div>';
+    h += '<div style="text-align:center;padding:12px;font-size:11px;color:var(--cb-mute)">' + courses.length + (showOurs ? ' league' : '') + ' course' + (courses.length !== 1 ? 's' : '') + '</div>';
   }
   document.querySelector('[data-page="courses"]').innerHTML = h;
 });
@@ -198,7 +247,7 @@ function filterCourseDirectory(val) {
   if (apiKey && q.length >= 3) {
     clearTimeout(_dirSearchTimer);
     _dirSearchTimer = setTimeout(function() {
-      if (apiEl) apiEl.innerHTML = '<div style="padding:4px 16px;font-size:9px;color:var(--muted2)">Searching online...</div>';
+      if (apiEl) apiEl.innerHTML = '<div style="padding:4px 16px;font-size:10px;color:var(--cb-mute)">Searching online…</div>';
       _searchGcApiForDirectory(q);
     }, 500);
   } else if (apiEl) {
@@ -225,7 +274,7 @@ function _searchGcApiForDirectory(query) {
     _renderDirApiResults(_gcSearchCache[cacheKey], apiEl, query);
   })
   .catch(function() {
-    if (apiEl) apiEl.innerHTML = '<div style="padding:4px 16px;font-size:9px;color:var(--muted2)">Online search unavailable</div>';
+    if (apiEl) apiEl.innerHTML = '<div style="padding:4px 16px;font-size:10px;color:var(--cb-mute)">Online search unavailable</div>';
   });
 }
 
@@ -379,7 +428,7 @@ function courseSearchWithApi(val, containerId, onSelect, onQuickAdd) {
   var exactMatch = results.some(function(c) { return c.name.toLowerCase() === val.toLowerCase(); });
   var apiKey = localStorage.getItem("golfcourse_api_key");
   if (apiKey && !exactMatch) {
-    h += '<div id="' + containerId + '-api"><div class="sr-section" style="color:var(--muted2)">Searching online...</div></div>';
+    h += '<div id="' + containerId + '-api"><div class="sr-section" style="color:var(--cb-mute)">Searching online…</div></div>';
   }
   
   // Quick add at bottom
@@ -424,7 +473,7 @@ function _searchGcApi(query, containerId, onSelect) {
   })
   .catch(function(err) {
     pbWarn("[GolfCourseAPI]", err);
-    if (apiContainer) apiContainer.innerHTML = '<div style="font-size:9px;color:var(--muted2);padding:4px 12px">Online search unavailable</div>';
+    if (apiContainer) apiContainer.innerHTML = '<div style="font-size:10px;color:var(--cb-mute);padding:4px 12px">Online search unavailable</div>';
   });
 }
 
@@ -435,7 +484,7 @@ function _renderApiResults(courses, apiContainer, containerId, onSelect, query) 
     return !PB.getCourseByName(name);
   });
   if (!filtered.length) {
-    apiContainer.innerHTML = '<div style="font-size:9px;color:var(--muted2);padding:6px 12px">No online results</div>';
+    apiContainer.innerHTML = '<div style="font-size:10px;color:var(--cb-mute);padding:6px 12px">No online results</div>';
     return;
   }
   var h = '<div class="sr-section">Online results</div>';
@@ -643,7 +692,7 @@ function showTeeScorecard(courseId, teeIdx) {
     if (holes[0].yardage) h += ' · ' + (fy+by).toLocaleString() + ' yards';
     h += '</div></div>';
   } else {
-    h += '<div style="padding:4px 16px;font-size:11px;color:var(--muted2)">No hole-by-hole data available for this tee</div>';
+    h += '<div style="padding:4px 16px;font-size:11px;color:var(--cb-mute)">No hole-by-hole data available for this tee</div>';
   }
   area.innerHTML = h;
 }

@@ -10,6 +10,32 @@ Router.register("scramble", function(params) {
   renderTeamList();
 });
 
+// v8.25.13 — initial-bearing avatar for the scramble surfaces. The shared
+// Router.getAvatar() always assigns one of six stock JPGs when a member has no
+// uploaded photo, so an all-default roster reads as a row of near-identical dark
+// discs with no per-member signal. Here, when a player has no detectable photo,
+// we draw a felt-green disc with their brass first initial instead — distinct,
+// on-token, and still wearing the member's real ring (founder brass / cosmetic /
+// hairline) via the shared ring helpers. Players WITH a real photo still go
+// through renderAvatar so images + cosmetic ring art render unchanged.
+function scrambleAvatar(p, size, clickToProfile) {
+  size = size || 36;
+  var hasPhoto = p && (p.photoUrl || p.photo || p.stockAvatar);
+  if (!p || hasPhoto) return renderAvatar(p, size, clickToProfile);
+
+  var ringStyle = typeof playerRingStyle === "function" ? playerRingStyle(p) : 'border:2px solid var(--gold)';
+  var ringCls = typeof playerRingClass === "function" ? playerRingClass(p) : '';
+  var pid = p.id || '';
+  var raw = (p.username || p.name || '?').charAt(0).toUpperCase();
+  var initial = escHtml(raw);
+  var click = clickToProfile && pid ? ' onclick="event.stopPropagation();Router.go(\'members\',{id:\'' + pid + '\'})"' : '';
+  var cursor = clickToProfile && pid ? 'cursor:pointer;' : '';
+  var fontPx = Math.max(11, Math.round(size * 0.42));
+  return '<div' + (ringCls ? ' class="' + ringCls + '"' : '') +
+    ' style="width:' + size + 'px;height:' + size + 'px;min-width:' + size + 'px;border-radius:50%;position:relative;' + ringStyle + ';' + cursor + 'flex-shrink:0"' + click +
+    '><div style="width:100%;height:100%;border-radius:50%;overflow:hidden;background:var(--cb-felt);display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:700;font-size:' + fontPx + 'px;line-height:1">' + initial + '</div></div>';
+}
+
 function renderTeamList() {
   var teams = PB.getScrambleTeams();
   var h = '<div class="sh"><h2>Scramble teams</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'home\')">← Back</button><button class="btn-sm green" onclick="Router.go(\'scramble\',{create:true})">+ New team</button></div></div>';
@@ -18,6 +44,12 @@ function renderTeamList() {
     if (teams.length >= 2) {
       h += '<div style="padding:0 16px 12px"><button class="btn full outline" onclick="Router.go(\'scramble\',{match:true})">Log a match</button></div>';
     }
+    // v8.25.13 — collect every team's real rounds + matches into one timeline so
+    // the page can show a "Recent scramble activity" feed below the cards (the
+    // bottom half of the viewport was empty cream). Built ONLY from data we
+    // already surface per-card (team.matches[] + the same course+date-derived
+    // founding rounds) — no fabricated values.
+    var activity = [];
     teams.forEach(function(team) {
       var members = team.members.map(function(id) { return PB.getPlayer(id); }).filter(Boolean);
       var captain = team.captain ? PB.getPlayer(team.captain) : null;
@@ -36,6 +68,13 @@ function renderTeamList() {
       var best = scored.length ? scored[0].score : null;
       var last3 = allMatches.slice(-3).reverse();
 
+      // Feed the cross-team activity timeline (Fix #1). Each item keeps the
+      // team it belongs to so the row is tap-through to that team's detail.
+      allMatches.forEach(function(m) {
+        if (!m.score) return;
+        activity.push({ teamId: team.id, teamName: team.name, score: m.score, course: m.course || '', date: m.date || '', result: m.result || null, opponent: m.opponent || null, opponentScore: m.opponentScore });
+      });
+
       h += '<div class="card" onclick="Router.go(\'scramble\',{id:\'' + team.id + '\'})" style="cursor:pointer">';
       h += '<div style="padding:14px 16px">';
       h += '<div style="display:flex;justify-content:space-between;align-items:flex-start">';
@@ -48,7 +87,7 @@ function renderTeamList() {
       h += '<div style="display:flex;gap:6px;margin-bottom:6px">';
       members.forEach(function(p) {
         var isCap = captain && p.id === team.captain;
-        h += renderAvatar(p, 28, false);
+        h += scrambleAvatar(p, 28, false);
       });
       h += '</div>';
       if (captain) h += '<div style="font-size:10px;color:var(--muted)">Captain: <span style="color:var(--gold);font-weight:600">' + escHtml(captain.name) + '</span></div>';
@@ -87,6 +126,47 @@ function renderTeamList() {
 
       h += '</div></div></div>';
     });
+
+    // ── Recent scramble activity ──────────────────────────────────────────
+    // Fills the lower fold with a real, glanceable timeline of the league's
+    // scramble play. Most-recent first; dated rounds rank above undated ones.
+    activity.sort(function(a, b) {
+      if (a.date && b.date) return a.date < b.date ? 1 : a.date > b.date ? -1 : 0;
+      if (a.date) return -1;
+      if (b.date) return 1;
+      return 0;
+    });
+    h += '<div class="section"><div class="sec-head"><span class="sec-title">Recent scramble activity</span></div>';
+    if (activity.length) {
+      activity.slice(0, 5).forEach(function(a) {
+        var diff = a.score - 72;
+        // Community-safe colour rule (scramble.js): under/at par reads quiet
+        // green, over par stays neutral — never alarm-red on a member's score.
+        var diffColor = diff <= 0 ? 'var(--birdie)' : 'var(--muted)';
+        var isMatch = a.result === 'win' || a.result === 'loss' || a.result === 'tie';
+        var line2;
+        if (isMatch) {
+          var verb = a.result === 'win' ? 'beat' : a.result === 'loss' ? 'lost to' : 'tied';
+          line2 = verb + ' ' + escHtml(a.opponent || 'a team') + (a.course ? ' · ' + escHtml(a.course) : '');
+        } else {
+          line2 = a.course ? escHtml(a.course) : 'Team round';
+        }
+        h += '<div class="card" style="margin-bottom:6px;cursor:pointer" onclick="Router.go(\'scramble\',{id:\'' + a.teamId + '\'})">';
+        h += '<div style="padding:10px 16px;display:flex;justify-content:space-between;align-items:center">';
+        h += '<div style="min-width:0"><div style="font-size:12px;font-weight:600;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(a.teamName) + '</div>';
+        h += '<div style="font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + line2 + (a.date ? ' · ' + escHtml(a.date) : '') + '</div></div>';
+        h += '<div style="text-align:right;flex-shrink:0;margin-left:10px">';
+        h += '<div style="font-size:16px;font-weight:700;color:var(--gold);line-height:1.1">' + a.score + '</div>';
+        h += '<div style="font-size:10px;font-weight:600;color:' + diffColor + '">' + (diff > 0 ? '+' : '') + diff + '</div>';
+        h += '</div></div></div>';
+      });
+    } else {
+      // P10 actionable empty-state: teams exist but none have logged a round.
+      h += '<div class="card"><div style="padding:16px;text-align:center">';
+      h += '<div style="font-size:12px;color:var(--muted);line-height:1.5">No rounds logged yet. Open a team and tap <span style="color:var(--gold);font-weight:600">Log team round</span> to start the activity feed.</div>';
+      h += '</div></div>';
+    }
+    h += '</div>';
   } else {
     h += '<div style="text-align:center;padding:32px 16px">';
     h += '<div style="margin-bottom:12px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5" opacity=".6"><circle cx="16" cy="16" r="6"/><circle cx="32" cy="16" r="6"/><path d="M8 36c0-4.4 3.6-8 8-8h16c4.4 0 8 3.6 8 8"/></svg></div>';
@@ -120,7 +200,7 @@ function renderCreateTeam() {
   h += '<div id="st-members">';
   players.forEach(function(p) {
     h += '<div class="h2h-row" style="cursor:pointer" onclick="toggleScrambleMember(\'' + p.id + '\')">';
-    h += '<div class="h2h-left">' + renderAvatar(p, 28, false) + '<span class="h2h-name">' + renderUsername(p, '', false) + '</span></div>';
+    h += '<div class="h2h-left">' + scrambleAvatar(p, 28, false) + '<span class="h2h-name">' + renderUsername(p, '', false) + '</span></div>';
     h += '<div id="st-check-' + p.id + '" style="width:22px;height:22px;border-radius:6px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--birdie)"></div>';
     h += '</div>';
   });
@@ -246,7 +326,7 @@ function renderTeamDetail(teamId) {
   members.forEach(function(p) {
     var isCaptain = captain && (p.id === team.captain);
     h += '<div style="text-align:center">';
-    h += renderAvatar(p, 60, true);
+    h += scrambleAvatar(p, 60, true);
     h += '<div style="font-size:12px;font-weight:600;margin-top:4px">' + renderUsername(p, '', false) + '</div>';
     if (isCaptain) h += '<div style="font-size:8px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;font-weight:700">Captain</div>';
     h += '</div>';

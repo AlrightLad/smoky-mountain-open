@@ -38,23 +38,33 @@ Router.register("teetimes", function() {
     return t.status === "cancelled" && t.cancelledAt && t.cancelledAt >= threeDaysAgo && _canSeePrivate(t);
   });
 
-  var h = '<div class="sh"><h2>Tee Times</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'home\')">← Back</button><button class="btn-sm green" onclick="Router.go(\'tee-create\')">+ Post</button></div></div>';
+  // When the empty-state hero is shown it is the unambiguous primary action,
+  // so the header "+ Post" demotes to a quiet outline to avoid two competing
+  // brass CTAs for the same task. With tee times present, the header button is
+  // the primary and stays brass (dark ink label clears AA on the brass fill).
+  var _postBtn = upcoming.length
+    ? '<button class="btn-sm green" style="color:var(--cb-ink)" onclick="Router.go(\'tee-create\')">+ Post</button>'
+    : '<button class="btn-sm outline" onclick="Router.go(\'tee-create\')">+ Post</button>';
+  var h = '<div class="sh"><h2>Tee Times</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'home\')">← Back</button>' + _postBtn + '</div></div>';
 
   if (!upcoming.length) {
     h += '<div style="text-align:center;padding:32px 16px">';
     h += '<div style="margin-bottom:12px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5" opacity=".6"><circle cx="24" cy="24" r="18"/><path d="M24 14v10l7 4"/><path d="M38 10l-3 3M10 10l3 3"/></svg></div>';
     h += '<div style="font-family:var(--font-display);font-size:18px;color:var(--gold)">No Tee Times Posted</div>';
     h += '<div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-width:280px;margin-left:auto;margin-right:auto">Post a tee time and your crew can RSVP. Never wonder who\u2019s playing this weekend again.</div>';
-    h += '<button class="btn full green" style="margin-top:16px;max-width:280px;margin-left:auto;margin-right:auto" onclick="Router.go(\'tee-create\')">Post a Tee Time</button>';
+    h += '<button class="btn full green" style="margin-top:16px;max-width:280px;margin-left:auto;margin-right:auto;color:var(--cb-ink)" onclick="Router.go(\'tee-create\')">Post a Tee Time</button>';
     h += '<div style="margin-top:20px;text-align:left">';
-    h += '<div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;text-align:center">Example tee times</div>';
+    h += '<div style="font-size:9px;color:var(--cb-mute);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;text-align:center">Example tee times</div>';
     var exTees = [
       "Honey Run \u00b7 Saturday 8:30 AM \u00b7 2 spots open",
       "Out Door CC \u00b7 Sunday 7:00 AM \u00b7 Need 3 more",
       "Heritage Hills \u00b7 Friday 3:00 PM \u00b7 All welcome"
     ];
+    // Sample cards are illustrative, not real bookings: dimmed to ~0.55, tagged
+    // with a "Sample" pill, and made non-interactive (pointer-events:none) so
+    // they never read as tappable live data.
     exTees.forEach(function(ex) {
-      h += '<div style="display:flex;align-items:center;gap:9px;padding:11px 13px;margin-bottom:6px;background:var(--cb-paper);border:1px solid var(--border);border-radius:var(--r-2);font-size:12px;color:var(--cb-ink)"><span style="width:6px;height:6px;border-radius:50%;background:var(--gold);flex:none"></span><span>' + ex + '</span></div>';
+      h += '<div style="display:flex;align-items:center;gap:9px;padding:11px 13px;margin-bottom:6px;background:var(--cb-paper);border:1px dashed var(--border);border-radius:var(--r-2);font-size:12px;color:var(--cb-ink);opacity:.55;pointer-events:none;cursor:default" aria-hidden="true"><span style="width:6px;height:6px;border-radius:50%;background:var(--gold);flex:none"></span><span style="flex:1">' + ex + '</span><span style="flex:none;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--cb-mute);border:1px solid var(--border);border-radius:var(--r-5);padding:2px 7px">Sample</span></div>';
     });
     h += '</div></div>';
   }

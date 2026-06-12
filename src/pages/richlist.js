@@ -51,17 +51,27 @@ Router.register("richlist", function() {
         el.innerHTML = '<div style="padding:24px;text-align:center;font-size:12px;color:var(--muted)">No one has earned coins yet. Go play!</div>';
         return;
       }
+      // Deterministic ordering: lifetime desc, then name asc as a stable tie-breaker
+      // so equal totals never reorder between renders (Firestore returns ties in
+      // arbitrary order). _displayName precomputed once for both sort + render.
+      players.forEach(function(p) { p._displayName = p.name || p.username || "Member"; });
+      players.sort(function(a, b) {
+        var diff = (b.parcoinsLifetime || 0) - (a.parcoinsLifetime || 0);
+        if (diff !== 0) return diff;
+        return a._displayName.localeCompare(b._displayName);
+      });
+      // Standard competition ranking ("1224"): equal lifetime totals share a rank,
+      // the next distinct total skips ahead. Fixes the rank 7=52 / rank 9=52 bug
+      // where ties were rendered as sequential positions.
+      var rank = 0, prevVal = null;
+      players.forEach(function(p, i) {
+        var val = p.parcoinsLifetime || 0;
+        if (val !== prevVal) { rank = i + 1; prevVal = val; }
+        p._rank = rank;
+      });
       var rh = '';
       players.forEach(function(p, i) {
-        var medal = i === 0 ? '<span style="color:var(--medal-gold)">1st</span>' : i === 1 ? '<span style="color:var(--medal-silver)">2nd</span>' : i === 2 ? '<span style="color:var(--medal-bronze)">3rd</span>' : '<span style="color:var(--muted)">' + (i+1) + '</span>';
-        var isGold = (p.parcoinsLifetime || 0) >= GOLD_MEMBER_THRESHOLD;
-        var goldBadge = isGold ? ' <span style="font-size:8px;background:rgba(var(--gold-rgb),.15);color:var(--gold);padding:2px 6px;border-radius:8px;font-weight:700;letter-spacing:.3px;vertical-align:middle">GOLD</span>' : '';
-        rh += '<div class="lb-card' + (i === 0 ? ' first' : '') + '" style="margin:0 16px 6px">';
-        rh += '<div class="lb-left"><div class="lb-medal" style="font-size:12px;width:28px">' + medal + '</div>';
-        rh += '<div><div class="lb-name">' + escHtml(p.name || p.username || "Member") + goldBadge + '</div>';
-        rh += '<div class="lb-detail">Balance: ' + (p.parcoins || 0).toLocaleString() + '</div></div></div>';
-        rh += '<div class="lb-pts" style="font-size:20px">' + (p.parcoinsLifetime || 0).toLocaleString() + '</div>';
-        rh += '</div>';
+        rh += _renderRichRow(p, i);
       });
       el.innerHTML = rh;
     }).catch(function() {
@@ -70,6 +80,44 @@ Router.register("richlist", function() {
     });
   }
 });
+
+// Shared coin glyph (matches shop.js _shopCoinSvg) — labels the lifetime value
+// so the big right-hand number reads as ParCoins, not an unlabeled score.
+var _richCoinSvg = '<svg viewBox="0 0 20 20" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.7" style="flex-shrink:0;vertical-align:middle"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7.5 7.5h4a1.8 1.8 0 010 3.6H7.5"/></svg>';
+
+// Rank chip — DELIBERATELY non-brass so rank and value don't compete. The brass
+// stays reserved for the hero lifetime number (.lb-pts) + the GOLD badge. Rank is
+// a structural slate chip: filled for the top 3 (medal hierarchy via opacity), an
+// outlined slate disc for 4+. Shape + neutral hue carry the rank, not color-vs-gold.
+function _rankChip(rank) {
+  if (rank <= 3) {
+    // Top-3 medal hierarchy expressed through fill strength, all on the same
+    // non-brass slate so it never reads as a second gold accent.
+    var fill = rank === 1 ? '.92' : rank === 2 ? '.60' : '.34';
+    return '<span style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;'
+      + 'background:rgba(90,107,120,' + fill + ');color:var(--cb-chalk);'
+      + 'font-family:var(--font-display);font-weight:800;font-size:13px;line-height:1;letter-spacing:-.5px">' + rank + '</span>';
+  }
+  return '<span style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;'
+    + 'border:1.5px solid rgba(90,107,120,.32);color:var(--cb-slate);'
+    + 'font-family:var(--font-display);font-weight:700;font-size:12px;line-height:1;letter-spacing:-.5px">' + rank + '</span>';
+}
+
+function _renderRichRow(p, i) {
+  var isGold = (p.parcoinsLifetime || 0) >= GOLD_MEMBER_THRESHOLD;
+  var goldBadge = isGold ? ' <span style="font-size:8px;background:rgba(var(--gold-rgb),.15);color:var(--gold);padding:2px 6px;border-radius:8px;font-weight:700;letter-spacing:.3px;vertical-align:middle">GOLD</span>' : '';
+  var h = '<div class="lb-card' + (i === 0 ? ' first' : '') + '" style="margin:0 16px 6px">';
+  h += '<div class="lb-left"><div class="lb-medal" style="width:26px;color:inherit">' + _rankChip(p._rank) + '</div>';
+  h += '<div><div class="lb-name">' + escHtml(p._displayName) + goldBadge + '</div>';
+  h += '<div class="lb-detail">Balance: ' + (p.parcoins || 0).toLocaleString() + '</div></div></div>';
+  // Stacked value: brass hero number + 9px LIFETIME micro-label with coin glyph.
+  h += '<div style="display:flex;flex-direction:column;align-items:flex-end;line-height:1.05">';
+  h += '<div class="lb-pts" style="font-size:20px">' + (p.parcoinsLifetime || 0).toLocaleString() + '</div>';
+  h += '<div style="display:flex;align-items:center;gap:3px;margin-top:2px;font-size:9px;font-weight:700;letter-spacing:.6px;color:var(--cb-mute);text-transform:uppercase">' + _richCoinSvg + 'Lifetime</div>';
+  h += '</div>';
+  h += '</div>';
+  return h;
+}
 
 function _renderPowerUp(name, cost, desc, key) {
   var balance = getParCoinBalance(currentUser ? currentUser.uid : null);

@@ -27,6 +27,19 @@ Router.register("rounds", function(params) {
   return renderRoundsList(params);
 });
 
+// Low-chrome per-row share affordance. Demotes the old full-size outlined
+// "Share" button (which gave every history row the same visual weight as the
+// score) to an icon-only control so the list reads as a clean ledger and the
+// score stays the hero. 44px tap target preserved (inline padding + min
+// dimensions) per the touch-target rule; brass-on-hover keeps it reachable
+// and obviously interactive. onclick/handler unchanged so the share flow and
+// any smoke assertions on the affordance keep working.
+function _shareIconBtn(id) {
+  return '<button class="rc-share-btn" aria-label="Share round" title="Share" onclick="event.stopPropagation();showRoundShareCard(\'' + id + '\')" style="display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:0;background:none;border:none;color:var(--cb-mute,var(--muted));cursor:pointer;flex-shrink:0;border-radius:8px;transition:color var(--duration-fast,.16s) var(--ease-default,ease),background var(--duration-fast,.16s) var(--ease-default,ease)" onmouseover="this.style.color=\'var(--gold,var(--cb-brass))\';this.style.background=\'var(--bg3)\'" onmouseout="this.style.color=\'var(--cb-mute,var(--muted))\';this.style.background=\'none\'">' +
+    '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>' +
+    '</button>';
+}
+
 // List view — handicap header + scramble-grouped history + "Log a round"
 // CTA. Ports the renderActivityRounds() history-rendering pattern from
 // the legacy Activity Rounds tab so members lose nothing in the move.
@@ -104,7 +117,10 @@ function renderRoundsList(params) {
       if (isScramble) {
         var gk = (r.course||"") + "|" + (r.date||"");
         if (!scrambleGroups[gk]) {
-          scrambleGroups[gk] = { course: r.course, date: r.date, score: r.score, tee: r.tee, format: r.format, players: [], ts: r.timestamp || 0, id: r.id };
+          // Carry the par-relevant fields off the representative round so the
+          // group can render the same ±N to-par delta the individual branch
+          // shows (via roundParTotal: holePars first, else course par).
+          scrambleGroups[gk] = { course: r.course, date: r.date, score: r.score, tee: r.tee, format: r.format, holePars: r.holePars, holesPlayed: r.holesPlayed, holesMode: r.holesMode, players: [], ts: r.timestamp || 0, id: r.id };
         }
         scrambleGroups[gk].players.push(r.playerName || "Parbaugh");
         return;
@@ -138,7 +154,16 @@ function renderRoundsList(params) {
       }
     });
 
-    h += '<div class="section"><div class="sec-head"><span class="sec-title">Round history</span><span class="sec-link">' + rounds.length + ' total</span></div>';
+    // Header scope label — disambiguates from the hero handicap card, which
+    // counts only the viewer's/scoped player's OWN rounds. The history list
+    // below is league-wide (every Parbaugh's rounds) unless the page is
+    // scoped to a single player via "View all rounds →". Spelling the scope
+    // out stops "8 rounds" (hero) vs "25 total" (history) reading as a
+    // contradiction on the same member. Numbers unchanged — labels clarified.
+    var histScopeLabel = scopePid
+      ? (rounds.length + (rounds.length === 1 ? ' round' : ' rounds'))
+      : (rounds.length + ' across the league');
+    h += '<div class="section"><div class="sec-head"><span class="sec-title">' + (scopePid ? 'Round history' : 'League rounds') + '</span><span class="sec-link" style="cursor:default">' + histScopeLabel + '</span></div>';
     h += '<div style="max-height:500px;overflow-y:auto;-webkit-overflow-scrolling:touch">';
     historyItems.forEach(function(item) {
       if (item.type === "individual") {
@@ -166,20 +191,36 @@ function renderRoundsList(params) {
           h += ' <span title="Personal best" style="display:inline-flex;align-items:center;gap:3px;font-family:var(--font-mono);font-size:8.5px;font-weight:700;letter-spacing:1.5px;color:var(--gold, var(--cb-brass));background:rgba(201,169,97,0.16);padding:2px 6px;border-radius:3px;vertical-align:middle">★ PR</span>';
         }
         h += '</div><div class="rc-date">' + r.date + ' · ' + escHtml(r.playerName||"") + (histTee ? ' · ' + histTee : '') + (r.holesPlayed && r.holesPlayed <= 9 ? (r.holesMode === "back9" ? ' · Back 9' : ' · Front 9') : '') + fmtLabel + '</div></div>';
-        h += '<div style="display:flex;align-items:center;gap:8px"><div style="text-align:right"><div class="rc-score">' + r.score + '</div>';
+        h += '<div style="display:flex;align-items:center;gap:6px"><div style="text-align:right"><div class="rc-score">' + r.score + '</div>';
         if (vsParStr) {
           h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:600;color:' + vsParColor + ';letter-spacing:0.5px;margin-top:2px;line-height:1">' + vsParStr + ' to par</div>';
         }
         h += '</div>';
-        h += '<button class="btn-sm outline" style="font-size:9px;padding:4px 8px;flex-shrink:0;border-color:var(--gold,var(--cb-brass));color:var(--gold,var(--cb-brass))" onclick="event.stopPropagation();showRoundShareCard(\'' + r.id + '\')">Share</button>';
+        h += _shareIconBtn(r.id);
         h += '</div></div>';
         if (quip) h += '<div class="rc-quip">' + quip + '</div>';
         h += '</div></div>';
       } else {
         var g = item.group;
-        h += '<div class="card"><div class="round-card"><div class="rc-top"><div style="flex:1"><div class="rc-course" style="color:var(--gold)">' + escHtml(g.teamName) + ' · Scramble</div><div class="rc-date">' + escHtml(g.course) + ' · ' + g.date + (g.tee ? ' · ' + g.tee : '') + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">' + g.players.join(", ") + '</div></div>';
-        h += '<div style="display:flex;align-items:center;gap:8px"><div class="rc-score">' + g.score + '</div>';
-        h += '<button class="btn-sm outline" style="font-size:9px;padding:4px 8px;flex-shrink:0" onclick="event.stopPropagation();showRoundShareCard(\'' + g.id + '\')">Share</button>';
+        // Scramble to-par delta — mirrors the individual branch so a team
+        // round reads the same as a solo one (was rendering NO delta).
+        // roundParTotal resolves par from the carried holePars, else course.
+        var gPar = roundParTotal(g);
+        var gVsPar = (g.score && g.score > 0) ? (g.score - gPar) : null;
+        var gVsParStr = "";
+        var gVsParColor = "var(--cb-mute, var(--muted))";
+        if (gVsPar !== null) {
+          if (gVsPar < 0)      { gVsParStr = gVsPar + ""; gVsParColor = "var(--cb-moss, var(--success, #4ea669))"; }
+          else if (gVsPar === 0) { gVsParStr = "E"; }
+          else                  { gVsParStr = "+" + gVsPar; }
+        }
+        h += '<div class="card"><div class="round-card"><div class="rc-top"><div style="flex:1"><div class="rc-course" style="color:var(--gold)">' + escHtml(g.teamName) + ' · Scramble</div><div class="rc-date">' + escHtml(g.course) + ' · ' + g.date + (g.tee ? ' · ' + g.tee : '') + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">' + escHtml(g.players.join(", ")) + '</div></div>';
+        h += '<div style="display:flex;align-items:center;gap:6px"><div style="text-align:right"><div class="rc-score">' + g.score + '</div>';
+        if (gVsParStr) {
+          h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:600;color:' + gVsParColor + ';letter-spacing:0.5px;margin-top:2px;line-height:1">' + gVsParStr + ' to par</div>';
+        }
+        h += '</div>';
+        h += _shareIconBtn(g.id);
         h += '</div></div></div></div>';
       }
     });

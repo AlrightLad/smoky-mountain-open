@@ -61,12 +61,8 @@ Router.register("calendar", function() {
   h += '<button type="button" class="cal-qa" onclick="Router.go(\'range\')"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="8" cy="8" r="3"/><circle cx="8" cy="8" r="6"/></svg> Range session</button>';
   h += '</div>';
 
-  // ── Legend ──
-  h += '<div class="cal-legend">';
-  h += '<span><i class="cal-dot cal-dot--sched"></i>Scheduled</span>';
-  h += '<span><i class="cal-dot cal-dot--round"></i>Round played</span>';
-  h += '<span><i class="cal-dot cal-dot--range"></i>Range</span>';
-  h += '</div>';
+  // (Status legend now renders adjacent to the grid it describes — see _calGridHTML /
+  // _calListHTML — and is suppressed on an empty month.)
 
   // ── Scheduling chat ──
   h += '<section class="cal-chat" aria-label="Scheduling chat">';
@@ -98,7 +94,10 @@ function _calScopeHTML(todayStr) {
   s += '<button type="button" id="calVtGrid" class="cal-vt' + (calView === "grid" ? " cal-vt--on" : "") + '" aria-pressed="' + (calView === "grid") + '" onclick="setCalView(\'grid\')">Grid</button>';
   s += '<button type="button" id="calVtList" class="cal-vt' + (calView === "list" ? " cal-vt--on" : "") + '" aria-pressed="' + (calView === "list") + '" onclick="setCalView(\'list\')">List</button>';
   s += '</div>';
-  s += '<button type="button" class="cal-create" onclick="showCalEventForm()">+ New event</button>';
+  // Demoted to a quiet rail control (single primary "+ New event" now lives in the
+  // empty-state card, contextually anchored). Reuses the .cal-qa chrome vocabulary
+  // so it reads as a toolbar action, not a competing CTA.
+  s += '<button type="button" class="cal-qa" onclick="showCalEventForm()"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg> New event</button>';
   s += '</div>';
   return s;
 }
@@ -180,6 +179,17 @@ function _calDayEvents(em, ds) {
   return out;
 }
 
+// ── Status legend (renders adjacent to the grid/list it describes; never on an
+//    empty month — there is nothing to legend). 3f.3 fix. ──
+function _calLegendHTML() {
+  var lg = '<div class="cal-legend">';
+  lg += '<span><i class="cal-dot cal-dot--sched"></i>Scheduled</span>';
+  lg += '<span><i class="cal-dot cal-dot--round"></i>Round played</span>';
+  lg += '<span><i class="cal-dot cal-dot--range"></i>Range</span>';
+  lg += '</div>';
+  return lg;
+}
+
 // ── Grid view ──
 function _calGridHTML(todayStr) {
   var em = _calBuildEventMap();
@@ -227,7 +237,8 @@ function _calGridHTML(todayStr) {
   }
   s += '</tbody></table>';
 
-  // Empty-month editorial block (3f.3)
+  // Empty-month editorial block (3f.3) — or the legend, adjacent to the grid it
+  // describes. On an empty month the legend is suppressed (nothing to legend).
   var meta = _calMeta(todayStr);
   if (meta.monthScheduled === 0 && meta.roundsThisMonth === 0) {
     s += '<div class="cal-empty">';
@@ -236,6 +247,8 @@ function _calGridHTML(todayStr) {
     s += '<div class="cal-empty__b">Schedule a tee time and the league will see it on the day.</div>';
     s += '<button type="button" class="cal-empty__cta" onclick="showCalEventForm()">+ New event</button>';
     s += '</div>';
+  } else {
+    s += _calLegendHTML();
   }
   return s;
 }
@@ -285,6 +298,8 @@ function _calListHTML(todayStr) {
     s += '<div class="cal-listsep">Past</div>';
     past.slice().reverse().forEach(function(ds) { s += dayBlock(ds); });
   }
+  // Legend at the foot of the populated list (the empty list returns early above).
+  s += _calLegendHTML();
   return s;
 }
 

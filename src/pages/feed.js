@@ -192,26 +192,57 @@ function _feedHoleDots(holeScores, holePars, holesPlayed, holesMode) {
 }
 
 // ── Stat chips helper (mono editorial chips) ──
+// P9 truth gate: firData/girData are stored as Array(18).fill(false) — an
+// untouched FIR/GIR checkbox is indistinguishable from a real miss. So an
+// all-false array is the *default untracked* state, not "0 fairways hit", and
+// surfacing "FIR 0/13" reads as broken/fabricated. We only show a coverage chip
+// when it traces to real tracking: at least one positive AND the player covered
+// >=50% of eligible (played) holes. PUTTS is sparse (Array(18).fill("")) so we
+// require a value on *every* played hole before showing a total — a partial
+// "PUTTS 5" is misleading. A round with thin tracking simply shows no chip.
 function _feedStatChips(item) {
   var chips = [];
   if (item.frontScore && item.backScore) {
     chips.push('F9 ' + item.frontScore);
     chips.push('B9 ' + item.backScore);
   }
+  // Played-hole count drives the coverage denominators below.
+  var played = 0;
+  if (item.holeScores && Array.isArray(item.holeScores)) {
+    item.holeScores.forEach(function(s) { if (parseInt(s) > 0) played++; });
+  }
+
   if (item.firData && Array.isArray(item.firData)) {
     var firC = 0, firH = 0;
-    item.firData.forEach(function(v, i) { var par = item.holePars ? (item.holePars[i] || 4) : 4; if (par !== 3) { firH++; if (v) firC++; } });
-    if (firH > 0) chips.push('FIR ' + firC + '/' + firH);
+    item.firData.forEach(function(v, i) {
+      var sc = item.holeScores ? parseInt(item.holeScores[i]) : 1;
+      if (!(sc > 0)) return;                               // only count played holes
+      var par = item.holePars ? (item.holePars[i] || 4) : 4;
+      if (par !== 3) { firH++; if (v) firC++; }            // par-3s are not eligible for FIR
+    });
+    // Show only when it reads as real, tracked data: a hit fairway exists and
+    // coverage clears half the eligible holes (kills the default 0/N chip).
+    if (firH > 0 && firC > 0 && firC * 2 >= firH) chips.push('FIR ' + firC + '/' + firH);
   }
   if (item.girData && Array.isArray(item.girData)) {
     var girC = 0, girH = 0;
-    item.girData.forEach(function(v) { girH++; if (v) girC++; });
-    if (girH > 0) chips.push('GIR ' + girC + '/' + girH);
+    item.girData.forEach(function(v, i) {
+      var sc = item.holeScores ? parseInt(item.holeScores[i]) : 1;
+      if (!(sc > 0)) return;                               // only count played holes
+      girH++; if (v) girC++;
+    });
+    if (girH > 0 && girC > 0 && girC * 2 >= girH) chips.push('GIR ' + girC + '/' + girH);
   }
   if (item.puttsData && Array.isArray(item.puttsData)) {
-    var pTotal = 0;
-    item.puttsData.forEach(function(v) { pTotal += (v || 0); });
-    if (pTotal > 0) chips.push('PUTTS ' + pTotal);
+    var pTotal = 0, pHoles = 0;
+    item.puttsData.forEach(function(v, i) {
+      var sc = item.holeScores ? parseInt(item.holeScores[i]) : 1;
+      if (!(sc > 0)) return;                               // only count played holes
+      var n = parseInt(v) || 0;
+      if (n > 0) { pTotal += n; pHoles++; }
+    });
+    // Only a total over *every* played hole is honest; a partial sum misleads.
+    if (pTotal > 0 && played > 0 && pHoles >= played) chips.push('PUTTS ' + pTotal);
   }
   if (!chips.length) return '';
   var ch = '<div class="feed-chips">';
@@ -318,12 +349,22 @@ function _renderFeedItems() {
   var lead = (_feedScope === "league") ? _feedLeadPick(items) : null;
   if (lead) fh += _renderLeadStory(lead);
 
+  // Density tiers — never a wall of identical full-fat cards. After the lead
+  // hero, the single most-recent remaining round renders as the FULL card
+  // (avatar + score + dots + chips + the four-button action row, smoke-locked).
+  // Every round after that collapses into a compact row (avatar · name · score ·
+  // time), tappable into the round. Chat + range cards are already light and
+  // keep their existing treatment.
+  var fullRoundUsed = false;
   var lastDay = null;
   items.slice(0, 60).forEach(function(item) {
     if (lead && item === lead) return; // the lead is already crowned above
     var dk = _feedDayKey(item.ts);
     if (dk !== lastDay) { fh += _feedDayEyebrow(item.ts); lastDay = dk; }
-    if (item.type === "round") fh += _renderRoundCard(item);
+    if (item.type === "round") {
+      if (!fullRoundUsed) { fh += _renderRoundCard(item); fullRoundUsed = true; }
+      else fh += _renderRoundCompact(item);
+    }
     else if (item.type === "chat") fh += _renderChatCard(item);
     else if (item.type === "range") fh += _renderRangeCard(item);
   });
@@ -604,6 +645,41 @@ function _renderRoundCard(item) {
   h += '<button class="feed-commentinput__post" type="button" onclick="event.stopPropagation();feedSubmitComment(\'' + item.roundId + '\')">Post</button>';
   h += '</div>';
 
+  h += '</article>';
+  return h;
+}
+
+// ── COMPACT ROUND ROW (density tier) ──────────────────────────────────────
+// After the lead hero + the single most-recent full card, every further round
+// collapses to a quiet one-line row: avatar · name · course · score · time. The
+// whole row taps into the round (where the full scorecard + action row live),
+// so no engagement chrome is duplicated here — keeping the smoke-locked
+// four-button action row to the FULL card only (no data-feed-action-row here).
+// Built from the existing .feed-card header classes so it needs no shared CSS;
+// the inline padding just tightens the row for genuine density contrast.
+function _renderRoundCompact(item) {
+  var _par = roundParTotal(item);
+  var _diff = (item.score && _par) ? item.score - _par : null;
+  var _diffStr = _diff === null ? "" : (_diff === 0 ? "E" : (_diff > 0 ? "+" + _diff : String(_diff)));
+  var _diffCls = (_diff !== null && _diff <= 0) ? "feed-topar--under" : "feed-topar--over";
+  var roundClick = item.roundId ? "Router.go('rounds',{roundId:'" + item.roundId + "'})" : "";
+  var name = item.playerName || (item.player ? (item.player.name || item.player.username) : "A Parbaugh");
+  var aria = name + " posted " + (item.score != null ? item.score : "a round") + " at " + (item.course || "a course") + ", " + feedTimeAgo(item.ts);
+
+  var h = '<article class="feed-card feed-card--round feed-card--compact" role="article" aria-label="' + escHtml(aria) + '"' +
+    ' style="padding:11px 16px;cursor:pointer"' +
+    (roundClick ? ' tabindex="0" onclick="' + roundClick + '" onkeydown="if(event.key===\'Enter\'){' + roundClick + '}"' : '') + '>';
+  h += '<div class="feed-card__head" style="align-items:center">';
+  h += renderAvatar(item.player, 30, false);
+  h += '<div class="feed-card__who">';
+  h += '<div class="feed-card__name" style="font-size:15px">' + escHtml(name) + (item.isScramble ? ' <span class="feed-card__tag">Scramble</span>' : '') + '</div>';
+  h += '<div class="feed-card__time"><span style="font-family:var(--font-display);font-style:italic">' + escHtml(item.course || "") + '</span>' + (item.course ? ' · ' : '') + escHtml(feedTimeAgo(item.ts)) + '</div>';
+  h += '</div>';
+  h += '<div class="feed-score" style="flex-direction:row;align-items:baseline;gap:7px">';
+  h += '<div class="feed-score__num" style="font-size:24px">' + (item.score != null ? item.score : "—") + '</div>';
+  if (_diffStr) h += '<div class="feed-topar ' + _diffCls + '" style="margin-top:0">' + _diffStr + '</div>';
+  h += '</div>';
+  h += '</div>';
   h += '</article>';
   return h;
 }

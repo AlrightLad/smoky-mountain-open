@@ -221,3 +221,9 @@ docs/reports/sessions.html
 
 # Local visual-critique screenshots (kept local per artifacts-local rule)
 .claude/state/onboarding-critique-2026-06-12/*.png
+
+# 2026-06-12 per-page 9.5 verify captures + dev log (regenerable, local-only)
+/.claude/state/visual-9.5-2026-06-12/verify-v13/
+/.claude/state/visual-9.5-2026-06-12/verify/
+/.claude/state/visual-9.5-2026-06-12/*.png
+/.claude/state/visual-9.5-2026-06-12/devserver.log
