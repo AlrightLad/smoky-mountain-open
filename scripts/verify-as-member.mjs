@@ -39,7 +39,10 @@ const OUT = '.claude/state/verify-' + LABEL;
 if (!existsSync(OUT)) mkdirSync(OUT, { recursive: true });
 
 const b = await chromium.launch();
-const ctx = await b.newContext({ viewport: { width: 430, height: 900 }, serviceWorkers: 'block', deviceScaleFactor: 2 });
+// reducedMotion:'no-preference' so the swing actually ANIMATES in capture —
+// headless Chromium otherwise defaults to 'reduce', which makes maybeShow() take
+// the static-finish-frame branch (no motion), hiding the real animation.
+const ctx = await b.newContext({ viewport: { width: 430, height: 900 }, serviceWorkers: 'block', deviceScaleFactor: 2, reducedMotion: 'no-preference' });
 const page = await ctx.newPage();
 await page.addInitScript(({ skipIntro }) => { try { if (skipIntro) { sessionStorage.setItem('pb_intro_seen', '1'); sessionStorage.setItem('pb_wt_routed', '1'); } } catch (e) {} }, { skipIntro: !WITH_INTRO });
 await page.goto(URL + '?nocache=' + Date.now(), { waitUntil: 'domcontentloaded' });
