@@ -49,5 +49,7 @@ module.exports = [
   require('./s31-onboarding-walkthrough.js'),
   // v8.25.5 — P0 regression guard: rounds dedup (the duplicate-rounds 7-0 fix).
   require('./s32-rounds-dedup.js'),
+  // v8.25.10 — fix-wave guards: 6 themes / 4 caddies / scramble all-members derivation.
+  require('./s33-tonight-fixes-regression.js'),
   require('./s11-logout-cleanup.js')
 ];
