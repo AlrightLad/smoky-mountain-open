@@ -309,7 +309,10 @@ Router.register("shop", function() {
     // preview
     if (item.cat === 'border') {
       var ringCss = item.ringClass ? '' : 'border:' + (item.css || '3px solid ' + item.preview);
-      c += '<div class="' + (item.ringClass || '') + '" style="width:56px;height:56px;border-radius:50%;' + ringCss + ';margin:0 auto 8px;display:flex;align-items:center;justify-content:center;background:var(--bg3);position:relative">' + (_myAvatar || '') + '</div>';
+      // v8.25.42 — showcase the ring as a real object: 104px (was a cramped 56px
+      // that hid the rope studs / fescue / claret sweep) on a clean brass-tinted
+      // ground, the SAME worn .ring-* class so the preview matches what you equip.
+      c += '<div class="shop-ring-stage"><div class="' + (item.ringClass || '') + '" style="width:104px;height:104px;border-radius:50%;' + ringCss + ';display:flex;align-items:center;justify-content:center;position:relative">' + (_myAvatar ? '<div style="width:82px;height:82px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center">' + _myAvatar + '</div>' : '<div class="shop-ring-core"></div>') + '</div></div>';
     } else if (item.cat === 'nameplate') {
       c += '<div style="height:34px;border-radius:6px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:' + (item.id === 'pc07_leaderboard_sunday' ? '#fff;background:#1d3a2a;font-family:var(--font-mono);letter-spacing:2px' : '#241c0c;background:linear-gradient(160deg,#caa75c,#9c7c38)') + '">' + escHtml(_myName) + '</div>';
     } else if (item.cat === 'card') {

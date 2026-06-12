@@ -4275,6 +4275,24 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 }
 .shop-item__equip:hover { filter: brightness(1.1); }
 
+/* v8.25.42 — Pro Shop ring preview: present the ornamental ring as a raised
+   object on a clean ground (was a 56px disc that hid the art). One soft ground
+   gradient + one shadow, Clubhouse tokens — restraint, not gleam. */
+.shop-ring-stage {
+  margin: 2px auto 12px;
+  width: 128px; height: 128px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle at 32% 28%, rgba(var(--cb-brass-rgb), 0.09), rgba(0,0,0,0.05));
+  box-shadow: 0 6px 14px rgba(0,0,0,0.13), inset 0 0 0 1px rgba(var(--cb-brass-rgb), 0.07);
+}
+.shop-ring-core {
+  width: 82px; height: 82px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, var(--cb-paper), rgba(var(--cb-brass-rgb), 0.08));
+  border: 1px solid rgba(var(--cb-brass-rgb), 0.12);
+}
+
 .shop-economy { margin: 0 0 30px; }
 .shop-econ-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
 .shop-econ-card {
