@@ -202,7 +202,11 @@
         Array.prototype.forEach.call(_root.querySelectorAll(".pbw-caddie-pick"), function (b2) { b2.style.borderColor = "var(--border)"; b2.style.background = "var(--cb-paper)"; });
         btn.style.borderColor = "var(--cb-brass)"; btn.style.background = "var(--cb-chalk-2)";
         if (preview && window.pbVoices) { preview.textContent = "“" + window.pbVoices.line("frame", id) + "”"; }
-        if (window.pbCaddy) { try { window.pbCaddy.setPose("tipCap"); } catch (e) {} }
+        // Swap the figure to THIS caddy's persona (cap style + tell + accent) so
+        // the four caddies are visibly distinct + previewable, not just 4 names.
+        if (window.pbCaddy) {
+          try { if (window.pbCaddy.setCaddy) window.pbCaddy.setCaddy(id); window.pbCaddy.setPose("tipCap"); } catch (e) {}
+        }
       };
     });
   }

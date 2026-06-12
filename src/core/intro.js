@@ -1,10 +1,18 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   TEE-SHOT WELCOME INTRO (v8.24.95 — wrapped finish + filled torso + 2-segment arm · task #34)
+   TEE-SHOT WELCOME INTRO (v8.24.95 — CARTOON golfer over the same swing engine · task #34)
 
-   A pro-golfer SILHOUETTE, viewed side-on (profile, facing the target to the
-   RIGHT), swings off the tee at dawn — the club traces a big clean overhead
+   A friendly CARTOON pro-golfer, viewed side-on (profile, facing the target to
+   the RIGHT), swings off the tee at dawn — the club traces a big clean overhead
    arc, the ball launches down the fairway on a brass trail, then the overlay
    fades into the Clubhouse.
+
+   The figure is a clean flat-color cartoon (NOT a black stick): skin-tone head
+   with a cap brim + face-edge hint + cheek highlight, a cream brass-trimmed polo
+   with a sun-side rim-light, felt-green trousers, skin hands on the grip, and
+   white spiked shoes. Each part is 2-3 flat tones + a warm sun-side rim so it
+   reads beautifully against the dark dawn sky. The swing ENGINE is unchanged —
+   the cartoon parts are driven entirely off the same computed pose coordinates,
+   so timing, the arc, and the geometry are byte-for-byte the same as before.
 
    Why profile (v8.24.82): the v8.24.80 FACE-ON build read as "waving a stick
    sideways" — a real golf swing foreshortens into/out of the screen face-on,
@@ -28,7 +36,18 @@
   var C = {
     skyTop: "#0c2c20", skyMid: "#1a4636", glow: "#caa04a", glowHot: "#f0d488",
     sun: "#f6e6b4", ground: "#06140e", figure: "#071109",
-    shaft: "#0a1810", brass: "#d8b260", ball: "#fdfcf7", trail: "218,178,96"
+    shaft: "#0a1810", brass: "#d8b260", ball: "#fdfcf7", trail: "218,178,96",
+    // ── Cartoon golfer art palette (hardcoded on purpose: the intro is a fixed
+    //    dawn-lit art scene, NOT a themed surface). 2-3 flat tones per part with
+    //    a warm sun-side rim-light so the character reads as a clean cartoon
+    //    against the dark dawn sky, never a black stick.
+    skin: "#e8b48a", skinShade: "#c98e63",          // face + hands (warm, sun-lit)
+    polo: "#f4efe3", poloShade: "#cfc6b0",            // cream/ivory polo body
+    poloRim: "#fff6e0", collar: "#d8b260",            // brass-trimmed collar/placket
+    pants: "#3c5848", pantsShade: "#2a3f33",          // felt-green trousers
+    cap: "#9c3b34", capShade: "#7a2c27", capBtn: "#f4efe3",  // brick-red cap
+    shoe: "#f4efe3", shoeSole: "#caa04a",             // white spikes, brass sole
+    rim: "#f0d488"                                     // shared sun-side rim-light
   };
 
   function _reduced() { try { return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) { return false; } }
@@ -102,14 +121,36 @@
         '<line x1="286" y1="376" x2="278" y2="360" stroke="' + C.brass + '" stroke-width="2.5" stroke-linecap="round"/>' +
       '</g>' +
       '<g id="pbi-golfer">' +
-        '<path id="pbi-leg-trail" d="" fill="none" stroke="' + C.figure + '" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>' +
-        '<path id="pbi-leg-lead" d="" fill="none" stroke="' + C.figure + '" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>' +
-        '<circle id="pbi-hips" cx="0" cy="0" r="12" fill="' + C.figure + '"/>' +
+        // ── Trousers: each leg is a felt-green stroke with a darker inner shade
+        //    line stacked behind a shoe cap. Same geometry as before — just tones.
+        '<path id="pbi-leg-trail" d="" fill="none" stroke="' + C.pants + '" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '<path id="pbi-leg-trail-sh" d="" fill="none" stroke="' + C.pantsShade + '" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '<path id="pbi-leg-lead" d="" fill="none" stroke="' + C.pants + '" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '<path id="pbi-leg-lead-sh" d="" fill="none" stroke="' + C.pantsShade + '" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>' +
+        '<line id="pbi-shoe-trail" x1="0" y1="0" x2="0" y2="0" stroke="' + C.shoe + '" stroke-width="7" stroke-linecap="round"/>' +
+        '<line id="pbi-shoe-lead" x1="0" y1="0" x2="0" y2="0" stroke="' + C.shoe + '" stroke-width="7" stroke-linecap="round"/>' +
+        '<line id="pbi-shoe-trail-sole" x1="0" y1="0" x2="0" y2="0" stroke="' + C.shoeSole + '" stroke-width="2.5" stroke-linecap="round"/>' +
+        '<line id="pbi-shoe-lead-sole" x1="0" y1="0" x2="0" y2="0" stroke="' + C.shoeSole + '" stroke-width="2.5" stroke-linecap="round"/>' +
+        '<circle id="pbi-hips" cx="0" cy="0" r="12" fill="' + C.pants + '"/>' +
         '<g id="pbi-upper">' +
-          '<path id="pbi-torso" d="" fill="' + C.figure + '"/>' +
-          '<circle id="pbi-head" cx="0" cy="0" r="14" fill="' + C.figure + '"/>' +
-          '<path id="pbi-cap" d="" fill="' + C.figure + '"/>' +
-          '<path id="pbi-arm" d="" fill="none" stroke="' + C.figure + '" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>' +
+          // ── Polo torso: cream body + a sun-side rim-light edge + a brass placket.
+          '<path id="pbi-torso" d="" fill="' + C.polo + '"/>' +
+          '<path id="pbi-torso-rim" d="" fill="none" stroke="' + C.poloRim + '" stroke-width="2.5" stroke-linecap="round" opacity=".85"/>' +
+          '<path id="pbi-placket" d="" fill="none" stroke="' + C.collar + '" stroke-width="2.5" stroke-linecap="round"/>' +
+          // ── Arm sleeve: cream polo sleeve to the elbow, skin forearm to the
+          //    hands — drawn as two stacked strokes on the SAME arm path points.
+          '<path id="pbi-arm" d="" fill="none" stroke="' + C.skin + '" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>' +
+          '<path id="pbi-sleeve" d="" fill="none" stroke="' + C.polo + '" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>' +
+          '<circle id="pbi-hands" cx="0" cy="0" r="6" fill="' + C.skinShade + '"/>' +
+          // ── Head: skin disc + a sun-side cheek highlight + a face-edge hint
+          //    (a short darker line where the profile face meets the sky).
+          '<circle id="pbi-head" cx="0" cy="0" r="13" fill="' + C.skin + '"/>' +
+          '<path id="pbi-face" d="" fill="none" stroke="' + C.skinShade + '" stroke-width="2" stroke-linecap="round"/>' +
+          '<circle id="pbi-cheek" cx="0" cy="0" r="4" fill="' + C.rim + '" opacity=".5"/>' +
+          // ── Cap: brick-red bill + crown with a darker under-bill shade + button.
+          '<path id="pbi-cap" d="" fill="' + C.cap + '"/>' +
+          '<path id="pbi-cap-sh" d="" fill="none" stroke="' + C.capShade + '" stroke-width="2" stroke-linecap="round"/>' +
+          '<circle id="pbi-cap-btn" cx="0" cy="0" r="1.8" fill="' + C.capBtn + '"/>' +
           '<line id="pbi-club" x1="0" y1="0" x2="0" y2="0" stroke="' + C.shaft + '" stroke-width="4" stroke-linecap="round"/>' +
           '<line id="pbi-clubhead" x1="0" y1="0" x2="0" y2="0" stroke="' + C.brass + '" stroke-width="6" stroke-linecap="round"/>' +
         '</g>' +
@@ -159,16 +200,34 @@
     var _tdx = SX - HX, _tdy = SY - HY, _tdl = Math.sqrt(_tdx*_tdx + _tdy*_tdy) || 1;
     var _px = -_tdy / _tdl, _py = _tdx / _tdl;   // unit perpendicular to the spine
     var WSH = 36, WHIP = 24;                       // shoulder + hip widths
+    // torso corners (reused for the polo body, its sun-side rim, and the placket)
+    var t_hipR_x = HX + _px*WHIP/2, t_hipR_y = HY + _py*WHIP/2;   // hip, target side (+perp)
+    var t_shR_x  = SX + _px*WSH/2,  t_shR_y  = SY + _py*WSH/2;    // shoulder, target side
+    var t_shL_x  = SX - _px*WSH/2,  t_shL_y  = SY - _py*WSH/2;    // shoulder, back side
+    var t_hipL_x = HX - _px*WHIP/2, t_hipL_y = HY - _py*WHIP/2;   // hip, back side
     _set("pbi-torso", { d:
-      "M " + (HX + _px*WHIP/2) + " " + (HY + _py*WHIP/2) +
-      " L " + (SX + _px*WSH/2) + " " + (SY + _py*WSH/2) +
-      " Q " + SX + " " + (SY - 4) + " " + (SX - _px*WSH/2) + " " + (SY - _py*WSH/2) +
-      " L " + (HX - _px*WHIP/2) + " " + (HY - _py*WHIP/2) + " Z" });
+      "M " + t_hipR_x + " " + t_hipR_y +
+      " L " + t_shR_x + " " + t_shR_y +
+      " Q " + SX + " " + (SY - 4) + " " + t_shL_x + " " + t_shL_y +
+      " L " + t_hipL_x + " " + t_hipL_y + " Z" });
+    // sun-side (target/right, +perp) edge catches the dawn light as a rim
+    _set("pbi-torso-rim", { d: "M " + t_hipR_x + " " + t_hipR_y + " L " + t_shR_x + " " + t_shR_y });
+    // brass placket runs down the centre-front of the polo (hip -> just under collar)
+    _set("pbi-placket", { d: "M " + ((SX*0.62)+(HX*0.38)) + " " + ((SY*0.62)+(HY*0.38)) + " L " + SX + " " + (SY - 1) });
     // head above the shoulder along the spine line; cap bill toward target (right)
     var hx = SX + Math.sin(leanR) * 18, hy = SY - Math.cos(leanR) * 18;
     _set("pbi-head", { cx: hx, cy: hy });
+    // Face-edge hint: the profile faces the target (right), so a short skin-shade
+    // line down the front-right of the head reads as nose/jaw, not a black disc.
+    _set("pbi-face", { d: "M " + (hx+10) + " " + (hy-3) + " Q " + (hx+13) + " " + (hy+2) + " " + (hx+9) + " " + (hy+7) });
+    // Sun-side cheek highlight (target/right) — the dawn light on the face.
+    _set("pbi-cheek", { cx: hx+5, cy: hy+1 });
+    // Cap: brick-red crown + bill toward target, an under-bill shade line, and a
+    // top button at the crown apex. Same shape as the silhouette version.
     _set("pbi-cap", { d: "M " + (hx-4) + " " + (hy-10) + " Q " + (hx+14) + " " + (hy-13) + " " + (hx+20) + " " + (hy-3) +
       " L " + (hx+20) + " " + (hy+1) + " L " + (hx+8) + " " + (hy+1) + " Q " + (hx+6) + " " + (hy-4) + " " + (hx-4) + " " + (hy-5) + " Z" });
+    _set("pbi-cap-sh", { d: "M " + (hx+8) + " " + (hy+1) + " L " + (hx+20) + " " + (hy+1) });  // under-bill shade
+    _set("pbi-cap-btn", { cx: hx-1, cy: hy-11 });                                              // crown button
 
     // arm + club rotate around the shoulder. armDeg from straight-down,
     // POSITIVE = back/CCW (up-behind). turn rotates the whole arm plane toward
@@ -189,7 +248,11 @@
     if (_apy < 0) { _apx = -_apx; _apy = -_apy; }    // bias the elbow downward (natural)
     var _bend = 7 + Math.abs(p.lag) * 0.06;          // more bend when the wrist is hinged
     var _ex = (SX + ax) / 2 + _apx * _bend, _ey = (SY + ay) / 2 + _apy * _bend;
+    // Skin forearm = full arm path (drawn first); cream polo sleeve = shoulder ->
+    // elbow only (drawn over it), so the bare forearm reads from elbow to grip.
     _set("pbi-arm", { d: "M " + SX + " " + SY + " L " + _ex + " " + _ey + " L " + ax + " " + ay });
+    _set("pbi-sleeve", { d: "M " + SX + " " + SY + " L " + _ex + " " + _ey });
+    _set("pbi-hands", { cx: ax, cy: ay });           // skin hands wrapped on the grip
     _set("pbi-club", { x1: ax, y1: ay, x2: cx2, y2: cy2 });
     var px = (cy2 - ay), py = -(cx2 - ax), pl = Math.sqrt(px*px + py*py) || 1;
     _set("pbi-clubhead", { x1: cx2 - 6*px/pl, y1: cy2 - 6*py/pl, x2: cx2 + 6*px/pl, y2: cy2 + 6*py/pl });
@@ -197,8 +260,21 @@
     // legs (profile): trail leg behind (left), lead leg toward target (right).
     // Lead leg straightens + trail heel lifts as weight posts up at the finish.
     var footY = HY + 86, kneeY = HY + 46;
-    _set("pbi-leg-trail", { d: "M " + (HX-3) + " " + (HY-1) + " L " + (HX-16) + " " + kneeY + " L " + (HX-14) + " " + (footY - p.heel) });
-    _set("pbi-leg-lead",  { d: "M " + (HX+5) + " " + (HY-1) + " L " + (HX+15) + " " + (kneeY+2) + " L " + (HX+16) + " " + footY });
+    var tFootX = HX-14, tFootY = footY - p.heel;     // trail foot (lifts at finish)
+    var lFootX = HX+16, lFootY = footY;              // lead foot (planted)
+    var trailD = "M " + (HX-3) + " " + (HY-1) + " L " + (HX-16) + " " + kneeY + " L " + tFootX + " " + tFootY;
+    var leadD  = "M " + (HX+5) + " " + (HY-1) + " L " + (HX+15) + " " + (kneeY+2) + " L " + lFootX + " " + lFootY;
+    _set("pbi-leg-trail", { d: trailD });
+    _set("pbi-leg-lead",  { d: leadD });
+    // Darker inner-seam shade on each trouser leg (same path, thinner stroke).
+    _set("pbi-leg-trail-sh", { d: trailD });
+    _set("pbi-leg-lead-sh",  { d: leadD });
+    // Shoe caps: a short stroke off each foot toward the target (right), with a
+    // brass sole line beneath. The trail shoe tips up onto its toe at the finish.
+    _set("pbi-shoe-trail", { x1: tFootX-2, y1: tFootY, x2: tFootX+11, y2: tFootY - p.heel*0.18 });
+    _set("pbi-shoe-lead",  { x1: lFootX-2, y1: lFootY, x2: lFootX+13, y2: lFootY });
+    _set("pbi-shoe-trail-sole", { x1: tFootX-2, y1: tFootY+3, x2: tFootX+11, y2: tFootY+3 - p.heel*0.18 });
+    _set("pbi-shoe-lead-sole",  { x1: lFootX-2, y1: lFootY+3, x2: lFootX+13, y2: lFootY+3 });
 
     // ball flight: launches toward the target (RIGHT) at impact (~0.66)
     var ball = document.getElementById("pbi-ball"), trail = document.getElementById("pbi-trail");
