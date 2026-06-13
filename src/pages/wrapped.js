@@ -13,10 +13,34 @@ var _wrappedIdx = 0;
 
 Router.register("wrapped", function(params) {
   var year = (params && params.year) ? parseInt(params.year) : new Date().getFullYear();
+  // v8.25.52 — a year's Wrapped doesn't FINALIZE until the year is essentially
+  // over: before Dec 1 of the CURRENT year, show a "pending yearly progress"
+  // screen rather than a premature champion/final recap (Founder 2026-06-13).
+  // Past years (or Dec onward) render the full Wrapped.
+  var _now = new Date();
+  if (year >= _now.getFullYear() && _now < new Date(year, 11, 1)) { _renderWrappedPending(year); return; }
   _wrappedSlides = _buildWrappedSlides(year);
   _wrappedIdx = 0;
   _renderWrappedSlide();
 });
+
+// Pre-December "your year is still being written" gate (Founder: don't show the
+// yearly Wrapped before Dec 1 — show pending progress instead).
+function _renderWrappedPending(year) {
+  var myPid = (typeof currentProfile !== "undefined" && currentProfile) ? (currentProfile.claimedFrom || currentProfile.id) : null;
+  var yc = 0;
+  try { yc = myPid ? PB.getPlayerRounds(myPid).filter(function(r) { return r.date && r.date >= year + "-01-01" && r.date <= year + "-12-31" && r.visibility !== "private"; }).length : 0; } catch (e) {}
+  var bg = "var(--cb-felt, #1d3a2a)", fg = "var(--cb-chalk, #f1ead3)", mute = "rgba(241,234,211,.72)";
+  var h = '<div style="position:fixed;inset:0;z-index:900;background:' + bg + ';color:' + fg + ';display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;gap:14px">';
+  h += '<button onclick="Router.back(\'seasonrecap\')" style="position:absolute;top:calc(14px + env(safe-area-inset-top));left:16px;background:none;border:none;color:' + mute + ';font-size:13px;cursor:pointer">← Back</button>';
+  h += '<div style="font-family:var(--font-mono);font-size:11px;letter-spacing:3px;color:var(--gold,#b58a3a);text-transform:uppercase">' + year + ' · In Progress</div>';
+  h += '<div style="font-family:var(--font-display);font-style:italic;font-weight:700;font-size:30px;line-height:1.15">Your year is still<br>being written.</div>';
+  h += '<div style="font-size:13px;color:' + mute + ';max-width:300px;line-height:1.5">Your ' + year + ' Wrapped unlocks <b style="color:' + fg + '">December 1</b>. ' + (yc > 0 ? (yc + ' round' + (yc === 1 ? '' : 's') + ' in the books so far — keep teeing it up.') : 'Log a round and your story starts here.') + '</div>';
+  h += '<svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="var(--gold,#b58a3a)" stroke-width="1.4" style="margin-top:6px;opacity:.85"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+  h += '</div>';
+  var el = document.querySelector('[data-page="wrapped"]');
+  if (el) el.innerHTML = h;
+}
 
 function _buildWrappedSlides(year) {
   // Wrapped covers the whole CALENDAR YEAR (Founder 2026-06-12) — Jan 1 to Dec 31,
