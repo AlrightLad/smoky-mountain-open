@@ -822,9 +822,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-13T20:41:27.893251Z",
+  "generated_at": "2026-06-13T20:52:28.704544Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 87.1,
+  "overall_score": 86.3,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -844,9 +844,9 @@
         "path": ".claude/state/incidents/2026-06-13-concurrent-marathon-collision.md"
       }
     ],
-    "pre_deduction_score": 92.1,
+    "pre_deduction_score": 91.3,
     "deduction": 5,
-    "post_deduction_score": 87.1
+    "post_deduction_score": 86.3
   },
   "dimensions": {
     "A1_roadmap": {
@@ -1005,20 +1005,20 @@
       "weak_points": []
     },
     "A12_operational": {
-      "score": 90,
-      "status": "green",
-      "label": "pipeline=green · 4 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "score": 75,
+      "status": "yellow",
+      "label": "pipeline=yellow · 6 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "4 of last 10 cron watcher runs hit skip-dirty",
+          "what": "6 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
       ],
       "details": {
         "watcher_last_status": "PASS",
-        "watcher_exit_reason": "no-new-files"
+        "watcher_exit_reason": "skip-dirty"
       }
     }
   },
@@ -1028,6 +1028,12 @@
       "where": "src/pages/rounds.js",
       "what_action": "Split into modules per AMD-027 budget",
       "dimension": "A5_code_quality"
+    },
+    {
+      "what": "6 of last 10 cron watcher runs hit skip-dirty",
+      "where": "scripts/cron/logs/*-downloads-watcher.log",
+      "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
+      "dimension": "A12_operational"
     }
   ],
   "founder_attention": [],
@@ -1037,12 +1043,18 @@
       "where": "src/pages/rounds.js",
       "what_action": "Split into modules per AMD-027 budget",
       "dimension": "A5_code_quality"
+    },
+    {
+      "what": "6 of last 10 cron watcher runs hit skip-dirty",
+      "where": "scripts/cron/logs/*-downloads-watcher.log",
+      "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
+      "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "55251d13",
-    "subject": "chore(stop-decision): log v8.25.96-98 home-convergence + 12-page sweep checkpoint",
-    "committed_at": "2026-06-13T16:41:06-04:00",
+    "sha": "e222d0c8",
+    "subject": "docs(backlog): swing-figure render-vet done (candidate=cart anim, REJECTED; current swing verified clean post-flicker-fix); E2E re-attempt logged (emulator port held, isolation already CI-verified)",
+    "committed_at": "2026-06-13T16:52:05-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
