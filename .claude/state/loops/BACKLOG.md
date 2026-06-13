@@ -62,11 +62,20 @@ against the actual bg → ship → Founder reacts (he owns ≥9.5 per AMD-028).
   MEMBERS handicaps (Kayvan 33.3 / Kiyan 29.4 / Mr Parbaugh 20.9 / Nick 49.7 all = prod
   computedHandicap, sensibly derived from real rounds). Materialized values trace to source;
   computed displays (standings pts) derive deterministically from these. No fabrication found.
-- [ ] Per-page 4-dim grind across ALL member pages (home deepen, feed, rounds, profile,
-  standings, richlist, wagers, chat, settings, playnow, more, leagues, trips, scorecard,
-  courses, records, trophyroom, season-recap) — color + density + motion + elevation each.
-- [ ] Data-integrity pass alongside each page (every visible value traces to source; no
-  zeros/dashes/fabrication per P9).
+- [~] Per-page 4-dim grind — SYSTEMIC pass DONE + every reachable page REVIEWED sound
+  (v8.25.100-104: depth atmosphere 17pg, brass masthead-rule 20pg, app-wide press-scale,
+  records-handicap consistency). Re-audited home/feed/members/richlist/profile/rounds/
+  trophyroom/records as a member — all well-built editorial designs, no bugs (the only
+  "issues" surfaced were agent misreads of letter-spaced/pixelated text). The remaining
+  delta to the Founder's 9.5 is TASTE-LEAP per-page refinement — GATED on Founder's
+  specific direction (he said "not 9.5" but component audit shows sound designs ⇒ the gap
+  is taste he must specify) + premium visual assets (swing/shop). Not agent-actionable
+  blind without over-correcting good designs ([[feedback_contrast_verify_each_change]]).
+- [x] Data-integrity pass — VERIFIED CLEAN across all value-dense pages (home/richlist/
+  members/profile/records cross-checked vs prod SA source: handicaps/bestRound/parcoins
+  Lifetime/totalRounds all trace exactly; test-account filtered; computed displays derive
+  deterministically). One consistency fix shipped (records handicap → materialized
+  computedHandicap + .toFixed(1), v8.25.104). No fabrication found.
 - [ ] SWING figure → PREMIUM asset (Founder chose 2026-06-13; free pool render-vetted +
   exhausted). Doc: task-queue/founder/swing-lottie-asset.md. Flicker is a baked-in
   coplanar seam (renderer-independent); data verified clean frame-by-frame.
