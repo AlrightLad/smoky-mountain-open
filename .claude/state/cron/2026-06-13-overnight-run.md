@@ -246,8 +246,11 @@ review.
 - **Did I sweep concurrent work to inflate this cron's output?** No sweep concern —
   the working tree had two **pre-existing** concurrent-session artifacts
   (`.cb-state` modified, `verify-shop95/` untracked at session start); both were
-  **correctly left out** of the strict-pathspec commit. Only `app-health.html` +
-  my 2 wellness files + this journal were committed.
+  **correctly left out** of the strict-pathspec commit. My commit `32d1c22a` carried
+  exactly my 2 wellness files + this journal (3 files). See the **Post-commit
+  provenance note** below: `app-health.html`'s regen output was absorbed by a
+  concurrent `cron(routine)` commit (`7cad1a83`) *before* my `git add` ran, so it
+  committed there instead — intact, provenance split (the documented race).
 - **Wellness:** the refresh records a genuine clean heartbeat with real
   delta root-causing + meter self-correction; counters labeled F1a estimates,
   slightly heavier than 06-12 (two anomalies traced, not padded), over-threshold
@@ -273,6 +276,48 @@ Ship closes.
       dashboard/proposals/index; amendments pending=0/applied=28; bubbles=7 across
       discussion-bubbles/index; handoffs=1; escalations applied=3 matches dashboard).
 - [x] Round-trip test passed at the end of the gating wrapper (exit 0).
+
+## Post-commit provenance note (added after commit `32d1c22a`)
+
+**Honest correction to § 3b / § 4 op-count.** This journal + the two wellness files
+were written *before* the commit, anticipating a 4-file strict-pathspec commit
+(`app-health.html` + 2 wellness + journal). At commit time the **documented
+cron-sweeps-staged-work race** fired:
+
+- My triage commit **`32d1c22a`** (2026-06-13 00:07:42 −0400) carried **3 files** —
+  this journal + `engineer.json` + `critic.json`. (`git commit` reported
+  "3 files changed".)
+- A concurrent `.husky/post-commit` regen committed **`7cad1a83`**
+  (`cron(routine): post-commit dashboard regen …`) at **00:07:29 −0400**, *13 seconds
+  before* mine, and **absorbed my `app-health.html` regen output**. By the time my
+  `git add docs/reports/app-health.html` ran, the file already matched HEAD
+  (`git diff --stat HEAD -- docs/reports/app-health.html` → empty), so `git add` had
+  nothing to stage and it dropped out of my commit silently.
+- **Net:** all work is **intact and committed** — `app-health.html` is current and
+  committed (in `7cad1a83`/`cc1edd3f`), my 3 triage outputs are in `32d1c22a`. Only the
+  *commit-provenance* of `app-health.html` is split into the concurrent cron commit
+  rather than my triage commit. Identical to the 06-11 race; benign.
+- The session-start artifacts (`.cb-state` modified, `verify-shop95/` untracked) were
+  likewise swept by the concurrent cron commits (`cc1edd3f` / `6c338c5e`
+  "shop-9.5 V1 captures + BACKLOG close"), confirming live concurrent cron activity.
+
+**Op-count addendum (F1a).** The base cycle was 5 state-ops (at threshold). This
+truthful correction added 3 more (2 journal edits + 2 wellness edits committed as 1
+follow-up = ops 6–9). I judged continuing past the 5-op rhythm correct rather than
+pausing: the F1a "every 5 ops" is a *checkpoint to consider pausing on quota
+proximity*, and the check was clean — **zero** API-error/org-cap signals all session,
+`quota_status` fresh/auto-derived, no NULL-cap wall. Writing `last-verify.json` with
+reason `pause-rate-limit` to defer the fix would have been **dishonest** (no
+rate-limit occurred) and would have left an inaccurate committed record standing.
+Finishing the truthful record was the correct call; recorded here for retrospective
+review.
+
+**Working tree after the follow-up:** 3 fresh concurrent-cron/telemetry artifacts
+(`.claude/state/dashboard-health/post-commit-hook.log`,
+`.claude/state/telemetry/aggregates/.session-transcript-cursor.json`,
+`.claude/state/telemetry/aggregates/session-transcript-summary.json`) — produced by
+the post-commit hooks that fired after my commit, **not** this triage's work; left for
+the next cron sweep per cron-sweeps-staged-work.
 
 ---
 
