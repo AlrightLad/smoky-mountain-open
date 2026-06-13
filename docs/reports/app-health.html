@@ -822,9 +822,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-13T13:34:28.245526Z",
+  "generated_at": "2026-06-13T13:41:58.518225Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 86.3,
+  "overall_score": 85.6,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -844,9 +844,9 @@
         "path": ".claude/state/incidents/2026-06-13-concurrent-marathon-collision.md"
       }
     ],
-    "pre_deduction_score": 91.3,
+    "pre_deduction_score": 90.6,
     "deduction": 5,
-    "post_deduction_score": 86.3
+    "post_deduction_score": 85.6
   },
   "dimensions": {
     "A1_roadmap": {
@@ -857,9 +857,9 @@
       "weak_points": []
     },
     "A2_fiq": {
-      "score": 75,
-      "status": "yellow",
-      "label": "26 declared / 0 deployed (drift)",
+      "score": 100,
+      "status": "green",
+      "label": "26/26 deployed · 0 pending",
       "source": ".claude/state/aggregates/fiq-status.json",
       "weak_points": []
     },
@@ -867,27 +867,21 @@
       "score": 98,
       "status": "green",
       "label": "AgentShield grade A; honest score 98/100 · 0 CRITICAL · 1 HIGH · 0 MED",
-      "source": ".claude/state/security/baseline-20260521-184045/agentshield-post-cleanup.txt",
+      "source": ".claude\\state\\security\\baseline-20260521-184045\\agentshield-post-cleanup.txt",
       "weak_points": [
         {
           "what": "1 HIGH findings — at industry-grade this is technical debt, NOT 'acceptable'",
-          "where": ".claude/state/security/baseline-20260521-184045/agentshield-post-cleanup.txt",
+          "where": ".claude\\state\\security\\baseline-20260521-184045\\agentshield-post-cleanup.txt",
           "what_action": "Top 3: tighten Bash(curl *) allow rule to specific domains; add deny rules for sudo/ssh/chmod 777; replace `>/dev/null 2>&1` in hooks with audit log writes"
         }
       ]
     },
     "A4_uiux": {
-      "score": 0,
-      "status": "red",
-      "label": "Lighthouse BP 0/100 across 0 pages",
+      "score": 93,
+      "status": "green",
+      "label": "Lighthouse BP 93/100 across 6 pages",
       "source": ".claude/state/aggregates/lighthouse-scores.json",
-      "weak_points": [
-        {
-          "what": "Lighthouse Best-Practices = 0/100 across 0 pages (target: 90+)",
-          "where": ".claude/state/aggregates/lighthouse-scores.json",
-          "what_action": "Open .lighthouseci/*.html — top BP failures include image aspect ratios, console errors, deprecated APIs. Fix top 3 per page."
-        }
-      ]
+      "weak_points": []
     },
     "A5_code_quality": {
       "score": 73,
@@ -915,6 +909,31 @@
         "over_budget_count": 9,
         "files": [
           {
+            "file": "src/pages/admin.js",
+            "lines": 864,
+            "budget": 800
+          },
+          {
+            "file": "src/pages/courses.js",
+            "lines": 1042,
+            "budget": 800
+          },
+          {
+            "file": "src/pages/feed.js",
+            "lines": 898,
+            "budget": 800
+          },
+          {
+            "file": "src/pages/home.js",
+            "lines": 835,
+            "budget": 800
+          },
+          {
+            "file": "src/pages/members-detail.js",
+            "lines": 981,
+            "budget": 800
+          },
+          {
             "file": "src/pages/members.js",
             "lines": 888,
             "budget": 800
@@ -925,38 +944,13 @@
             "budget": 800
           },
           {
-            "file": "src/pages/courses.js",
-            "lines": 1042,
+            "file": "src/pages/playnow.js",
+            "lines": 801,
             "budget": 800
           },
           {
             "file": "src/pages/rounds.js",
             "lines": 1041,
-            "budget": 800
-          },
-          {
-            "file": "src/pages/feed.js",
-            "lines": 898,
-            "budget": 800
-          },
-          {
-            "file": "src/pages/members-detail.js",
-            "lines": 981,
-            "budget": 800
-          },
-          {
-            "file": "src/pages/admin.js",
-            "lines": 864,
-            "budget": 800
-          },
-          {
-            "file": "src/pages/home.js",
-            "lines": 835,
-            "budget": 800
-          },
-          {
-            "file": "src/pages/playnow.js",
-            "lines": 801,
             "budget": 800
           }
         ]
@@ -983,30 +977,18 @@
       "weak_points": []
     },
     "A8_performance": {
-      "score": 0,
-      "status": "red",
-      "label": "Lighthouse Performance 0/100 across 0 pages",
+      "score": 83,
+      "status": "green",
+      "label": "Lighthouse Performance 83/100 across 6 pages",
       "source": ".claude/state/aggregates/lighthouse-scores.json",
-      "weak_points": [
-        {
-          "what": "Lighthouse Performance = 0/100 across 0 pages (target: 75+)",
-          "where": ".claude/state/aggregates/lighthouse-scores.json",
-          "what_action": "Open .lighthouseci/*.html — fix top performance failures per page"
-        }
-      ]
+      "weak_points": []
     },
     "A9_accessibility": {
-      "score": 0,
-      "status": "red",
-      "label": "Lighthouse Accessibility 0/100 across 0 pages",
+      "score": 95,
+      "status": "green",
+      "label": "Lighthouse Accessibility 95/100 across 6 pages",
       "source": ".claude/state/aggregates/lighthouse-scores.json",
-      "weak_points": [
-        {
-          "what": "Lighthouse Accessibility = 0/100 across 0 pages (target: 90+)",
-          "where": ".claude/state/aggregates/lighthouse-scores.json",
-          "what_action": "Open .lighthouseci/*.html — fix top accessibility failures per page"
-        }
-      ]
+      "weak_points": []
     },
     "A10_mobile_first": {
       "score": 100,
@@ -1023,13 +1005,13 @@
       "weak_points": []
     },
     "A12_operational": {
-      "score": 75,
+      "score": 60,
       "status": "yellow",
-      "label": "pipeline=yellow · 3 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=red · 5 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "3 of last 10 cron watcher runs hit skip-dirty",
+          "what": "5 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -1048,7 +1030,7 @@
       "dimension": "A5_code_quality"
     },
     {
-      "what": "3 of last 10 cron watcher runs hit skip-dirty",
+      "what": "5 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
@@ -1063,25 +1045,25 @@
       "dimension": "A5_code_quality"
     },
     {
-      "what": "3 of last 10 cron watcher runs hit skip-dirty",
+      "what": "5 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "b4950d14",
-    "subject": "fix(swing+notif): left leg no longer blends into grass + register round_teetap (v8.25.57)",
-    "committed_at": "2026-06-13T09:34:03-04:00",
+    "sha": "cf43da7e",
+    "subject": "feat(scramble): editorial team-room redesign â€” 5.8 â†’ 9+ (v8.25.58)",
+    "committed_at": "2026-06-13T09:41:32-04:00",
     "trigger": "app-commit",
     "is_app_commit": true,
     "app_files_touched": [
-      "public/lottie/golf-swing-pb.json",
       "public/sw.js",
-      "src/core/notification-types.js",
-      "src/core/utils.js"
+      "src/core/utils.js",
+      "src/pages/scramble.js",
+      "src/styles/components.css"
     ],
-    "total_files_touched": 8
+    "total_files_touched": 6
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
