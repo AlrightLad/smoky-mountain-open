@@ -314,9 +314,13 @@ when every item below is [x].
   characterful data display, and tasteful motion — benchmark against Linear/
   Stripe/Vercel per P7. "Bland" = too much sameness + not enough designed
   emphasis. Treat as the PRIMARY remaining UI workstream once the ≥9 lifts close.
-- [ ] Tasteful page ANIMATION pass — animated rich list ("money list") + other fun
-  pages (leaderboards/recap). Founder: "nothing overwhelming or that ruins app
-  integrity." Reduced-motion-safe, transform/opacity only, on-brand.
+- [x] Tasteful page ANIMATION pass — DONE across the app (LIVE+V1): animated money
+  list / rich list (v8.25.89 cascade + count-up), Awards Night (v8.25.92 celebratory
+  card cascade + masthead), Standings (The Chase + row reveal + count-up), Season
+  Recap (staggeredReveal + fadeInScale + count-up), PLUS entrance motion added to
+  profile/rounds/home/members/feed/courses/settings/trophy during the page lifts.
+  All reduced-motion-safe, transform/opacity only, on-brand — "nothing overwhelming."
+  (Further per-page bespoke animations can layer in during the 9.5 convergence pass.)
 
 ### Closeout — Founder-defined sequence (2026-06-13 17:15): do these IN ORDER, only
 ### after ALL tasks/items above are complete.
