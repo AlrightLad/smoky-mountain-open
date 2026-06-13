@@ -160,8 +160,15 @@ when every item below is [x].
 - [ ] PLAY NOW LIVE 8.2 → re-skin FIR/GIR + Finish button off legacy green into
   moss/brass, tokenize turn summary + confirm/publish panels, contrast harden,
   birdie micro-celebration.
-- [ ] MEMBERS 8.2 → row-reveal + live-dot motion, rail earns column at low data,
-  keep mobile density (restack not hide), demote invite slab, avatar leader strip.
+- [x] MEMBERS 8.2 → DONE v8.25.78 (LIVE+V1): roster was already strong (editorial
+  'The roster.' masthead, All/Live-now tabs, search+sort, agate rail w/ handicap +
+  most-active leaders, demoted invite slab at the foot). Added the two missing
+  motion cues: live-presence dot now gently pulses (ring-only keyframe, reduced-
+  motion off) on the row 'Live now' + the tab marker so online reads as live;
+  roster rows cascade in on first render (staggeredReveal, fired in full render not
+  filterRoster). V1-confirmed: FatalBert shows the pulsing ● LIVE NOW, rows reveal,
+  invite demoted. (mobile restack-not-hide of Rounds/Last-seen cols + avatar leader
+  strip = convergence-pass levers.)
 - [ ] FEED 8.4 → fade-up cascade, kudos heart-pop, separate stacked green blocks,
   posts-today pulse, resolve dead Community tab.
 - [ ] TROPHY ROOM 8.4 → tier emblems by rarity (metallic depth), hero marquee cell,
