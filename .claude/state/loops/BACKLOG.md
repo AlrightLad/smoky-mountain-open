@@ -305,7 +305,17 @@ when every item below is [x].
   headcover, struck-brass COMING SOON plate, PARBAUGHS MERCH header, claret pennant,
   York-PA maker's ribbon, double brass border + editorial 'Merch.' masthead.
   V1-verified premium retail-poster quality.
-- [~] SHOP ITEM art + MERCH via AI gen — PIPELINE BUILT v8.25.95+ (plug-and-play):
+- [~] SHOP ITEM art + MERCH via AI gen — PIPELINE BUILT + KEY STORED; BLOCKED ON
+  BILLING. Founder dropped a Gemini key (stored gitignored scripts/.secrets/
+  gemini-key.txt) — auth WORKS, but the IMAGE model (gemini-2.5-flash-preview-image)
+  returns 429 "free_tier_requests limit: 0": Gemini IMAGE gen is NOT free (the free
+  500/day is TEXT models only). Needs BILLING enabled on the key's Google Cloud
+  project (~$0.04/img ≈ pennies for all 7 assets). FOUNDER ACTION: enable billing at
+  console.cloud.google.com (or aistudio billing) on the project tied to the key →
+  then `node scripts/_gen-gemini-art.mjs` runs instantly → review public/img/gen/ →
+  wire winners into shop.js/merch.js. (Free top-tier programmatic image gen genuinely
+  doesn't exist in 2026: Pollinations x402-walled, Gemini-image=billing, Craiyon=low
+  quality. A few cents of billing is the cheapest path to pro art.) Original note: -
   scripts/_gen-gemini-art.mjs generates premium cosmetic art (enamel club pin,
   struck-brass medallion, calfskin bag tag, sterling marker, green jacket,
   hole-in-one marker) + a merch hero flat-lay via Google Gemini 2.5 Flash Image
@@ -378,8 +388,28 @@ when every item below is [x].
   V1-verified that way. The smoke + E2E suites run clean in CI (GitHub Actions) —
   so this full E2E closeout runs THERE (or on a Founder workstation with a free
   port), not in-agent. gh-auth would also let me read CI results.
-- [ ] 3. FULL PEN TEST (AgentShield + Firestore rules + auth + injection + rate
-  limits + the exploit-test capstone), repair every finding.
+- [~] 3. FULL PEN TEST — APP-LAYER PASS (2026-06-13): secret scan CLEAN (the only
+  client "key" is the Firebase web apiKey, public-by-design — security is via rules
+  + auth; real secrets prod-SA + functions/.env are gitignored ✓). AgentShield scan
+  ran: 6 HIGH — but ALL are AGENT-HARNESS CONFIG (the .claude/settings Bash/Write/Edit
+  allow-list, node -e allow rules, the stop-hook's >/dev/null), NOT app/Firestore/
+  injection vulns. The APP pen-test (rules/auth/injection/rate-limits) was GREEN in
+  the exploit-test capstone (.claude/state/exploit-test-2026-06-12.md) + the rules
+  audit. Remaining: the full multi-data E2E in CI (item 2, needs gh PAT) is the live
+  exercise of the rules under cross-league data. Agent-config hardening = optional
+  (it's the dev workspace, not the shipped app).
+- [ ] GITHUB HARDENING (Founder 2026-06-13 19:30, AFTER all work) — the repo is
+  PUBLIC, so ALL source + the .claude/state strategic docs (roadmap/BACKLOG/market-
+  strategy/research) are visible to competitors. Founder wants to hide keys + IP that
+  could be maliciously used; will buy GitHub private if needed but prefers hardening
+  first. ANALYSIS: a public repo fundamentally exposes everything — true IP protection
+  needs PRIVATE (his paid step) OR moving proprietary logic server-side (Cloud
+  Functions). Without private: (a) keys are already clean (Firebase apiKey public-by-
+  design, real secrets gitignored — VERIFIED); (b) the biggest exposure is .claude/
+  state/ strategic docs (market strategy, roadmap, research) + this BACKLOG — could
+  gitignore/move those out of the public repo; (c) scrub internal-only comments. But
+  honest truth: meaningful IP protection = PRIVATE repo. Recommend private (cheap) +
+  keep secrets gitignored. Continue other work first per Founder.
 - [ ] 4. Polish + review pass over whatever 2–3 surface.
 - [ ] 5. If E2E + data-test + pen-test all PASS → DONE. PushNotification to Founder;
   then WAIT on Founder for remaining founder-checklist items + dashboard/app review.
