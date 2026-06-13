@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-13T04:40:24.974448Z",
+  "generated_at": "2026-06-13T04:41:55.982951Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 87.1,
   "overall_grade": "A-",
@@ -1007,11 +1007,11 @@
     "A12_operational": {
       "score": 90,
       "status": "green",
-      "label": "pipeline=green · 7 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=green · 6 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "7 of last 10 cron watcher runs hit skip-dirty",
+          "what": "6 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -1040,10 +1040,10 @@
     }
   ],
   "audit_trigger": {
-    "sha": "59bb349d",
-    "subject": "chore(dashboard): app-health regen (AMD-020 Class A)",
-    "committed_at": "2026-06-13T00:39:08-04:00",
-    "trigger": "substrate-commit",
+    "sha": "7939f030",
+    "subject": "cron(routine): post-watcher-commit drift sweep (2026-06-13T04:41:46.2914689Z)",
+    "committed_at": "2026-06-13T00:41:46-04:00",
+    "trigger": "cron",
     "is_app_commit": false,
     "app_files_touched": [],
     "total_files_touched": 1
