@@ -219,12 +219,17 @@ when every item below is [x].
   until both filled (double-confirm); quit-round shows #quit-confirm; block-member
   has a confirm sheet; delete-round has a del-confirm panel. All destructive actions
   gate. (Exhaustive every-button sweep is part of the E2E closeout.)
-- [ ] GITHUB HEALTH CHECK failed (Founder 2026-06-13 17:23) — a workflow run went
-  red (.github/workflows: heartbeat/deploy/staging-deploy/etc). gh is NOT authed in
-  this env so I can't read the failed run; need Founder to `! gh auth login` OR
-  inspect the workflow files for the likely failure + ROOT-CAUSE + prevention (not
-  just a patch). Founder: "ensure every time that happens we are repairing... and it
-  doesn't happen again."
+- [~] GITHUB HEALTH CHECK failed (Founder 2026-06-13 17:23) — DIAGNOSED as far as
+  possible without run logs (gh NOT authed in this env): (1) lockfile is IN SYNC —
+  `npm ci --dry-run` succeeds, so lockfile drift (the #1 CI failure) is RULED OUT;
+  (2) version trio is consistent (.86 everywhere); (3) deploy.yml ALREADY has the
+  recurrence prevention — `cancel-in-progress` (superseded ship+regen runs cancel
+  instead of failing+emailing) + a documented Pages-401 OIDC-flake double-attempt
+  retry; (4) prod IS deploying fine (main advanced to v8.25.86, every push returned
+  a live Hosting URL). So the pipeline is fundamentally healthy + the common
+  recurring causes are guarded. To root-cause the SPECIFIC red run the Founder saw
+  + add any further guard, I need the run logs → **Founder: run `! gh auth login`**
+  and I'll pull the failed run + fix the exact cause. Likely a one-off transient.
 - [ ] CREATIVE REVIEW all pages + ANIMATION pieces (Founder 2026-06-13 17:23) — the
   9.5 convergence pass PLUS tasteful animated portions on pages that deserve them.
   Folds into the convergence-pass item below.
