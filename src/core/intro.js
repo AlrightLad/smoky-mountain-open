@@ -178,13 +178,18 @@
     _root.setAttribute("role", "dialog");
     _root.setAttribute("aria-label", "Welcome to the Clubhouse — teeing off");
     _root.style.cssText = "position:fixed;inset:0;z-index:9000;background:#0b1a13;transition:opacity .4s ease;overflow:hidden";
-    // Realistic dawn-fairway PHOTO backdrop (z-index:0) + a top/bottom dark scrim
-    // so the wordmark (top) and the hint (bottom) stay legible over the bright
-    // sky/turf. Replaces the green COURSE_SVG. The golfer (#pbi-lottie, in the
-    // z-index:1 overlay) is positioned over the LOWER fairway so he tees off
-    // "down the fairway" instead of floating in the sky (Founder alignment note).
+    // v8.25.84 (cohesion fix, Founder 2026-06-13 17:15): the real dawn-fairway
+    // PHOTO clashed with the flat CARTOON golfer ("not the same art style"). Rather
+    // than revert to the green SVG (he disliked) or ship a photoreal figure (needs
+    // Figma Make / a realistic Lottie + fresh budget), the photo is POSTERIZED into
+    // a flat illustrated/poster rendition (#pbiPoster: saturate + 6-level discrete
+    // banding) so it reads as one cohesive illustrated style WITH the golfer, while
+    // keeping the realistic dawn colors + composition. Static bg → filter renders
+    // once (no per-frame cost; the golfer canvas is separate). A top/bottom scrim
+    // keeps the wordmark + hint legible; golfer sits over the LOWER fairway.
     _root.innerHTML =
-      '<div style="position:absolute;inset:0;z-index:0;background:#0b1a13 url(\'' + BG_URL + '\') center/cover no-repeat"></div>' +
+      '<svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="pbiPoster" color-interpolation-filters="sRGB"><feColorMatrix type="saturate" values="1.42"/><feComponentTransfer><feFuncR type="discrete" tableValues="0.04 0.24 0.44 0.62 0.8 1"/><feFuncG type="discrete" tableValues="0.04 0.24 0.44 0.62 0.8 1"/><feFuncB type="discrete" tableValues="0.04 0.24 0.44 0.62 0.8 1"/></feComponentTransfer></filter></svg>' +
+      '<div style="position:absolute;inset:0;z-index:0;background:#0b1a13 url(\'' + BG_URL + '\') center/cover no-repeat;filter:url(#pbiPoster)"></div>' +
       '<div style="position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,rgba(7,15,11,.60) 0%,rgba(7,15,11,.14) 24%,rgba(7,15,11,.04) 50%,rgba(7,15,11,.30) 78%,rgba(7,15,11,.62) 100%)"></div>';
     var overlay = document.createElement("div");
     overlay.style.cssText = "position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:10px;padding:0 0 13vh";
