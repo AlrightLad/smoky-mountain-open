@@ -266,7 +266,13 @@ function _trTitlesSec(lvl) {
 //    (#A8A395, ~1.x:1 — fails WCAG AA) is repainted in AA-safe --cb-mute /
 //    --cb-ink-faint so locked rows stay legible (ADA requirement).
 var _TR_STYLE = '<style id="tr-page-style">'
-  + '.tr-standing--hero{background:linear-gradient(135deg,rgba(var(--cb-brass-rgb),.08),var(--cb-chalk-2));border:1px solid rgba(var(--cb-brass-rgb),.45);box-shadow:var(--el-2);padding:18px 22px;align-items:stretch}'
+  + '.tr-standing--hero{background:linear-gradient(135deg,rgba(var(--cb-brass-rgb),.08),var(--cb-chalk-2));border:1px solid rgba(var(--cb-brass-rgb),.45);box-shadow:var(--el-2);padding:18px 22px;align-items:stretch;position:relative;overflow:hidden}'
+  /* v8.25.80 — a single brass foil gleam sweeps the standing hero once on
+     arrival (the trophy-case "catch the light" moment). One-shot, never loops,
+     pointer-transparent; fully off under reduced-motion. */
+  + '.tr-standing--hero::after{content:"";position:absolute;top:0;left:-65%;width:45%;height:100%;background:linear-gradient(105deg,transparent,rgba(255,255,255,.32),transparent);transform:skewX(-18deg);animation:trFoilSweep 2.4s cubic-bezier(.4,0,.2,1) .45s 1 both;pointer-events:none}'
+  + '@keyframes trFoilSweep{0%{left:-65%}60%{left:135%}100%{left:135%}}'
+  + '@media (prefers-reduced-motion:reduce){.tr-standing--hero::after{display:none}}'
   /* Hero balance — the single Level/number rail was vertically centered against
      a tall four-row right column, stranding air above + below the "7". Stretch
      the rail to the column height, center its content as one optical block, and
