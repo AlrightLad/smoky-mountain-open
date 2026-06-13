@@ -81,9 +81,10 @@ when every item below is [x].
   right leg + regenerated golf-swing-pb.json. Verified on the held-finish frame.
 - [x] NOTIFICATIONS answer + round_teetap — DONE v8.25.57: kudos ✓ + tee-time ✓ WORK;
   round_teetap type registered (was unregistered → generic icon/wrong link).
-- [ ] CHAT-POST notification (the one real gap) — chat.js sendChat never calls
-  sendNotification. Build a COALESCED notification (one "new trash talk" entry per
-  recipient per burst, NOT one-per-message = spam). Needs the coalesce design.
+- [x] CHAT-POST notification — DONE v8.25.65 (LIVE, smoke 33/33): sendChat now
+  broadcasts a coalesced 'chat_message' notification to active league members (each
+  sender fires ≤1 per 20-min session via a module-var throttle — no spam). Mirrors
+  the tee_posted broadcast guards. Closes the one real notification gap.
 
 ### Per-page lifts to ≥9.0 (worst-first; specs in WF2 output)
 - [x] SCRAMBLE 5.8 → DONE v8.25.58 (LIVE+V1): editorial masthead ('The team room.'),
