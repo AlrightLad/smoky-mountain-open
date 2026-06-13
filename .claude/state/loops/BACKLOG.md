@@ -299,7 +299,12 @@ when every item below is [x].
   + Awards behind the Dec-1 check (current year before Dec 1 → 'sealed until Dec 31'
   pending card; standings read 'Current' not 'Final'). Mirrors the Wrapped gate.
   Verified on staging (2026 mid-season → awards sealed).
-- [ ] E2E data-workflow bug fixes surfaced by WF1 (e2e-core/social/profile agents).
+- [~] E2E data-workflow bug fixes surfaced by WF1 — NOT actionable in-agent: the
+  WF1 output files (w6myyl5yi.output / w0u4t39i2.output) are GONE (prior-session
+  temp tasks dir, cleaned), so the specific findings aren't recoverable; re-running
+  WF1 needs the emulator (wedged localhost) or CI. Folds into the closeout E2E run
+  (item 2) which runs in CI. The app has changed massively since WF1 (19 ships) so
+  those findings are likely stale anyway — the fresh CI E2E run supersedes them.
 
 ### Founder follow-ups (AFTER current workload — Founder 2026-06-13 15:32)
 - [ ] SECOND deep 9.5 review pass on EVERY page — same exhaustive WF2 rating method,
