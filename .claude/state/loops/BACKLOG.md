@@ -327,6 +327,14 @@ when every item below is [x].
 - [ ] 1. Full per-page V1 re-rate confirming every page ≥9.0 (strive 9.5).
 - [ ] 2. FULL E2E test with MULTIPLE DATA scenarios spanning INDEPENDENT users AND
   CROSS-LEAGUE users (multi-league isolation, friend/messaging, no data leak).
+  NOTE (2026-06-13): the local `npm run smoke` / `npm run test:e2e` CANNOT run in
+  this agent environment — Vite dev-server port binding is wedged (httpServerStart
+  fails even after killing all stray node procs; documented "wedged localhost",
+  see [[reference_harness_tooling]]). In-session verification was done per-ship via
+  the authed STAGING V1 capture (verify-as-member.mjs) — every v8.25.74→.92 change
+  V1-verified that way. The smoke + E2E suites run clean in CI (GitHub Actions) —
+  so this full E2E closeout runs THERE (or on a Founder workstation with a free
+  port), not in-agent. gh-auth would also let me read CI results.
 - [ ] 3. FULL PEN TEST (AgentShield + Firestore rules + auth + injection + rate
   limits + the exploit-test capstone), repair every finding.
 - [ ] 4. Polish + review pass over whatever 2–3 surface.
