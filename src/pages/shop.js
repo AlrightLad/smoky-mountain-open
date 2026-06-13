@@ -391,6 +391,30 @@ Router.register("shop", function() {
 
   // ── Category shelves ──
   PRO_SHOP_SHELVES.forEach(function(shelf) {
+    // v8.25.46 — Caddies render from the SAME source as Settings (window.pbCaddies)
+    // so the shop matches Settings exactly (Founder: "caddies in shop the same as
+    // settings — currently they don't match"). 3 are free/included; Bag Room Guy is
+    // the one unlockable. Selection/unlock happens in Settings where the picker is.
+    if (shelf.cat === 'voice') {
+      var caddies = (typeof window !== 'undefined' && window.pbCaddies) ? window.pbCaddies : [];
+      if (!caddies.length) return;
+      h += '<div class="shop-shelf"><div class="shop-shelf__head"><span class="shop-shelf__title">Caddies</span><span class="shop-shelf__meta">Your voice on the course — choose in Settings</span></div>';
+      h += '<div class="shop-shelf__rail">';
+      caddies.forEach(function(cd) {
+        var skuItem = cd.sku ? PRO_SHOP_CATALOG.filter(function(i) { return i.id === cd.sku; })[0] : null;
+        var c = '<div class="shop-item shop-item--proshop">';
+        c += '<div class="shop-tier-chip shop-tier-chip--proshop">Caddy</div>';
+        c += '<div class="shop-surface-stage"><span style="font-size:30px" aria-hidden="true">⛳</span></div>';
+        c += '<div class="shop-item__name">' + escHtml(cd.name) + '</div>';
+        c += '<div class="shop-item__desc">' + escHtml(cd.blurb || '') + '</div>';
+        if (!cd.locked) c += '<button class="shop-item__equip" onclick="Router.go(\'settings\')">Included · choose in Settings</button>';
+        else c += '<button class="shop-item__buy" onclick="Router.go(\'settings\')">' + (skuItem && skuItem.price ? 'Unlock · ' + skuItem.price + ' coins' : 'Unlock in Settings') + '</button>';
+        c += '</div>';
+        h += c;
+      });
+      h += '</div></div>';
+      return;
+    }
     var items = PRO_SHOP_CATALOG.filter(function(i) { return i.cat === shelf.cat && !i.earnedBy; });
     if (!items.length) return;
     // v8.25.45 — sort each shelf LOWEST→HIGHEST rarity (Founder: the tiers ARE the
