@@ -205,8 +205,20 @@ when every item below is [x].
   flag, tee box the golfer stands on — ONE cohesive illustrated style WITH the
   cartoon golfer. Replaced the clashing photo + the glitchy posterize interim
   (rainbow banding). No filters/anims → perf-safe. V1-verified ready + mid-swing.
-- [~] SWING KNEE FLICKER — 3 fixes shipped; Founder re-reported after fix #2, fix #3
-  now live (v8.25.91). Fix #1 (prior): opacity-pops pinned. Fix #2 (v8.25.87): torso
+- [ ] SWING ANIMATION REPLACEMENT (Founder 2026-06-13 18:52: knees STILL flickering
+  after 3 fixes) — DEFINITIVE DIAGNOSIS via browser: the app's golf-swing animation
+  IS the LottieFiles "golf swing by MJ Mograph" source (confirmed identical — same
+  30 layers head/torso/right-leg/left-leg, 1920², fr24, op96; .lottie at
+  assets-v2.lottiefiles.com/a/25f174b6-1167-11ee-8b81-f74d52af05dd/TjskuHeTBV.lottie).
+  Its knee shimmer is INHERENT (coplanar same-color legs + overlapping WHITE strokes
+  the fill-shade fix #3 didn't touch). No more surgery — Founder wants a tool-driven
+  REPLACEMENT. PLAN (fresh budget): browse LottieFiles golf-swing CATEGORY via the
+  Playwright browser (mcp__playwright; network-capture the .lottie → unzip → JSON
+  works, proven this session), render-VET 5-6 golfer-swing candidates for a clean
+  pro figure with NO coplanar-leg z-fight, recolor to brand (scripts/_recolor-swing
+  MAP), integrate (swap LOTTIE_URL), V1 + Founder taste sign-off. Tools: [[reference_design_tools_kit]].
+- [~] SWING KNEE FLICKER (3 surgical fixes — superseded by the replacement above):
+  fix #3 live (v8.25.91). Fix #1 (prior): opacity-pops pinned. Fix #2 (v8.25.87): torso
   z-reordered in FRONT of both legs (killed torso-between-legs seam). Founder still
   saw flicker → Fix #3 (v8.25.91): the two legs were coplanar + IDENTICAL cream fill
   (their own shared edge z-fights as they cross) — shaded the BACK leg (left, ind 20)
