@@ -509,38 +509,44 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
    brass slot (not gold) — so the 3 default themes read as genuinely different
    palettes. AA preserved: text tokens darkened/cooled to clear 4.5:1 on the cool
    canvas; the sage accent is used as a fill with dark-ink labels (bold, >=3:1). */
+/* Bluebird (default) — a bluebird-day theme: crisp cool-white paper, near-black
+   navy ink for MAX contrast (the old Linen Draft was a low-contrast sage-on-cream
+   that read too close to Clubhouse — Founder 2026-06-13 "replace it"). Tour-blue
+   accent makes it the only cool/blue theme in the set, distinct from the five warm
+   green/burgundy/amber palettes. id stays "linen_draft" so members who selected it
+   keep their pick. */
 [data-theme="linen_draft"] {
-  --cb-chalk: #EDEFE6;
-  --cb-chalk-2: #DFE3D5;
-  --cb-chalk-3: #C7CDBA;
-  --cb-canvas: #DBE0CE;
-  --cb-paper: #F6F8EF;
-  --cb-green: #24332A;
-  --cb-green-2: #18241C;
-  --cb-green-3: #4B5D3B;
-  --cb-felt: #1B3024;
-  --cb-ink: #222F27;
-  --cb-ink-2: #34453A;
-  --cb-ink-soft: #43513E;
-  --cb-charcoal: #4E5A48;
-  --cb-ink-link: #3C5A32;       /* deep sage for links — AA-safe on the cool ground */
-  --cb-mute: #585E4D;           /* AA >=4.6:1 on the cool canvas */
-  --cb-mute-1: #535949;
-  --cb-ink-faint: #535949;
-  --cb-mute-2: #9AA189;
-  --cb-mute-3: #BFC6B0;
-  --cb-mute-faint: #AEB59B;
-  --cb-brass: #6E7C3F;          /* SAGE-OLIVE accent (distinct from Clubhouse gold) */
-  --cb-brass-2: #7E8E48;
-  --cb-brass-3: #95A857;
-  --cb-brass-deep: #515D2F;
-  --cb-ink-rgb: 34, 47, 39;
-  --cb-brass-rgb: 110, 124, 63;
-  --cb-chalk-rgb: 237 239 230;
-  --cb-green-ink-rgb: 24 36 28;
-  --bg-rgb: 237, 239, 230;
-  --cream-rgb: 34, 47, 39;
-  --gold-rgb: 110, 124, 63;
+  --cb-chalk: #EAF0F5;
+  --cb-chalk-2: #DCE6EE;
+  --cb-chalk-3: #C2D2E0;
+  --cb-canvas: #D7E3EE;
+  --cb-paper: #FBFCFE;
+  --cb-green: #103A5C;
+  --cb-green-2: #0B2A45;
+  --cb-green-3: #2C6FA6;
+  --cb-felt: #0C2E4B;
+  --cb-ink: #15232E;            /* near-black navy — ~11:1 on canvas (kills the "no contrast" complaint) */
+  --cb-ink-2: #293C4A;
+  --cb-ink-soft: #39505F;
+  --cb-charcoal: #45545F;
+  --cb-ink-link: #1C5C8F;       /* tour-blue link — AA on the cool ground */
+  --cb-mute: #50606C;           /* AA >=4.6:1 on the cool canvas */
+  --cb-mute-1: #4B5B67;
+  --cb-ink-faint: #4B5B67;
+  --cb-mute-2: #92A4B3;
+  --cb-mute-3: #B7C6D3;
+  --cb-mute-faint: #A5B5C3;
+  --cb-brass: #1F6FB2;          /* TOUR-BLUE accent (distinct from Clubhouse gold) */
+  --cb-brass-2: #2A82C9;
+  --cb-brass-3: #4A9BD8;
+  --cb-brass-deep: #18567F;
+  --cb-ink-rgb: 21, 35, 46;
+  --cb-brass-rgb: 31, 111, 178;
+  --cb-chalk-rgb: 234 240 245;
+  --cb-green-ink-rgb: 11 42 69;
+  --bg-rgb: 234, 240, 245;
+  --cream-rgb: 21, 35, 46;
+  --gold-rgb: 31, 111, 178;
 }
 
 /* Champion Sunday (unlock) — tournament-program burgundy, worn after a win.

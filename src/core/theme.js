@@ -6,7 +6,7 @@
 
      Default  · clubhouse         — quiet confidence, tournament-program
      Default  · twilight_links    — dusk over coastal course, cool-leaning
-     Default  · linen_draft       — bright outdoor light, reading chair
+     Default  · linen_draft       — "Bluebird": crisp white + navy ink + tour-blue (id kept)
      Unlock   · champion_sunday   — burgundy, worn after a win
      Unlock   · bourbon_room      — lodge/whiskey-bar, tenure-based
      Unlock   · course_record     — ledger paper, silver-brass, rarest
@@ -29,7 +29,7 @@
 var THEMES = {
   clubhouse:       { id: "clubhouse",       name: "Clubhouse",       availability: "default", order: 1 },
   twilight_links:  { id: "twilight_links",  name: "Twilight Links",  availability: "default", order: 2 },
-  linen_draft:     { id: "linen_draft",     name: "Linen Draft",     availability: "default", order: 3 },
+  linen_draft:     { id: "linen_draft",     name: "Bluebird",        availability: "default", order: 3 },
   // v8.25.9 — all three unlockables now show in the picker as locked teasers
   // ("not all themes are showing" — Founder wants the full "3 ready, 3 to earn"
   // set visible, the copy already promises six). hidden_until_unlocked dropped
