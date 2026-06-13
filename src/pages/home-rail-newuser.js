@@ -353,7 +353,11 @@ function _renderEmailVerifyBanner() {
   var h = '<div style="padding:10px 22px;background:rgba(180,137,62,0.08);border-bottom:1px solid rgba(180,137,62,0.15);display:flex;align-items:center;gap:10px">';
   h += '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="var(--cb-brass)" stroke-width="1.5" style="flex-shrink:0"><path d="M8 1L1 5v6l7 4 7-4V5L8 1z"/><path d="M1 5l7 4 7-4"/></svg>';
   h += '<div style="flex:1;font-family:var(--font-ui);font-size:12px;letter-spacing:0.1px;color:var(--cb-ink);line-height:1.4">Verify your email to unlock wagers, bounties, and the shop.</div>';
-  h += '<button style="background:var(--cb-brass);color:var(--cb-ink);border:none;border-radius:var(--r-1);font:700 11px/1 var(--font-ui);padding:7px 13px;cursor:pointer;flex-shrink:0;letter-spacing:0.5px" onclick="sendVerificationEmail()">Verify</button>';
+  /* Critique 2026-06-13 (Gemini 8.5→9 pass): a brass button on the brass-tinted
+     cream banner had weak edge separation — the CTA didn't pop. Switch to the
+     felt-green CTA (cream text, ~10:1 contrast, clears AA) so it reads as the
+     clear action; the brass shield icon stays the unlock-semantic accent. */
+  h += '<button style="background:var(--cb-green);color:var(--cb-chalk);border:none;border-radius:var(--r-1);font:700 11px/1 var(--font-ui);padding:8px 14px;min-height:32px;cursor:pointer;flex-shrink:0;letter-spacing:0.5px;box-shadow:var(--shadow-sm)" onclick="sendVerificationEmail()">Verify</button>';
   h += '</div>';
   return h;
 }
@@ -491,7 +495,7 @@ function _renderNewUserCTAs() {
   h += '<div class="tappable" onclick="Router.go(\'playnow\')" style="flex:1 1 180px;padding:18px 16px;background:var(--cb-green);border-radius:14px;box-shadow:var(--shadow-md);cursor:pointer">';
   h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:8px">START HERE</div>';
   h += '<div style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--cb-chalk);line-height:1.25;letter-spacing:-0.2px">Your first round.</div>';
-  h += '<div style="font-family:var(--font-ui);font-size:12px;color:rgba(var(--bg-rgb),0.66);margin-top:6px;line-height:1.5">Log a full round and the Clubhouse comes alive.</div>';
+  h += '<div style="font-family:var(--font-ui);font-size:12px;font-weight:500;color:rgba(var(--bg-rgb),0.82);margin-top:6px;line-height:1.5">Log a full round and the Clubhouse comes alive.</div>';
   h += '</div>';
   // Range session
   h += '<div class="tappable" onclick="Router.go(\'range\')" style="flex:1 1 180px;padding:18px 16px;background:var(--cb-paper);border:1px solid var(--cb-chalk-3);border-radius:14px;box-shadow:var(--shadow-sm);cursor:pointer">';
