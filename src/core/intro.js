@@ -61,7 +61,113 @@
   // golfer (#pbi-lottie, in the z-index:1 overlay) stands ON the green. On-brand:
   // dawn sky → felt-green rolling hills → lit green + brass flagstick + sun glow.
   // Gradient/filter ids are pbi-prefixed to avoid collisions with other inline SVGs.
-  var COURSE_SVG = '<svg id="pbi-course" viewBox="0 0 1080 1080" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style="position:absolute;top:0;left:0;z-index:-1" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs><linearGradient id="pbiSkyGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#10203a"/><stop offset="40%" stop-color="#2c4a72"/><stop offset="72%" stop-color="#7a6486"/><stop offset="100%" stop-color="#d99a62"/></linearGradient><radialGradient id="pbiSun" cx="58%" cy="92%" r="40%"><stop offset="0%" stop-color="#fdeccb" stop-opacity="0.95"/><stop offset="45%" stop-color="#f4b86a" stop-opacity="0.4"/><stop offset="100%" stop-color="#f4b86a" stop-opacity="0"/></radialGradient><linearGradient id="pbiFairway" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3a6048"/><stop offset="100%" stop-color="#5a8a64"/></linearGradient></defs><rect width="1080" height="440" fill="url(#pbiSkyGrad)"/><ellipse cx="624" cy="404" rx="320" ry="170" fill="url(#pbiSun)"/><circle cx="624" cy="402" r="42" fill="#fdeccb" opacity="0.92"/><path d="M150 150 q32 -28 72 -10 q26 -20 58 4 q34 -4 28 26 l-180 4 q-18 -10 -6 -24z" fill="#f3ecde" opacity="0.42"/><path d="M780 112 q26 -22 62 -8 q24 -16 50 6 l2 26 l-130 4 q-16 -12 16 -24z" fill="#f3ecde" opacity="0.36"/><path d="M0 432 Q 220 402 440 424 Q 700 404 1080 426 L1080 470 L0 470 Z" fill="#1c3a2a"/><g opacity="0.9"><rect x="170" y="402" width="62" height="30" fill="#8a6a4a"/><polygon points="162,402 201,384 240,402" fill="#a8845c"/><rect x="186" y="412" width="10" height="10" fill="#f3eccb" opacity="0.7"/></g><rect y="430" width="1080" height="650" fill="#2a4836"/><path d="M 168 1080 L 498 430 L 582 430 L 912 1080 Z" fill="url(#pbiFairway)"/><path d="M 332 1080 L 516 430 L 534 430 L 512 1080 Z" fill="#6a9a6e" opacity="0.3"/><path d="M 650 1080 L 548 430 L 566 430 L 770 1080 Z" fill="#6a9a6e" opacity="0.3"/><ellipse cx="286" cy="648" rx="74" ry="28" fill="#d8bd86"/><ellipse cx="286" cy="643" rx="66" ry="22" fill="#e6cf9c"/><ellipse cx="802" cy="706" rx="90" ry="33" fill="#d8bd86"/><ellipse cx="802" cy="701" rx="82" ry="27" fill="#e6cf9c"/><path d="M 1010 1080 Q 905 760 726 476" fill="none" stroke="#cabd98" stroke-width="13" opacity="0.5" stroke-linecap="round"/><g><ellipse cx="74" cy="486" rx="48" ry="56" fill="#2f5a3c"/><ellipse cx="40" cy="516" rx="34" ry="42" fill="#274e34"/><rect x="68" y="528" width="11" height="42" fill="#5a4330"/></g><g><ellipse cx="1008" cy="486" rx="48" ry="56" fill="#2f5a3c"/><ellipse cx="1042" cy="516" rx="34" ry="42" fill="#274e34"/><rect x="1003" y="528" width="11" height="42" fill="#5a4330"/></g><ellipse cx="540" cy="436" rx="44" ry="11" fill="#6aaa78"/><line x1="556" y1="436" x2="556" y2="386" stroke="#d8b260" stroke-width="2.5" stroke-linecap="round"/><polygon points="556,386 556,400 582,393" fill="#caa04a"/><ellipse cx="540" cy="930" rx="230" ry="58" fill="#5a8a64" opacity="0.42"/></svg>';
+  // "Dawn Break at the 18th" — a layered, atmospheric-perspective course scene.
+  // Five depth bands (sky · far ridge · mid hills · fairway · foreground) with the
+  // brightest bloom kept LOW (sun half-clipped at a low horizon ~y660) so the upper
+  // ~40% stays dark and the GLOW_HOT "Parbaughs." wordmark reads cleanly over it.
+  // All motion is gated behind @media (prefers-reduced-motion: no-preference); the
+  // reduced-motion state is the painted mid-pose. Template-literal delimited so the
+  // SVG can use double-quotes throughout (the JS file otherwise uses single quotes).
+  var COURSE_SVG = `<svg id="pbi-course" viewBox="0 0 1080 1080" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" style="position:absolute;top:0;left:0;z-index:-1" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<defs>
+<linearGradient id="pbiSkyBase" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#091f17"/><stop offset="34%" stop-color="#0e2c20"/><stop offset="62%" stop-color="#274a3c"/><stop offset="84%" stop-color="#6a6a55"/><stop offset="100%" stop-color="#b78a4e"/></linearGradient>
+<radialGradient id="pbiBloom" cx="58%" cy="61%" r="46%"><stop offset="0%" stop-color="#f6e6b4" stop-opacity="0.95"/><stop offset="30%" stop-color="#f0d488" stop-opacity="0.6"/><stop offset="62%" stop-color="#caa04a" stop-opacity="0.22"/><stop offset="100%" stop-color="#caa04a" stop-opacity="0"/></radialGradient>
+<radialGradient id="pbiSunCore" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fff6dd"/><stop offset="55%" stop-color="#f6e6b4"/><stop offset="100%" stop-color="#f0d488" stop-opacity="0.2"/></radialGradient>
+<linearGradient id="pbiFairway" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3f6a4c"/><stop offset="55%" stop-color="#4f8159"/><stop offset="100%" stop-color="#5f9968"/></linearGradient>
+<linearGradient id="pbiFore" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2c4a36"/><stop offset="100%" stop-color="#173023"/></linearGradient>
+<linearGradient id="pbiFlagstick" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#8c6a2e"/><stop offset="42%" stop-color="#e4cf94"/><stop offset="58%" stop-color="#C9A04A"/><stop offset="100%" stop-color="#8c6a2e"/></linearGradient>
+<linearGradient id="pbiDew" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#eafaf0" stop-opacity="0"/><stop offset="50%" stop-color="#eafaf0" stop-opacity="0.5"/><stop offset="100%" stop-color="#eafaf0" stop-opacity="0"/></linearGradient>
+<filter id="pbiSoft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="9"/></filter>
+<filter id="pbiHaze" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="26"/></filter>
+<clipPath id="pbiHorizon"><rect x="0" y="0" width="1080" height="660"/></clipPath>
+<style>
+@keyframes pbiDrift{from{transform:translateX(0)}to{transform:translateX(140px)}}
+@keyframes pbiFog{0%{transform:translateX(-40px);opacity:.18}50%{transform:translateX(40px);opacity:.34}100%{transform:translateX(-40px);opacity:.18}}
+@keyframes pbiRay{0%{opacity:.05}50%{opacity:.20}100%{opacity:.05}}
+@keyframes pbiFlutter{0%{transform:skewX(0deg)}50%{transform:skewX(7deg)}100%{transform:skewX(0deg)}}
+@keyframes pbiShimmer{0%{transform:translateX(-520px)}60%{transform:translateX(540px)}100%{transform:translateX(540px)}}
+#pbi-flag{transform-box:fill-box;transform-origin:left center}
+@media (prefers-reduced-motion: no-preference){
+.pbi-c1{animation:pbiDrift 80s linear infinite alternate}
+.pbi-c2{animation:pbiDrift 60s linear infinite alternate}
+.pbi-c3{animation:pbiDrift 45s linear infinite alternate}
+.pbi-fog{animation:pbiFog 34s ease-in-out infinite}
+.pbi-ray1{animation:pbiRay 9s ease-in-out infinite}
+.pbi-ray2{animation:pbiRay 9s ease-in-out 3s infinite}
+.pbi-ray3{animation:pbiRay 9s ease-in-out 6s infinite}
+#pbi-flag{animation:pbiFlutter 4.5s ease-in-out infinite}
+.pbi-dew{animation:pbiShimmer 11s ease-in-out infinite}
+}
+</style>
+</defs>
+
+<!-- BAND 1 · sky: linear base + radial bloom blurred so the low horizon blooms instead of banding -->
+<rect width="1080" height="1080" fill="url(#pbiSkyBase)"/>
+<rect width="1080" height="900" fill="url(#pbiBloom)" filter="url(#pbiHaze)"/>
+
+<!-- god-ray cone: thin blurred triangles fanning up from the sun, staggered breathing -->
+<g clip-path="url(#pbiHorizon)" filter="url(#pbiSoft)">
+<polygon class="pbi-ray1" points="626,652 470,40 540,30" fill="#f6e6b4"/>
+<polygon class="pbi-ray2" points="626,652 612,20 690,28" fill="#f0d488"/>
+<polygon class="pbi-ray3" points="626,652 760,46 836,70" fill="#f6e6b4"/>
+</g>
+
+<!-- sun core, half-clipped at the horizon (only the top dome shows) -->
+<g clip-path="url(#pbiHorizon)"><circle cx="626" cy="678" r="70" fill="url(#pbiSunCore)"/></g>
+
+<!-- parallax clouds (3 speeds); palette desaturated to sit against the dawn sky -->
+<g opacity="0.30" fill="#cdbf9a"><path class="pbi-c1" d="M120 196 q34 -30 78 -10 q28 -22 62 4 q38 -4 30 28 l-196 4 q-20 -12 -8 -26z"/></g>
+<g opacity="0.22" fill="#b7a880"><path class="pbi-c2" d="M740 150 q28 -24 66 -8 q26 -18 54 6 l2 28 l-140 4 q-18 -14 18 -26z"/></g>
+<g opacity="0.16" fill="#a89870"><path class="pbi-c3" d="M430 110 q24 -20 56 -6 q22 -14 46 6 l2 22 l-118 2 q-14 -10 14 -22z"/></g>
+
+<!-- BAND 2 · far ridge: high value, low saturation, soft (blurred) edge — recedes into sky -->
+<path d="M0 642 Q 240 612 470 632 Q 720 612 1080 636 L1080 700 L0 700 Z" fill="#52614e" opacity="0.7" filter="url(#pbiSoft)"/>
+
+<!-- BAND 3 · mid hills: rim-lit crest + fog ribbon in the valley -->
+<path d="M0 706 Q 270 666 540 692 Q 800 668 1080 700 L1080 800 L0 800 Z" fill="#33503c"/>
+<path d="M0 706 Q 270 666 540 692 Q 800 668 1080 700" fill="none" stroke="#bfa86a" stroke-width="3" opacity="0.45"/>
+<g clip-path="url(#pbiHorizon)"><ellipse class="pbi-fog" cx="540" cy="724" rx="430" ry="34" fill="#dfe6da" filter="url(#pbiSoft)"/></g>
+
+<!-- BAND 4 · fairway: full-saturation green, mowing stripes converging to the flag (vanishing point ~626,720) -->
+<rect y="760" width="1080" height="320" fill="#2f5740"/>
+<path d="M 60 1080 L 560 728 L 626 720 L 360 1080 Z" fill="url(#pbiFairway)"/>
+<path d="M 360 1080 L 626 720 L 692 728 L 1010 1080 Z" fill="url(#pbiFairway)"/>
+<g opacity="0.16" fill="#7cb585">
+<path d="M 196 1080 L 588 726 L 600 725 L 280 1080 Z"/>
+<path d="M 470 1080 L 614 721 L 626 720 L 530 1080 Z"/>
+<path d="M 760 1080 L 660 724 L 672 725 L 880 1080 Z"/>
+</g>
+<g opacity="0.12" fill="#1e3c2c">
+<path d="M 280 1080 L 600 725 L 608 724 L 400 1080 Z"/>
+<path d="M 640 1080 L 644 722 L 656 723 L 780 1080 Z"/>
+</g>
+
+<!-- dew-shimmer sweep across the green (clipped to the lit fairway zone) -->
+<g clip-path="url(#pbiHorizon)"></g>
+<rect class="pbi-dew" x="60" y="820" width="320" height="260" fill="url(#pbiDew)" opacity="0.7" transform="skewX(-22)"/>
+
+<!-- ONE organic asymmetric bunker (lower-left): sand body, shadow-side stroke, cast shadow -->
+<path d="M 150 980 C 90 940 130 902 210 906 C 300 902 372 922 388 962 C 402 1004 320 1028 236 1024 C 168 1022 198 1008 150 980 Z" fill="#1c3424" opacity="0.5" transform="translate(14 16)" filter="url(#pbiSoft)"/>
+<path d="M 150 980 C 90 940 130 902 210 906 C 300 902 372 922 388 962 C 402 1004 320 1028 236 1024 C 168 1022 198 1008 150 980 Z" fill="#e6cf9c"/>
+<path d="M 150 980 C 90 940 130 902 210 906 C 300 902 372 922 388 962" fill="none" stroke="#b89a62" stroke-width="6" opacity="0.7"/>
+
+<!-- lit putting green disc at the vanishing point, with a soft cast shadow -->
+<ellipse cx="630" cy="724" rx="58" ry="15" fill="#173023" opacity="0.45" transform="translate(8 5)" filter="url(#pbiSoft)"/>
+<ellipse cx="630" cy="722" rx="56" ry="14" fill="#74bd84"/>
+<ellipse cx="630" cy="722" rx="56" ry="14" fill="none" stroke="#bfa86a" stroke-width="1.5" opacity="0.4"/>
+
+<!-- brass flagstick (vertical metal-sheen gradient) + fluttering pennant -->
+<rect x="623" y="722" width="6" height="8" rx="2" fill="#3a3024"/>
+<rect x="624.5" y="620" width="4" height="106" fill="url(#pbiFlagstick)"/>
+<g id="pbi-flag"><path d="M628 622 L692 636 L628 654 Z" fill="#C9A04A"/><path d="M628 622 L692 636 L660 629 Z" fill="#B4893E"/></g>
+
+<!-- BAND 5 · foreground: crisp edge, full-to-dark saturation, grass-tuft cluster -->
+<path d="M0 1006 Q 280 968 540 1000 Q 820 972 1080 1004 L1080 1080 L0 1080 Z" fill="url(#pbiFore)"/>
+<g stroke="#1f3a2a" stroke-width="5" stroke-linecap="round" fill="none">
+<path d="M96 1080 C 92 1040 84 1024 70 1010"/><path d="M118 1080 C 118 1036 122 1018 134 1004"/><path d="M140 1080 C 134 1044 128 1026 116 1014"/>
+<path d="M958 1080 C 962 1038 970 1020 984 1006"/><path d="M982 1080 C 980 1040 974 1022 962 1010"/><path d="M1004 1080 C 1008 1042 1016 1024 1030 1010"/>
+</g>
+</svg>`;
 
   function _mount() {
     _root = document.createElement("div");
