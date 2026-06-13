@@ -143,8 +143,10 @@ when every item below is [x].
 - [ ] RICH LIST redesign — podium/tiers/momentum (WF1 rich-list-design spec).
 - [ ] STANDINGS redesign (folds into the page lift above).
 - [ ] MERCH loading screen redesign (WF1 merch-loading-design spec).
-- [ ] LINEN DRAFT theme REPLACEMENT — new high-contrast distinct colorway
-  (WF1 theme-linen-replace spec; theme.js).
+- [x] LINEN DRAFT theme REPLACEMENT — DONE v8.25.63 (LIVE+V1): replaced with
+  "Bluebird" (crisp white + near-black navy ink ~11:1 + tour-blue accent — the only
+  cool/blue theme, distinct from the 5 warm palettes). id kept; name → Bluebird.
+  Verified high-contrast on home.
 
 ### Bigger features
 - [ ] FEED BOT CONSOLIDATION (Founder 2026-06-13) — collapse the multiple feed bot
