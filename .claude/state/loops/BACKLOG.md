@@ -189,8 +189,12 @@ when every item below is [x].
   brass FOIL-SWEEP gleam across the standing hero on arrival (the trophy-case "catch
   the light" moment) — pointer-transparent, never loops, off under reduced-motion.
   (Per-emblem rarity tiers + foil on rare/championship cells = convergence-pass.)
-- [ ] SHOP 8.6 → sticky category rail for long scroll, replace ⛳ emoji w/ SVG,
-  reduce 'Arriving' dilution, contrast harden locker/cabinet desc, featured shimmer.
+- [x] SHOP 8.6 → DONE v8.25.83 (LIVE+V1): replaced all 3 ⛳ emoji placeholders (shop
+  card header, surface stage, try-it-on stage) with one brass golf-flag SVG
+  (_shopFlagSvg, sized per call site) — the no-emoji rule reserves ⛳ for The Caddy
+  bot + the raw emoji rendered inconsistently iPhone/Android. V1: shop renders clean,
+  no regression. (Sticky category rail + featured shimmer + locker/cabinet desc
+  contrast + 'Arriving' dilution = convergence-pass + the shop EXPANSION below.)
 
 ### Named design redesigns (WF1 specs; some overlap the page lifts above)
 - [x] SWING SCENE redesign — DONE v8.25.81 (LIVE+V1): the SVG path was a dead end
