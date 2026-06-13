@@ -234,3 +234,6 @@ docs/reports/sessions.html
 
 # Local authed UI-review captures (per-page critique, #41)
 .claude/state/cap-*/
+
+# Lottie download scratch (swing-figure exploration)
+.claude/state/lottie-dl/
