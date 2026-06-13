@@ -51,7 +51,7 @@ Router.register("roundhistory", function(params) {
   h += '<div style="display:flex;gap:8px">';
   // v8.24.27 — canonical .stat-box family (cleanup backlog #7) instead of
   // three hand-rolled tile recipes.
-  h += '<div class="stat-box" style="flex:1"><div class="stat-val">' + totalRounds + '</div><div class="stat-label">Rounds</div></div>';
+  h += '<div class="stat-box" style="flex:1"><div class="stat-val">' + totalRounds + '</div><div class="stat-label">' + (totalRounds === 1 ? 'Round' : 'Rounds') + '</div></div>';
   h += '<div class="stat-box" style="flex:1"><div class="stat-val" style="color:var(--birdie)">' + (lowest || "—") + '</div><div class="stat-label">Lowest</div></div>';
   h += '<div class="stat-box" style="flex:1"><div class="stat-val" style="color:var(--cream)">' + (avg || "—") + '</div><div class="stat-label">Average</div></div>';
   h += '</div>';
