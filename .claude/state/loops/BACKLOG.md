@@ -76,15 +76,14 @@ in chat), diagnosis/e2e/design specs in WF1 output
 when every item below is [x].
 
 ### Quick-win fixes (Wave 1)
-- [ ] SWING LEFT LEG blends into grass — DONE-CODE: left-leg stroke was felt-green
-  (recolor MAP line 54 mapped light-blue→FELT; right leg stayed white). Fixed
-  _recolor-swing.mjs → white [1,1,1] + regenerated golf-swing-pb.json (light-blue
-  residual 0). SHIP + V1-verify the held finish frame.
-- [ ] NOTIFICATIONS answer + chat gap: kudos (round_like/round_teetap) ✓ + tee-time
-  (tee_posted/RSVP) ✓ WORK. Chat-POST does NOT notify (chat.js sendChat never calls
-  sendNotification) — build a COALESCED chat notification (one "new trash talk"
-  entry per recipient until read, not one-per-message = spam). round_teetap type
-  registered in notification-types.js (was unregistered → generic icon/wrong link).
+- [x] SWING LEFT LEG blends into grass — DONE v8.25.57 (LIVE+V1): left-leg stroke was
+  felt-green (recolor MAP mapped light-blue→FELT); fixed → white [1,1,1] matching the
+  right leg + regenerated golf-swing-pb.json. Verified on the held-finish frame.
+- [x] NOTIFICATIONS answer + round_teetap — DONE v8.25.57: kudos ✓ + tee-time ✓ WORK;
+  round_teetap type registered (was unregistered → generic icon/wrong link).
+- [ ] CHAT-POST notification (the one real gap) — chat.js sendChat never calls
+  sendNotification. Build a COALESCED notification (one "new trash talk" entry per
+  recipient per burst, NOT one-per-message = spam). Needs the coalesce design.
 
 ### Per-page lifts to ≥9.0 (worst-first; specs in WF2 output)
 - [x] SCRAMBLE 5.8 → DONE v8.25.58 (LIVE+V1): editorial masthead ('The team room.'),
@@ -97,8 +96,11 @@ when every item below is [x].
   leading on the league best round; Event Champions + All-time records open on
   arrival (records visible immediately), long tail stays collapsed. (Hero
   record-board + count-up + .hof-card→tr-* migration = follow-up polish.)
-- [ ] SEASON RECAP 6.3 → rebuild landing on roster-masthead, real podium medals,
-  champion hero, award tiles (fix 28px-wrapper-on-14px-SVG bug); Wrapped token unify.
+- [x] SEASON RECAP 6.3 → DONE v8.25.61 (LIVE+V1): editorial masthead ('The year in
+  full.'), award tiles (brass icon chip — fixed the 28px-wrapper-on-14px-SVG dead
+  box), brass/silver/bronze rank chips replacing flat '1st/2nd/3rd' text, '1 rds'
+  grammar fixed. ALSO delivers the season-award gating below. (Wrapped token unify =
+  follow-up.)
 - [ ] TRIPS/EVENTS 6.6 → "tee sheet" event card, fill fold, masthead-integrate CTA,
   pf-empty state, entrance motion.
 - [ ] PLAY NOW SETUP 7.0 → course/anticipation hero to kill dead canvas, editorial
@@ -148,8 +150,10 @@ when every item below is [x].
   voices into ONE "The Caddy" persona w/ a branded profile picture so agent posts
   read distinct from human posts; ALL AI ribs/voicelines use the USER'S SELECTED
   caddie voice (caddy-voices.js CADDIES). Massive lift.
-- [ ] SEASON AWARDS gating — hide award night / season awards until each season is
-  COMPLETE (mirror Wrapped pending-gate; WF1 season-award-gating spec).
+- [x] SEASON AWARDS gating — DONE v8.25.61 (LIVE+V1): Season Recap gates the Champion
+  + Awards behind the Dec-1 check (current year before Dec 1 → 'sealed until Dec 31'
+  pending card; standings read 'Current' not 'Final'). Mirrors the Wrapped gate.
+  Verified on staging (2026 mid-season → awards sealed).
 - [ ] E2E data-workflow bug fixes surfaced by WF1 (e2e-core/social/profile agents).
 
 ### Closeout
