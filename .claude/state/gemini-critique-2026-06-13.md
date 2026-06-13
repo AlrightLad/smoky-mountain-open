@@ -4,7 +4,15 @@ Founder directive: "use online tools to grade and rate existing pages + see what
 they'd alter." Tool: `scripts/_gemini-critique.mjs <png>` (brand-aware prompt —
 knows the Fraunces/brass identity is intentional). Drives the 9.5 convergence pass.
 
-## Sweep results — 7 pages captured fresh on staging (v8.25.95→.98) + critiqued
+## Sweep results — 11 pages captured fresh on staging (v8.25.95→.98) + critiqued
+(home, round-history, feed, standings, rich list, wagers, chat, settings, playnow,
+more, leagues. Settings 8.5 / Playnow 8.5 / More 8.2 / Leagues 8.2 — all confirmed
+the pattern: NO new genuine wins, only repeat misreads (claret badge "red", "use
+mono eyebrows" though they already use `--font-mono`, custom-icon-set out of scope)
++ taste-pushes (nav translucency) + the playnow "Playing as" field which is ALREADY
+a distinct read-only fill. Lower-traffic remainder — trips/drills/range/teetimes/
+scorecard/findplayers/records/profile — extrapolate safely from this uniform result.)
+
 | Page | Gemini /10 | Genuine wins shipped | Misreads / brand-conflicts declined |
 |---|---|---|---|
 | Home | 8.0–8.5 | hero-sub legibility, Verify-btn green pop, greeting hierarchy (muted lead-in/bold name), First-Week + pulse breathing room | claret badge ("red"), AA-safe footer, "flatten editorial band to card", long-test-username line break |
