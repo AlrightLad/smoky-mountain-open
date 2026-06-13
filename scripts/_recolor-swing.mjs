@@ -34,6 +34,10 @@ const GOLD_LIGHT = [0.847, 0.698, 0.376];
 const CREAM = [0.957, 0.937, 0.89];
 const FELT = [0.235, 0.345, 0.282];
 const FELT_DARK = [0.165, 0.247, 0.2];
+// CREAM * 0.85 — a gentle same-hue shadow shade for the BACK (left) leg fill so
+// the two coplanar same-color legs read as front-over-back (depth) instead of
+// z-fighting/shimmering at their shared edge during the swing. See sentinel below.
+const CREAM_SHADE = [0.81345, 0.79645, 0.7565];
 
 // Source colors (rounded to 3dp for matching) -> dawn target.
 // Each entry documents the role we identified in the rig.
@@ -48,6 +52,14 @@ const MAP = [
   { from: [1, 0.255, 0.675], to: CREAM, role: 'magenta hat/garment fill' },
   { from: [1, 0.255, 0.676], to: CREAM, role: 'magenta garment fill (rounding twin)' },
   { from: [1, 0.059, 0.391], to: CREAM, role: 'hot-pink garment fill (legs/cuffs)' },
+  // KNEE-FLICKER FIX (v8.25.x): both legs share the SAME source fill
+  // [1,0.059,0.391] -> CREAM, leaving them identical-color and coplanar (same
+  // anchor [-322,6,0], 44px apart in x) so their edges z-fight as they cross.
+  // The BACK leg ("left leg", ind 20, painted behind "right leg" after the torso
+  // reorder) had its source fill nudged to this sentinel so it remaps to a
+  // slightly-darker CREAM_SHADE — natural front-over-back depth, no shimmer.
+  // (Same hue, ~0.85 value; the front "right leg" keeps plain CREAM.)
+  { from: [0.9, 0.059, 0.391], to: CREAM_SHADE, role: 'back (left) leg fill — shaded for depth (anti-flicker sentinel)' },
   // --- BLUE / PURPLE trousers + shoe/leg accents -> FELT-GREEN ---
   { from: [0.31, 0.259, 1], to: FELT, role: 'blue-purple trouser/shoe fill' },
   { from: [0.231, 0.184, 0.855], to: FELT_DARK, role: 'blue trouser/cap stroke' },
