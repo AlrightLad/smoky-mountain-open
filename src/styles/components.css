@@ -388,6 +388,12 @@ input.s:disabled,
 .feed-wrap .feed-action:hover{color:var(--cb-ink)}
 .feed-wrap .feed-action--on{color:var(--cb-brass)}
 .feed-wrap .feed-action svg{flex-shrink:0}
+/* v8.25.79 — kudos heart-pop: a one-shot overshoot scale on a fresh like,
+   driven by the transient .feed-action--pop class feedToggleLike adds + removes.
+   Overshoot easing gives the heart a satisfying springy beat. */
+.feed-wrap .feed-action--pop svg{animation:feedKudosPop .42s cubic-bezier(.34,1.56,.64,1)}
+@keyframes feedKudosPop{0%{transform:scale(1)}35%{transform:scale(1.45)}65%{transform:scale(.92)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.feed-wrap .feed-action--pop svg{animation:none}}
 
 /* Inline comment input (distinct name from legacy .feed-comment-input). */
 .feed-commentinput{display:flex;gap:8px;margin-top:12px;align-items:center}

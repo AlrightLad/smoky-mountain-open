@@ -376,6 +376,11 @@ function _renderFeedItems() {
     else if (item.type === "range") fh += _renderRangeCard(item);
   });
   el.innerHTML = fh;
+  // v8.25.79 — fade-up cascade over the feed blocks (weekly report → lead story
+  // → day eyebrows + cards). transform/opacity only, reduced-motion no-ops
+  // inside staggeredReveal. Fires once per full stream render (not on the
+  // surgical kudos patch, which never re-runs _renderFeedItems).
+  if (window.staggeredReveal) window.staggeredReveal(el.children, { gap: 40, duration: 320 });
 }
 
 // ── The Caddy's Weekly Report (rank 4) — the app authors the conversation ────

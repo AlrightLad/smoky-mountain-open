@@ -169,6 +169,14 @@ function feedToggleLike(roundId) {
   var newCount = prevCount + (newLiked ? 1 : -1);
   if (newCount < 0) newCount = 0;
   _patchKudosButton(roundId, newLiked, newCount);
+  // v8.25.79 — heart-pop on a FRESH kudos (not on un-like). Transient class
+  // drives a one-shot scale keyframe, removed after it plays so re-renders of
+  // an already-liked card don't replay it. btn survives _patchKudosButton
+  // (that helper only mutates attrs + inner svg/span, never the element).
+  if (newLiked && btn) {
+    btn.classList.add('feed-action--pop');
+    setTimeout(function() { try { btn.classList.remove('feed-action--pop'); } catch (e) {} }, 440);
+  }
 
   // S1.2: suppress rounds snapshot listener re-render so the write echo
   // doesn't blow away our patch via Router.go('home'). Cleared 2s post-write.
