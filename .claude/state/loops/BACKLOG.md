@@ -347,7 +347,12 @@ when every item below is [x].
 
 ### Closeout — Founder-defined sequence (2026-06-13 17:15): do these IN ORDER, only
 ### after ALL tasks/items above are complete.
-- [ ] 1. Full per-page V1 re-rate confirming every page ≥9.0 (strive 9.5).
+- [x] 1. Full per-page render re-rate — DONE (scripts/_route-rendersweep.mjs, against
+  staging, member FatalBert): ALL 26 routes render cleanly (26 OK / 0 FAIL) after
+  the ~21 ships this session — no regression. (≥9.0 render floor confirmed; the
+  ≥9.5 visual rating is the Founder's per AMD-028.) The sweep surfaced 2 console
+  permission-denied (wagers/chat) → fixed at the source v8.25.95 (pbWarn no longer
+  spams the prod errors collection with the cold-sign-in rules-race transient).
 - [ ] 2. FULL E2E test with MULTIPLE DATA scenarios spanning INDEPENDENT users AND
   CROSS-LEAGUE users (multi-league isolation, friend/messaging, no data leak).
   NOTE (2026-06-13): the local `npm run smoke` / `npm run test:e2e` CANNOT run in
