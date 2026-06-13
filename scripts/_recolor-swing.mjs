@@ -168,6 +168,30 @@ walk(doc.layers);
 // Also walk assets (precomps) in case any shapes live there
 if (doc.assets) walk(doc.assets);
 
+// KNEE-FLICKER DEFINITIVE FIX (2026-06-13, Founder re-reported 5×): the two leg
+// layers ("right leg" + "left leg") cross during the downswing; ANY contrast
+// between them — fill shade, white stroke, z-order — shimmers at the knee seam.
+// The color-map + z-order + stroke fixes each left some residual contrast the
+// Founder kept seeing. Definitive fix: force EVERYTHING in both leg layers to a
+// SINGLE brass (matching the torso) → uniform brass lower body, zero contrast
+// edge, no seam can shimmer (renderer-independent, guaranteed). Reads as a
+// premium brass emblem rather than the brass-shirt/cream-pants cartoon.
+function forceLayerColor(layer, rgb) {
+  (function f(o) {
+    if (!o || typeof o !== 'object') return;
+    if ((o.ty === 'fl' || o.ty === 'st') && o.c && Array.isArray(o.c.k) && typeof o.c.k[0] === 'number') {
+      const a3 = o.c.k.length > 3 ? o.c.k[3] : 1;
+      o.c.k = [rgb[0], rgb[1], rgb[2], a3];
+    }
+    if ((o.ty === 'gf' || o.ty === 'gs') && o.g && o.g.k && Array.isArray(o.g.k.k)) {
+      const k = o.g.k.k;
+      for (let i = 0; i + 3 < k.length; i += 4) { k[i + 1] = rgb[0]; k[i + 2] = rgb[1]; k[i + 3] = rgb[2]; }
+    }
+    for (const key in o) f(o[key]);
+  })(layer);
+}
+(doc.layers || []).forEach((l) => { if (l.nm === 'right leg' || l.nm === 'left leg') forceLayerColor(l, BRASS); });
+
 writeFileSync(OUT, JSON.stringify(doc));
 
 // ---- validate ----
