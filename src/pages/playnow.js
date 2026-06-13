@@ -376,7 +376,12 @@ var PN_CHECK_SVG = '<svg viewBox="0 0 10 10" width="8" height="8" fill="none" st
 var PN_KEY_ACTIVATE = ' role="button" tabindex="0" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();this.click()}"';
 
 function renderPlaySetup() {
-  var h = '<div class="sh"><h2>Play now</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
+  // v8.25.71 — editorial masthead (matches Members/Standings/Scramble) so the
+  // setup entry carries the same gravity as the live-scoring surface it launches.
+  var h = '<div class="roster-masthead">';
+  h += '<button class="back" onclick="Router.back(\'home\')" style="margin-bottom:12px">← Back</button>';
+  h += '<div class="roster-eyebrow">LIVE SCORING</div>';
+  h += '<h1 class="roster-headline">Play now.</h1></div>';
 
   // Single hierarchy: the .sh "Play now" title is the only heading. This is a
   // quiet supporting line, not a second gold display heading competing with it,
@@ -428,6 +433,8 @@ function renderPlaySetup() {
   h += '</div>'; // .form-section
 
   document.querySelector('[data-page="playnow"]').innerHTML = h;
+  // v8.25.71 — entrance cascade on the setup fields (reduced-motion no-ops inside).
+  if (window.staggeredReveal) window.staggeredReveal(document.querySelectorAll('[data-page="playnow"] .pn-setup-card .ff'), { gap: 45, duration: 320 });
 }
 
 // ---- Play Now: inline scramble team creation ----

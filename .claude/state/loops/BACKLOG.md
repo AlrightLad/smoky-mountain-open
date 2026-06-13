@@ -107,12 +107,14 @@ when every item below is [x].
   "+ New Event" promoted into the masthead, entrance reveal. Verified.
 - [ ] PLAY NOW SETUP 7.0 → course/anticipation hero to kill dead canvas, editorial
   title, entrance motion, ready-state CTA pulse.
-- [ ] COURSES 7.2 → masthead, sort/scope chips, legible score line, row hierarchy,
-  stagger motion, richer monogram tiles.
+- [x] COURSES 7.2 → DONE v8.25.66 (LIVE+V1): editorial masthead ('The yardage book.'
+  + live count), legible F9/B9/18 score line (brass 18 + ink F9/B9, was washed cream),
+  stagger motion. (Sort chips + row hierarchy = follow-up.)
 - [ ] ROUNDS 7.4 → unify list hero w/ detail masthead, designed score-chip rows,
   entrance motion, tokenize inline strings, editorial empty state.
-- [ ] WAGERS 7.4 → bankroll hero band, opponent call-out rail, card entrance+count-up,
-  live-stakes treatment, centered desktop column.
+- [x] WAGERS 7.4 → DONE v8.25.69 (LIVE): editorial masthead ('On the line.') + felt
+  BANKROLL HERO band (44px brass numeral, count-up) replacing the 14px footnote.
+  (Opponent call-out rail + per-card count-up = follow-up.)
 - [ ] STANDINGS 7.4 → render The Chase for 1-golfer board, suppress dead Avg col, fix
   "1 rds" grammar (standings.js:245), crown thin trophies honestly (≥3 rounds),
   count-up the points.
