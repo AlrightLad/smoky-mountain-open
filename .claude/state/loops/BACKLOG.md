@@ -205,12 +205,15 @@ when every item below is [x].
   flag, tee box the golfer stands on — ONE cohesive illustrated style WITH the
   cartoon golfer. Replaced the clashing photo + the glitchy posterize interim
   (rainbow banding). No filters/anims → perf-safe. V1-verified ready + mid-swing.
-- [ ] SWING KNEE FLICKER (Founder 2026-06-13 17:23: "Knees are still flickering")
-  — STILL present despite the prior right-leg Shape3/4 hold-opacity fix. Separate
-  from the scene (it's the Lottie golf-swing-pb.json knee z-fight during motion).
-  Lag is confirmed GONE. Needs a deeper Lottie fix (the knee/leg layer z-order or
-  a coplanar-seam at the knee joint mid-swing). Reference real pro-swing knee
-  motion. Possibly the canvas renderer still seams at one frame range.
+- [x] SWING KNEE FLICKER — DONE v8.25.87 (LIVE+V1). Root-caused (subagent deep-dive):
+  NOT opacity — those pops were all already pinned. It was STRUCTURAL z-fighting: the
+  ANIMATING torso layer was painted BETWEEN the two coplanar, identically-colored
+  legs, so its sweeping edge shimmered the shared leg boundary mid-swing. Fix =
+  surgical layers-array reorder so the torso paints in FRONT of both legs (legs now
+  adjacent, nothing animating between them). No geometry/motion/color/opacity change;
+  all ind+parent preserved; applied to both -pb.json + source (recolor-safe). V1:
+  figure renders correctly (torso cleanly over legs, no broken occlusion) — the
+  seam that caused the shimmer is structurally gone.
 - [x] SETTINGS POLICY back button — DONE v8.25.86 (LIVE): added a "← Back to
   Parbaughs" link to public/privacy.html + public/terms.html (history.back() when
   same-tab, else href="./" loads the app — robust for the window.open _blank case).
