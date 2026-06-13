@@ -28,7 +28,8 @@ var pbDistanceStrip, pbReadDistance, pbSetGreen, pbCancelSetGreen;
   var _geoOk = false;
   // 2-step "set the green" capture state: { holeIdx, courseId, front:{la,ln} }.
   var _setState = null;
-  var POOR_ACCURACY_M = 18; // beyond this, label the read "approx"
+  var POOR_ACCURACY_M = 18; // beyond this, label a personal READ "approx"
+  var SET_MAX_ACCURACY_M = 12; // a SET persists league-wide → require a tighter fix
 
   // Haversine great-circle distance → whole yards.
   function _yards(la1, ln1, la2, ln2) {
@@ -148,6 +149,17 @@ var pbDistanceStrip, pbReadDistance, pbSetGreen, pbCancelSetGreen;
     if (typeof Router !== 'undefined' && Router.toast) Router.toast(_setState ? 'Reading back edge…' : 'Reading front edge…');
     _readGps().then(function (pos) {
       _geoOk = true;
+      // A SET persists to the shared course for the whole league, so unlike a
+      // personal read it must come from a precise fix — a poor one would store a
+      // pin tens of metres off and make everyone's distance wrong (P9 data
+      // integrity). Reject a weak fix and let them retry in the open. (Missing
+      // accuracy data — some browsers omit it — is allowed through.)
+      if (typeof pos.accuracy === 'number' && pos.accuracy > SET_MAX_ACCURACY_M) {
+        _setState = null;
+        _rerenderStrip(holeIdx);
+        if (typeof Router !== 'undefined' && Router.toast) Router.toast('GPS isn’t precise enough to set the green (±' + Math.round(pos.accuracy) + 'm). Step into the open and try again.');
+        return;
+      }
       if (!_setState || _setState.holeIdx !== holeIdx) {
         // first tap → front edge captured; flip the strip to "capture back"
         _setState = { holeIdx: holeIdx, courseId: courseId, front: { la: pos.latitude, ln: pos.longitude } };
