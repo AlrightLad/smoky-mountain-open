@@ -460,18 +460,20 @@ when every item below is [x].
   audit. Remaining: the full multi-data E2E in CI (item 2, needs gh PAT) is the live
   exercise of the rules under cross-league data. Agent-config hardening = optional
   (it's the dev workspace, not the shipped app).
-- [ ] GITHUB HARDENING (Founder 2026-06-13 19:30, AFTER all work) — the repo is
-  PUBLIC, so ALL source + the .claude/state strategic docs (roadmap/BACKLOG/market-
-  strategy/research) are visible to competitors. Founder wants to hide keys + IP that
-  could be maliciously used; will buy GitHub private if needed but prefers hardening
-  first. ANALYSIS: a public repo fundamentally exposes everything — true IP protection
-  needs PRIVATE (his paid step) OR moving proprietary logic server-side (Cloud
-  Functions). Without private: (a) keys are already clean (Firebase apiKey public-by-
-  design, real secrets gitignored — VERIFIED); (b) the biggest exposure is .claude/
-  state/ strategic docs (market strategy, roadmap, research) + this BACKLOG — could
-  gitignore/move those out of the public repo; (c) scrub internal-only comments. But
-  honest truth: meaningful IP protection = PRIVATE repo. Recommend private (cheap) +
-  keep secrets gitignored. Continue other work first per Founder.
+- [~] GITHUB HARDENING (Founder 2026-06-13 19:30) — KEYS HALF DONE 2026-06-13; IP half
+  Founder-gated. (a) KEYS: ran a full GIT-HISTORY secret audit — `git log -S "BEGIN
+  PRIVATE KEY"` matches are ALL scanner pattern-code (verify-firestore-agent-access.mjs
+  checks for the pemHeader string), NOT real keys; both service-account JSONs +
+  gemini-key.txt + functions/.env are NEVER tracked + gitignored. Then HARDENED the
+  .gitignore with broad catch-alls (`*adminsdk*.json`, `*service-account*.json`,
+  `*serviceaccount*.json`) so a SA key dropped anywhere under Google's default name can
+  never be committed (verified via git check-ignore). The only client "key" (Firebase
+  web apiKey) is public-by-design. ⇒ NO keys exposed in tree OR history. ✓
+  (b) IP: the .claude/state strategic docs (roadmap/BACKLOG/market-strategy/research) are
+  visible in the PUBLIC repo + its history. Gitignoring them now does NOT remove history;
+  true protection = PRIVATE repo (Founder's paid step — he said he'd buy it if needed) OR
+  a history rewrite (dangerous on a shared public repo). FOUNDER DECISION: flip the repo
+  private (recommended, cheap) — then I keep secrets gitignored as defense-in-depth.
 - [ ] 4. Polish + review pass over whatever 2–3 surface.
 - [ ] 5. If E2E + data-test + pen-test all PASS → DONE. PushNotification to Founder;
   then WAIT on Founder for remaining founder-checklist items + dashboard/app review.
