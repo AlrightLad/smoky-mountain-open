@@ -169,8 +169,14 @@ when every item below is [x].
   filterRoster). V1-confirmed: FatalBert shows the pulsing ● LIVE NOW, rows reveal,
   invite demoted. (mobile restack-not-hide of Rounds/Last-seen cols + avatar leader
   strip = convergence-pass levers.)
-- [ ] FEED 8.4 → fade-up cascade, kudos heart-pop, separate stacked green blocks,
-  posts-today pulse, resolve dead Community tab.
+- [x] FEED 8.4 → DONE v8.25.79 (LIVE+V1): feed was already strong (editorial 'What's
+  happening.' masthead, League/Community scope w/ posts-today meta + truthful
+  Community empty state, the Caddy's Weekly Report + oversize Lead story = one
+  asymmetric hero, density-tiered cards, single-Caddy bot identity). Added the two
+  missing motion cues: fade-up cascade over the stream blocks (report → lead → day
+  eyebrows → cards) per full render; kudos HEART-POP (springy overshoot scale) on a
+  FRESH like via a transient .feed-action--pop class. Both transform/opacity only +
+  reduced-motion off. V1-confirmed feed renders fully (no blank-card regression).
 - [ ] TROPHY ROOM 8.4 → tier emblems by rarity (metallic depth), hero marquee cell,
   foil sweep on rare/championship, masthead avatar, level-bar glow+ticks.
 - [ ] SHOP 8.6 → sticky category rail for long scroll, replace ⛳ emoji w/ SVG,
@@ -194,10 +200,14 @@ when every item below is [x].
   Verified high-contrast on home.
 
 ### Bigger features
-- [ ] FEED BOT CONSOLIDATION (Founder 2026-06-13) — collapse the multiple feed bot
-  voices into ONE "The Caddy" persona w/ a branded profile picture so agent posts
-  read distinct from human posts; ALL AI ribs/voicelines use the USER'S SELECTED
-  caddie voice (caddy-voices.js CADDIES). Massive lift.
+- [x] FEED BOT CONSOLIDATION (Founder 2026-06-13) — DONE (prior session, code-verified
+  LIVE): src/core/utils.js PB_CADDY sentinel ({id:"the-caddy",bot:true}) +
+  isCaddyAuthor()/caddyChatDoc()/postCaddyChat() are the single source all bot WRITES
+  route through; router.js caddyAvatarMark (felt disc + brass flag) + caddyBotBadge +
+  getAvatar/renderAvatar/renderUsername short-circuit render every bot post under ONE
+  "The Caddy" branded identity (legacy 'system'/'the-caddy' both fold in). feed.js +
+  router-activity-feed.js both consume it (V1: the dark 'Caddy's Report' card renders
+  as the single Caddy). AI ribs use the user's selected caddie voice (caddy-voices).
 - [x] SEASON AWARDS gating — DONE v8.25.61 (LIVE+V1): Season Recap gates the Champion
   + Awards behind the Dec-1 check (current year before Dec 1 → 'sealed until Dec 31'
   pending card; standings read 'Current' not 'Final'). Mirrors the Wrapped gate.
