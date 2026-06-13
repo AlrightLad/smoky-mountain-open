@@ -101,8 +101,9 @@ when every item below is [x].
   box), brass/silver/bronze rank chips replacing flat '1st/2nd/3rd' text, '1 rds'
   grammar fixed. ALSO delivers the season-award gating below. (Wrapped token unify =
   follow-up.)
-- [ ] TRIPS/EVENTS 6.6 → "tee sheet" event card, fill fold, masthead-integrate CTA,
-  pf-empty state, entrance motion.
+- [x] TRIPS/EVENTS 6.6 → DONE v8.25.62 (LIVE+V1): .ev-card "tee sheet" rows (Fraunces
+  name, status-keyed left rule, clustered avatars, brass status/champion badge),
+  "+ New Event" promoted into the masthead, entrance reveal. Verified.
 - [ ] PLAY NOW SETUP 7.0 → course/anticipation hero to kill dead canvas, editorial
   title, entrance motion, ready-state CTA pulse.
 - [ ] COURSES 7.2 → masthead, sort/scope chips, legible score line, row hierarchy,
