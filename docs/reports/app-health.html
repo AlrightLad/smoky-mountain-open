@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-13T22:00:22.058139Z",
+  "generated_at": "2026-06-13T22:03:45.834776Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 87.6,
   "overall_grade": "A-",
@@ -1034,13 +1034,17 @@
     }
   ],
   "audit_trigger": {
-    "sha": "6fd55d62",
-    "subject": "chore(stop-decision): log v8.25.96-101 flicker-fixes + 9.5 depth-foundation checkpoint",
-    "committed_at": "2026-06-13T18:00:00-04:00",
-    "trigger": "substrate-commit",
-    "is_app_commit": false,
-    "app_files_touched": [],
-    "total_files_touched": 1
+    "sha": "7483909d",
+    "subject": "feat(ui): app-wide press-scale on every .tappable (Founder 4-dim push: motion & life) â€” iOS-style physical press on all cards/rows, reduced-motion-safe",
+    "committed_at": "2026-06-13T18:03:19-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "public/sw.js",
+      "src/core/utils.js",
+      "src/styles/components.css"
+    ],
+    "total_files_touched": 6
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
