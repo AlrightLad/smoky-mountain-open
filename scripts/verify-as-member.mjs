@@ -55,8 +55,11 @@ await page.waitForFunction(() => { var m = document.getElementById('mainApp'); r
 // frames straddle the auto-play start, the full arc, and the finish gate — and
 // would surface any onboarding overlay overlapping the swing.
 if (WITH_INTRO) {
+  await page.waitForTimeout(500); // intro mounts + lottie loads; capture the waiting "tap to start" scene
+  await page.screenshot({ path: `${OUT}/${LABEL}-swing-0000ready.png`, fullPage: true });
+  try { await page.click('#pbIntro', { timeout: 2000 }); } catch (e) {} // tee off (no auto-advance now)
   let prev = 0;
-  for (const at of [200, 2300, 2700, 3100, 3600, 4200]) {
+  for (const at of [300, 700, 1100, 1500, 2000, 2700]) {
     await page.waitForTimeout(at - prev); prev = at;
     await page.screenshot({ path: `${OUT}/${LABEL}-swing-${String(at).padStart(4, '0')}ms.png`, fullPage: true });
   }

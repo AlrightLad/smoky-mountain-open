@@ -33,6 +33,18 @@ finish.
 - [x] Onboarding-replay ParCoin farm exploit — fixed v8.25.33 (durable rookieRewarded flag).
 - [x] Kudos/Tee-Tap → one appreciation reaction app-wide — done v8.25.32 (feed) + v8.25.34 (League Pulse) + Caddy Notes v8.25.37.
 
+## Founder batch 2026-06-13 (new — top priority)
+- [ ] SWING flow + scene rebuild: golfer must tee off DOWN A FAIRWAY (not standing on a putting green doing a driver swing — alignment makes no sense), build the course AROUND him + a sky backdrop so it's inviting/immersive. Still reads clunky + flickering — research an online tool to help compose/clean it. Hint text → "Tap to start your adventure" (or "Tap to continue"). REMOVE auto-advance — if the user doesn't tap it must NOT continue on its own; it waits for the tap. The whole swing screen must flow + fit.
+- [ ] Profile "Recent play" → show only LAST 3 rounds, remove the "show all rounds" button (the round-count→full-ledger tap from #54 can stay; the recent-play section button goes).
+- [ ] Season Recap alignment: doesn't line up with season standings/leaderboards + isn't ANNUAL → confusing. Make the recap period match the standings + be annual (per #59 calendar-year).
+- [ ] Shop: shelf order must go LOWEST→HIGHEST rarity (Range Bucket → Pro Shop → Member's Locker → Champion's Cabinet) to show item progression. Confirm tiers ARE the rarity ladder + surface that to the user.
+- [ ] Shop: revamp the cosmetic ITEMS + ADD more (the catalog itself, beyond the preview polish already done).
+- [ ] Caddies available in the SHOP matching Settings (The Caddy / Old Tom / Birdie / Bag Room Guy) — currently shop caddies ≠ settings caddies.
+- [ ] Merch page → a Parbaughs-merch "coming soon" page (all coming soon): animated mini-golfers swinging OR a Lee-Wybranski-style poster-art screen (original art, not his — capture the vintage-tournament-poster feel).
+- [ ] Add a course via PHOTO SCAN / UPLOAD (OCR a scorecard photo) — feature still missing.
+- [ ] Leaderboards / Season Recap — add tasteful animations to jazz them up.
+- [~] PLANNING ONLY (no code): "see yourself on the hole diagram/map" + wrap YARDAGE into it. Add to founder checklist + write a plan. (task-queue/founder/)
+
 ## Swing + shop (active Founder iteration 2026-06-12)
 - [x] Sign-in swing rebuild — DONE v8.25.38→.41 on staging+prod: professional Lottie golfer recolored to brass/cream/felt-green (golf-swing-pb.json), CANVAS renderer (kills the structural knee z-fight), inline dawn course scene (green/hills/flag/sun) behind him, AUTO-OPEN flow (one tap or auto-tee → native-speed swing → app opens itself; no gate, no skip, no double-click). Verified via CAP_WITH_INTRO capture. Founder evaluating knees-in-motion on staging; hairline-seam fallback ready if any residual shudder.
 - [x] Shop grid alignment — DONE v8.25.40 (flex-column cards, pinned actions, 14px gutters, line-clamps).
