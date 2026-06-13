@@ -329,6 +329,11 @@ function renderMemberListHtml(players) {
   h += '<aside class="hq-grid__rail-right" aria-label="Roster highlights">' + _rosterRail(models) + '</aside>';
   h += '</div>';
   document.querySelector('[data-page="members"]').innerHTML = h;
+  // v8.25.78 — roster rows cascade in on first render. Fires here (full render)
+  // not in filterRoster (which only swaps #rosterBody on search/sort), so the
+  // reveal doesn't re-trigger on every keystroke. transform/opacity only,
+  // reduced-motion no-ops inside staggeredReveal.
+  if (window.staggeredReveal) window.staggeredReveal(document.querySelectorAll('[data-page="members"] .roster-row'), { gap: 28, duration: 280 });
 }
 
 function rosterSetTab(tab) {
