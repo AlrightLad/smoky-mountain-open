@@ -254,6 +254,12 @@ function _renderMobileHome(ctx) {
   h += renderPageFooter();
 
   document.querySelector('[data-page="home"]').innerHTML = h;
+  // v8.25.76 — entrance choreography: top-down cascade over the home blocks
+  // (greeting → nemesis → hero CTA → checklist → stats band → pulse → feed).
+  // The greeting takes the 0ms slot so it reads instant; the rest assemble
+  // beneath it. transform/opacity only, reduced-motion no-ops inside
+  // staggeredReveal. The stats-band count-up rides the router post-nav hook.
+  if (window.staggeredReveal) window.staggeredReveal(document.querySelectorAll('[data-page="home"] > *'), { gap: 48, duration: 320 });
 }
 
 // Compact league pulse for mobile home — 3 most-recent activity items as
