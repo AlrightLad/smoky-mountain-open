@@ -394,8 +394,14 @@ input.s:disabled,
 .feed-commentinput__post{flex-shrink:0;font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cb-chalk);background:var(--cb-brass);border:none;border-radius:8px;padding:0 14px;min-height:44px;cursor:pointer}
 .feed-commentinput__post:hover{background:var(--cb-brass-deep)}
 
-/* The Caddy avatar (⛳ — explicitly allowed glyph exception). */
+/* The Caddy avatar (⛳ — explicitly allowed glyph exception). Legacy class kept
+   for any older markup; live feed now renders the single branded SVG mark via
+   renderAvatar(PB_CADDY) (router.js). */
 .feed-caddy-av{width:40px;height:40px;border-radius:50%;background:var(--cb-green);color:var(--cb-chalk);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+/* THE CADDY bot badge (v8.25.x) — single brass mono chip trailing the bot's
+   name everywhere, so an automated post reads instantly vs. a human one.
+   Identical across leagues. Token-driven; no hardcoded colors. */
+.pb-bot-badge{display:inline-block;vertical-align:middle;margin-left:6px;padding:1px 5px;border-radius:4px;font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:1px;line-height:1.4;text-transform:uppercase;color:var(--cb-brass-deep);background:rgba(var(--cb-brass-rgb),0.14);border:1px solid rgba(var(--cb-brass-rgb),0.3)}
 
 /* Range card body. */
 .feed-range__row{display:flex;align-items:center;gap:10px;margin-top:4px}

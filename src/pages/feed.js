@@ -140,15 +140,22 @@ Router.register("feed", function() {
     leagueQuery("chat").orderBy("createdAt", "desc").limit(30).get().then(function(snap) {
       snap.forEach(function(doc) {
         var msg = doc.data();
-        var player = msg.authorId ? PB.getPlayer(msg.authorId) : null;
+        // RENDER-TIME NORMALIZATION (v8.25.x): any doc that is bot content —
+        // new canonical (authorId "the-caddy" / bot:true) OR legacy ("system",
+        // authorName "The Caddy"/"Parbaughs") — collapses into the single Caddy
+        // identity here, so already-stored docs render branded without a
+        // Firestore migration. Human posts keep their real member player.
+        var isBot = (typeof isCaddyAuthor === "function") ? isCaddyAuthor(msg)
+          : (!!msg.system || msg.authorName === "The Caddy" || msg.authorName === "Parbaughs");
+        var player = (!isBot && msg.authorId) ? PB.getPlayer(msg.authorId) : null;
         items.push({
           type: "chat",
-          player: player,
-          playerId: msg.authorId || "",
-          author: msg.system ? "The Caddy" : msg.authorName || msg.user || "Member",
+          player: isBot ? (typeof PB_CADDY !== "undefined" ? PB_CADDY : { id: "the-caddy", name: "The Caddy", bot: true }) : player,
+          playerId: isBot ? "" : (msg.authorId || ""),
+          author: isBot ? "The Caddy" : (msg.authorName || msg.user || "Member"),
           text: msg.text || "",
           ts: tsMillis(msg.createdAt) || (msg.timestamp || 0),
-          system: !!msg.system
+          system: isBot
         });
       });
       pending--; tryRender();
@@ -687,24 +694,30 @@ function _renderRoundCompact(item) {
 }
 
 // ── CHAT CARD (Chip-style post — member message or The Caddy) ──
+// v8.25.x — The Caddy renders through the SINGLE canonical avatar + username
+// helpers (renderAvatar/renderUsername detect the bot identity and draw the
+// branded flag mark + BOT badge). The old hardcoded ⛳ disc + plain name are
+// gone, so the bot looks identical here and everywhere else (one treatment,
+// not two). Member chats render their real avatar + name as before.
 function _renderChatCard(item) {
-  var isSystem = item.system;
+  var isSystem = item.system || (typeof isCaddyPlayer === "function" && isCaddyPlayer(item.player));
   var who = isSystem ? "The Caddy" : (item.author || "Member");
-  var aria = (isSystem ? "The Caddy" : who) + " posted, " + feedTimeAgo(item.ts);
+  var aria = (isSystem ? "The Caddy (automated)" : who) + " posted, " + feedTimeAgo(item.ts);
   var h = '<article class="feed-card feed-card--chat' + (isSystem ? ' feed-card--caddy' : '') + '" role="article" aria-label="' + escHtml(aria) + '">';
   h += '<div class="feed-card__head">';
   if (isSystem) {
-    h += '<div class="feed-caddy-av" aria-hidden="true">⛳</div>';
+    var caddy = (typeof PB_CADDY !== "undefined") ? PB_CADDY : { id: "the-caddy", name: "The Caddy", bot: true };
+    h += renderAvatar(caddy, 40, false);
+    h += '<div class="feed-card__who">';
+    h += '<div class="feed-card__name">' + renderUsername(caddy, "font-family:var(--font-display);font-style:italic;font-weight:600;font-size:16px;") + '</div>';
   } else {
     h += renderAvatar(item.player, 40, true);
-  }
-  h += '<div class="feed-card__who">';
-  if (isSystem) {
-    h += '<div class="feed-card__name feed-card__name--caddy">The Caddy</div>';
-  } else if (item.player) {
-    h += '<div class="feed-card__name">' + renderUsername(item.player, "font-family:var(--font-display);font-style:italic;font-weight:600;font-size:16px;color:var(--cb-ink);", true) + '</div>';
-  } else {
-    h += '<div class="feed-card__name" style="font-family:var(--font-display);font-style:italic;font-weight:600;font-size:16px;color:var(--cb-ink)">' + escHtml(who) + '</div>';
+    h += '<div class="feed-card__who">';
+    if (item.player) {
+      h += '<div class="feed-card__name">' + renderUsername(item.player, "font-family:var(--font-display);font-style:italic;font-weight:600;font-size:16px;color:var(--cb-ink);", true) + '</div>';
+    } else {
+      h += '<div class="feed-card__name" style="font-family:var(--font-display);font-style:italic;font-weight:600;font-size:16px;color:var(--cb-ink)">' + escHtml(who) + '</div>';
+    }
   }
   h += '<div class="feed-card__time">' + escHtml(feedTimeAgo(item.ts)) + '</div>';
   h += '</div>';

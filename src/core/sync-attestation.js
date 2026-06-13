@@ -125,32 +125,18 @@ function startTripScoreListener(tripId) {
 // Event activity announcements
 function announceEventStart(tripId, courseName) {
   if (!db) return;
-  db.collection("chat").add(leagueDoc("chat", {
-    id: genId(),
-    text: "Live scoring started for " + courseName + "! Watch the scorecard update in real-time.",
-    authorId: "system",
-    authorName: "The Caddy",
-    system: true,
+  // v8.25.x — single canonical Caddy identity (see PB_CADDY in utils.js).
+  postCaddyChat("Live scoring started for " + courseName + "! Watch the scorecard update in real-time.", {
     tripId: tripId,
-    linkType: "event",
-    createdAt: fsTimestamp()
-  }))
+    linkType: "event"
+  });
 }
 
 function announceEventEnd(tripId, courseName, results) {
   if (!db) return;
   var msg = courseName + " is complete!";
   if (results) msg += " " + results;
-  db.collection("chat").add(leagueDoc("chat", {
-    id: genId(),
-    text: msg,
-    authorId: "system",
-    authorName: "The Caddy",
-    system: true,
-    tripId: tripId,
-    linkType: "event",
-    createdAt: fsTimestamp()
-  }))
+  postCaddyChat(msg, { tripId: tripId, linkType: "event" });
 }
 
 function assignScorekeeper(tripId, courseKey, uid) {
@@ -227,17 +213,11 @@ function finishTripRound(tripId, courseKey, _confirmed) {
     createdBy: currentUser ? currentUser.uid : "local",
     createdAt: fsTimestamp()
   }).then(function() {
-    // Announce to feed
-    db.collection("chat").add(leagueDoc("chat", {
-      id: genId(),
-      text: course.n + " scoring is complete. All players must attest their scores.",
-      authorId: "system",
-      authorName: "The Caddy",
-      system: true,
+    // Announce to feed — single canonical Caddy identity.
+    postCaddyChat(course.n + " scoring is complete. All players must attest their scores.", {
       tripId: tripId,
-      linkType: "event",
-      createdAt: fsTimestamp()
-    }))
+      linkType: "event"
+    });
     Router.toast("Attestation started! Players must confirm their scores.");
     Router.go("scorecard", { tripId: tripId });
   });

@@ -99,15 +99,11 @@ function _submitFeatureRequest(feature) {
       });
     });
     
-    // Also post to activity feed so everyone can see/discuss
-    db.collection("chat").add(leagueDoc("chat", {
-      id: genId(),
-      text: name + " submitted a feature request: \"" + feature.substring(0, 100) + (feature.length > 100 ? "..." : "") + "\"",
-      authorId: "system",
-      authorName: "Parbaughs",
-      createdAt: fsTimestamp(),
+    // Also post to activity feed so everyone can see/discuss — single
+    // canonical Caddy identity (see PB_CADDY in utils.js).
+    postCaddyChat(name + " submitted a feature request: \"" + feature.substring(0, 100) + (feature.length > 100 ? "..." : "") + "\"", {
       type: "feature_request"
-    })).catch(function(){});
+    });
     
     Router.toast("Request sent! The Commissioner has been notified.");
   } else {

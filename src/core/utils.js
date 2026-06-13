@@ -4,7 +4,7 @@
    ================================================ */
 
 // ── App version — single source of truth ──
-var APP_VERSION = "8.25.71";
+var APP_VERSION = "8.25.72";
 
 // ── Onboarding walkthrough (FTUE) — foundation constants/helpers ──
 // WALKTHROUGH_MAJOR is decoupled from APP_VERSION so a patch bump never
@@ -53,6 +53,70 @@ function leagueDoc(name, data) {
     data.leagueId = getActiveLeague();
   }
   return data;
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// THE CADDY — single canonical bot identity (v8.25.x consolidation)
+// ══════════════════════════════════════════════════════════════════════════
+// Founder requirement: every automated / scheduled / "league message from a
+// bot" post collapses into ONE "The Caddy" user with a Parbaughs-branded
+// avatar, IDENTICAL across all leagues, so it reads instantly as automated
+// vs. a human post. Before this, bot writers used a grab-bag of authors
+// ("The Caddy", "Parbaughs", authorId "system") with no consistent flag, so
+// some rendered like a human member (the bug). This is the single source of
+// truth all bot WRITES route through. PB_CADDY.id is a reserved sentinel —
+// no real member can ever own it (Firebase UIDs are 28 chars), so the
+// render-layer match below can never collide with a human.
+var PB_CADDY = { id: "the-caddy", authorId: "the-caddy", name: "The Caddy", bot: true };
+
+// isCaddyAuthor(doc) — TRUE when a stored doc is bot content, under either the
+// new canonical identity OR a legacy shape. Used by the render layer to
+// normalize already-stored docs without a Firestore migration (Founder: no
+// risky prod data migration). Legacy bot docs were authored authorId "system"
+// and/or authorName "The Caddy"/"Parbaughs"; some carried system:true.
+function isCaddyAuthor(d) {
+  if (!d || typeof d !== "object") return false;
+  if (d.bot === true) return true;
+  if (d.authorId === PB_CADDY.id || d.id === PB_CADDY.id) return true;
+  if (d.authorId === "system" || d.system === true) return true;
+  var nm = d.authorName || d.author || d.name;
+  return nm === "The Caddy" || nm === "Parbaughs";
+}
+
+// caddyChatDoc(text, extra) — builds a league-scoped chat doc stamped with the
+// canonical Caddy identity. ALL bot chat writers build their doc through this
+// so the stored author/flag are identical everywhere. extra merges in
+// site-specific fields (tripId, linkType, pinned, type, etc.). The caller
+// owns the db.collection("chat").add(...) so each site keeps its own
+// .then()/.catch() and side effects.
+function caddyChatDoc(text, extra) {
+  var doc = {
+    id: genId(),
+    text: String(text == null ? "" : text),
+    authorId: PB_CADDY.id,
+    authorName: PB_CADDY.name,
+    bot: true,
+    system: true,
+    createdAt: fsTimestamp()
+  };
+  if (extra && typeof extra === "object") {
+    for (var k in extra) { if (Object.prototype.hasOwnProperty.call(extra, k)) doc[k] = extra[k]; }
+  }
+  return leagueDoc("chat", doc);
+}
+
+// postCaddyChat(text, extra) — one-call convenience: build + write a Caddy
+// chat post on the active league. Returns the add() promise so callers can
+// chain (or ignore). Errors swallowed by default; pass extra._rethrow to opt
+// out. Use this for fire-and-forget announcements; use caddyChatDoc directly
+// when the call site needs the doc inline (e.g. inside a larger .then chain).
+function postCaddyChat(text, extra) {
+  if (typeof db === "undefined" || !db) return Promise.resolve();
+  var rethrow = !!(extra && extra._rethrow);
+  var clean = extra;
+  if (extra && extra._rethrow) { clean = {}; for (var k in extra) { if (k !== "_rethrow" && Object.prototype.hasOwnProperty.call(extra, k)) clean[k] = extra[k]; } }
+  var p = db.collection("chat").add(caddyChatDoc(text, clean));
+  return rethrow ? p : p.catch(function() {});
 }
 
 // Global array of active league-scoped listeners for cleanup on league switch

@@ -142,6 +142,11 @@ var Router = (function() {
   var AVATAR_DISCS = ['var(--cb-felt)', 'var(--cb-brass-deep)', 'var(--cb-moss)', 'var(--cb-claret)', 'var(--cb-charcoal)'];
 
   function getAvatar(player, fallback) {
+    // The Caddy ALWAYS draws its single branded mark — never a member photo,
+    // initial disc, or stock avatar (the reserved "the-caddy" id can't collide
+    // with a real 28-char Firebase UID). isCaddyPlayer + caddyAvatarMark are
+    // top-level globals (defined below) so renderAvatar shares the same logic.
+    if (typeof isCaddyPlayer === "function" && isCaddyPlayer(player)) return caddyAvatarMark();
     var imgSrc = '';
     // Check Firestore photo cache — try by id, claimedFrom, and username
     var cached = photoCache["member:" + player.id];
@@ -231,6 +236,37 @@ var Router = (function() {
     handlePhotoUpload: handlePhotoUpload
   };
 })();
+
+// ── THE CADDY branded identity (v8.25.x bot consolidation) ──────────────────
+// ONE Parbaughs-branded mark + ONE bot badge for the single canonical bot
+// identity (PB_CADDY in utils.js), drawn IDENTICALLY in every avatar slot and
+// every league. isCaddyPlayer matches the canonical id OR any legacy bot shape
+// so already-stored bot docs normalize at render time (no Firestore migration).
+// Top-level (not inside the Router IIFE) so renderAvatar/renderUsername — which
+// are themselves top-level — can share the exact same logic as Router.getAvatar.
+function isCaddyPlayer(p) {
+  if (!p) return false;
+  return p.id === "the-caddy" || p.authorId === "the-caddy" || p.bot === true ||
+         p.name === "The Caddy" || p.username === "The Caddy" || p.authorName === "The Caddy" ||
+         p.author === "The Caddy";
+}
+// The branded mark: a felt-green disc with a brass flagstick + flag (the
+// Parbaughs club mark). The ⛳ glyph is the one emoji explicitly allowed for The
+// Caddy per CLAUDE.md, but we draw a crisp brass SVG flag so it scales cleanly
+// at every size and stays on the Clubhouse palette. Fills the inherited slot.
+function caddyAvatarMark() {
+  return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--cb-felt);border-radius:inherit">' +
+    '<svg viewBox="0 0 24 24" width="64%" height="64%" fill="none" aria-hidden="true">' +
+    '<path d="M8 4v16" stroke="var(--cb-brass-3)" stroke-width="1.6" stroke-linecap="round"/>' +
+    '<path d="M8 4.6l9 2.7-9 2.7z" fill="var(--cb-brass)"/>' +
+    '<circle cx="8" cy="20" r="1.5" fill="var(--cb-brass-3)"/>' +
+    '</svg></div>';
+}
+// The bot badge: a small brass mono "BOT" chip that trails The Caddy's name so
+// humans-vs-bot is legible at a glance. Identical across leagues.
+function caddyBotBadge() {
+  return '<span class="pb-bot-badge" aria-label="Automated post by The Caddy">BOT</span>';
+}
 
 // ── GLOBAL UTILITY: profile border color ────────────────────────────────────
 // Single source of truth for avatar frame colors. Call anywhere you render
@@ -366,6 +402,13 @@ function getPlayerCardClass(p) {
 // If clickToProfile is true, wraps in an onclick that navigates to their profile.
 function renderAvatar(p, size, clickToProfile) {
   size = size || 36;
+  // The Caddy: ONE branded mark, ONE consistent brass-hairline ring, no member
+  // cosmetics, never click-to-profile (the bot has no profile page). Identical
+  // everywhere, every league.
+  if (isCaddyPlayer(p)) {
+    return '<div class="pb-caddy-avatar" style="width:' + size + 'px;height:' + size + 'px;min-width:' + size + 'px;border-radius:50%;position:relative;border:2px solid var(--cb-brass);flex-shrink:0">' +
+      '<div style="width:100%;height:100%;border-radius:50%;overflow:hidden">' + caddyAvatarMark() + '</div></div>';
+  }
   var ringStyle = p ? playerRingStyle(p) : 'border:2px solid var(--gold)';
   // v8.24.76 — apply the ornamental ring CLASS (was never applied), so the
   // .ring-* ::before/::after art (rope studs, fescue grass, fried-egg splash,
@@ -513,6 +556,11 @@ function pbTeeMarkerHtml(p) {
 
 function renderUsername(p, extraStyle, clickToProfile) {
   if (!p) return '<span style="' + (extraStyle || '') + '">Unknown</span>';
+  // The Caddy: canonical name + brass BOT badge, no member cosmetics, never
+  // click-to-profile. Identical across leagues so a bot post reads instantly.
+  if (isCaddyPlayer(p)) {
+    return '<span class="feed-card__name--caddy" style="' + (extraStyle || '') + '">' + escHtml("The Caddy") + '</span>' + caddyBotBadge();
+  }
   var name = p.username || p.name || 'Member';
   var nameClass = getPlayerNameClass(p);
   var pid = p.id || '';

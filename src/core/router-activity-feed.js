@@ -9,11 +9,16 @@ function renderFeedItem(a) {
   // ── Chat messages ──
   if (a.type === "chat") {
     var clickAttr = a.dest ? ' onclick="' + a.dest + '" style="cursor:pointer"' : '';
+    // v8.25.x \u2014 The Caddy renders through the SINGLE canonical avatar + username
+    // helpers (branded flag mark + BOT badge), identical to /feed and everywhere
+    // else. The old birdie-tinted glyph disc treatment is gone (it was the
+    // second, divergent flag disc). a.system covers legacy + normalized bots.
     if (a.system) {
-      var h = '<div style="display:flex;gap:10px;padding:8px 16px;margin:2px 0;background:rgba(var(--birdie-rgb),.06);border-radius:8px"' + clickAttr + '>';
-      h += '<div style="width:28px;height:28px;min-width:28px;border-radius:50%;background:rgba(var(--birdie-rgb),.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:14px">\u26f3</span></div>';
+      var caddy = (typeof PB_CADDY !== "undefined") ? PB_CADDY : { id: "the-caddy", name: "The Caddy", bot: true };
+      var h = '<div style="display:flex;gap:10px;padding:8px 16px;margin:2px 0;background:rgba(var(--cb-brass-rgb),.06);border-radius:8px"' + clickAttr + '>';
+      h += renderAvatar(caddy, 28, false);
       h += '<div style="flex:1;min-width:0"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">';
-      h += '<span style="font-size:10px;font-weight:700;color:var(--birdie)">The Caddy</span>';
+      h += '<span style="font-size:10px;font-weight:700">' + renderUsername(caddy, '') + '</span>';
       h += '<span style="font-size:9px;color:var(--muted2)">' + timeLabel + '</span></div>';
       h += '<div style="font-size:12px;color:var(--cream);line-height:1.6">' + escHtml(a.sub) + '</div>';
       h += '</div></div>';
@@ -226,16 +231,20 @@ function loadHomeActivityFeed() {
   leagueQuery("chat").orderBy("createdAt", "desc").limit(20).get().then(function(snap) {
     snap.forEach(function(doc) {
       var msg = doc.data();
-      var isSystem = !!msg.system || msg.authorId === "system" || msg.authorName === "The Caddy" || msg.authorName === "Parbaughs";
+      // RENDER-TIME NORMALIZATION (v8.25.x): detect bot content under the new
+      // canonical identity OR any legacy shape, so already-stored docs render
+      // through the single Caddy identity (no Firestore migration).
+      var isSystem = (typeof isCaddyAuthor === "function") ? isCaddyAuthor(msg)
+        : (!!msg.system || msg.authorId === "system" || msg.authorName === "The Caddy" || msg.authorName === "Parbaughs");
       var text = msg.text || "";
       // Skip automated messages that duplicate other feed items
-      if (text.indexOf("range session") !== -1 && (isSystem || msg.authorName === "Parbaughs" || msg.authorId === "system")) return;
+      if (text.indexOf("range session") !== -1 && isSystem) return;
       if (text.indexOf("scoring is complete") !== -1) return;
       if (text.indexOf("just finished a") !== -1 && text.indexOf("range") !== -1) return;
       var dest = "";
       if (msg.linkType === "event" && msg.tripId) dest = "Router.go('scorecard',{tripId:'" + msg.tripId + "'})";
       else if (msg.linkType === "round" && msg.roundId) dest = "Router.go('rounds',{roundId:'" + msg.roundId + "'})";
-      items.push({type:"chat", playerId:msg.authorId||"", name:(msg.system ? "The Caddy" : msg.authorName || msg.user || "Member"), sub:text, ts:tsMillis(msg.createdAt) || (msg.timestamp || 0), system:isSystem, dest:dest});
+      items.push({type:"chat", playerId: isSystem ? "" : (msg.authorId||""), name:(isSystem ? "The Caddy" : msg.authorName || msg.user || "Member"), sub:text, ts:tsMillis(msg.createdAt) || (msg.timestamp || 0), system:isSystem, dest:dest});
     });
     pending--; tryRender();
   }).catch(function() { pending--; tryRender(); });

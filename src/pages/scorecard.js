@@ -393,17 +393,12 @@ function closeEvent(tripId, _confirmed) {
     finalStandings.forEach(function(s, i) {
       resultsText += (i + 1) + ". " + s.name + " – " + s.points + " pts\n";
     });
-    db.collection("chat").add(leagueDoc("chat", {
-      id: genId(),
-      text: resultsText,
-      authorId: "system",
-      authorName: "The Caddy",
-      system: true,
+    // v8.25.x — single canonical Caddy identity (see PB_CADDY in utils.js).
+    postCaddyChat(resultsText, {
       tripId: tripId,
       linkType: "event",
-      timestamp: Date.now(),
-      createdAt: fsTimestamp()
-    })).catch(function(){});
+      timestamp: Date.now()
+    });
   }
   
   // Update local player wins

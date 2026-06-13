@@ -191,11 +191,8 @@ function submitBounty() {
   if (!deductCoins(currentUser.uid, pot, "bounty_post", "Posted bounty at " + course)) return;
 
   db.collection("bounties").add(leagueDoc("bounties", bountyData)).then(function() {
-    db.collection("chat").add(leagueDoc("chat", {
-      id: genId(),
-      text: myName + " posted a " + pot + "-coin bounty: " + (type === "score" ? "Shoot " + bountyData.targetScore + " or better" : "Birdie hole " + bountyData.targetHole) + " at " + course + ". Who can claim it?",
-      authorId: "system", authorName: "The Caddy", createdAt: fsTimestamp()
-    })).catch(function(){});
+    // v8.25.x — single canonical Caddy identity (see PB_CADDY in utils.js).
+    postCaddyChat(myName + " posted a " + pot + "-coin bounty: " + (type === "score" ? "Shoot " + bountyData.targetScore + " or better" : "Birdie hole " + bountyData.targetHole) + " at " + course + ". Who can claim it?");
     Router.toast("Bounty posted!");
     Router.go("bounties", {}, true);
   }).catch(function(err) { Router.toast(pbErrMsg(err, "Couldn't post the bounty.")); });
@@ -226,11 +223,7 @@ function checkBountyClaims(round) {
         var myName = currentProfile ? (currentProfile.name || currentProfile.username) : "A Parbaugh";
         awardCoins(currentUser.uid, b.pot, "bounty_claim", "Claimed bounty at " + b.course + " (" + b.pot + " coins)");
         db.collection("bounties").doc(doc.id).update({ status: "claimed", claimedBy: currentUser.uid, claimedByName: myName, claimedAt: fsTimestamp() });
-        db.collection("chat").add(leagueDoc("chat", {
-          id: genId(),
-          text: myName + " CLAIMED the " + b.pot + "-coin bounty at " + b.course + "! " + (b.type === "score" ? "Shot " + round.score + " (target: " + b.targetScore + ")" : "Birdied hole " + b.targetHole),
-          authorId: "system", authorName: "The Caddy", createdAt: fsTimestamp()
-        })).catch(function(){});
+        postCaddyChat(myName + " CLAIMED the " + b.pot + "-coin bounty at " + b.course + "! " + (b.type === "score" ? "Shot " + round.score + " (target: " + b.targetScore + ")" : "Birdied hole " + b.targetHole));
         sendNotification(b.createdBy, { type: "bounty_claimed", title: "Bounty claimed!", message: myName + " claimed your " + b.pot + "-coin bounty at " + b.course, page: "bounties" });
         Router.toast("BOUNTY CLAIMED! +" + b.pot + " ParCoins!");
       }

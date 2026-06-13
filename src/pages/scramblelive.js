@@ -197,14 +197,8 @@ function finishScrambleLive(_confirmed) {
       createdAt: fsTimestamp()
     }).catch(function(){});
     
-    // Post to activity feed
-    db.collection("chat").add(leagueDoc("chat", {
-      id: genId(),
-      text: s.team.name + " shot " + total + " in a scramble at " + s.course + "!",
-      authorId: "system",
-      authorName: "Parbaughs",
-      createdAt: fsTimestamp()
-    })).catch(function(){});
+    // Post to activity feed — single canonical Caddy identity (PB_CADDY).
+    postCaddyChat(s.team.name + " shot " + total + " in a scramble at " + s.course + "!");
   }
   
   scrambleLiveState = { active: false };

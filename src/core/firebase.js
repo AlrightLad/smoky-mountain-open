@@ -430,14 +430,8 @@ function doRegister() {
             welcomeName + " is officially a member. The dress code is vibes only and the only rule is don't be slower than Nick."
           ];
           var ribb = welcomeRibbs[Math.floor(Math.random() * welcomeRibbs.length)];
-          db.collection("chat").add(leagueDoc("chat", {
-            id: genId(),
-            text: ribb,
-            authorId: "system",
-            authorName: "The Caddy",
-            createdAt: fsTimestamp(),
-            type: "welcome"
-          })).catch(function(){});
+          // v8.25.x — single canonical Caddy identity (see PB_CADDY in utils.js).
+          postCaddyChat(ribb, { type: "welcome" });
         });
       });
     });

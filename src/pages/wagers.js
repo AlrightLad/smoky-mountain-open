@@ -320,12 +320,9 @@ function submitWager() {
       message: WAGER_TYPES[type].label + " for " + totalCost + " ParCoins" + (course ? " at " + course : ""),
       page: "wagers"
     });
-    // Post to feed if public
+    // Post to feed if public — single canonical Caddy identity (PB_CADDY).
     if (visibility === "public") {
-      db.collection("chat").add(leagueDoc("chat", {
-        id: genId(), text: myName + " challenged " + oppName + " to a " + WAGER_TYPES[type].label + " wager for " + totalCost + " ParCoins" + (course ? " at " + course : "") + "!",
-        authorId: "system", authorName: "Parbaughs", createdAt: fsTimestamp()
-      })).catch(function(){});
+      postCaddyChat(myName + " challenged " + oppName + " to a " + WAGER_TYPES[type].label + " wager for " + totalCost + " ParCoins" + (course ? " at " + course : "") + "!");
     }
     Router.toast("Challenge sent to " + oppName + "!");
     Router.go("wagers");

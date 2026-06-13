@@ -169,10 +169,8 @@ function purchasePowerUp(key, cost) {
     db.collection("members").doc(currentUser.uid).set({ handicapShield: true }, { merge: true });
     if (currentProfile) currentProfile.handicapShield = true;
     Router.toast("Handicap Shield activated! Your next bad round won't hurt your handicap.");
-    db.collection("chat").add(leagueDoc("chat", {
-      id: genId(), text: myName + " activated a Handicap Shield! Their next round won't count toward their handicap.",
-      authorId: "system", authorName: "The Caddy", createdAt: fsTimestamp()
-    })).catch(function(){});
+    // v8.25.x — single canonical Caddy identity (see PB_CADDY in utils.js).
+    postCaddyChat(myName + " activated a Handicap Shield! Their next round won't count toward their handicap.");
   }
   Router.go("richlist", {}, true);
 }
@@ -189,10 +187,7 @@ function purchaseStatus(key, cost) {
     var course = currentProfile ? (currentProfile.homeCourse || "their home course") : "a course";
     db.collection("members").doc(currentUser.uid).set({ sponsoredHole: { course: course, season: PB.getCurrentSeason().label } }, { merge: true });
     Router.toast("You now sponsor a hole at " + course + " for the season!");
-    db.collection("chat").add(leagueDoc("chat", {
-      id: genId(), text: myName + " is now a HOLE SPONSOR at " + course + " for " + PB.getCurrentSeason().label + "! Their name appears on scorecards.",
-      authorId: "system", authorName: "The Caddy", createdAt: fsTimestamp()
-    })).catch(function(){});
+    postCaddyChat(myName + " is now a HOLE SPONSOR at " + course + " for " + PB.getCurrentSeason().label + "! Their name appears on scorecards.");
   }
   // v8.24.33 — the "nameTournament" purchase branch removed entirely (Founder
   // removed the item from status purchases in v8.24.20; the handler had become

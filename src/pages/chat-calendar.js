@@ -354,14 +354,8 @@ function createEventFromCal(startDate, endDate, _name, _loc) {
   if (db) {
     db.collection("trips").doc(eventData.id).set(leagueDoc("trips", eventData)).then(function() {
       Router.toast("Event created!");
-      // Post to activity feed
-      db.collection("chat").add(leagueDoc("chat", {
-        id: genId(),
-        text: (currentProfile ? PB.getDisplayName(currentProfile) : "Someone") + " created a new event: " + name.trim() + " (" + startDate + " to " + endDate + ")",
-        authorId: "system",
-        authorName: "Parbaughs",
-        createdAt: fsTimestamp()
-      })).catch(function(){});
+      // Post to activity feed — single canonical Caddy identity (PB_CADDY).
+      postCaddyChat((currentProfile ? PB.getDisplayName(currentProfile) : "Someone") + " created a new event: " + name.trim() + " (" + startDate + " to " + endDate + ")");
       clubCalRangeStart = null;
       clubCalRangeEnd = null;
       clubCalSelectedDate = null;
