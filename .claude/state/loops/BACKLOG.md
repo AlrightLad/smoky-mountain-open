@@ -87,9 +87,10 @@ when every item below is [x].
   registered in notification-types.js (was unregistered → generic icon/wrong link).
 
 ### Per-page lifts to ≥9.0 (worst-first; specs in WF2 output)
-- [ ] SCRAMBLE 5.8 → editorial masthead, felt team-crest card w/ hero W-L, fix
-  avatar-blob (stockAvatar skips initial disc, scramble.js:23), fill empty fold,
-  scramblelive token migration + finish celebration.
+- [x] SCRAMBLE 5.8 → DONE v8.25.58 (LIVE+V1): editorial masthead ('The team room.'),
+  felt team-crest cards w/ hero W-L + split bar, avatar-blob fixed (stockAvatar no
+  longer counts as a photo → distinct brass initials). Verified via injected-team
+  capture. (scramblelive token migration deferred to a polish pass.)
 - [ ] PROFILE 6.3 → kill inline-style body, migrate sections to pf-*/tokens, one
   type scale, reduce tab/collapsible load, entrance+count-up motion.
 - [ ] RECORDS 6.3 → editorial masthead, open headline sections (show records on
