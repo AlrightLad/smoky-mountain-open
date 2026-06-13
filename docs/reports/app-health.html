@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-13T04:06:24.999628Z",
+  "generated_at": "2026-06-13T04:08:05.799494Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 85.6,
   "overall_grade": "A-",
@@ -1046,13 +1046,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "b2498fa6",
-    "subject": "test(smoke): unstale intro hygiene + Wrapped pending-gate (33/33 green)",
-    "committed_at": "2026-06-13T00:05:35-04:00",
+    "sha": "32d1c22a",
+    "subject": "Overnight triage 2026-06-13 - 0 reports, 0 proposals, 0 FIQ entries graded",
+    "committed_at": "2026-06-13T00:07:42-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 2
+    "total_files_touched": 3
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
