@@ -2039,7 +2039,7 @@ var PB = (function() {
     if (seasonKey) {
       var cfg = SEASON_CONFIG.find(function(s) { return s.key === seasonKey; });
       if (cfg) { seasonStart = year + cfg.start; seasonEnd = year + cfg.end; seasonLabel = cfg.label + " " + year; }
-      else { seasonStart = year + "-03-01"; seasonEnd = year + "-11-30"; seasonLabel = year + " Full Year"; }
+      else { seasonStart = year + "-01-01"; seasonEnd = year + "-12-31"; seasonLabel = year + ""; }  // v8.25.47 — TRUE calendar year (annual Recap + Wrapped per Decision #59; was Mar–Nov, which misaligned the recap)
     } else {
       // Default: current season or full year
       var current = getCurrentSeason();

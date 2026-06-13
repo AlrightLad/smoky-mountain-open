@@ -1,12 +1,12 @@
 // ========== SEASON RECAP ==========
 Router.register("seasonrecap", function(params) {
   var year = (params && params.year) ? parseInt(params.year) : new Date().getFullYear();
-  var season = PB.getSeasonStandings(year);
+  var season = PB.getSeasonStandings(year, "_year"); // annual (calendar Jan–Dec), same as Wrapped (#59) — the recap is the YEAR's story; the seasonal Spring/Summer/Fall board lives on Standings
   var players = PB.getPlayers();
   var allRounds = [];
   players.forEach(function(p) {
     PB.getPlayerRounds(p.id).forEach(function(r) {
-      if (r.date && r.date >= year + "-03-01" && r.date <= year + "-09-30") {
+      if (r.date && r.date >= year + "-01-01" && r.date <= year + "-12-31") {
         allRounds.push(Object.assign({playerName: p.name || p.username, playerId: p.id}, r));
       }
     });
@@ -18,7 +18,7 @@ Router.register("seasonrecap", function(params) {
   h += '<div style="text-align:center;padding:24px 16px;background:linear-gradient(180deg,var(--grad-hero),var(--bg));border-bottom:1px solid var(--border)">';
   h += '';
   h += '<div style="font-family:var(--font-display);font-size:24px;color:var(--gold);font-weight:700">' + year + ' Season Recap</div>';
-  h += '<div style="font-size:11px;color:var(--muted);margin-top:6px">March 1 – September 30</div>';
+  h += '<div style="font-size:11px;color:var(--muted);margin-top:6px">The full year · January – December</div>';
   // v8.24.44 — Wrapped entry (growth #2): the story-format personal recap.
   // v8.25.9 — SVG play glyph, not the ▶ emoji (Founder: "we do not do emojis,
   // they feel cheap and gross — we do SVG icons").
@@ -193,7 +193,7 @@ Router.register("seasonrecap", function(params) {
     h += '</div>';
   }
   
-  h += '<div style="text-align:center;padding:20px;font-size:10px;color:var(--muted2)">See you next season · March ' + (year+1) + '</div>';
+  h += '<div style="text-align:center;padding:20px;font-size:10px;color:var(--muted2)">Here\'s to ' + (year+1) + '</div>';
   
   document.querySelector('[data-page="seasonrecap"]').innerHTML = h;
 });
