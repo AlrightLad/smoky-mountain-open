@@ -3088,7 +3088,10 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
   transition: background-color var(--dur-quick) var(--ease-default),
               transform var(--dur-quick) var(--ease-default);
 }
-.tappable:active { background-color: color-mix(in oklab, currentColor 6%, transparent); }
+/* Press-scale on EVERY tappable (Founder 4-dim push: "more motion & life") — every
+   card/row now gives the iOS-style physical press, not just the primary CTAs. Subtle
+   (0.985) so it reads as responsive, not bouncy. Reduced-motion-safe below. */
+.tappable:active { background-color: color-mix(in oklab, currentColor 6%, transparent); transform: scale(0.985); }
 .tappable[data-surface="dark"]:active { background-color: color-mix(in oklab, var(--cb-chalk) 8%, transparent); }
 .tappable--primary:active { transform: scale(0.98); }
 @media (hover: hover) {
@@ -3096,7 +3099,7 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 }
 @media (prefers-reduced-motion: reduce) {
   .tappable, .tappable--primary { transition: none; }
-  .tappable--primary:active { transform: none; }
+  .tappable:active, .tappable--primary:active { transform: none; }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
