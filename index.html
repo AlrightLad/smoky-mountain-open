@@ -236,7 +236,7 @@ html{background:var(--bg)!important}body{font-family:'Inter',system-ui,sans-seri
   </aside>
   <div id="hqDrawerBackdrop" class="hq-drawer-backdrop" aria-hidden="true" onclick="if (window._closeHQDrawer) window._closeHQDrawer();"></div>
 
-  <div id="profileBar" style="position:sticky;top:0;z-index:90;display:flex;justify-content:space-between;align-items:center;padding:calc(8px + env(safe-area-inset-top)) 16px 8px 16px;background:var(--bg);border-bottom:1px solid var(--border)">
+  <div id="profileBar" style="position:sticky;top:0;z-index:90;display:flex;justify-content:space-between;align-items:center;padding:calc(8px + env(safe-area-inset-top)) 16px 8px 16px;background:var(--bg);border-bottom:1px solid var(--border);transform:translateZ(0);-webkit-backface-visibility:hidden;backface-visibility:hidden">
     <div id="profileBarLeft" style="display:flex;align-items:center;gap:8px;cursor:pointer" onclick="goToMyProfile()">
       <div id="profileBarAvatar" style="width:28px;height:28px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;position:relative"></div>
       <div id="profileBarRight" style="font-size:12px;color:var(--muted)"></div>
