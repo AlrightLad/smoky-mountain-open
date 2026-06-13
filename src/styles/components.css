@@ -4311,6 +4311,11 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 /* v8.25.48 — Merch "coming soon" vintage poster */
 .merch-poster { max-width: 380px; margin: 14px auto 8px; padding: 0 16px; }
 .merch-note { max-width: 360px; margin: 6px auto 26px; padding: 0 22px; text-align: center; font-family: var(--font-ui); font-size: 11.5px; line-height: 1.55; color: var(--cb-mute); }
+/* v8.25.51 — add-course scorecard-photo reference (client-side chart-from) */
+.ac-photo { display: block; cursor: pointer; margin-bottom: 12px; }
+.ac-photo__empty { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 22px; border: 1.5px dashed var(--border); border-radius: 12px; color: var(--muted); font-size: 12px; text-align: center; transition: border-color var(--duration-fast, .15s) ease; }
+.ac-photo:hover .ac-photo__empty { border-color: var(--gold); }
+.ac-photo__empty svg { color: var(--gold); }
 
 .shop-economy { margin: 0 0 30px; }
 .shop-econ-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }

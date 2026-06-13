@@ -623,6 +623,14 @@ function promptAddCourse() {
 function renderAddCourseForm() {
   var h = '<div class="sh"><h2>Add course</h2><button class="back" onclick="Router.back(\'courses\')">← Back</button></div>';
   h += '<div class="form-section"><div class="form-title">New course</div>';
+  // v8.25.51 — chart from a scorecard photo (Founder: "add a course via a photo
+  // scan or upload"). The photo is a CLIENT-SIDE reference you read off while
+  // filling in the details — it is NOT uploaded or stored, so there is zero risk
+  // to the shared course-data path. (Auto-fill OCR is the gated follow-up —
+  // task-queue/founder/course-photo-scan-decision.md.) Camera or library.
+  h += '<label class="ac-photo"><input type="file" accept="image/*" capture="environment" onchange="_acPhotoPreview(this)" style="display:none">';
+  h += '<div id="ac-photo-empty" class="ac-photo__empty"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h3l2-2h8l2 2h3v12H3z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Snap or upload a scorecard to chart from</span></div>';
+  h += '<img id="ac-photo-img" alt="Scorecard reference" style="display:none;width:100%;border-radius:10px;margin-bottom:10px"></label>';
   h += formField("Course name", "ac-name", "", "text", "e.g. Pebble Beach");
   h += formField("Location", "ac-loc", "", "text", "e.g. Pebble Beach, CA");
   h += formField("State", "ac-region", "", "text", "e.g. CA");
@@ -633,6 +641,23 @@ function renderAddCourseForm() {
   h += formField("Par", "ac-par", "72", "number", "72");
   h += '<button class="btn full green" onclick="submitAddCourse()">Add course</button></div>';
   document.querySelector('[data-page="courses"]').innerHTML = h;
+}
+
+// v8.25.51 — show the picked scorecard photo as an on-screen reference (client
+// only; not uploaded). Global (called from the form's inline onchange, like
+// submitAddCourse). Revokes any prior object URL to avoid a leak on re-pick.
+var _acPhotoUrl = null;
+function _acPhotoPreview(input) {
+  var f = input && input.files && input.files[0];
+  if (!f) return;
+  var img = document.getElementById("ac-photo-img");
+  var empty = document.getElementById("ac-photo-empty");
+  try {
+    if (_acPhotoUrl) { try { URL.revokeObjectURL(_acPhotoUrl); } catch (e) {} }
+    _acPhotoUrl = URL.createObjectURL(f);
+    if (img) { img.src = _acPhotoUrl; img.style.display = "block"; }
+    if (empty) empty.style.display = "none";
+  } catch (e) {}
 }
 
 function submitAddCourse() {
