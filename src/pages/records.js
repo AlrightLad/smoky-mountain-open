@@ -321,16 +321,20 @@ Router.register("records", function() {
     hcapsSeen[key] = true;
     var computed = PB.calcHandicap(PB.getPlayerRounds(p.id)) ||
                    (p.claimedFrom ? PB.calcHandicap(PB.getPlayerRounds(p.claimedFrom)) : null);
-    var stored = p.handicap || null;
+    // Fall back to the MATERIALIZED computedHandicap (what profile/members/home
+    // display) before the legacy `handicap` field, so the leaderboard never
+    // disagrees with the rest of the app on the same player's index (P9).
+    var stored = (p.computedHandicap != null ? p.computedHandicap : p.handicap);
+    if (stored == null) stored = null;
     var hcap = computed !== null ? computed : stored;
     if (hcap === null) return null;
     return { name: p.name || p.username, hcap: hcap };
   }).filter(Boolean).sort(function(a, b) { return a.hcap - b.hcap; });
-  if (hcaps.length) { hcaps.forEach(function(x) { hcapContent += '<div class="hof-row"><span class="hof-label">' + escHtml(x.name) + '</span><span class="hof-val">' + x.hcap + '</span></div>'; }); }
+  if (hcaps.length) { hcaps.forEach(function(x) { hcapContent += '<div class="hof-row"><span class="hof-label">' + escHtml(x.name) + '</span><span class="hof-val">' + (+x.hcap).toFixed(1) + '</span></div>'; }); }
   else hcapContent = '<div class="hof-row"><span class="hof-label">No handicaps yet</span><span class="hof-val">Log 3+ rounds</span></div>';
   // Inline the leader (lowest handicap — list is sorted ascending) under the
   // title so the section conveys data before any tap (P10).
-  var hcapPreview = hcaps.length ? ('Leader: ' + escHtml(hcaps[0].name) + ' · ' + hcaps[0].hcap) : '';
+  var hcapPreview = hcaps.length ? ('Leader: ' + escHtml(hcaps[0].name) + ' · ' + (+hcaps[0].hcap).toFixed(1)) : '';
   h += hofCard("hcap", "Handicap leaderboard", hcapContent, hcapPreview);
 
   // 7. Member averages — use all known members (fbMemberCache has everyone)
