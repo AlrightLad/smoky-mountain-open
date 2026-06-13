@@ -822,9 +822,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-13T16:24:30.934296Z",
+  "generated_at": "2026-06-13T16:28:42.954053Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 86.3,
+  "overall_score": 85.6,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -844,9 +844,9 @@
         "path": ".claude/state/incidents/2026-06-13-concurrent-marathon-collision.md"
       }
     ],
-    "pre_deduction_score": 91.3,
+    "pre_deduction_score": 90.6,
     "deduction": 5,
-    "post_deduction_score": 86.3
+    "post_deduction_score": 85.6
   },
   "dimensions": {
     "A1_roadmap": {
@@ -1005,9 +1005,9 @@
       "weak_points": []
     },
     "A12_operational": {
-      "score": 75,
+      "score": 60,
       "status": "yellow",
-      "label": "pipeline=yellow · 8 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=red · 8 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
@@ -1052,13 +1052,18 @@
     }
   ],
   "audit_trigger": {
-    "sha": "309ad796",
-    "subject": "chore(home): mark HOME + STANDINGS lifts done + regen",
-    "committed_at": "2026-06-13T12:23:21-04:00",
-    "trigger": "substrate-commit",
-    "is_app_commit": false,
-    "app_files_touched": [],
-    "total_files_touched": 5
+    "sha": "019329fa",
+    "subject": "feat(settings): unify caddie picker onto .theme-row + coin glyph on balance + section motion (v8.25.77)",
+    "committed_at": "2026-06-13T12:27:22-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "public/sw.js",
+      "src/core/utils.js",
+      "src/pages/settings.js",
+      "src/styles/components.css"
+    ],
+    "total_files_touched": 6
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
