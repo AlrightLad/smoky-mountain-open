@@ -157,9 +157,15 @@ when every item below is [x].
   Room Guy w/ lock all clean). Coin glyph + count-up on the ParCoin balance; section
   entrance cascade (staggeredReveal). (Location inline-style migration = minor
   convergence-pass cleanup; it already uses set-row tokens.)
-- [ ] PLAY NOW LIVE 8.2 → re-skin FIR/GIR + Finish button off legacy green into
-  moss/brass, tokenize turn summary + confirm/publish panels, contrast harden,
-  birdie micro-celebration.
+- [x] PLAY NOW LIVE 8.2 → DONE v8.25.82 (LIVE, bundle-verified): FIR/GIR 'hit' active
+  state moved off the bright --birdie green onto on-brand MOSS; the big Finish Round
+  button moved off its --birdie→--cb-green-3 gradient onto the brass --gold→--gold3
+  gradient (matches the already-brass .btn.green Next/Confirm) + dark ink. Birdie/
+  eagle micro-celebration: a moss(birdie)/brass(eagle) label floats up off the score
+  hero on a sub-par score — one-shot, NOT full PB confetti, reduced-motion gated in
+  JS. Verified the 3 changes in the built bundle (CSS token swaps + burst). (Live-
+  scorer visual capture needs an injected active-round state — quick follow-up;
+  turn-summary/confirm-panel tokenize = convergence-pass.)
 - [x] MEMBERS 8.2 → DONE v8.25.78 (LIVE+V1): roster was already strong (editorial
   'The roster.' masthead, All/Live-now tabs, search+sort, agate rail w/ handicap +
   most-active leaders, demoted invite slab at the foot). Added the two missing

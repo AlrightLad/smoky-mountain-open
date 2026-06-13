@@ -4,6 +4,17 @@
    ParCoins are cosmetic-only with zero real-world cash value.
    ================================================ */
 
+// v8.25.83 — brass golf-flag SVG replacing the ⛳ emoji placeholders (the
+// no-emoji rule reserves ⛳ for The Caddy bot only; a raw emoji also rendered
+// inconsistently across iPhone/Android). One source, sized per call site.
+function _shopFlagSvg(px) {
+  px = px || 28;
+  return '<svg viewBox="0 0 24 24" width="' + px + '" height="' + px + '" fill="none" aria-hidden="true">' +
+    '<path d="M7 22V3l11 3.2L7 9.6" fill="rgba(var(--cb-brass-rgb),0.20)" stroke="var(--cb-brass)" stroke-width="1.5" stroke-linejoin="round"/>' +
+    '<line x1="7" y1="22" x2="7" y2="3" stroke="var(--cb-brass)" stroke-width="1.6" stroke-linecap="round"/>' +
+    '<circle cx="7" cy="22" r="1.4" fill="var(--cb-brass)"/></svg>';
+}
+
 var COSMETICS_CATALOG = [
   // ── PROFILE RINGS — Basic: 100-200, Mid: 300-500, Premium: 750-1500, Ultra: 2000+ ──
   {id:"border_default_gold",cat:"border",name:"Classic Gold",      price:0,   desc:"The default Parbaugh gold, free for all members",  css:"2px solid #c9a84c",  preview:"#c9a84c"},
@@ -350,7 +361,7 @@ Router.register("shop", function() {
       var _mg = (typeof pbMarkerGlyph === 'function') ? pbMarkerGlyph(item.id, 56) : '';
       c += '<div class="shop-surface-stage">' + (_mg || '<span style="width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,' + item.preview + ',rgba(0,0,0,.35));box-shadow:0 3px 4px -2px rgba(0,0,0,.5)"></span>') + '</div>';
     } else if (item.cat === 'voice') {
-      c += '<div style="height:34px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:16px">⛳</div>';
+      c += '<div style="height:34px;margin-bottom:8px;display:flex;align-items:center;justify-content:center">' + _shopFlagSvg(20) + '</div>';
     } else if (item.cat === 'title') {
       // v8.24.76 — pc36 previews as its leather bag tag (was the same brass
       // plate as pc14, so the two priciest title plates looked identical).
@@ -422,7 +433,7 @@ Router.register("shop", function() {
         var skuItem = cd.sku ? PRO_SHOP_CATALOG.filter(function(i) { return i.id === cd.sku; })[0] : null;
         var c = '<div class="shop-item shop-item--proshop">';
         c += '<div class="shop-tier-chip shop-tier-chip--proshop">Caddy</div>';
-        c += '<div class="shop-surface-stage"><span style="font-size:30px" aria-hidden="true">⛳</span></div>';
+        c += '<div class="shop-surface-stage">' + _shopFlagSvg(34) + '</div>';
         c += '<div class="shop-item__name">' + escHtml(cd.name) + '</div>';
         c += '<div class="shop-item__desc">' + escHtml(cd.blurb || '') + '</div>';
         if (!cd.locked) c += '<button class="shop-item__equip" onclick="Router.go(\'settings\')">Included · choose in Settings</button>';
@@ -682,7 +693,7 @@ function shopPreviewCosmetic(itemId) {
   } else if (item.cat === 'voice') {
     var cad = (window.pbCaddies || []).filter(function (c) { return c.sku === item.id; })[0];
     var line = (cad && window.pbVoices) ? window.pbVoices.line('frame', cad.id) : '';
-    stage = '<div style="text-align:center"><div style="font-size:34px">⛳</div><div style="font-weight:700;font-size:15px;color:var(--cb-ink);margin-top:6px">' + escHtml(cad ? cad.name : item.name) + '</div>'
+    stage = '<div style="text-align:center"><div style="display:flex;justify-content:center">' + _shopFlagSvg(38) + '</div><div style="font-weight:700;font-size:15px;color:var(--cb-ink);margin-top:6px">' + escHtml(cad ? cad.name : item.name) + '</div>'
       + (line ? '<div style="font-family:var(--font-display);font-style:italic;font-size:14px;color:var(--cb-ink);background:var(--cb-chalk-2);border-radius:10px;padding:10px 12px;margin-top:10px;line-height:1.4">“' + escHtml(line) + '”</div>' : '') + '</div>';
   } else if (item.cat === 'title' || item.cat === 'nameplate') {
     var titleEl = item.plate
