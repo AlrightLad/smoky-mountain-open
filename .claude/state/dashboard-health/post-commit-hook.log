@@ -36,6 +36,8 @@
 [aggregate-fiq-status] OK status=green declared=26 deployed=26 write=False (skip-idempotent-grace-content-unchanged-2166932s)
 
 --- scripts/aggregate-self-tests.py ---
+[aggregate-self-tests] FAIL (1 aggregators):
+  aggregate-fiq-status: parity-fail: source-detected but status=unknown
 [aggregate-self-tests] starting D40 parity checks across 5 aggregators
   [aggregate-test-health] PASS status=green age=84026s
   [aggregate-security-health] PASS status=yellow age=75615s
@@ -97,11 +99,11 @@
 [regen-token-usage] pie_views slices: agent=3 work=2 session_top10=10
 
 --- scripts/consolidate-lighthouse.py ---
-Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
-  performance       : 83
-  accessibility     : 95
-  best-practices    : 93
-  seo               : 92
+Consolidated 0 pages -> .claude/state/aggregates/lighthouse-scores.json
+  performance       : None
+  accessibility     : None
+  best-practices    : None
+  seo               : None
 
 --- scripts/aggregate-app-health.py ---
 [aggregate-app-health] overall=A- (85.6) · 2 attention items · .claude\state\aggregates\app-health.json
