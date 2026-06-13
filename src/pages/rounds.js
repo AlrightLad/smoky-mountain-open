@@ -68,9 +68,21 @@ function renderRoundsList(params) {
   var scopeName = scopePlayer ? (scopePlayer.name || scopePlayer.username || "Player") : null;
   var isSelfScope = scopePid && selfIds.indexOf(scopePid) !== -1;
 
-  var h = '<div class="sh"><h2>' + (scopePid ? escHtml((isSelfScope ? "My" : (scopeName + "’s")) + " rounds") : "Rounds") + '</h2>';
-  if (scopePid) h += '<button class="back" onclick="Router.back(\'rounds\')">← Back</button>';
-  else h += '<button class="btn-sm green" onclick="Router.go(\'rounds\',{action:\'new\'})">+ Log a round</button>';
+  // v8.25.75 (ROUNDS lift) — editorial masthead replacing the legacy .sh/<h2>
+  // header so the list hero reads in the same voice as the round-detail
+  // masthead (mono eyebrow + Fraunces headline), matching Courses/Members/
+  // Records/Scramble. The "+ Log a round" CTA is promoted into the masthead;
+  // the scoped-player view leads with a back affordance + the player's name.
+  var h = '<div class="roster-masthead">';
+  if (scopePid) {
+    h += '<button class="back" onclick="Router.back(\'rounds\')" style="margin-bottom:12px">← Back</button>';
+    h += '<div class="roster-eyebrow">' + (isSelfScope ? 'YOUR SCORECARD' : 'PLAYER SCORECARD') + '</div>';
+    h += '<h1 class="roster-headline">' + escHtml(isSelfScope ? 'My rounds.' : (scopeName + '’s rounds.')) + '</h1>';
+  } else {
+    h += '<div class="roster-eyebrow">THE SCORECARD</div>';
+    h += '<h1 class="roster-headline">Rounds.</h1>';
+    h += '<div style="margin-top:14px"><button class="btn-sm green" onclick="Router.go(\'rounds\',{action:\'new\'})">+ Log a round</button></div>';
+  }
   h += '</div>';
 
   // Handicap (mirrors the legacy activity.js:38-42 treatment so the
@@ -264,6 +276,11 @@ function renderRoundsList(params) {
 
   h += renderPageFooter();
   document.querySelector('[data-page="rounds"]').innerHTML = h;
+  // v8.25.75 — entrance cascade on the history rows (the only .card elements in
+  // the list view; hcap-box is its own recipe). The handicap-hero count-up is
+  // already driven by the router's post-nav initCountAnimations hook
+  // (router-sidebar.js). transform/opacity only, reduced-motion no-ops inside.
+  if (window.staggeredReveal) window.staggeredReveal(document.querySelectorAll('[data-page="rounds"] .card'), { gap: 35, duration: 300 });
 }
 
 // New-round entry surface. Reuses _renderRoundEntryForm with no prefill.
