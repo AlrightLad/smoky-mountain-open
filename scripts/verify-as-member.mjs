@@ -66,9 +66,18 @@ if (WITH_INTRO) {
 }
 await page.evaluate(() => { try { window.pbTeeIntro && window.pbTeeIntro.skip && window.pbTeeIntro.skip(); } catch (e) {} });
 await page.waitForTimeout(5000); // let league-scoped listeners hydrate
-await page.evaluate((r) => { if (window.Router && window.Router.go) window.Router.go(r); }, ROUTE);
+// Support param routes like "members?id=UID" → Router.go("members", {id:"UID"}).
+await page.evaluate((r) => {
+  if (!(window.Router && window.Router.go)) return;
+  var q = r.indexOf('?');
+  if (q === -1) { window.Router.go(r); return; }
+  var base = r.slice(0, q), params = {};
+  r.slice(q + 1).split('&').forEach(function (kv) { var p = kv.split('='); if (p[0]) params[decodeURIComponent(p[0])] = decodeURIComponent(p[1] || ''); });
+  window.Router.go(base, params);
+}, ROUTE);
 await page.waitForTimeout(3000);
-await page.screenshot({ path: `${OUT}/${LABEL}-${ROUTE}.png`, fullPage: true });
+var _safeRoute = ROUTE.replace(/[^a-zA-Z0-9_-]+/g, '_');
+await page.screenshot({ path: `${OUT}/${LABEL}-${_safeRoute}.png`, fullPage: true });
 // CAP_SELECTOR=".shop-item" → also grab a readable element-level shot (full-page
 // is too compressed to judge cosmetic/preview detail). Captures up to 4 matches.
 if (process.env.CAP_SELECTOR) {
