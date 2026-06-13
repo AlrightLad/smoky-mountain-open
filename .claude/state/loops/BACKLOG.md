@@ -217,8 +217,14 @@ when every item below is [x].
   works, proven this session), render-VET 5-6 golfer-swing candidates for a clean
   pro figure with NO coplanar-leg z-fight, recolor to brand (scripts/_recolor-swing
   MAP), integrate (swap LOTTIE_URL), V1 + Founder taste sign-off. Tools: [[reference_design_tools_kit]].
-- [~] SWING KNEE FLICKER (3 surgical fixes — superseded by the replacement above):
-  fix #3 live (v8.25.91). Fix #1 (prior): opacity-pops pinned. Fix #2 (v8.25.87): torso
+- [x] SWING KNEE FLICKER — ROOT CAUSE FIXED v8.25.94 (LIVE+V1). The 3 prior fixes
+  (opacity-pin, torso z-reorder, fill-shade) all MISSED it: the two coplanar legs
+  still had identical pure-WHITE strokes (w=141+65, [1,1,1]) — overlapping white
+  outlines shimmer as the legs cross. Shaded the back (left) leg's strokes to
+  CREAM_SHADE (matching its fill) so the back leg is uniformly shaded — no
+  white-on-white seam. -pb.json + source sentinel + recolor MAP (regen-safe). V1:
+  figure renders clean, legs read as one mass. (Nicer-figure replacement still
+  optional/future — a clean free figure-swing Lottie is scarce, see above.) Fix #1 (prior): opacity-pops pinned. Fix #2 (v8.25.87): torso
   z-reordered in FRONT of both legs (killed torso-between-legs seam). Founder still
   saw flicker → Fix #3 (v8.25.91): the two legs were coplanar + IDENTICAL cream fill
   (their own shared edge z-fights as they cross) — shaded the BACK leg (left, ind 20)
