@@ -197,18 +197,37 @@ when every item below is [x].
   contrast + 'Arriving' dilution = convergence-pass + the shop EXPANSION below.)
 
 ### Named design redesigns (WF1 specs; some overlap the page lifts above)
-- [ ] SWING SCENE COHESION REBUILD (Founder 2026-06-13 17:15) — REOPENED. The
-  realistic PHOTO backdrop (v8.25.81) and the CARTOON Lottie golfer CLASH: "not the
-  same art style nor cohesive." Founder wants ONE cohesive style, leaning REALISTIC,
-  as an "extreme visual win / great introduction." Direction: (1) reference real
-  PRO tee-off videos (a player hitting off the tee box down the fairway) and
-  replicate that motion; (2) the cartoon Lottie can be ALTERED or REPLACED — Founder
-  open to a new/personalized animation; (3) use ONLINE TOOLS — Founder named **Figma
-  Make** as great for onboarding animations; also use online tools to GRADE/RATE
-  pages + get alteration recommendations; (4) keep the realistic photo direction (he
-  likes the real colors) — make the FIGURE match it (realistic), OR commit fully to
-  one illustrated style end-to-end. Substantial creative task — execute with fresh
-  budget + the online tools, not a rushed pass. ([[reference_online_asset_sourcing]])
+- [x] SWING SCENE COHESION REBUILD — DONE v8.25.85 (LIVE+V1). Founder chose "FULLY
+  ILLUSTRATED — fits brand" (2026-06-13 17:23). Built a purpose-made flat-vector
+  illustrated dawn scene (subagent-authored SVG, COURSE_SVG_V2): realistic dawn
+  colors (indigo→periwinkle→peach→gold sky, NOT green), soft sun+glow, clouds,
+  treeline, 4 receding fairway bands + mowing stripes, green w/ brass pin + claret
+  flag, tee box the golfer stands on — ONE cohesive illustrated style WITH the
+  cartoon golfer. Replaced the clashing photo + the glitchy posterize interim
+  (rainbow banding). No filters/anims → perf-safe. V1-verified ready + mid-swing.
+- [ ] SWING KNEE FLICKER (Founder 2026-06-13 17:23: "Knees are still flickering")
+  — STILL present despite the prior right-leg Shape3/4 hold-opacity fix. Separate
+  from the scene (it's the Lottie golf-swing-pb.json knee z-fight during motion).
+  Lag is confirmed GONE. Needs a deeper Lottie fix (the knee/leg layer z-order or
+  a coplanar-seam at the knee joint mid-swing). Reference real pro-swing knee
+  motion. Possibly the canvas renderer still seams at one frame range.
+- [x] SETTINGS POLICY back button — DONE v8.25.86 (LIVE): added a "← Back to
+  Parbaughs" link to public/privacy.html + public/terms.html (history.back() when
+  same-tab, else href="./" loads the app — robust for the window.open _blank case).
+- [x] DANGER-ZONE CONFIRMATIONS — VERIFIED already solid: delete-account
+  (firebase.js:519) requires password + typing the confirm word + a disabled button
+  until both filled (double-confirm); quit-round shows #quit-confirm; block-member
+  has a confirm sheet; delete-round has a del-confirm panel. All destructive actions
+  gate. (Exhaustive every-button sweep is part of the E2E closeout.)
+- [ ] GITHUB HEALTH CHECK failed (Founder 2026-06-13 17:23) — a workflow run went
+  red (.github/workflows: heartbeat/deploy/staging-deploy/etc). gh is NOT authed in
+  this env so I can't read the failed run; need Founder to `! gh auth login` OR
+  inspect the workflow files for the likely failure + ROOT-CAUSE + prevention (not
+  just a patch). Founder: "ensure every time that happens we are repairing... and it
+  doesn't happen again."
+- [ ] CREATIVE REVIEW all pages + ANIMATION pieces (Founder 2026-06-13 17:23) — the
+  9.5 convergence pass PLUS tasteful animated portions on pages that deserve them.
+  Folds into the convergence-pass item below.
 - [x] SWING SCENE redesign (v1) — DONE v8.25.81 (LIVE+V1): the SVG path was a dead end
   for "realistic" (Founder: "sky isn't green but realistic colors", "SVG not doing
   it justice"). Sourced a LICENSE-FREE real dawn-fairway PHOTO (Pexels) via the new
