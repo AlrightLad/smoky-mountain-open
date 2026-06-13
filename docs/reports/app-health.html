@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-13T19:00:15.257379Z",
+  "generated_at": "2026-06-13T19:05:11.012364Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 85.6,
   "overall_grade": "A-",
@@ -1052,13 +1052,18 @@
     }
   ],
   "audit_trigger": {
-    "sha": "74e51565",
-    "subject": "chore(backlog): swing animation diagnosis â€” it IS the LottieFiles source; needs clean-figure REPLACEMENT not surgery; tool path proven (browser-capture .lottie)",
-    "committed_at": "2026-06-13T14:59:52-04:00",
-    "trigger": "substrate-commit",
-    "is_app_commit": false,
-    "app_files_touched": [],
-    "total_files_touched": 1
+    "sha": "5ab93068",
+    "subject": "fix(intro): shade the back-leg WHITE STROKES â€” the real residual knee z-fight (v8.25.94)",
+    "committed_at": "2026-06-13T15:04:45-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "public/lottie/golf-swing-pb.json",
+      "public/lottie/golf-swing.json",
+      "public/sw.js",
+      "src/core/utils.js"
+    ],
+    "total_files_touched": 7
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
