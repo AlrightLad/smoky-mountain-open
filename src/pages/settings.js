@@ -174,18 +174,24 @@ Router.register("settings", function(params) {
     var _curCaddie = (currentProfile && currentProfile.walkthrough && currentProfile.walkthrough.caddieVoice) || "caddy";
     var _ownedCos = (currentProfile && currentProfile.ownedCosmetics) || [];
     disp += '<div class="set-row" style="margin-top:14px"><div class="set-row__main"><div class="set-row__label">Your caddie</div><div class="set-row__desc">Pick the voice that guides you through the app — same help, four personalities. Switch anytime; your pick follows you to every device.</div></div></div>';
-    disp += '<div role="radiogroup" aria-label="Caddie" style="display:flex;flex-direction:column;gap:8px">';
+    // v8.25.77 — caddie picker unified onto the .theme-row component (was a
+    // bespoke .pb-caddie-row with ~8 inline-style triplets). Same geometry,
+    // type, active-ring + locked treatment as the theme picker right above it,
+    // so Display reads as one consistent radio language. The per-caddie accent
+    // lives on the avatar chip (the caddie's color identity); the active ring is
+    // brass via the shared .theme-row[aria-checked] rule.
+    disp += '<div role="radiogroup" aria-label="Caddie" class="set-caddie-group">';
     _caddieRoster.forEach(function(cad) {
       var owned = !cad.locked || _ownedCos.indexOf(cad.sku) !== -1;
       var isActive = (cad.id === _curCaddie);
-      var border = isActive ? cad.accent : 'var(--cb-line)';
-      disp += '<button type="button" class="pb-caddie-row" role="radio" aria-checked="' + (isActive ? 'true' : 'false') + '" data-caddie-id="' + cad.id + '" data-accent="' + cad.accent + '" data-owned="' + (owned ? '1' : '0') + '" onclick="' + (owned ? 'settingsPickCaddie' : 'settingsCaddieLockedHint') + '(\'' + cad.id + '\')" style="display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:11px 13px;border-radius:var(--radius,10px);border:1.5px solid ' + border + ';background:var(--card,var(--cb-canvas));cursor:pointer;min-height:44px' + (owned ? '' : ';opacity:.72') + '">';
-      disp += '<span style="width:26px;height:26px;border-radius:50%;background:' + cad.accent + ';flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px">' + escHtml((cad.name || "?").charAt(0)) + '</span>';
-      disp += '<span style="flex:1;min-width:0"><span style="display:block;font-weight:600;font-size:13px;color:var(--ink,var(--cb-ink))">' + escHtml(cad.name) + (cad.locked ? ' <span style="font-size:8.5px;letter-spacing:.6px;color:var(--cb-mute,var(--muted));font-weight:700">· PRO SHOP</span>' : '') + '</span><span style="display:block;font-size:11px;color:var(--muted,var(--cb-mute));margin-top:2px;line-height:1.35">' + escHtml(cad.blurb || '') + '</span></span>';
+      var initial = escHtml((cad.name || "?").charAt(0));
+      disp += '<button type="button" class="theme-row theme-row--caddie' + (owned ? '' : ' theme-row--locked') + '" role="radio" aria-checked="' + (isActive ? 'true' : 'false') + '" data-caddie-id="' + cad.id + '" data-accent="' + cad.accent + '" data-owned="' + (owned ? '1' : '0') + '" onclick="' + (owned ? 'settingsPickCaddie' : 'settingsCaddieLockedHint') + '(\'' + cad.id + '\')">';
+      disp += '<span class="theme-row__chip theme-row__chip--caddie" aria-hidden="true" style="background:' + cad.accent + '">' + initial + '</span>';
+      disp += '<span class="theme-row__main"><span class="theme-row__name">' + escHtml(cad.name) + (cad.locked ? ' <span class="set-caddie-tag">· PRO SHOP</span>' : '') + '</span><span class="theme-row__desc">' + escHtml(cad.blurb || '') + '</span></span>';
       if (owned) {
-        disp += '<span class="pb-caddie-check" style="flex-shrink:0;color:' + cad.accent + ';visibility:' + (isActive ? 'visible' : 'hidden') + '"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 4"/></svg></span>';
+        disp += '<span class="theme-row__check pb-caddie-check"' + (isActive ? '' : ' style="visibility:hidden"') + '><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 4"/></svg></span>';
       } else {
-        disp += '<span style="flex-shrink:0;color:var(--cb-mute,var(--muted))"><svg viewBox="0 0 12 12" width="13" height="13" fill="currentColor" aria-hidden="true"><path d="M3 5V3a3 3 0 116 0v2h.5a.5.5 0 01.5.5v5a.5.5 0 01-.5.5h-7a.5.5 0 01-.5-.5v-5a.5.5 0 01.5-.5H3zm1 0h4V3a2 2 0 10-4 0v2z"/></svg></span>';
+        disp += '<span class="theme-row__check"><svg viewBox="0 0 12 12" width="14" height="14" fill="var(--cb-mute)" aria-hidden="true"><path d="M3 5V3a3 3 0 116 0v2h.5a.5.5 0 01.5.5v5a.5.5 0 01-.5.5h-7a.5.5 0 01-.5-.5v-5a.5.5 0 01.5-.5H3zm1 0h4V3a2 2 0 10-4 0v2z"/></svg></span>';
       }
       disp += '</button>';
     });
@@ -228,7 +234,7 @@ Router.register("settings", function(params) {
   var coins = "";
   var shopBalance = getParCoinBalance(currentUser ? currentUser.uid : null);
   coins += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Balance</div><div class="set-row__desc">Spend on cosmetics, rings, and name effects in the shop.</div></div>';
-  coins += '<div class="set-coins"><span class="set-coins__num">' + shopBalance + '</span><span class="set-coins__lbl">coins</span></div></div>';
+  coins += '<div class="set-coins"><svg class="set-coins__ico" viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7"/></svg><span class="set-coins__num" data-count="' + shopBalance + '">' + shopBalance + '</span><span class="set-coins__lbl">coins</span></div></div>';
   coins += '<div style="margin-top:14px"><button class="set-btn set-btn--brass" onclick="Router.go(\'shop\')"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7"/></svg> Cosmetics shop</button></div>';
   secs.push({ key: "parcoins", label: "ParCoins", html: coins });
 
@@ -331,6 +337,11 @@ Router.register("settings", function(params) {
   h += '</div></div>';
 
   document.querySelector('[data-page="settings"]').innerHTML = h;
+  // v8.25.77 — section entrance cascade + balance count-up. staggeredReveal is
+  // reduced-motion-safe + transform/opacity only; count-up rides the router hook
+  // but call it here too so the balance animates on first paint. A deeplink
+  // scroll (below) still lands correctly — reveal only animates opacity/transform.
+  if (window.staggeredReveal) window.staggeredReveal(document.querySelectorAll('[data-page="settings"] .set-section'), { gap: 40, duration: 320 });
 
   // Section deeplink (v8.11.0). Router.go("settings",{section:"location"}) →
   // scroll to #location-section. 50ms defer lets innerHTML settle.
@@ -679,10 +690,11 @@ function settingsPickCaddie(id) {
   } else {
     Router.toast(cad.name + " is your caddie now.");
   }
-  document.querySelectorAll('.pb-caddie-row[role="radio"]').forEach(function (el) {
+  document.querySelectorAll('.theme-row--caddie[role="radio"]').forEach(function (el) {
     var active = el.getAttribute('data-caddie-id') === id && el.getAttribute('data-owned') === '1';
     el.setAttribute('aria-checked', active ? 'true' : 'false');
-    el.style.borderColor = active ? (el.getAttribute('data-accent') || 'var(--cb-brass)') : 'var(--cb-line)';
+    // Active ring is the shared .theme-row[aria-checked="true"] brass rule; no
+    // manual border override needed (unified with the theme picker).
     var check = el.querySelector('.pb-caddie-check');
     if (check) check.style.visibility = active ? 'visible' : 'hidden';
   });
