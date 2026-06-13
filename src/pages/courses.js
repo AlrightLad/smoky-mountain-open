@@ -36,7 +36,12 @@ Router.register("courses", function(params) {
   // hero path to "thousands worldwide"; the two +Add buttons that used to fight
   // it for attention are demoted — the top-right is dropped here, and the only
   // manual-add affordance lives quietly under the search box (added below).
-  var h = '<div class="sh"><h2>Course directory</h2><button class="back" onclick="Router.back(\'records\')">← Back</button></div>';
+  // v8.25.66 — editorial masthead (matches Members/Standings/Scramble/Records),
+  // replacing the legacy .sh header that read a tier below the rest of the app.
+  var _cCount = (PB.getCourses() || []).length;
+  var h = '<div class="roster-masthead"><button class="back" onclick="Router.back(\'records\')" style="margin-bottom:12px">← Back</button>';
+  h += '<div class="roster-eyebrow">COURSE DIRECTORY · ' + _cCount + ' COURSE' + (_cCount === 1 ? '' : 'S') + '</div>';
+  h += '<h1 class="roster-headline">The yardage book.</h1></div>';
 
   // v8.25.20 (design-pass) — compute "do we have any league courses?" up front so
   // the All / Our toggle can be suppressed when there's nothing to scope to. An
@@ -163,13 +168,15 @@ Router.register("courses", function(params) {
     }
     // Best scores — always show all 3 columns, "--" for missing
     if (indivRounds.length) {
-      var f9Display = bestF9 !== null ? '<span style="color:var(--cream);font-weight:600">' + bestF9 + '</span>' : '<span style="color:var(--muted2)">--</span>';
-      var b9Display = bestB9 !== null ? '<span style="color:var(--cream);font-weight:600">' + bestB9 + '</span>' : '<span style="color:var(--muted2)">--</span>';
-      var fullDisplay = best18 !== null ? '<span style="color:var(--gold);font-weight:700">' + best18 + '</span>' : '<span style="color:var(--muted2)">--</span>';
-      h += '<div style="font-size:10px;margin-top:3px;display:flex;gap:10px">';
-      h += '<span><span style="color:var(--muted);font-size:9px">F9</span> ' + f9Display + '</span>';
-      h += '<span><span style="color:var(--muted);font-size:9px">B9</span> ' + b9Display + '</span>';
-      h += '<span><span style="color:var(--muted);font-size:9px">18</span> ' + fullDisplay + '</span>';
+      // v8.25.66 — the score story is the reason a golfer opens this page; bump it
+      // from 9-10px muted to legible 11px with brass on the 18 + ink on F9/B9 (WF2).
+      var f9Display = bestF9 !== null ? '<b style="color:var(--cb-ink)">' + bestF9 + '</b>' : '<span style="color:var(--cb-mute-2)">--</span>';
+      var b9Display = bestB9 !== null ? '<b style="color:var(--cb-ink)">' + bestB9 + '</b>' : '<span style="color:var(--cb-mute-2)">--</span>';
+      var fullDisplay = best18 !== null ? '<b style="color:var(--cb-brass);font-weight:700">' + best18 + '</b>' : '<span style="color:var(--cb-mute-2)">--</span>';
+      h += '<div style="font-size:11px;margin-top:4px;display:flex;gap:12px">';
+      h += '<span><span style="color:var(--cb-mute);font-size:9.5px;letter-spacing:.5px">F9</span> ' + f9Display + '</span>';
+      h += '<span><span style="color:var(--cb-mute);font-size:9.5px;letter-spacing:.5px">B9</span> ' + b9Display + '</span>';
+      h += '<span><span style="color:var(--cb-mute);font-size:9.5px;letter-spacing:.5px">18</span> ' + fullDisplay + '</span>';
       h += '</div>';
     }
     h += '</div></div></div>';
@@ -243,6 +250,8 @@ Router.register("courses", function(params) {
     h += '<div style="text-align:center;padding:12px;font-size:11px;color:var(--cb-mute)">' + courses.length + (showOurs ? ' league' : '') + ' course' + (courses.length !== 1 ? 's' : '') + '</div>';
   }
   document.querySelector('[data-page="courses"]').innerHTML = h;
+  // v8.25.66 — entrance reveal on the directory rows (reduced-motion no-ops inside).
+  if (window.staggeredReveal) window.staggeredReveal(document.querySelectorAll('[data-page="courses"] .course-dir-item'), { gap: 35, duration: 300 });
 });
 
 var _dirSearchTimer = null;
