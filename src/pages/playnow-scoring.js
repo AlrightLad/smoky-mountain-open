@@ -394,7 +394,7 @@ function _renderBottomNavInner(hole) {
       h += '<div style="display:flex;gap:8px">';
       if (hole > 0) h += '<button class="btn outline" style="flex:0 0 70px;padding:14px 0;font-size:11px" onclick="liveNavPrev()">← Prev</button>';
       var _finishPulse = allScored ? 'animation:ringPulse 1.5s ease-in-out infinite;' : '';
-      h += '<button class="btn" style="flex:1;padding:16px 0;font-size:16px;font-weight:800;background:linear-gradient(135deg,var(--birdie),var(--cb-green-3));color:#fff;border:none;border-radius:var(--radius);' + _finishPulse + '" onclick="showFinishOptions()">\u2714 Finish Round (' + scoredCount + '/' + totalHoles + ')</button>';
+      h += '<button class="btn" style="flex:1;padding:16px 0;font-size:16px;font-weight:800;background:linear-gradient(135deg,var(--gold),var(--gold3));color:var(--cb-ink);border:none;border-radius:var(--radius);' + _finishPulse + '" onclick="showFinishOptions()">\u2714 Finish Round (' + scoredCount + '/' + totalHoles + ')</button>';
       h += '</div>';
     } else {
       // Not on last hole: Next + small Finish option
@@ -473,6 +473,23 @@ function _redrawScoreCard(hole, par) {
     scoreNumEl.classList.remove("score-pop");
     void scoreNumEl.offsetWidth;
     scoreNumEl.classList.add("score-pop");
+    // v8.25.82 — birdie/eagle micro-celebration: a small moss/brass label
+    // floats up off the score hero when the entered score beats par. Tasteful
+    // (not the full PB confetti), one-shot, reduced-motion-safe. position:relative
+    // (no offsets) is layout-neutral so the absolute badge anchors to the hero.
+    var _rm = false; try { _rm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+    if (!_rm && scoreVal !== "" && !isNaN(parseInt(scoreVal))) {
+      var _d = parseInt(scoreVal) - par;
+      var _lbl = _d <= -2 ? "EAGLE" : _d === -1 ? "BIRDIE" : "";
+      if (_lbl) {
+        scoreNumEl.style.position = "relative";
+        var _burst = document.createElement("div");
+        _burst.className = "pn-birdie-burst" + (_d <= -2 ? " pn-birdie-burst--eagle" : "");
+        _burst.textContent = _lbl;
+        scoreNumEl.appendChild(_burst);
+        setTimeout(function() { try { _burst.remove(); } catch (e) {} }, 1300);
+      }
+    }
   }
 }
 

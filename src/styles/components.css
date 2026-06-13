@@ -1888,8 +1888,17 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 .pn-fg-btn:active{transform:scale(.97)}
 .pn-fg-btn .pn-fg-title{font-size:14px;font-weight:700;color:var(--muted);letter-spacing:.3px}
 .pn-fg-btn .pn-fg-state{font-size:10px;font-weight:600;color:var(--muted2);letter-spacing:.3px}
-.pn-fg-btn.active{background:rgba(var(--birdie-rgb),.15);border-color:var(--birdie)}
-.pn-fg-btn.active .pn-fg-title,.pn-fg-btn.active .pn-fg-state{color:var(--birdie)}
+/* v8.25.82 — FIR/GIR "hit" re-skinned off the bright birdie green onto the
+   on-brand muted MOSS (the Clubhouse green), so live scoring reads in the
+   moss/brass palette rather than the loud legacy green. */
+.pn-fg-btn.active{background:rgba(var(--cb-moss-rgb),.16);border-color:var(--cb-moss)}
+.pn-fg-btn.active .pn-fg-title,.pn-fg-btn.active .pn-fg-state{color:var(--cb-moss)}
+/* v8.25.82 — birdie/eagle micro-celebration label floating off the live score
+   hero. Moss for birdie, brass for eagle. One-shot; reduced-motion is gated in
+   JS (the burst element is never appended when reduce is set). */
+.pn-birdie-burst{position:absolute;left:50%;top:-4px;transform:translateX(-50%);font-family:var(--font-mono);font-size:11px;font-weight:800;letter-spacing:2.5px;color:var(--cb-moss);pointer-events:none;white-space:nowrap;text-shadow:0 1px 6px rgba(var(--cb-moss-rgb),.4);animation:pnBirdieBurst 1.3s cubic-bezier(.22,.61,.36,1) forwards}
+.pn-birdie-burst--eagle{color:var(--cb-brass);text-shadow:0 1px 8px rgba(var(--cb-brass-rgb),.5)}
+@keyframes pnBirdieBurst{0%{opacity:0;transform:translate(-50%,6px) scale(.8)}22%{opacity:1;transform:translate(-50%,-10px) scale(1.12)}68%{opacity:1;transform:translate(-50%,-22px) scale(1)}100%{opacity:0;transform:translate(-50%,-36px) scale(.95)}}
 .pn-fg-btn.disabled{opacity:.4;cursor:default;pointer-events:none}
 .pn-putts-btn{flex:1;height:60px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg3);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--sp-1);cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background var(--duration-fast) var(--ease-default),border-color var(--duration-fast) var(--ease-default),color var(--duration-fast) var(--ease-default)}
 .pn-putts-btn:active{transform:scale(.97)}
