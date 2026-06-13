@@ -18,6 +18,13 @@
 serviceAccountKey.json
 *-serviceAccountKey.json
 firebase-adminsdk-*.json
+# Broad catch-alls (hardening 2026-06-13): Google's default SA download name is
+# "{project-id}-firebase-adminsdk-{hash}.json" (project-id PREFIX) — the line above
+# misses that. These match a service-account / admin-sdk key dropped ANYWHERE under
+# any name, so the #1 leak risk (a SA private key) can never be committed by accident.
+*adminsdk*.json
+*service-account*.json
+*serviceaccount*.json
 scripts/.service-account.json
 scripts/.secrets/
 
