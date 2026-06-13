@@ -1905,6 +1905,31 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 .ls-holeedit__input{width:104px;text-align:center;font-size:15px;font-weight:600;color:var(--cb-ink);background:var(--cb-chalk);border:1px solid var(--cb-chalk-3);border-radius:8px;padding:11px 8px;-webkit-appearance:none;min-height:44px}
 .ls-holeedit__note{font-size:10px;color:var(--cb-mute);margin-top:10px;line-height:1.4}
 
+/* GPS distance-to-pin (Lane A, v8.25.55) — Front/Center/Back to a crowdsourced
+   green. Tokens only (functional UI). 44pt touch targets. */
+.ls-dist{margin:10px 0 2px}
+.ls-dist__read,.ls-dist__set-start{display:inline-flex;align-items:center;gap:7px;width:100%;justify-content:center;min-height:44px;padding:11px 14px;border-radius:10px;cursor:pointer;-webkit-tap-highlight-color:transparent;font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:transform .12s,border-color .15s,color .15s}
+.ls-dist__read{color:var(--cb-brass);background:rgba(var(--gold-rgb),.1);border:1px solid rgba(var(--gold-rgb),.3)}
+.ls-dist__set-start{color:var(--cb-mute);background:var(--cb-chalk-2);border:1px dashed var(--cb-chalk-3)}
+.ls-dist__read:active,.ls-dist__set-start:active{transform:scale(.98)}
+.ls-dist__out{margin-top:8px}
+.ls-dist__fcb{display:flex;align-items:stretch;gap:8px}
+.ls-dist__pt{flex:1;display:flex;flex-direction:column;align-items:center;gap:1px;padding:10px 4px;border-radius:10px;background:var(--cb-chalk-2);border:1px solid var(--cb-chalk-3)}
+.ls-dist__pt--c{background:rgba(var(--gold-rgb),.12);border-color:rgba(var(--gold-rgb),.34)}
+.ls-dist__n{font-family:var(--font-display);font-weight:700;font-size:24px;line-height:1;color:var(--cb-ink)}
+.ls-dist__pt--c .ls-dist__n{color:var(--cb-brass)}
+.ls-dist__k{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--cb-mute)}
+.ls-dist__refresh{display:block;width:100%;text-align:center;margin-top:7px;background:none;border:none;cursor:pointer;font-family:var(--font-mono);font-size:9.5px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--cb-mute);min-height:30px}
+.ls-dist__msg{display:block;text-align:center;font-size:12px;color:var(--cb-mute);padding:6px 4px;line-height:1.4}
+.ls-dist__msg--warn{color:var(--cb-brass)}
+.ls-dist__set{padding:12px;border-radius:12px;background:var(--cb-chalk-2);border:1px solid rgba(var(--gold-rgb),.22)}
+.ls-dist__setlbl{font-size:12.5px;color:var(--cb-ink);text-align:center;margin-bottom:10px;line-height:1.45}
+.ls-dist__row{display:flex;gap:8px}
+.ls-dist__btn{flex:1;min-height:44px;border-radius:10px;cursor:pointer;font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase}
+.ls-dist__btn--go{color:var(--cb-brass);background:rgba(var(--gold-rgb),.12);border:1px solid rgba(var(--gold-rgb),.34)}
+.ls-dist__btn--ghost{color:var(--cb-mute);background:transparent;border:1px solid var(--cb-chalk-3)}
+.ls-dist__btn:active{transform:scale(.98)}
+
 /* Parbaugh stroke indicator */
 .ls-stroke{display:flex;align-items:center;justify-content:space-between;margin:12px 0 0;padding:8px 12px;border-radius:8px;background:var(--cb-chalk-2);border:1px solid var(--cb-chalk-3);font-size:11px;font-weight:600;color:var(--cb-mute)}
 .ls-stroke.is-on{background:rgba(var(--gold-rgb),.1);border-color:rgba(var(--gold-rgb),.28);color:var(--cb-brass)}

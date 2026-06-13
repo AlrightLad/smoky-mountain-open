@@ -160,6 +160,10 @@ function _renderLiveScoringInner() {
   h += (heOpen ? 'Done' : 'Adjust') + '</button>';
   h += '</div>';
 
+  // GPS distance-to-pin (Front/Center/Back) — Founder-greenlit Lane A. Returns ''
+  // when there's no course/GPS to anchor a green to, so it's a safe no-op there.
+  if (typeof pbDistanceStrip === 'function') h += pbDistanceStrip(hole);
+
   // BL-001 — inline par/yardage editor, revealed by the "Adjust" toggle.
   // Writes to the round-scoped liveState.holes copy; a full re-render on each
   // commit refreshes every par-derived value (diff label, running +/-, turn
