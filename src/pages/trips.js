@@ -32,34 +32,37 @@ Router.register("trips", function(params) {
   // single brass CTA.
   var _upc = activeTrips.length;
   var h = '<div class="roster-masthead"><div class="roster-eyebrow">EVENTS · ' + _upc + ' UPCOMING</div>';
-  h += '<h1 class="roster-headline">The events board.</h1></div>';
-  h += '<div style="padding:0 16px 10px"><button class="btn-sm green" onclick="Router.go(\'trips\',{create:true})">+ New Event</button></div>';
+  h += '<h1 class="roster-headline">The events board.</h1>';
+  h += '<div style="margin-top:14px"><button class="btn-sm green" onclick="Router.go(\'trips\',{create:true})">+ New Event</button></div></div>';
 
   // Commissioner-only tournament CTA — revealed async after the league-doc
   // commissioner cache warms (see reveal block after innerHTML below).
   h += '<div id="commish-tourn-cta"></div>';
 
+  // v8.25.62 — editorial "tee sheet" event row (.ev-card) replacing the legacy
+  // .card/.trip-row: Fraunces event name, a status-keyed left rule, a clustered
+  // avatar stack, and a brass-ring status/champion badge. Tokens only.
   function tripCard(t) {
-    var memberAvatars = (t.members || []).slice(0, 4).map(function(id) {
+    var memberAvatars = (t.members || []).slice(0, 5).map(function(id) {
       var p = PB.getPlayer(id) || (typeof fbMemberCache !== "undefined" && fbMemberCache[id]);
-      return p ? '<div style="margin-left:-6px">' + renderAvatar(p, 24, false) + '</div>' : '';
+      return p ? renderAvatar(p, 26, false) : '';
     }).join('');
     var winner = t.champion ? (PB.getPlayer(t.champion) || (typeof fbMemberCache !== "undefined" && fbMemberCache[t.champion]) || {name: t.champion}) : null;
-    var card = '<div class="card" onclick="Router.go(\'scorecard\',{tripId:\'' + t.id + '\'})">';
-    card += '<div class="trip-row"><div class="trip-info">';
-    card += '<div class="trip-name">' + escHtml(t.name) + '</div>';
-    card += '<div class="trip-detail">' + escHtml(t.dates) + ' · ' + escHtml(t.location) + '</div>';
-    if ((t.members || []).length) {
-      card += '<div style="display:flex;align-items:center;margin-top:6px">' + memberAvatars;
-      card += '<span style="font-size:11px;color:var(--muted);margin-left:8px">' + t.members.length + ' members · ' + (t.courses || []).length + ' rounds</span></div>';
-    }
-    card += '</div>';
+    var mod = winner ? 'ev-card--champ' : (t.status === "upcoming" ? 'ev-card--upcoming' : 'ev-card--active');
     var badge = winner
-      ? '<div style="text-align:right"><span class="badge gld" style="font-size:9px">' + escHtml(winner.name || winner.username) + '</span><div style="font-size:9px;color:var(--gold);margin-top:4px;letter-spacing:.3px">Champion</div></div>'
+      ? '<span class="ev-badge ev-badge--champ">' + escHtml(winner.name || winner.username) + ' · Champion</span>'
       : t.status === "upcoming"
-        ? '<span class="badge">Upcoming</span>'
-        : '<span class="badge gld">Active</span>';
-    card += '<div>' + badge + '</div></div></div>';
+        ? '<span class="ev-badge">Upcoming</span>'
+        : '<span class="ev-badge ev-badge--live">Active</span>';
+    var card = '<div class="ev-card ' + mod + '" onclick="Router.go(\'scorecard\',{tripId:\'' + t.id + '\'})">';
+    card += '<div class="ev-card__body">';
+    card += '<div class="ev-card__name">' + escHtml(t.name) + '</div>';
+    card += '<div class="ev-card__meta">' + escHtml(t.dates) + ' · ' + escHtml(t.location) + '</div>';
+    if ((t.members || []).length) {
+      card += '<div class="ev-card__people"><div class="ev-card__avatars">' + memberAvatars + '</div>';
+      card += '<span class="ev-card__count">' + t.members.length + ' member' + (t.members.length === 1 ? '' : 's') + ' · ' + (t.courses || []).length + ' round' + ((t.courses || []).length === 1 ? '' : 's') + '</span></div>';
+    }
+    card += '</div><div class="ev-card__right">' + badge + '</div></div>';
     return card;
   }
 
@@ -89,6 +92,8 @@ Router.register("trips", function(params) {
 
   h += renderPageFooter();
   document.querySelector('[data-page="trips"]').innerHTML = h;
+  // v8.25.62 — entrance reveal on the event rows (reduced-motion no-ops inside).
+  if (window.staggeredReveal) window.staggeredReveal(document.querySelectorAll('[data-page="trips"] .ev-card'), { gap: 55, duration: 340 });
 
   // Reveal the tournament CTA only for this league's commissioner. The route
   // itself is also commissioner-gated (defense in depth in tournament.js).

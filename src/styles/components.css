@@ -1966,6 +1966,25 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 .sr-rank--silver{color:#3a3a3a;background:linear-gradient(135deg,#e8e8ea,#c4c6ca);border-color:#a8aab0}
 .sr-rank--bronze{color:#3a220c;background:linear-gradient(135deg,#e0b088,#bf8050);border-color:#9c6535}
 
+/* Trips/Events — editorial "tee sheet" event rows (v8.25.62) */
+.ev-card{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--cb-paper);border:1px solid var(--cb-chalk-3);border-left:3px solid var(--cb-chalk-3);border-radius:12px;margin:0 16px 10px;padding:14px 16px;cursor:pointer;transition:transform .12s var(--ease-default,ease),box-shadow .15s}
+.ev-card:active{transform:scale(.99)}
+.ev-card:hover{box-shadow:0 4px 14px -6px rgba(0,0,0,.28)}
+.ev-card--champ,.ev-card--active{border-left-color:var(--cb-brass)}
+.ev-card--upcoming{border-left-color:var(--cb-moss)}
+.ev-card__body{min-width:0}
+.ev-card__name{font-family:var(--font-display);font-style:italic;font-weight:700;font-size:17px;color:var(--cb-ink);line-height:1.12}
+.ev-card__meta{font-family:var(--font-mono);font-size:11px;color:var(--cb-mute);margin-top:3px;letter-spacing:.2px}
+.ev-card__people{display:flex;align-items:center;gap:8px;margin-top:8px}
+.ev-card__avatars{display:flex}
+.ev-card__avatars > *{margin-left:-6px;box-shadow:0 0 0 2px var(--cb-paper);border-radius:50%}
+.ev-card__avatars > *:first-child{margin-left:0}
+.ev-card__count{font-size:11px;color:var(--cb-mute)}
+.ev-card__right{flex-shrink:0}
+.ev-badge{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 8px;border-radius:6px;background:var(--cb-chalk-2);color:var(--cb-mute);white-space:nowrap}
+.ev-badge--champ{background:rgba(var(--gold-rgb),.14);color:var(--cb-brass)}
+.ev-badge--live{color:var(--cb-moss)}
+
 /* Parbaugh stroke indicator */
 .ls-stroke{display:flex;align-items:center;justify-content:space-between;margin:12px 0 0;padding:8px 12px;border-radius:8px;background:var(--cb-chalk-2);border:1px solid var(--cb-chalk-3);font-size:11px;font-weight:600;color:var(--cb-mute)}
 .ls-stroke.is-on{background:rgba(var(--gold-rgb),.1);border-color:rgba(var(--gold-rgb),.28);color:var(--cb-brass)}
