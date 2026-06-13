@@ -177,13 +177,24 @@ when every item below is [x].
   eyebrows → cards) per full render; kudos HEART-POP (springy overshoot scale) on a
   FRESH like via a transient .feed-action--pop class. Both transform/opacity only +
   reduced-motion off. V1-confirmed feed renders fully (no blank-card regression).
-- [ ] TROPHY ROOM 8.4 → tier emblems by rarity (metallic depth), hero marquee cell,
-  foil sweep on rare/championship, masthead avatar, level-bar glow+ticks.
+- [x] TROPHY ROOM 8.4 → DONE v8.25.80 (LIVE): already well-polished (tabbed sections,
+  standing-hero w/ level+XP count-up + progress bar, marquee, Roll of Honor, tab
+  fade-in). Added the distinctive metallic touch the lift called for: a one-shot
+  brass FOIL-SWEEP gleam across the standing hero on arrival (the trophy-case "catch
+  the light" moment) — pointer-transparent, never loops, off under reduced-motion.
+  (Per-emblem rarity tiers + foil on rare/championship cells = convergence-pass.)
 - [ ] SHOP 8.6 → sticky category rail for long scroll, replace ⛳ emoji w/ SVG,
   reduce 'Arriving' dilution, contrast harden locker/cabinet desc, featured shimmer.
 
 ### Named design redesigns (WF1 specs; some overlap the page lifts above)
-- [ ] SWING SCENE redesign — richer dawn course (WF1 swing-scene-design spec).
+- [x] SWING SCENE redesign — DONE v8.25.81 (LIVE+V1): the SVG path was a dead end
+  for "realistic" (Founder: "sky isn't green but realistic colors", "SVG not doing
+  it justice"). Sourced a LICENSE-FREE real dawn-fairway PHOTO (Pexels) via the new
+  online-asset approach ([[reference_online_asset_sourcing]]) and swapped it in for
+  the green COURSE_SVG: real blue→lavender→gold sky + fairway-to-flag, golfer
+  grounded on the box teeing DOWN the fairway (alignment fix), dark scrim for text.
+  V1-confirmed (ready + mid-swing). Sent to Founder for the 9.5 verdict. NEXT on the
+  same approach: merch + shop-item raster art (below). COURSE_SVG now dead — cleanup.
 - [ ] SHOP ITEM fidelity + EXPANSION (Founder 2026-06-13 13:59: "not enough items
   and they are too cheap parcoin-wise AND design-wise"). Three axes: (1) MORE items
   across categories, (2) RAISE ParCoin prices (current floor too low — economy
@@ -193,7 +204,16 @@ when every item below is [x].
   rarity/effort.
 - [ ] RICH LIST redesign — podium/tiers/momentum (WF1 rich-list-design spec).
 - [ ] STANDINGS redesign (folds into the page lift above).
-- [ ] MERCH loading screen redesign (WF1 merch-loading-design spec).
+- [ ] MERCH coming-soon image — Founder 2026-06-13: the SVG poster "isn't doing it
+  justice." Use the online-asset approach ([[reference_online_asset_sourcing]]):
+  source a license-free realistic photo (Pexels — golf merch / pro-shop wall /
+  folded apparel / clubhouse retail) as the coming-soon hero, scrim + 'Coming soon'
+  overlay. NEXT online-asset task after the swing scene.
+- [ ] SHOP ITEM art via online realistic imagery — Founder 2026-06-13: the SVG
+  cosmetic art "isn't doing it justice." For the items where a photoreal object
+  beats SVG (apparel, headcovers, bag tags, markers), source license-free product
+  photos (Pexels) + process locally (crop/tint to the rarity palette). Pair with the
+  EXPANSION below. ([[reference_online_asset_sourcing]])
 - [x] LINEN DRAFT theme REPLACEMENT — DONE v8.25.63 (LIVE+V1): replaced with
   "Bluebird" (crisp white + near-black navy ink ~11:1 + tour-blue accent — the only
   cool/blue theme, distinct from the 5 warm palettes). id kept; name → Bluebird.
