@@ -141,8 +141,60 @@ function prefersReducedMotion() {
   return _prefersReducedMotion;
 }
 
+/**
+ * Staggered entrance — slide + fade a set of rows/cards in one after another.
+ * v8.25.50. Reduced-motion → no-op (elements stay in their natural final state).
+ * Transform/opacity only (no layout thrash); will-change set during + cleared
+ * after; the per-item gap is capped so a large list never animates for seconds.
+ * @param {NodeList|Array|Element} els  ordered elements to reveal
+ * @param {object} [opts]  {gap:ms (45), duration:ms (360), axis:'y'|'x'}
+ */
+function staggeredReveal(els, opts) {
+  if (!els || _prefersReducedMotion) return;
+  els = (els.length !== undefined) ? Array.prototype.slice.call(els) : [els];
+  if (!els.length) return;
+  opts = opts || {};
+  var dur = opts.duration || 360;
+  var axis = opts.axis === 'x' ? 'X' : 'Y';
+  var off = opts.axis === 'x' ? '-14px' : '10px';
+  var gap = Math.min(opts.gap || 45, Math.floor(600 / els.length) || 45); // cap total tail
+  els.forEach(function(el, i) {
+    if (!el || !el.style) return;
+    el.style.opacity = '0';
+    el.style.transform = 'translate' + axis + '(' + off + ')';
+    el.style.willChange = 'opacity, transform';
+    setTimeout(function() {
+      el.style.transition = 'opacity ' + dur + 'ms ease, transform ' + dur + 'ms cubic-bezier(.22,.61,.36,1)';
+      el.style.opacity = '1';
+      el.style.transform = 'translate' + axis + '(0)';
+      setTimeout(function() { el.style.willChange = ''; el.style.transition = ''; }, dur + 40);
+    }, i * gap);
+  });
+}
+
+/**
+ * Fade + slight scale-up a single element on entrance (awards, stat boxes).
+ * v8.25.50. Reduced-motion → no-op.
+ */
+function fadeInScale(el, opts) {
+  if (!el || !el.style || _prefersReducedMotion) return;
+  opts = opts || {};
+  var dur = opts.duration || 320;
+  el.style.opacity = '0';
+  el.style.transform = 'scale(.94)';
+  el.style.willChange = 'opacity, transform';
+  setTimeout(function() {
+    el.style.transition = 'opacity ' + dur + 'ms ease, transform ' + dur + 'ms cubic-bezier(.22,.61,.36,1)';
+    el.style.opacity = '1';
+    el.style.transform = 'scale(1)';
+    setTimeout(function() { el.style.willChange = ''; el.style.transition = ''; }, dur + 40);
+  }, opts.delay || 0);
+}
+
 // Expose as globals for router.js + page code consumption
 window.animateNumber = animateNumber;
 window.initCountAnimations = initCountAnimations;
 window.reanimateNumber = reanimateNumber;
 window.prefersReducedMotion = prefersReducedMotion;
+window.staggeredReveal = staggeredReveal;
+window.fadeInScale = fadeInScale;

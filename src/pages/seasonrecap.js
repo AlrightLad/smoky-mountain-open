@@ -196,4 +196,11 @@ Router.register("seasonrecap", function(params) {
   h += '<div style="text-align:center;padding:20px;font-size:10px;color:var(--muted2)">Here\'s to ' + (year+1) + '</div>';
   
   document.querySelector('[data-page="seasonrecap"]').innerHTML = h;
+  // v8.25.50 — entrance: stat boxes + award/standings cards reveal in, numbers
+  // count up. Reduced-motion no-ops inside the helpers.
+  if (window.staggeredReveal) {
+    window.staggeredReveal(document.querySelectorAll('[data-page="seasonrecap"] .stat-box'), { gap: 70, duration: 340 });
+    window.staggeredReveal(document.querySelectorAll('[data-page="seasonrecap"] .card'), { gap: 60, duration: 360 });
+  }
+  if (window.initCountAnimations) window.initCountAnimations(document.querySelector('[data-page="seasonrecap"]'));
 });

@@ -421,6 +421,10 @@ Router.register("standings", function(params) {
   h += '</div>'; // end .hq-grid
 
   document.querySelector('[data-page="standings"]').innerHTML = h;
+  // v8.25.50 — tasteful entrance: stagger the board rows in + count up any
+  // [data-count] values. Reduced-motion no-ops inside the helpers.
+  if (window.staggeredReveal) window.staggeredReveal(document.querySelectorAll('[data-page="standings"] .std-row'), { gap: 45, duration: 360 });
+  if (window.initCountAnimations) window.initCountAnimations(document.querySelector('[data-page="standings"]'));
   appendStdLeagueTrophies();
 });
 
