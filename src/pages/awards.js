@@ -20,7 +20,11 @@ Router.register("awards", function(params) {
     return String(name || "").replace(/\b(gcc|g&cc|gc|cc)\b/gi, function(m) { return m.toUpperCase(); });
   }
   
-  var h = '<div class="sh"><h2>Awards Night</h2><button class="back" onclick="Router.back(\'standings\')">← Back</button></div>';
+  // v8.25.92 — editorial masthead (replaces the legacy .sh/<h2>) + celebratory
+  // card cascade on this "fun page" (Founder's page-animation pass).
+  var h = '<div class="roster-masthead"><button class="back" onclick="Router.back(\'standings\')" style="margin-bottom:12px">← Back</button>';
+  h += '<div class="roster-eyebrow">THE SEASON · IN REVIEW</div>';
+  h += '<h1 class="roster-headline">Awards Night.</h1></div>';
   
   h += '<div style="text-align:center;padding:30px 16px 24px;background:linear-gradient(180deg,var(--bg),var(--grad-hero),var(--bg));border-bottom:1px solid rgba(var(--gold-rgb),.15)">';
   h += '';
@@ -211,4 +215,8 @@ Router.register("awards", function(params) {
   h += '<div style="text-align:center;padding:24px;font-size:11px;color:var(--cb-mute);font-style:italic">"It\'s not about the handicap you have, it\'s about the stories you make."</div>';
   
   document.querySelector('[data-page="awards"]').innerHTML = h;
+  // v8.25.92 — celebratory cascade: the award cards reveal in sequence (Awards
+  // Night should feel like the envelopes opening). transform/opacity only,
+  // reduced-motion no-ops inside staggeredReveal.
+  if (window.staggeredReveal) window.staggeredReveal(document.querySelectorAll('[data-page="awards"] .card'), { gap: 70, duration: 380 });
 });
