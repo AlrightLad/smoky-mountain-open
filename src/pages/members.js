@@ -299,7 +299,17 @@ function _rosterRail(models) {
 }
 
 function renderMemberListHtml(players) {
-  var visible = players.filter(function(p) { return !isBannedRole(p); });
+  // v8.25.93 — defense-in-depth test/real isolation (Founder: test user showing in
+  // all-members). The primary Firestore path filters isMemberVisibleToViewer, but
+  // the LOCAL-players merge + the catch/no-db fallbacks reach this render unfiltered
+  // — so apply the visibility filter HERE too (the final render point) so a test
+  // account never leaks into a real viewer's roster via ANY path. Mirrors the
+  // richlist/feed guard; only filters the test↔real boundary, never real members.
+  var visible = players.filter(function(p) {
+    if (isBannedRole(p)) return false;
+    if (typeof PB.isMemberVisibleToViewer === "function" && !PB.isMemberVisibleToViewer(p)) return false;
+    return true;
+  });
   var models = visible.map(_rosterModel);
   window._rosterModels = models;
   window._rosterTab = 'all';
