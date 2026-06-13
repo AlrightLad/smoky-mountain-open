@@ -1,8 +1,39 @@
 ---
 status: open
-title: Pick a golf-swing Lottie you love (unblocks the senior-grade tee-shot animation)
-est_minutes: 3
-unblocks: The post-sign-in tee-shot animation becomes genuine motion-designer quality (you pick the asset; I composite it with the clubhouse brand + wire the tap-to-enter + verify).
+title: Premium swing animation — the free pool is exhausted (you pick/fund the asset; I integrate)
+est_minutes: 5
+unblocks: A flicker-FREE, professional tee-shot swing. You chose "premium/commissioned" 2026-06-13 after I proved the free options can't get there.
+---
+
+# UPDATE 2026-06-13: free Lottie pool exhausted — premium is the path (your call)
+I render-vetted the situation frame-by-frame:
+- The CURRENT swing (MJ-Mograph, free) renders CLEAN in every static frame, but has
+  an inherent **torso/leg coplanar seam** that jitters in MOTION — that's the
+  "knee flicker" you keep seeing. It persists across BOTH renderers (SVG jitters the
+  seam → that's why a prior session moved to canvas → canvas still flickers for you).
+  No patch (z-order, fills, strokes, renderer) fully kills a seam baked into the asset.
+- The ONLY other free LottieFiles golfer figure is a guy **riding in a golf cart** —
+  not a swing. The free figure pool is just these two.
+So a flicker-free, "award-winning" swing needs a PREMIUM asset. You picked this path.
+
+## What to do (pick ONE)
+1. **Commission** a short (2-3s) golf tee-shot Lottie from a motion designer
+   (Fiverr/LottieFiles marketplace ~$30-120). Ask for: clean limb separation (NO
+   coplanar torso/leg seam), loopable or one-shot, exportable as Lottie JSON.
+2. **Buy** a premium golfer-swing Lottie from lottiefiles.com/marketplace or
+   iconscout (a few $). Confirm: it's a SWING (not idle/cart), Lottie JSON export,
+   commercial license.
+3. Send me 2-3 candidate links/files and I'll vet them frame-by-frame (same harness)
+   + pick the cleanest.
+Drop the Lottie JSON at **`C:\Users\Zach\smoky-mountain-open\public\lottie\tee-swing.json`**
+and tell me — I recolor to brass/cream/felt, composite on the dawn scene, wire the
+tap-to-enter, and verify frame-by-frame before prod.
+
+(Original free-pick note kept below for reference — superseded by the above.)
+
+---
+status: superseded
+title: Pick a golf-swing Lottie you love (free — superseded; free pool exhausted)
 ---
 
 # Pick the tee-shot animation (your taste — I integrate it pro-grade)

@@ -296,7 +296,7 @@ function _renderFirstWeekChecklist(ctx) {
   // because they never set a profile photo (critique 2026-06-12).
   if (doneCount >= items.length || rounds >= 5) return "";
 
-  var h = '<div style="background:var(--cb-paper);border:1px solid var(--border);border-radius:var(--r-3);padding:16px 16px 12px;box-shadow:var(--el-1)">';
+  var h = '<div style="background:var(--cb-paper);border:1px solid var(--border);border-radius:var(--r-3);padding:16px 16px 12px;box-shadow:var(--shadow-sm)">';
   h += '<div style="display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:10px">';
   h += '<span style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-brass-deep)">Your First Week</span>';
   h += '<span style="display:flex;align-items:center;gap:8px"><span style="font-family:var(--font-mono);font-size:10px;color:var(--cb-mute)">' + doneCount + ' of ' + items.length + '</span>';
