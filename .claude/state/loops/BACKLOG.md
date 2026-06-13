@@ -44,7 +44,16 @@ finish.
 - [x] Leaderboards / Season Recap entrance animations — DONE v8.25.50 (staggeredReveal + fadeInScale in animate.js, reduced-motion early-return + stagger cap + transform/opacity only; wired Standings rows + Season Recap stat-boxes/cards + count-up). V1-verified the board still renders (no blank-row regression).
 - [x] Add course via PHOTO — T1 photo-as-reference DONE v8.25.51 (client-side scorecard photo in the add-course form; no upload/Storage = zero course-data risk). T2 (free-source fallback) + T3 (true OCR auto-fill, Anthropic key + CF deploy) remain — Founder sets up the key at his PC; T2/T3 build after.
 - [x] SWING scene v3 + finish frame — DONE v8.25.53 (verified): richer dawn-course scene (L/R bunkers + trees + cart path + clubhouse + clouds + treeline, realistic blue→peach sky — no longer all-green) + FINISH_FRAME 74→58 (frame-verified clean follow-through, both legs match, ball at landed-downrange before respawn-walk-back + before recenter). Held-finish + ready-scene captured + confirmed.
-- [ ] SHOP 9.5 cosmetic quality leap — research-driven material upgrades + premium new items SPECCED in .claude/state/batch-0613b/shop.md + plan.md (richer brass/enamel/leather/foil CSS recipes, preview==worn). Subjective 9.5 bar — execute with fresh context + per-item V1 verify; ensure worn-render maps wired for any new equippables.
+- [x] SHOP 9.5 cosmetic quality leap — DONE v8.25.54 (LIVE on prod). 5 new premium
+  pieces (pc52 Club Pin enamel/brass-bezel, pc53 Medallion struck-brass+gleam, pc54
+  Calfskin Tag grain+stitch+enamel-rivet, pc55 Pairing Sheet committee-rule, pc56
+  Sterling hammered-silver+sapphire) + brass material upgrade (.title-engraved +
+  .plate-locker-brass → 7-stop struck metal + specular band, every brass title/plate
+  inherits). Worn-render wired (playerRingClass pc52/53, _npCls pc54, pbMarkerGlyph
+  pc56 w/ px-suffixed gradient id). pc46 Clubhouse Crest deliberately UNTOUCHED
+  (shipped SKU — synth conflict #1 respected; regression-check clean). V1-verified all
+  8 surfaces as a real member on staging (.claude/state/verify-shop95/). Smoke 33/33
+  green (fixed 2 stale scenarios: intro hygiene + Wrapped pending-gate).
 - [ ] DISTANCE TO PIN (Founder-greenlit 2026-06-13, Lane A) — GPS Front/Center/Back-of-green read in playnow + static per-hole yardage; crowdsourced green pins ($0, no gate). Spec in task-queue/founder/hole-diagram-self-position-plan.md. Substantial GPS build — fresh context, V1-verify the geolocation + per-hole coord path.
 - [~] PLANNING ONLY (no code): hole diagram self-position + yardage — DONE: plan written to task-queue/founder/hole-diagram-self-position-plan.md (3 lanes + recommendation; Founder picks the lane).
 
