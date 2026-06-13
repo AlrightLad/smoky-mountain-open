@@ -38,14 +38,19 @@ function _wgSecHead(eyebrow, title) {
 
 function renderWagerList() {
   var uid = currentUser ? currentUser.uid : null;
-  var h = '<div class="sh"><h2>Wagers</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'home\')">← Back</button><button class="btn-sm green" onclick="Router.go(\'wagers\',{create:true})">+ New Wager</button></div></div>';
+  // v8.25.69 — editorial masthead + a felt BANKROLL HERO band (the balance was a
+  // 14px footnote; now it's the page's headline metric, Datadog-style) (WF2 audit).
+  var h = '<div class="roster-masthead">';
+  h += '<button class="back" onclick="Router.back(\'home\')" style="margin-bottom:12px">← Back</button>';
+  h += '<div class="roster-eyebrow">WAGERS</div>';
+  h += '<h1 class="roster-headline">On the line.</h1>';
+  h += '<div style="margin-top:14px"><button class="btn-sm green" onclick="Router.go(\'wagers\',{create:true})">+ New Wager</button></div></div>';
 
-  // Balance
   var balance = getParCoinBalance(uid);
-  h += '<div class="wg-balance">';
-  h += '<svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="var(--cb-brass)" stroke-width="1.3" aria-hidden="true"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7"/></svg>';
-  h += '<span class="wg-balance__amt">' + balance + '</span>';
-  h += '<span class="wg-balance__note">available to wager</span>';
+  h += '<div class="wg-bankroll">';
+  h += '<div class="wg-bankroll__lbl">Your bankroll</div>';
+  h += '<div class="wg-bankroll__amt"><svg viewBox="0 0 20 20" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7"/></svg><span data-count="' + balance + '">' + balance + '</span></div>';
+  h += '<div class="wg-bankroll__note">ParCoin · available to wager</div>';
   h += '</div>';
 
   // Active wagers
@@ -53,6 +58,8 @@ function renderWagerList() {
 
   h += renderPageFooter();
   document.querySelector('[data-page="wagers"]').innerHTML = h;
+  // v8.25.69 — ticker the bankroll on entrance (reduced-motion no-ops inside).
+  if (window.initCountAnimations) window.initCountAnimations(document.querySelector('[data-page="wagers"]'));
 
   // Async load wagers from Firestore
   if (db && uid) {

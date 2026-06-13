@@ -1985,6 +1985,13 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 .ev-badge--champ{background:rgba(var(--gold-rgb),.14);color:var(--cb-brass)}
 .ev-badge--live{color:var(--cb-moss)}
 
+/* Wagers — bankroll hero band (v8.25.69) */
+.wg-bankroll{margin:0 16px 14px;padding:18px 20px;border-radius:14px;background:linear-gradient(135deg,var(--cb-felt),#0c3325);color:var(--cb-chalk);text-align:center;box-shadow:0 2px 8px -3px rgba(0,0,0,.4)}
+.wg-bankroll__lbl{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-brass-3,#E0BB60);margin-bottom:7px}
+.wg-bankroll__amt{font-family:var(--font-display);font-weight:700;font-size:44px;line-height:1;color:var(--cb-brass-3,#E0BB60);display:inline-flex;align-items:center;gap:9px}
+.wg-bankroll__amt svg{opacity:.9}
+.wg-bankroll__note{font-size:11px;color:rgba(241,234,211,.72);margin-top:7px;letter-spacing:.3px}
+
 /* Parbaugh stroke indicator */
 .ls-stroke{display:flex;align-items:center;justify-content:space-between;margin:12px 0 0;padding:8px 12px;border-radius:8px;background:var(--cb-chalk-2);border:1px solid var(--cb-chalk-3);font-size:11px;font-weight:600;color:var(--cb-mute)}
 .ls-stroke.is-on{background:rgba(var(--gold-rgb),.1);border-color:rgba(var(--gold-rgb),.28);color:var(--cb-brass)}
