@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-06-13T03:09:53.673407+00:00",
+  "generated_at": "2026-06-13T03:13:48.341819+00:00",
   "schema_version": 1,
   "source": "~/.claude/projects/C--Users-Zach-smoky-mountain-open/*.jsonl",
   "session_count": 314,
   "bucket_count": 378,
-  "all_time_total_tokens": 19805547071,
+  "all_time_total_tokens": 19816707450,
   "by_day_total": {
     "2026-04-17": 294853821,
     "2026-04-20": 362592283,
@@ -48,12 +48,12 @@
     "2026-06-10": 837583343,
     "2026-06-11": 1452210982,
     "2026-06-12": 1938993389,
-    "2026-06-13": 181958096
+    "2026-06-13": 193118475
   },
   "by_model_total": {
     "claude-opus-4-7": 11336701903,
     "<synthetic>": 0,
-    "claude-opus-4-8": 7543677431,
+    "claude-opus-4-8": 7554837810,
     "claude-fable-5": 925167737
   },
   "buckets": {
@@ -4949,27 +4949,27 @@
       "session_id": "14b32e71-e98c-4be1-819e-5288e4bfd93c",
       "day": "2026-06-13",
       "model": "claude-opus-4-8",
-      "turn_count": 244,
-      "input_tokens": 92998,
-      "output_tokens": 397843,
-      "cache_read_input_tokens": 179080927,
-      "cache_creation_input_tokens": 2386328,
-      "total": 181958096,
+      "turn_count": 257,
+      "input_tokens": 95015,
+      "output_tokens": 415954,
+      "cache_read_input_tokens": 190198660,
+      "cache_creation_input_tokens": 2408846,
+      "total": 193118475,
       "first_ts": "2026-06-13T02:16:15.251Z",
-      "last_ts": "2026-06-13T03:09:38.410Z"
+      "last_ts": "2026-06-13T03:13:39.678Z"
     },
     "14b32e71-e98c-4be1-819e-5288e4bfd93c|2026-06-13|<synthetic>": {
       "session_id": "14b32e71-e98c-4be1-819e-5288e4bfd93c",
       "day": "2026-06-13",
       "model": "<synthetic>",
-      "turn_count": 2,
+      "turn_count": 3,
       "input_tokens": 0,
       "output_tokens": 0,
       "cache_read_input_tokens": 0,
       "cache_creation_input_tokens": 0,
       "total": 0,
       "first_ts": "2026-06-13T02:25:42.368Z",
-      "last_ts": "2026-06-13T02:26:09.093Z"
+      "last_ts": "2026-06-13T03:12:36.042Z"
     }
   }
 }
