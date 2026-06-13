@@ -1930,6 +1930,30 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 .ls-dist__btn--ghost{color:var(--cb-mute);background:transparent;border:1px solid var(--cb-chalk-3)}
 .ls-dist__btn:active{transform:scale(.98)}
 
+/* Scramble — editorial team-room (v8.25.58). Felt "team crest" cards replacing
+   the legacy inline-style .card; tokens only. */
+.scr-mast-actions{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.scr-team{background:var(--cb-paper);border:1px solid var(--cb-chalk-3);border-radius:14px;overflow:hidden;margin:0 16px 12px;cursor:pointer;box-shadow:0 1px 2px rgba(0,0,0,.06);transition:transform .12s var(--ease-default,ease),box-shadow .15s}
+.scr-team:active{transform:scale(.99)}
+.scr-team:hover{box-shadow:0 4px 14px -6px rgba(0,0,0,.3)}
+.scr-team__crest{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 16px;background:linear-gradient(135deg,var(--cb-felt),#0c3325)}
+.scr-team__name{font-family:var(--font-display);font-style:italic;font-weight:700;font-size:18px;line-height:1.1;color:var(--cb-chalk)}
+.scr-team__size{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--cb-brass-3,#E0BB60);background:rgba(0,0,0,.24);padding:3px 7px;border-radius:6px;white-space:nowrap}
+.scr-team__body{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px}
+.scr-team__roster{min-width:0}
+.scr-team__avatars{display:flex;margin-bottom:8px}
+.scr-team__avatars > *{margin-right:-9px;box-shadow:0 0 0 2px var(--cb-paper);border-radius:50%}
+.scr-team__cap{font-family:var(--font-mono);font-size:10px;letter-spacing:.4px;color:var(--cb-mute)}
+.scr-team__cap b{color:var(--cb-ink);font-weight:700}
+.scr-team__metric{text-align:right;flex-shrink:0;min-width:92px}
+.scr-team__record{font-family:var(--font-display);font-weight:700;font-size:34px;line-height:1;color:var(--cb-brass)}
+.scr-team__dash{margin:0 1px;color:var(--cb-mute);font-size:22px}
+.scr-team__mlabel{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--cb-mute);margin-top:3px}
+.scr-team__bar{height:4px;border-radius:2px;background:var(--cb-chalk-3);overflow:hidden;margin:7px 0 0 auto;width:80px}
+.scr-team__bar > span{display:block;height:100%;background:var(--cb-brass);border-radius:2px}
+.scr-team__sub{font-family:var(--font-mono);font-size:10px;color:var(--cb-mute);margin-top:6px}
+.scr-team__empty{font-size:12px;color:var(--cb-mute);margin-top:6px}
+
 /* Parbaugh stroke indicator */
 .ls-stroke{display:flex;align-items:center;justify-content:space-between;margin:12px 0 0;padding:8px 12px;border-radius:8px;background:var(--cb-chalk-2);border:1px solid var(--cb-chalk-3);font-size:11px;font-weight:600;color:var(--cb-mute)}
 .ls-stroke.is-on{background:rgba(var(--gold-rgb),.1);border-color:rgba(var(--gold-rgb),.28);color:var(--cb-brass)}

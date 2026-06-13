@@ -20,7 +20,12 @@ Router.register("scramble", function(params) {
 // through renderAvatar so images + cosmetic ring art render unchanged.
 function scrambleAvatar(p, size, clickToProfile) {
   size = size || 36;
-  var hasPhoto = p && (p.photoUrl || p.photo || p.stockAvatar);
+  // v8.25.58 — a rotating STOCK jpg is NOT a real photo: six members all assigned
+  // stock avatars render as near-identical dark discs (the blob problem). Treat
+  // only an uploaded photoUrl/photo as "has a photo"; everyone else gets the
+  // distinct brass-initial felt disc so a default roster reads as four letters,
+  // not four blobs.
+  var hasPhoto = p && (p.photoUrl || p.photo);
   if (!p || hasPhoto) return renderAvatar(p, size, clickToProfile);
 
   var ringStyle = typeof playerRingStyle === "function" ? playerRingStyle(p) : 'border:2px solid var(--gold)';
@@ -38,17 +43,18 @@ function scrambleAvatar(p, size, clickToProfile) {
 
 function renderTeamList() {
   var teams = PB.getScrambleTeams();
-  var h = '<div class="sh"><h2>Scramble teams</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'home\')">← Back</button><button class="btn-sm green" onclick="Router.go(\'scramble\',{create:true})">+ New team</button></div></div>';
+  // v8.25.58 — editorial masthead (matches Members/Standings/Trips), replacing the
+  // legacy .sh/h2 header that read a design generation older than its siblings.
+  var h = '<div class="roster-masthead">';
+  h += '<button class="back" onclick="Router.back(\'home\')" style="margin-bottom:12px">← Back</button>';
+  h += '<div class="roster-eyebrow">SCRAMBLE · ' + teams.length + ' TEAM' + (teams.length === 1 ? '' : 'S') + '</div>';
+  h += '<h1 class="roster-headline">The team room.</h1>';
+  h += '<div class="scr-mast-actions"><button class="btn-sm green" onclick="Router.go(\'scramble\',{create:true})">+ New team</button>';
+  if (teams.length >= 2) h += '<button class="btn-sm outline" onclick="Router.go(\'scramble\',{match:true})">Log a match</button>';
+  h += '</div></div>';
 
   if (teams.length) {
-    if (teams.length >= 2) {
-      // v8.25.20 — was a transparent outline pill that disappeared directly above
-      // the cream team cards (same fill, hairline border the only separation). The
-      // primary brass fill (.btn.green = brass ground, dark --cb-ink label, the
-      // dark-on-brass AA pairing) reads as a clear call-to-action distinct from the
-      // tappable cards below it, and matches the green CTAs used elsewhere on the page.
-      h += '<div style="padding:0 16px 12px"><button class="btn full green" onclick="Router.go(\'scramble\',{match:true})">Log a match</button></div>';
-    }
+    // "Log a match" now lives in the masthead actions row (v8.25.58).
     // v8.25.13 — collect every team's real rounds + matches into one timeline so
     // the page can show a "Recent scramble activity" feed below the cards (the
     // bottom half of the viewport was empty cream). Built ONLY from data we
@@ -80,62 +86,43 @@ function renderTeamList() {
         activity.push({ teamId: team.id, teamName: team.name, score: m.score, course: m.course || '', date: m.date || '', result: m.result || null, opponent: m.opponent || null, opponentScore: m.opponentScore });
       });
 
-      h += '<div class="card" onclick="Router.go(\'scramble\',{id:\'' + team.id + '\'})" style="cursor:pointer">';
-      h += '<div style="padding:14px 16px">';
-      h += '<div style="display:flex;justify-content:space-between;align-items:flex-start">';
-
-      // Left — name, avatars, captain
-      h += '<div>';
-      h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">';
-      h += '<div style="font-size:15px;font-weight:700;color:var(--gold)">' + escHtml(team.name) + '</div>';
-      h += '<span class="badge" style="font-size:9px">' + members.length + '-man</span></div>';
-      h += '<div style="display:flex;gap:6px;margin-bottom:6px">';
-      members.forEach(function(p) {
-        var isCap = captain && p.id === team.captain;
-        h += scrambleAvatar(p, 28, false);
-      });
-      h += '</div>';
-      if (captain) h += '<div style="font-size:10px;color:var(--muted)">Captain: <span style="color:var(--gold);font-weight:600">' + escHtml(captain.name) + '</span></div>';
-      h += '</div>';
-
-      // Right rail — a single unified shape across both card states (v8.25.20):
-      // a big brass metric numeral, a muted metric label, then exactly ONE quiet
-      // caption line. Previously the W-L card showed a one-line "Best: N" caption
-      // while the best-score card grew a taller two-row coloured score strip + its
-      // own "Last N" label — so the two cards' right rails read as different
-      // components. Now both are numeral / label / one caption: W-L → "Best N",
-      // best-score → "Last N · 77 75" recent-form line.
+      // v8.25.58 — bespoke felt "team crest" card replacing the inline-style .card.
+      // Felt crest header (team name in Fraunces) over a paper body with a clustered
+      // avatar stack + a hero W-L (or best-score) metric and a win/loss split bar.
       var h2h = allMatches.filter(function(m) { return m.result === 'win' || m.result === 'loss' || m.result === 'tie'; });
-      h += '<div style="text-align:right">';
+      h += '<div class="scr-team" onclick="Router.go(\'scramble\',{id:\'' + team.id + '\'})">';
+      h += '<div class="scr-team__crest"><span class="scr-team__name">' + escHtml(team.name) + '</span><span class="scr-team__size">' + members.length + '-MAN</span></div>';
+      h += '<div class="scr-team__body">';
+      h += '<div class="scr-team__roster"><div class="scr-team__avatars">';
+      members.forEach(function(p) { h += scrambleAvatar(p, 34, false); });
+      h += '</div>';
+      if (captain) h += '<div class="scr-team__cap">Captain · <b>' + escHtml(captain.name) + '</b></div>';
+      h += '</div>';
+      h += '<div class="scr-team__metric">';
       if (h2h.length > 0) {
         var wins = h2h.filter(function(m) { return m.result === "win"; }).length;
         var losses = h2h.filter(function(m) { return m.result === "loss"; }).length;
-        h += '<div style="font-size:28px;font-weight:800;color:var(--gold);line-height:1">' + wins + '-' + losses + '</div>';
-        h += '<div style="font-size:10px;color:var(--muted);margin-bottom:4px">W-L</div>';
-        if (best !== null) h += '<div style="font-size:10px;color:var(--muted)">Best ' + best + '</div>';
+        var tot = (wins + losses) || 1;
+        h += '<div class="scr-team__record">' + wins + '<span class="scr-team__dash">–</span>' + losses + '</div>';
+        h += '<div class="scr-team__mlabel">Win–Loss</div>';
+        h += '<div class="scr-team__bar"><span style="width:' + Math.round(wins / tot * 100) + '%"></span></div>';
+        if (best !== null) h += '<div class="scr-team__sub">Best ' + best + '</div>';
       } else if (best !== null) {
-        h += '<div style="font-size:28px;font-weight:800;color:var(--gold);line-height:1">' + best + '</div>';
-        h += '<div style="font-size:10px;color:var(--muted);margin-bottom:4px">' + (scored.length === 1 ? 'Score' : 'Best score') + '</div>';
-        // One caption line mirroring the W-L card's "Best N" — recent form as a
-        // single inline run, not a separate strip. Only when there's more than the
-        // single best (otherwise it just repeats the same number).
+        h += '<div class="scr-team__record">' + best + '</div>';
+        h += '<div class="scr-team__mlabel">' + (scored.length === 1 ? 'Team score' : 'Best score') + '</div>';
         var recent = last3.filter(function(m){ return m.score; });
         if (scored.length > 1 && recent.length) {
-          h += '<div style="font-size:10px;color:var(--muted)">Last ' + recent.length + ' · ';
+          h += '<div class="scr-team__sub">Last ' + recent.length + ' · ';
           recent.forEach(function(m,i) {
-            var d = m.score - 72;
-            // Community-safe: under or at the team baseline reads quiet green, over
-            // stays neutral muted. Never alarm-red on a member's score.
-            var c = d <= 0 ? 'var(--birdie)' : 'var(--muted)';
-            h += '<span style="color:' + c + ';margin-left:' + (i?5:0) + 'px">' + m.score + '</span>';
+            // Community-safe: under/at baseline reads quiet moss, over stays muted.
+            var c = (m.score - 72) <= 0 ? 'var(--cb-moss)' : 'var(--cb-mute)';
+            h += '<span style="color:' + c + '">' + m.score + '</span>' + (i < recent.length - 1 ? ' ' : '');
           });
           h += '</div>';
         }
       } else {
-        h += '<div style="font-size:12px;color:var(--muted);margin-top:4px">No rounds</div>';
+        h += '<div class="scr-team__empty">No rounds yet</div>';
       }
-      h += '</div>';
-
       h += '</div></div></div>';
     });
 
