@@ -166,7 +166,15 @@ var PRO_SHOP_CATALOG = [
   {id:"pc51_chalk_board",     cat:"nameplate", tier:"range",   name:"The Chalk Board", price:250, preview:"#2a2a2a", desc:"Deep-slate manual-scoreboard chalk, your name in white. Raw honest scoring, no paint."},
   {id:"pc47_quartered_leather", cat:"ball",    tier:"proshop", name:"The Quartered Leather", price:400, preview:"#8a6f55", desc:"A scrap of rich saddle leather, quartered on a brass ring. Hit it straight; mark it well."},
   {id:"pc49_wooden_peg",      cat:"teemarker", tier:"range",   name:"The Wooden Peg", price:150, preview:"#6b4a28", desc:"A hickory dowel snapped clean, branded with a single burn-mark. From the bag on Granddad's cart."},
-  {id:"pc50_eagle_soar",      cat:"flair",     tier:"locker",  name:"The Eagle Soar", price:700, arriving:true, preview:"#4a7cb8", desc:"Two-under and a bird bursts off your card with a sharp whistle. Gone in a flash."}
+  {id:"pc50_eagle_soar",      cat:"flair",     tier:"locker",  name:"The Eagle Soar", price:700, arriving:true, preview:"#4a7cb8", desc:"Two-under and a bird bursts off your card with a sharp whistle. Gone in a flash."},
+  // — Founder batch 2026-06-13: premium quality-leap pieces (enamel/medallion/
+  //   cloisonne/pairing-sheet/sterling). Rings + plate carry worn-render classes
+  //   (preview==worn); ball reuses pbMarkerGlyph (56px shop / 12px worn). —
+  {id:"pc52_crest_pin",    cat:"border",    tier:"locker",  name:"The Club Pin",     price:850,  ringClass:"ring-crest-pin", preview:"#1f5135", desc:"Hard-enamel cloisonne: crossed clubs on deep clubhouse green, struck in a polished brass bezel. The lapel pin they hand you when you join."},
+  {id:"pc53_medallion",    cat:"border",    tier:"cabinet", name:"The Medallion",    price:1400, ringClass:"ring-medallion", preview:"#caa75c", desc:"A struck championship medallion, laurel in relief around the rim, a slow gleam crossing the strike. Heavy in the hand."},
+  {id:"pc54_calfskin_tag", cat:"nameplate", tier:"locker",  name:"The Calfskin Tag", price:700,  preview:"#7a4a28", desc:"Pebbled saddle leather, a hard-enamel green roundel riveted at the left, your name embossed deep. The bag tag the caddymaster knows by sight."},
+  {id:"pc55_pairing_sheet",cat:"card",      tier:"proshop", name:"The Pairing Sheet",price:450,  preview:"#f2ecda", css:"border:1px solid #d8cfa8;border-left:4px solid #1f5135;background:linear-gradient(0deg,rgba(244,238,214,.18),rgba(252,248,232,.2)),repeating-linear-gradient(0deg,transparent 0 8px,rgba(31,81,53,.06) 8px 9px)", desc:"Tournament-issue pairing sheet: cream stock, a green committee rule down the spine, tee-time grid faint behind your score."},
+  {id:"pc56_sterling",     cat:"ball",      tier:"locker",  name:"The Sterling",     price:600,  preview:"#dfe2e6", desc:"A hand-hammered sterling silver marker, a single small sapphire-enamel dot at center. Heirloom weight; you'd mark a six-footer to win with this."}
 ];
 // Legacy items kept ON SALE in the Paint Locker (the best ~15); every other
 // legacy item is retired from sale. Owned items are grandfathered forever —
@@ -326,7 +334,7 @@ Router.register("shop", function() {
     } else if (item.cat === 'nameplate') {
       // v8.25.43 — reuse the WORN .plate-* class (preview == worn), centered on a
       // clean surface stage, instead of a hardcoded inline approximation.
-      var _npCls = { pc05_locker_brass: 'plate-locker-brass', pc06_yardage_book: 'plate-yardage', pc07_leaderboard_sunday: 'plate-sunday', pc29_stimp_13: 'plate-stimp', pc46_clubhouse_crest: 'plate-clubhouse-crest', pc51_chalk_board: 'plate-chalk-board' }[item.id] || 'plate-locker-brass';
+      var _npCls = { pc05_locker_brass: 'plate-locker-brass', pc06_yardage_book: 'plate-yardage', pc07_leaderboard_sunday: 'plate-sunday', pc29_stimp_13: 'plate-stimp', pc46_clubhouse_crest: 'plate-clubhouse-crest', pc51_chalk_board: 'plate-chalk-board', pc54_calfskin_tag: 'plate-calfskin-tag' }[item.id] || 'plate-locker-brass';
       c += '<div class="shop-surface-stage"><span class="shop-plate-name ' + _npCls + '">' + escHtml(_myName) + '</span></div>';
     } else if (item.cat === 'card') {
       c += '<div style="border-radius:var(--radius);background:var(--bg3);margin-bottom:8px;padding:8px 10px;text-align:left;' + (item.css || '') + '"><div style="font-size:9px;font-weight:600;color:var(--cream)">' + escHtml(_myName) + '</div><div style="font-size:8px;color:var(--muted);margin-top:1px">Honey Run · 92</div></div>';
