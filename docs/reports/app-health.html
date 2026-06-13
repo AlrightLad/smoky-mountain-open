@@ -822,9 +822,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-13T21:47:12.380090Z",
+  "generated_at": "2026-06-13T21:51:41.007107Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 87.6,
+  "overall_score": 86.8,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -844,9 +844,9 @@
         "path": ".claude/state/incidents/2026-06-13-concurrent-marathon-collision.md"
       }
     ],
-    "pre_deduction_score": 92.6,
+    "pre_deduction_score": 91.8,
     "deduction": 5,
-    "post_deduction_score": 87.6
+    "post_deduction_score": 86.8
   },
   "dimensions": {
     "A1_roadmap": {
@@ -1005,14 +1005,14 @@
       "weak_points": []
     },
     "A12_operational": {
-      "score": 100,
+      "score": 85,
       "status": "green",
-      "label": "pipeline=green · 2 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=yellow · 2 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [],
       "details": {
         "watcher_last_status": "PASS",
-        "watcher_exit_reason": "no-new-files"
+        "watcher_exit_reason": "skip-dirty"
       }
     }
   },
@@ -1034,13 +1034,17 @@
     }
   ],
   "audit_trigger": {
-    "sha": "cda34505",
-    "subject": "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)",
-    "committed_at": "2026-06-13T17:46:57-04:00",
-    "trigger": "cron",
-    "is_app_commit": false,
-    "app_files_touched": [],
-    "total_files_touched": 1
+    "sha": "192ec8bc",
+    "subject": "feat(ui): cohesive lit-from-above depth atmosphere across 16 content pages (Founder 4-dim push: depth+warmth) â€” one warm light source instead of flat beige",
+    "committed_at": "2026-06-13T17:51:15-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "public/sw.js",
+      "src/core/utils.js",
+      "src/styles/components.css"
+    ],
+    "total_files_touched": 6
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
