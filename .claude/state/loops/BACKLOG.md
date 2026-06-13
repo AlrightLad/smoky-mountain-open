@@ -54,7 +54,16 @@ finish.
   (shipped SKU — synth conflict #1 respected; regression-check clean). V1-verified all
   8 surfaces as a real member on staging (.claude/state/verify-shop95/). Smoke 33/33
   green (fixed 2 stale scenarios: intro hygiene + Wrapped pending-gate).
-- [ ] DISTANCE TO PIN (Founder-greenlit 2026-06-13, Lane A) — GPS Front/Center/Back-of-green read in playnow + static per-hole yardage; crowdsourced green pins ($0, no gate). Spec in task-queue/founder/hole-diagram-self-position-plan.md. Substantial GPS build — fresh context, V1-verify the geolocation + per-hole coord path.
+- [x] DISTANCE TO PIN — DONE v8.25.55 (LIVE on prod). GPS Front/Center/Back read in
+  the live-play hole header via new src/core/distance.js (on-tap one-shot read,
+  battery-safe; PB.native.gps helper). Crowdsourced green edges (2-tap front+back)
+  merge-written to courses/{id}.greens[holeIdx] — member course writes already
+  permitted, NO rules change. Static per-hole yardage was already in the header.
+  P10-graceful (every denied/timeout/no-green/unsupported state explained).
+  PRIVACY: member location never stored (transient client-side), privacy.html
+  updated. V1-verified on staging: globals resolve live (tree-shake fix confirmed),
+  all 3 strip states render, Haversine math exact (122/182/243 yds vs hand-calc).
+  Smoke 33/33. Spec: task-queue/founder/hole-diagram-self-position-plan.md.
 - [~] PLANNING ONLY (no code): hole diagram self-position + yardage — DONE: plan written to task-queue/founder/hole-diagram-self-position-plan.md (3 lanes + recommendation; Founder picks the lane).
 
 ## Swing + shop (active Founder iteration 2026-06-12)

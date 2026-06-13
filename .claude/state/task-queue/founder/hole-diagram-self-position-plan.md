@@ -84,9 +84,16 @@ rangefinder read), not just center. Build approach:
 - **Yardage (wrapped in):** static per-hole yardage from GolfCourseAPI shows regardless
   of GPS — a free win even without a green pin set.
 - No graphical hole map (Lane B/C deferred) — distance is the value.
-**Status:** greenlit, queued to build (substantial GPS feature — built carefully on a
-fresh context so the geolocation + per-hole-coord write path is solid). NO credential or
-gate needed for this (it's all client GPS + the existing course doc).
+**Status:** ✅ BUILT + LIVE on prod (v8.25.55, 2026-06-13). `src/core/distance.js`
+renders Front/Center/Back in the live-play hole header: tap "Distance to green" for a
+one-shot GPS read (battery-safe), or "Set the green" to crowdsource the front+back
+edges (2 taps, midpoint = center) onto `courses/{id}.greens[holeIdx]`. Member course
+writes were already permitted — no rules change. Static per-hole yardage was already
+shown. P10-graceful on every denied/timeout/no-green/unsupported state. PRIVACY: the
+member's location is never stored (transient client-side compute); `privacy.html`
+updated to disclose precise-GPS-on-tap. V1-verified on staging (globals resolve live,
+all 3 strip states render, Haversine exact: 122/182/243 yds vs hand-calc). Smoke 33/33.
+NO credential/gate was needed (client GPS + existing course doc), as predicted.
 
 ## Note on the OCR / credential items (Founder 2026-06-13)
 Founder is on mobile / away from his PC and will set up the gated bits (the Anthropic
