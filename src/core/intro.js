@@ -30,6 +30,11 @@
   // intro.js is concatenated into the CORE IIFE, which ESLint parses as a script
   // where import.meta is a parse error.)
   var LOTTIE_URL = (function() { try { return new URL("lottie/golf-swing-pb.json", document.baseURI).href; } catch (e) { return "/lottie/golf-swing-pb.json"; } })();
+  // v8.25.81 — realistic dawn-fairway PHOTO backdrop (Pexels, license-free: free
+  // commercial use, no attribution). Replaces the flat green-tinted SVG sky the
+  // Founder flagged ("sky shade isn't green but realistic colors"). Same
+  // baseURI-relative resolution as the Lottie so the GitHub-Pages base path holds.
+  var BG_URL = (function() { try { return new URL("img/swing-fairway.jpg", document.baseURI).href; } catch (e) { return "/img/swing-fairway.jpg"; } })();
   var _root = null, _started = false, _done = false, _safety = null, _autoTee = null;
   var _anim = null;        // the lottie AnimationItem
   var _ready = false;      // true once the Lottie JSON has parsed (DOMLoaded)
@@ -172,16 +177,21 @@
     _root.id = "pbIntro";
     _root.setAttribute("role", "dialog");
     _root.setAttribute("aria-label", "Welcome to the Clubhouse — teeing off");
-    _root.style.cssText = "position:fixed;inset:0;z-index:9000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:radial-gradient(95% 95% at 62% 80%, " + SKY_GLOW + " 0%, " + SKY_MID + " 34%, " + SKY_TOP + " 100%);transition:opacity .4s ease;overflow:hidden";
-    // Course scene behind (z-index:-1); content in a z-index:1 overlay so the
-    // golfer stands ON the green rather than floating over a bare gradient.
-    _root.innerHTML = COURSE_SVG;
+    _root.style.cssText = "position:fixed;inset:0;z-index:9000;background:#0b1a13;transition:opacity .4s ease;overflow:hidden";
+    // Realistic dawn-fairway PHOTO backdrop (z-index:0) + a top/bottom dark scrim
+    // so the wordmark (top) and the hint (bottom) stay legible over the bright
+    // sky/turf. Replaces the green COURSE_SVG. The golfer (#pbi-lottie, in the
+    // z-index:1 overlay) is positioned over the LOWER fairway so he tees off
+    // "down the fairway" instead of floating in the sky (Founder alignment note).
+    _root.innerHTML =
+      '<div style="position:absolute;inset:0;z-index:0;background:#0b1a13 url(\'' + BG_URL + '\') center/cover no-repeat"></div>' +
+      '<div style="position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,rgba(7,15,11,.60) 0%,rgba(7,15,11,.14) 24%,rgba(7,15,11,.04) 50%,rgba(7,15,11,.30) 78%,rgba(7,15,11,.62) 100%)"></div>';
     var overlay = document.createElement("div");
-    overlay.style.cssText = "position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px";
+    overlay.style.cssText = "position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:10px;padding:0 0 13vh";
     overlay.innerHTML =
-      '<div style="font-family:var(--font-display);font-style:italic;font-weight:700;font-size:30px;color:' + GLOW_HOT + ';letter-spacing:-.5px;text-shadow:0 1px 12px rgba(0,0,0,.3)">Parbaughs.</div>' +
+      '<div style="position:absolute;top:8vh;left:0;right:0;text-align:center;font-family:var(--font-display);font-style:italic;font-weight:700;font-size:32px;color:' + GLOW_HOT + ';letter-spacing:-.5px;text-shadow:0 2px 16px rgba(0,0,0,.55)">Parbaughs.</div>' +
       _scene() +
-      '<div id="pbi-hint" style="font-family:var(--font-mono);font-size:10.5px;font-weight:700;letter-spacing:2.5px;color:' + SUN + ';opacity:.7;text-transform:uppercase;text-shadow:0 1px 6px rgba(0,0,0,.4)">Tap to start your adventure</div>';
+      '<div id="pbi-hint" style="font-family:var(--font-mono);font-size:10.5px;font-weight:700;letter-spacing:2.5px;color:#fff;opacity:.82;text-transform:uppercase;text-shadow:0 1px 8px rgba(0,0,0,.7)">Tap to start your adventure</div>';
     _root.appendChild(overlay);
     // ONE tap tees off; taps during/after the swing are ignored (no skip, no
     // double-click, no "tap to enter" — the app opens on its own when it ends).
