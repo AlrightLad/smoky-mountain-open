@@ -822,9 +822,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-13T20:52:28.704544Z",
+  "generated_at": "2026-06-13T21:02:53.551478Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 86.3,
+  "overall_score": 85.6,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -844,9 +844,9 @@
         "path": ".claude/state/incidents/2026-06-13-concurrent-marathon-collision.md"
       }
     ],
-    "pre_deduction_score": 91.3,
+    "pre_deduction_score": 90.6,
     "deduction": 5,
-    "post_deduction_score": 86.3
+    "post_deduction_score": 85.6
   },
   "dimensions": {
     "A1_roadmap": {
@@ -1005,9 +1005,9 @@
       "weak_points": []
     },
     "A12_operational": {
-      "score": 75,
+      "score": 60,
       "status": "yellow",
-      "label": "pipeline=yellow · 6 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=red · 6 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
@@ -1052,13 +1052,17 @@
     }
   ],
   "audit_trigger": {
-    "sha": "e222d0c8",
-    "subject": "docs(backlog): swing-figure render-vet done (candidate=cart anim, REJECTED; current swing verified clean post-flicker-fix); E2E re-attempt logged (emulator port held, isolation already CI-verified)",
-    "committed_at": "2026-06-13T16:52:05-04:00",
-    "trigger": "substrate-commit",
-    "is_app_commit": false,
-    "app_files_touched": [],
-    "total_files_touched": 1
+    "sha": "6e904e34",
+    "subject": "fix(perf): GPU-promote fixed bottom-nav + sticky #profileBar to own compositing layers â€” kills the scroll-flicker (Founder report); swing data verified clean frame-by-frame",
+    "committed_at": "2026-06-13T17:02:27-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "public/sw.js",
+      "src/core/utils.js",
+      "src/styles/components.css"
+    ],
+    "total_files_touched": 15
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
