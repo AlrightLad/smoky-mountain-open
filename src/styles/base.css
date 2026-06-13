@@ -549,6 +549,43 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --gold-rgb: 31, 111, 178;
 }
 
+/* Azalea (default) — a theme for the ladies (Founder 2026-06-13). Augusta's
+   azaleas: soft blush paper, deep aubergine ink for high contrast, a refined rose
+   accent. Distinct from the green/blue/burgundy/amber set; tasteful, not stereotyped. */
+[data-theme="azalea"] {
+  --cb-chalk: #F6ECF0;
+  --cb-chalk-2: #EFDFE6;
+  --cb-chalk-3: #DDC6D1;
+  --cb-canvas: #EADBE2;
+  --cb-paper: #FDF8FA;
+  --cb-green: #3A1F33;
+  --cb-green-2: #2A1626;
+  --cb-green-3: #7C3F66;
+  --cb-felt: #2E1828;
+  --cb-ink: #2C1928;            /* deep aubergine — ~10:1 on the blush canvas */
+  --cb-ink-2: #442F3D;
+  --cb-ink-soft: #56414E;
+  --cb-charcoal: #5E4956;
+  --cb-ink-link: #9A3E68;       /* deep rose link — AA on blush */
+  --cb-mute: #6C5662;           /* AA >=4.6:1 on canvas */
+  --cb-mute-1: #67515D;
+  --cb-ink-faint: #67515D;
+  --cb-mute-2: #B698A6;
+  --cb-mute-3: #D3BAC6;
+  --cb-mute-faint: #C3A6B3;
+  --cb-brass: #A8506F;          /* REFINED ROSE accent (distinct from gold) */
+  --cb-brass-2: #BC627F;
+  --cb-brass-3: #D588A4;
+  --cb-brass-deep: #863F58;
+  --cb-ink-rgb: 44, 25, 40;
+  --cb-brass-rgb: 168, 80, 111;
+  --cb-chalk-rgb: 246 236 240;
+  --cb-green-ink-rgb: 42 22 38;
+  --bg-rgb: 246, 236, 240;
+  --cream-rgb: 44, 25, 40;
+  --gold-rgb: 168, 80, 111;
+}
+
 /* Champion Sunday (unlock) — tournament-program burgundy, worn after a win.
    Claret-deep "greens", trophy brass. */
 [data-theme="champion_sunday"] {

@@ -30,13 +30,13 @@ var THEMES = {
   clubhouse:       { id: "clubhouse",       name: "Clubhouse",       availability: "default", order: 1 },
   twilight_links:  { id: "twilight_links",  name: "Twilight Links",  availability: "default", order: 2 },
   linen_draft:     { id: "linen_draft",     name: "Bluebird",        availability: "default", order: 3 },
-  // v8.25.9 — all three unlockables now show in the picker as locked teasers
-  // ("not all themes are showing" — Founder wants the full "3 ready, 3 to earn"
-  // set visible, the copy already promises six). hidden_until_unlocked dropped
-  // so Champion Sunday + Course Record join Bourbon Room as visible-but-locked.
-  champion_sunday: { id: "champion_sunday", name: "Champion Sunday", availability: "unlock",  order: 4, hidden_until_unlocked: false, preview_progress: true },
-  bourbon_room:    { id: "bourbon_room",    name: "Bourbon Room",    availability: "unlock",  order: 5, hidden_until_unlocked: false, preview_progress: true },
-  course_record:   { id: "course_record",   name: "Course Record",   availability: "unlock",  order: 6, hidden_until_unlocked: false, preview_progress: true }
+  azalea:          { id: "azalea",          name: "Azalea",          availability: "default", order: 4 },  // v8.25.64 — a theme for the ladies (Augusta's azaleas; refined rose + aubergine)
+  // v8.25.9 — all unlockables show in the picker as locked teasers (Founder wants
+  // the full set visible). hidden_until_unlocked dropped so Champion Sunday +
+  // Course Record join Bourbon Room as visible-but-locked.
+  champion_sunday: { id: "champion_sunday", name: "Champion Sunday", availability: "unlock",  order: 5, hidden_until_unlocked: false, preview_progress: true },
+  bourbon_room:    { id: "bourbon_room",    name: "Bourbon Room",    availability: "unlock",  order: 6, hidden_until_unlocked: false, preview_progress: true },
+  course_record:   { id: "course_record",   name: "Course Record",   availability: "unlock",  order: 7, hidden_until_unlocked: false, preview_progress: true }
 };
 
 var DEFAULT_THEME_ID = "clubhouse";
