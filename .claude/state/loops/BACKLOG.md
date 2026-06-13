@@ -252,8 +252,14 @@ when every item below is [x].
   classes), axis (3) richer design + name-vs-art fidelity via online-sourced art
   ([[reference_online_asset_sourcing]], reconsider photo vs illustrated per the
   swing cohesion lesson). Both = fresh-budget creative work.
-- [ ] RICH LIST redesign — podium/tiers/momentum (WF1 rich-list-design spec).
-- [ ] STANDINGS redesign (folds into the page lift above).
+- [x] RICH LIST redesign + ANIMATION — DONE v8.25.89 (LIVE+V1): editorial 'The money
+  list.' masthead (Founder's name for it) replacing the legacy .sh/<h2>; the list
+  now ANIMATES in — rows cascade up (staggeredReveal) + every lifetime total counts
+  up from 0 (data-count), fired after the async Firestore load; reduced-motion-safe.
+  Brass podium chips (top 3) + champion card for rank 1 already existed. This is the
+  "animated money list" from the Founder's page-animation pass. V1-verified.
+- [x] STANDINGS redesign — folds into the STANDINGS page lift (already DONE + V1'd:
+  The Chase + editorial masthead + count-up + row reveal). Nothing further.
 - [ ] MERCH coming-soon image — Founder 2026-06-13: the SVG poster "isn't doing it
   justice." Use the online-asset approach ([[reference_online_asset_sourcing]]):
   source a license-free realistic photo (Pexels — golf merch / pro-shop wall /
