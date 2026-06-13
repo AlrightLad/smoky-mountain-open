@@ -119,8 +119,14 @@ when every item below is [x].
 - [x] COURSES 7.2 → DONE v8.25.66 (LIVE+V1): editorial masthead ('The yardage book.'
   + live count), legible F9/B9/18 score line (brass 18 + ink F9/B9, was washed cream),
   stagger motion. (Sort chips + row hierarchy = follow-up.)
-- [ ] ROUNDS 7.4 → unify list hero w/ detail masthead, designed score-chip rows,
-  entrance motion, tokenize inline strings, editorial empty state.
+- [x] ROUNDS 7.4 → DONE v8.25.75 (LIVE+V1): list hero now the editorial
+  .roster-masthead (mono 'THE SCORECARD' + Fraunces 'Rounds.'), unified with the
+  round-detail masthead (which was already strong) + Courses/Members/Records.
+  '+ Log a round' promoted into the masthead; scoped-player view leads with back +
+  name. Entrance cascade (staggeredReveal) on the history-row cards; handicap-hero
+  count-up rides the router post-nav hook. V1-verified as a member (THE SCORECARD
+  eyebrow + Rounds. headline + handicap-index hero + 26 league rounds with ★ BEST /
+  to-par deltas render clean). (Score-chip-row redesign = convergence-pass lever.)
 - [x] WAGERS 7.4 → DONE v8.25.69 (LIVE): editorial masthead ('On the line.') + felt
   BANKROLL HERO band (44px brass numeral, count-up) replacing the 14px footnote.
   (Opponent call-out rail + per-card count-up = follow-up.)
@@ -175,6 +181,15 @@ when every item below is [x].
 - [ ] SECOND deep 9.5 review pass on EVERY page — same exhaustive WF2 rating method,
   push each page from its current ≥9.0 toward "close to or above 9.5". (The first
   pass lifted the bottom tier over 9; this is the convergence pass to 9.5.)
+  **REINFORCED Founder 2026-06-13 16:07: "Pages are still bland and not meeting
+  9.5 or greater."** The systematic masthead+token+motion treatment is clearing
+  ≥9 but NOT clearing "bland" → 9.5. The convergence pass must go FURTHER than the
+  recipe: real visual hierarchy + an asymmetric focal peak per page, richer
+  materials (felt/brass depth, not flat cards), distinctive per-page identity
+  (each page should NOT look like the same masthead+list template), denser/more
+  characterful data display, and tasteful motion — benchmark against Linear/
+  Stripe/Vercel per P7. "Bland" = too much sameness + not enough designed
+  emphasis. Treat as the PRIMARY remaining UI workstream once the ≥9 lifts close.
 - [ ] Tasteful page ANIMATION pass — animated rich list ("money list") + other fun
   pages (leaderboards/recap). Founder: "nothing overwhelming or that ruins app
   integrity." Reduced-motion-safe, transform/opacity only, on-brand.
