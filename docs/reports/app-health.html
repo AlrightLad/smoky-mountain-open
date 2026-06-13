@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-13T19:13:55.558722Z",
+  "generated_at": "2026-06-13T19:16:01.793722Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 85.6,
   "overall_grade": "A-",
@@ -1052,16 +1052,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "1d2966bc",
-    "subject": "fix(errors): stop permission-denied spam in the prod errors collection (v8.25.95)",
-    "committed_at": "2026-06-13T15:13:29-04:00",
-    "trigger": "app-commit",
-    "is_app_commit": true,
-    "app_files_touched": [
-      "public/sw.js",
-      "src/core/utils.js"
-    ],
-    "total_files_touched": 4
+    "sha": "169c2919",
+    "subject": "chore: render re-rate done (26/26 routes OK) + permission-spam fix v8.25.95 + sweep tool",
+    "committed_at": "2026-06-13T15:15:39-04:00",
+    "trigger": "substrate-commit",
+    "is_app_commit": false,
+    "app_files_touched": [],
+    "total_files_touched": 2
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
