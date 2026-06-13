@@ -91,8 +91,16 @@ when every item below is [x].
   felt team-crest cards w/ hero W-L + split bar, avatar-blob fixed (stockAvatar no
   longer counts as a photo → distinct brass initials). Verified via injected-team
   capture. (scramblelive token migration deferred to a polish pass.)
-- [ ] PROFILE 6.3 → kill inline-style body, migrate sections to pf-*/tokens, one
-  type scale, reduce tab/collapsible load, entrance+count-up motion.
+- [x] PROFILE 6.3 → DONE v8.25.74 (LIVE+V1): masthead/badges/chips/stat-grid were
+  already pf-*/token-migrated + count-up wired; this closes the two remaining
+  inline-style hero blocks (XP bar → .pf-xp__*, ParCoin wallet → .pf-wallet__*,
+  balance/lifetime numerals now --font-display for one type scale) and adds the
+  missing entrance cascade (staggeredReveal: XP → wallet → nemesis → stat grid →
+  tabs; masthead instant as anchor). XP fill keeps its inline gradient+width
+  (04-ui-layout-regression guard) and .stats-grid stays exactly 6 .stat-box.
+  V1-verified own profile on staging (xpToken/walletToken render, 6 stat-boxes,
+  5 reveal targets, xpFill preserved). (Tab/collapsible IA is already sensible —
+  4 tabs + open-on-arrival overview sections; left as-is.)
 - [x] RECORDS 6.3 → DONE v8.25.60 (LIVE+V1): editorial masthead ('The numbers.')
   leading on the league best round; Event Champions + All-time records open on
   arrival (records visible immediately), long tail stays collapsed. (Hero
@@ -105,8 +113,9 @@ when every item below is [x].
 - [x] TRIPS/EVENTS 6.6 → DONE v8.25.62 (LIVE+V1): .ev-card "tee sheet" rows (Fraunces
   name, status-keyed left rule, clustered avatars, brass status/champion badge),
   "+ New Event" promoted into the masthead, entrance reveal. Verified.
-- [ ] PLAY NOW SETUP 7.0 → course/anticipation hero to kill dead canvas, editorial
-  title, entrance motion, ready-state CTA pulse.
+- [x] PLAY NOW SETUP 7.0 → DONE v8.25.71 (LIVE): renderPlaySetup editorial masthead
+  ('Play now.' + LIVE SCORING eyebrow), staggeredReveal on the setup cards' fields.
+  (CTA pulse = follow-up polish if the convergence pass wants it.)
 - [x] COURSES 7.2 → DONE v8.25.66 (LIVE+V1): editorial masthead ('The yardage book.'
   + live count), legible F9/B9/18 score line (brass 18 + ink F9/B9, was washed cream),
   stagger motion. (Sort chips + row hierarchy = follow-up.)
