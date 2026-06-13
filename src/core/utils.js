@@ -4,7 +4,7 @@
    ================================================ */
 
 // ── App version — single source of truth ──
-var APP_VERSION = "8.25.94";
+var APP_VERSION = "8.25.95";
 
 // ── Onboarding walkthrough (FTUE) — foundation constants/helpers ──
 // WALKTHROUGH_MAJOR is decoupled from APP_VERSION so a patch bump never
@@ -355,24 +355,37 @@ function pbSetBlocked(uid, shouldBlock) {
 
 function pbLog() { if (PB_DEBUG && console.log) console.log.apply(console, arguments); }
 function pbWarn() {
-  // Always surface Firestore critical errors (index missing, permission denied)
+  // Surface Firestore critical errors to the console. v8.25.95 — SPLIT the two
+  // critical classes: INDEX / FAILED_PRECONDITION errors are always real +
+  // actionable (a missing composite index), so they still write to the prod
+  // `errors` collection for the admin panel. PERMISSION-DENIED, however, is
+  // almost always the self-healing cold-sign-in rules-context race (a
+  // league-scoped listener firing before profile/league context hydrates; it
+  // succeeds on the next tick) — writing it to `errors` just SPAMS the
+  // maintenance loop (the recurring scrambleTeams/Trip/wagers/chat rows). So we
+  // still console.error it (visible for dev + caught by E2E/rules tests) but do
+  // NOT persist it. A genuine rules gap surfaces via the rules test suite +
+  // console, not auto-error rows.
   var msg = arguments.length > 0 ? String(arguments[arguments.length > 1 ? 1 : 0]) : "";
-  var isCritical = /index|permission|FAILED_PRECONDITION|PERMISSION_DENIED|requires an index/i.test(msg);
-  if (isCritical) {
+  var isIndex = /index|FAILED_PRECONDITION|requires an index/i.test(msg);
+  var isPermission = /permission|PERMISSION_DENIED|insufficient permissions/i.test(msg);
+  if (isIndex || isPermission) {
     console.error("[PB CRITICAL]", Array.prototype.slice.call(arguments).join(" "));
-    // Log to Firestore errors collection so it shows in admin panel
-    try {
-      if (typeof db !== "undefined" && db) {
-        db.collection("errors").add({
-          message: Array.prototype.slice.call(arguments).map(String).join(" ").substring(0, 500),
-          type: "query_error",
-          page: typeof Router !== "undefined" ? Router.getPage() : "unknown",
-          appVersion: APP_VERSION,
-          timestamp: new Date().toISOString(),
-          resolved: false
-        }).catch(function(){});
-      }
-    } catch(e) {}
+    if (isIndex) {
+      // Real, actionable → admin panel errors collection.
+      try {
+        if (typeof db !== "undefined" && db) {
+          db.collection("errors").add({
+            message: Array.prototype.slice.call(arguments).map(String).join(" ").substring(0, 500),
+            type: "query_error",
+            page: typeof Router !== "undefined" ? Router.getPage() : "unknown",
+            appVersion: APP_VERSION,
+            timestamp: new Date().toISOString(),
+            resolved: false
+          }).catch(function(){});
+        }
+      } catch(e) {}
+    }
   } else if (PB_DEBUG && console.warn) {
     console.warn.apply(console, arguments);
   }
