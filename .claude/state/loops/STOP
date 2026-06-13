@@ -1,0 +1,15 @@
+HALT dropped 2026-06-13 ~00:22 EDT by the overnight-triage-cron session.
+
+REASON: concurrent-marathon-agent hazard. A SECOND Claude instance is actively
+executing this same marathon and already built + committed the only open backlog
+item — DISTANCE TO PIN — as v8.25.55 (commit fafbf398: distance.js bundled + wired
++ version-trio bumped). Two agents on one repo race production pushes (the exact
+disaster parbaughs-ship-cycle warns about). This session stood down rather than
+collide. The agent-actionable backlog is exhausted (distance-to-pin was the last
+[ ]; all else is [x] or Founder-gated), so halting loses no pending work.
+
+FULL WRITE-UP: .claude/state/incidents/2026-06-13-concurrent-marathon-collision.md
+
+FOUNDER: confirm only ONE marathon driver runs (stray ralph-loop.ps1 task / second
+Claude window / duplicate hibernation cron), verify v8.25.55 distance-to-pin shipped
+cleanly, then delete this STOP file to re-arm the loop.
