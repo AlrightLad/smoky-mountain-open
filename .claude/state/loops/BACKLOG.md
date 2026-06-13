@@ -33,6 +33,33 @@ finish.
 - [x] Onboarding-replay ParCoin farm exploit — fixed v8.25.33 (durable rookieRewarded flag).
 - [x] Kudos/Tee-Tap → one appreciation reaction app-wide — done v8.25.32 (feed) + v8.25.34 (League Pulse) + Caddy Notes v8.25.37.
 
+## ACTIVE MARATHON — "all pages → 9.5" 4-DIMENSION push (Founder 2026-06-13 21:28)
+Founder verdict: pages are "not a 9.5 or higher or even close." Asked to review ALL
+pages + data integrity, upgrade, push. Calibration (he picked ALL FOUR directions):
+  1. **Depth & elevation** — cards float on crisp shadows + layered surfaces, clear light source.
+  2. **Bolder color & contrast** — less flat monochrome cream; richer felt-green/claret/brass accents + hero moments.
+  3. **More motion & life** — richer micro-interactions, screen transitions, touch response, ambient motion.
+  4. **Denser & more premium** — tighter magazine-grade density, more useful content/screen, refined type scale + rhythm.
+SYSTEMIC FINDINGS (explored 2026-06-13): the base `.card` is already good (bright
+`--cb-paper` surface + 3-layer `--shadow-sm` + hover-lift + press-scale); the core
+token system is sound. So there is NO safe one-token blanket lever — the `--el-1`
+weak-shadow usages are mostly trophy GRID cells where subtle is correct (do NOT
+blanket-bump). The 9.5 gap is genuine PER-PAGE work: richer COLOR on the monochrome
+cream pages, DENSITY/rhythm, more MOTION, consistent elevation on bespoke cards.
+Multi-batch marathon — per page: capture → upgrade across the 4 dims → V1-verify
+against the actual bg → ship → Founder reacts (he owns ≥9.5 per AMD-028).
+- [x] FOUNDATION START — HOME depth (v8.25.100, LIVE+V1): warm brass dawn-glow backdrop
+  on `[data-page="home"]` (breaks the flat-cream field) + First-Week card lifted off
+  `--el-1`→`--shadow-sm`. Founder reacting to the direction.
+- [ ] Per-page 4-dim grind across ALL member pages (home deepen, feed, rounds, profile,
+  standings, richlist, wagers, chat, settings, playnow, more, leagues, trips, scorecard,
+  courses, records, trophyroom, season-recap) — color + density + motion + elevation each.
+- [ ] Data-integrity pass alongside each page (every visible value traces to source; no
+  zeros/dashes/fabrication per P9).
+- [ ] SWING figure → PREMIUM asset (Founder chose 2026-06-13; free pool render-vetted +
+  exhausted). Doc: task-queue/founder/swing-lottie-asset.md. Flicker is a baked-in
+  coplanar seam (renderer-independent); data verified clean frame-by-frame.
+
 ## Founder batch 2026-06-13
 - [x] SWING flow + scene rebuild — DONE v8.25.44: fairway tee scene (golfer tees DOWN a striped fairway to a distant green+flag, big dawn sky, inviting), "Tap to start your adventure", NO auto-advance (waits for the tap), plays to the follow-through + HOLDS (watching the shot down the fairway, never recenters) then the app opens. canvas renderer (flicker fix). Verified via tapped WITH_INTRO capture — finish pose nails the "staring down the fairway" note.
 - [x] Profile "Recent play" → 3 rounds, show-all button removed — DONE v8.25.45 (full ledger still via the tappable Rounds-count stat).
