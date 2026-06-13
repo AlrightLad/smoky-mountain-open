@@ -68,3 +68,28 @@ green-center coordinate (Lane A).
 
 **Decision needed from you:** which lane(s) to greenlight. Once you pick, I build it.
 No code written yet (per your instruction).
+
+---
+
+## ✅ FOUNDER DECISION (2026-06-13): Lane A — distance to pin, with FRONT/CENTER/BACK.
+Greenlit: GPS "distance to the green," shown as **Front / Center / Back** (the classic
+rangefinder read), not just center. Build approach:
+- **Coordinates:** crowdsourced per hole, $0. The member taps "set the green" while
+  standing on it and drops **front-edge + back-edge** pins (2 taps) → center = midpoint,
+  and F/C/B distances are all exact. (Fallback if only one tap: center ± ~half a typical
+  green depth.) Cached on the course doc, gets better as the league plays.
+- **Live read:** during a `playnow` round, `navigator.geolocation` → Haversine to the
+  three points → "Front 138 · Center 147 · Back 156" (yds). Permission-gated, graceful
+  if GPS denied/unavailable (P10: explain, don't silently show 0).
+- **Yardage (wrapped in):** static per-hole yardage from GolfCourseAPI shows regardless
+  of GPS — a free win even without a green pin set.
+- No graphical hole map (Lane B/C deferred) — distance is the value.
+**Status:** greenlit, queued to build (substantial GPS feature — built carefully on a
+fresh context so the geolocation + per-hole-coord write path is solid). NO credential or
+gate needed for this (it's all client GPS + the existing course doc).
+
+## Note on the OCR / credential items (Founder 2026-06-13)
+Founder is on mobile / away from his PC and will set up the gated bits (the Anthropic
+key for course photo→auto-fill OCR, any `gh` auth) next time he's at his command center.
+Until then: the FREE versions ship without them (course photo-as-reference already
+live v8.25.51; distance-to-pin needs no key). T3 OCR waits for the PC session.
