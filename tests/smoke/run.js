@@ -160,6 +160,21 @@ async function runOnBrowser(browserName, runDir) {
         // replication is variable; 2s is well within budget.
         await page.waitForTimeout(2000);
       }
+      // v8.25.54 — intro hygiene: the tee-shot intro now WAITS for a tap (no
+      // auto-advance, Founder 2026-06-13), and S27 deliberately clears
+      // pb_intro_seen to test the opt-out gate. Either can leave a #pbIntro
+      // overlay (or a re-mountable state) that intercepts pointer events for the
+      // NEXT scenario's clicks (notifBell, etc.). Re-assert the suppressed state
+      // before every scenario so one scenario's intro manipulation can't bleed
+      // into the next. Does not touch pb_wt_routed (S31 owns the walkthrough).
+      await page.evaluate(function() {
+        try {
+          sessionStorage.setItem('pb_intro_seen', '1');
+          if (window.pbTeeIntro && pbTeeIntro.skip) pbTeeIntro.skip();
+          var e = document.getElementById('pbIntro');
+          if (e && e.parentNode) e.parentNode.removeChild(e);
+        } catch (_) {}
+      });
       var out = await scenario.run({ page: page, capture: capture, devUrl: SMOKE_NAV_URL });
       record.passed = !!(out && out.passed);
       if (out && out.details) record.details = out.details;

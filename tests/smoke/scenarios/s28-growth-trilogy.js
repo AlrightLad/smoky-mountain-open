@@ -15,27 +15,48 @@ module.exports = {
   run: async function(ctx) {
     var page = ctx.page;
 
-    // ── 1+2. Wrapped story engine (signed-in member with rounds) ──
+    // ── 1+2. Share gate + Wrapped (BOTH branches: pending-gate AND story engine) ──
+    // v8.25.54: Wrapped for the CURRENT year is gated until Dec 1 (Founder
+    // 2026-06-13 — "show pending yearly progress, not results, before then").
+    // So the story-stage assertion now runs against a PAST year (never gated),
+    // and we separately assert the current-year pending gate renders correctly.
     var r = await page.evaluate(function() {
       var out = {};
       out.shareFn = typeof pbCreateShareLink === 'function';
-      out.wrappedRoute = typeof _buildWrappedSlides === 'function';
-      Router.go('wrapped');
+      out.wrappedFn = typeof _buildWrappedSlides === 'function';
+      var now = new Date();
+      var cur = now.getFullYear();
+      out.gatedNow = now < new Date(cur, 11, 1); // true before Dec 1 → current year shows "pending"
       return new Promise(function(resolve) {
+        // (a) STORY ENGINE — a past year is never gated, so the stage always builds
+        Router.go('wrapped', { year: cur - 1 });
         setTimeout(function() {
           var stage = document.getElementById('wrappedStage');
           out.stageRendered = !!stage;
-          out.progressSegments = stage ? stage.firstElementChild.children.length : 0;
+          out.progressSegments = (stage && stage.firstElementChild) ? stage.firstElementChild.children.length : 0;
           out.slideCount = (typeof _wrappedSlides !== 'undefined') ? _wrappedSlides.length : 0;
-          // advance one slide via the engine's own click handler
           if (stage) {
             var evt = new MouseEvent('click', { clientX: window.innerWidth - 10, bubbles: true });
             stage.dispatchEvent(evt);
           }
           setTimeout(function() {
             out.advanced = (typeof _wrappedIdx !== 'undefined') && _wrappedIdx === (out.slideCount > 1 ? 1 : 0);
+            // (b) PENDING GATE — back home, then the current-year route
             Router.go('home');
-            resolve(out);
+            setTimeout(function() {
+              Router.go('wrapped');
+              setTimeout(function() {
+                var stageCur = document.getElementById('wrappedStage');
+                var pageEl = document.querySelector('[data-page="wrapped"]');
+                var txt = pageEl ? pageEl.textContent : '';
+                // before Dec 1: pending view (no story stage); on/after: the story
+                out.currentBranchOk = out.gatedNow
+                  ? (!stageCur && /still being written|In Progress|unlocks/i.test(txt))
+                  : !!stageCur;
+                Router.go('home');
+                resolve(out);
+              }, 500);
+            }, 300);
           }, 250);
         }, 600);
       });
@@ -43,10 +64,12 @@ module.exports = {
 
     var failures = [];
     if (!r.shareFn) failures.push('pbCreateShareLink missing');
-    if (!r.wrappedRoute || !r.stageRendered) failures.push('wrapped stage did not render');
-    if (r.slideCount < 1) failures.push('wrapped built zero slides');
+    if (!r.wrappedFn) failures.push('_buildWrappedSlides missing');
+    if (!r.stageRendered) failures.push('wrapped story stage did not render (past year)');
+    if (r.slideCount < 1) failures.push('wrapped built zero slides (past year)');
     if (r.progressSegments !== r.slideCount) failures.push('progress segments (' + r.progressSegments + ') != slides (' + r.slideCount + ')');
     if (r.slideCount > 1 && !r.advanced) failures.push('tap did not advance the story');
+    if (!r.currentBranchOk) failures.push(r.gatedNow ? 'current-year Wrapped pending-gate did not render' : 'current-year Wrapped story did not render (post-Dec-1)');
 
     // ── 3. Commissioner's Kit on the smoke league page ──
     var k = await page.evaluate(function() {
