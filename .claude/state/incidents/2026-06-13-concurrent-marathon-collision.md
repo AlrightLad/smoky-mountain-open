@@ -98,3 +98,4 @@ was due to wind down after this item regardless.
 *Authored by the overnight-triage-cron session as a stand-down/coordination record. No
 feature files, no `BACKLOG.md`, and no remote were touched — collision avoidance was the
 whole point.*
+RESOLVED 2026-06-13 13:28 UTC: Founder re-engaged THIS interactive session as sole driver with a large new batch (all-pages-9+, swing leg, feed-bot, etc.) + an explicit completion-notification ask. Overnight cron remains dormant (no commits 25min+; hibernation cron is session-only per memory). Re-arming the loop per the STOP file's own instruction ('FOUNDER ... delete this STOP file to re-arm'). Races guarded by fetch-merge-before-every-push.
