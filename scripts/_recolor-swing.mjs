@@ -51,7 +51,11 @@ const MAP = [
   // --- BLUE / PURPLE trousers + shoe/leg accents -> FELT-GREEN ---
   { from: [0.31, 0.259, 1], to: FELT, role: 'blue-purple trouser/shoe fill' },
   { from: [0.231, 0.184, 0.855], to: FELT_DARK, role: 'blue trouser/cap stroke' },
-  { from: [0.686, 0.775, 1], to: FELT, role: 'light-blue leg/trouser stroke' },
+  // v8.25.57 — the LEFT leg's stroke was the only light-blue source; the RIGHT
+  // leg's stroke is pure white and fell through unmapped, so mapping this to FELT
+  // turned the left leg felt-green = the fairway colour and it blended in (Founder
+  // report). Map to white [1,1,1] to MATCH the right leg's stroke exactly.
+  { from: [0.686, 0.775, 1], to: [1, 1, 1], role: 'left-leg stroke — match right leg (white), not felt' },
   // --- TEAL decorative effect shapes (ground swoosh) -> FELT-GREEN family ---
   { from: [0, 0.827, 0.701], to: FELT, role: 'teal ground/effect fill' },
   { from: [0.338, 0.65, 0.706], to: FELT, role: 'teal ballfly-trail fill' },

@@ -66,6 +66,87 @@ finish.
   Smoke 33/33. Spec: task-queue/founder/hole-diagram-self-position-plan.md.
 - [~] PLANNING ONLY (no code): hole diagram self-position + yardage — DONE: plan written to task-queue/founder/hole-diagram-self-position-plan.md (3 lanes + recommendation; Founder picks the lane).
 
+## Founder batch 2026-06-13 (SECOND batch) — ALL PAGES ≥9.0, STRIVE 9.5
+Founder mandate 2026-06-13 13:25 UTC: "all pages should strive for 9.5 but at
+minimum be over a 9." + "send me a notification once all assigned work is
+completed." Sole-driver confirmed (overnight cron stood down, STOP was its
+self-halt). Full evidence: per-page ratings in WF2 output (verify-* + the table
+in chat), diagnosis/e2e/design specs in WF1 output
+(.claude/.../tasks/w6myyl5yi.output + w0u4t39i2.output). PushNotification ONLY
+when every item below is [x].
+
+### Quick-win fixes (Wave 1)
+- [ ] SWING LEFT LEG blends into grass — DONE-CODE: left-leg stroke was felt-green
+  (recolor MAP line 54 mapped light-blue→FELT; right leg stayed white). Fixed
+  _recolor-swing.mjs → white [1,1,1] + regenerated golf-swing-pb.json (light-blue
+  residual 0). SHIP + V1-verify the held finish frame.
+- [ ] NOTIFICATIONS answer + chat gap: kudos (round_like/round_teetap) ✓ + tee-time
+  (tee_posted/RSVP) ✓ WORK. Chat-POST does NOT notify (chat.js sendChat never calls
+  sendNotification) — build a COALESCED chat notification (one "new trash talk"
+  entry per recipient until read, not one-per-message = spam). round_teetap type
+  registered in notification-types.js (was unregistered → generic icon/wrong link).
+
+### Per-page lifts to ≥9.0 (worst-first; specs in WF2 output)
+- [ ] SCRAMBLE 5.8 → editorial masthead, felt team-crest card w/ hero W-L, fix
+  avatar-blob (stockAvatar skips initial disc, scramble.js:23), fill empty fold,
+  scramblelive token migration + finish celebration.
+- [ ] PROFILE 6.3 → kill inline-style body, migrate sections to pf-*/tokens, one
+  type scale, reduce tab/collapsible load, entrance+count-up motion.
+- [ ] RECORDS 6.3 → editorial masthead, open headline sections (show records on
+  arrival), hero record-board, count-up, migrate off legacy .hof-card.
+- [ ] SEASON RECAP 6.3 → rebuild landing on roster-masthead, real podium medals,
+  champion hero, award tiles (fix 28px-wrapper-on-14px-SVG bug); Wrapped token unify.
+- [ ] TRIPS/EVENTS 6.6 → "tee sheet" event card, fill fold, masthead-integrate CTA,
+  pf-empty state, entrance motion.
+- [ ] PLAY NOW SETUP 7.0 → course/anticipation hero to kill dead canvas, editorial
+  title, entrance motion, ready-state CTA pulse.
+- [ ] COURSES 7.2 → masthead, sort/scope chips, legible score line, row hierarchy,
+  stagger motion, richer monogram tiles.
+- [ ] ROUNDS 7.4 → unify list hero w/ detail masthead, designed score-chip rows,
+  entrance motion, tokenize inline strings, editorial empty state.
+- [ ] WAGERS 7.4 → bankroll hero band, opponent call-out rail, card entrance+count-up,
+  live-stakes treatment, centered desktop column.
+- [ ] STANDINGS 7.4 → render The Chase for 1-golfer board, suppress dead Avg col, fix
+  "1 rds" grammar (standings.js:245), crown thin trophies honestly (≥3 rounds),
+  count-up the points.
+- [ ] HOME 7.8 → stats strip surface + count-up, nemesis felt banner, entrance
+  choreography, differentiate PULSE rows, one asymmetric hierarchy peak.
+- [ ] SETTINGS 8.0 → unify caddie picker onto theme-row component, migrate Location
+  off inline styles, section motion, coin glyph on balance.
+- [ ] PLAY NOW LIVE 8.2 → re-skin FIR/GIR + Finish button off legacy green into
+  moss/brass, tokenize turn summary + confirm/publish panels, contrast harden,
+  birdie micro-celebration.
+- [ ] MEMBERS 8.2 → row-reveal + live-dot motion, rail earns column at low data,
+  keep mobile density (restack not hide), demote invite slab, avatar leader strip.
+- [ ] FEED 8.4 → fade-up cascade, kudos heart-pop, separate stacked green blocks,
+  posts-today pulse, resolve dead Community tab.
+- [ ] TROPHY ROOM 8.4 → tier emblems by rarity (metallic depth), hero marquee cell,
+  foil sweep on rare/championship, masthead avatar, level-bar glow+ticks.
+- [ ] SHOP 8.6 → sticky category rail for long scroll, replace ⛳ emoji w/ SVG,
+  reduce 'Arriving' dilution, contrast harden locker/cabinet desc, featured shimmer.
+
+### Named design redesigns (WF1 specs; some overlap the page lifts above)
+- [ ] SWING SCENE redesign — richer dawn course (WF1 swing-scene-design spec).
+- [ ] SHOP ITEM fidelity — name-vs-art audit + legibility (re-run failed WF1
+  shop-item-fidelity agent — it errored Overloaded).
+- [ ] RICH LIST redesign — podium/tiers/momentum (WF1 rich-list-design spec).
+- [ ] STANDINGS redesign (folds into the page lift above).
+- [ ] MERCH loading screen redesign (WF1 merch-loading-design spec).
+- [ ] LINEN DRAFT theme REPLACEMENT — new high-contrast distinct colorway
+  (WF1 theme-linen-replace spec; theme.js).
+
+### Bigger features
+- [ ] FEED BOT CONSOLIDATION (Founder 2026-06-13) — collapse the multiple feed bot
+  voices into ONE "The Caddy" persona w/ a branded profile picture so agent posts
+  read distinct from human posts; ALL AI ribs/voicelines use the USER'S SELECTED
+  caddie voice (caddy-voices.js CADDIES). Massive lift.
+- [ ] SEASON AWARDS gating — hide award night / season awards until each season is
+  COMPLETE (mirror Wrapped pending-gate; WF1 season-award-gating spec).
+- [ ] E2E data-workflow bug fixes surfaced by WF1 (e2e-core/social/profile agents).
+
+### Closeout
+- [ ] Full per-page V1 re-rate confirming every page ≥9.0; then PushNotification to Founder.
+
 ## Swing + shop (active Founder iteration 2026-06-12)
 - [x] Sign-in swing rebuild — DONE v8.25.38→.41 on staging+prod: professional Lottie golfer recolored to brass/cream/felt-green (golf-swing-pb.json), CANVAS renderer (kills the structural knee z-fight), inline dawn course scene (green/hills/flag/sun) behind him, AUTO-OPEN flow (one tap or auto-tee → native-speed swing → app opens itself; no gate, no skip, no double-click). Verified via CAP_WITH_INTRO capture. Founder evaluating knees-in-motion on staging; hairline-seam fallback ready if any residual shudder.
 - [x] Shop grid alignment — DONE v8.25.40 (flex-column cards, pinned actions, 14px gutters, line-clamps).
