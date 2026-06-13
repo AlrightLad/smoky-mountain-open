@@ -4,7 +4,7 @@
    ================================================ */
 
 // ── App version — single source of truth ──
-var APP_VERSION = "8.25.96";
+var APP_VERSION = "8.25.97";
 
 // ── Onboarding walkthrough (FTUE) — foundation constants/helpers ──
 // WALKTHROUGH_MAJOR is decoupled from APP_VERSION so a patch bump never
@@ -355,7 +355,7 @@ function pbSetBlocked(uid, shouldBlock) {
 
 function pbLog() { if (PB_DEBUG && console.log) console.log.apply(console, arguments); }
 function pbWarn() {
-  // Surface Firestore critical errors to the console. v8.25.96 — SPLIT the two
+  // Surface Firestore critical errors to the console. v8.25.97 — SPLIT the two
   // critical classes: INDEX / FAILED_PRECONDITION errors are always real +
   // actionable (a missing composite index), so they still write to the prod
   // `errors` collection for the admin panel. PERMISSION-DENIED, however, is

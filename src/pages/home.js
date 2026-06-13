@@ -279,8 +279,9 @@ function _renderMobileLeaguePulse() {
   h += '<div onclick="Router.go(\'feed\')" style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:1.5px;color:var(--cb-brass);cursor:pointer;text-transform:uppercase">Full feed →</div>';
   h += '</div>';
 
-  // Item rows
-  h += '<div style="display:flex;flex-direction:column;gap:8px">';
+  // Item rows — gap widened 8→12px (Gemini 2026-06-13 breathing-room pass) so
+  // the pulse cards read as distinct, scannable items, not a stacked block.
+  h += '<div style="display:flex;flex-direction:column;gap:12px">';
   items.slice(0, 3).forEach(function(it) {
     var clickAttr = it.dest ? ' onclick="' + it.dest + '"' : '';
     h += '<div' + clickAttr + ' style="display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--cb-chalk);border-radius:10px;box-shadow:var(--shadow-sm);' + (it.dest ? 'cursor:pointer;' : '') + '">';

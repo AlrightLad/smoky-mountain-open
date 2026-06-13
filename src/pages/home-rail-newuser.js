@@ -304,11 +304,11 @@ function _renderFirstWeekChecklist(ctx) {
   h += '</div>';
   items.forEach(function (it) {
     if (it.done) {
-      h += '<div style="display:flex;align-items:center;gap:10px;padding:7px 0">';
+      h += '<div style="display:flex;align-items:center;gap:10px;padding:11px 0">';
       h += '<span style="flex:none;width:18px;height:18px;border-radius:50%;background:var(--cb-brass);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="var(--cb-paper)" stroke-width="2.4"><path d="M3 8.5l3.2 3L13 5"/></svg></span>';
       h += '<span style="font-family:var(--font-ui);font-size:13px;color:var(--cb-charcoal)">' + escHtml(it.label) + '</span></div>';
     } else {
-      h += '<div onclick="Router.go(\'' + it.go + '\')" role="button" tabindex="0" style="display:flex;align-items:flex-start;gap:10px;padding:8px 0;cursor:pointer;min-height:44px">';
+      h += '<div onclick="Router.go(\'' + it.go + '\')" role="button" tabindex="0" style="display:flex;align-items:flex-start;gap:10px;padding:12px 0;cursor:pointer;min-height:44px">';
       h += '<span style="flex:none;width:18px;height:18px;border-radius:50%;border:2px solid var(--cb-brass);margin-top:1px"></span>';
       h += '<span style="flex:1"><span style="font-family:var(--font-ui);font-size:13px;font-weight:600;color:var(--cb-ink)">' + escHtml(it.label) + '</span>';
       h += '<span style="display:block;font-family:var(--font-ui);font-size:11.5px;color:var(--cb-mute);margin-top:1px">' + escHtml(it.tip) + '</span></span>';
@@ -365,9 +365,12 @@ function _renderEmailVerifyBanner() {
 function _renderGreeting(greetingWord, firstName) {
   var h = '<div style="padding:28px 22px 0">';
   h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:10px">' + _formatDateEyebrow() + '</div>';
-  h += '<div style="font-family:var(--font-display);font-size:33px;font-weight:700;color:var(--cb-ink);line-height:1.12;letter-spacing:-0.5px;font-variation-settings:\'opsz\' 40">';
-  h += escHtml(greetingWord) + ',<br>';
-  h += '<span style="font-style:italic;font-weight:600">' + escHtml(firstName) + '.</span>';
+  // Greeting hierarchy (Gemini 2026-06-13): the lead-in word was heavier (700)
+  // than the name (600) — inverted emphasis. Lead-in is now a lighter charcoal
+  // (500) so the member's name, bold italic in full ink, is the clear focal point.
+  h += '<div style="font-family:var(--font-display);font-size:33px;line-height:1.12;letter-spacing:-0.5px;font-variation-settings:\'opsz\' 40">';
+  h += '<span style="font-weight:500;color:var(--cb-charcoal)">' + escHtml(greetingWord) + ',</span><br>';
+  h += '<span style="font-style:italic;font-weight:700;color:var(--cb-ink)">' + escHtml(firstName) + '.</span>';
   h += '</div>';
   h += '</div>';
   return h;
