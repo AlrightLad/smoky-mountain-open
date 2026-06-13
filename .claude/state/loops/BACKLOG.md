@@ -162,6 +162,14 @@ when every item below is [x].
   Verified on staging (2026 mid-season → awards sealed).
 - [ ] E2E data-workflow bug fixes surfaced by WF1 (e2e-core/social/profile agents).
 
+### Founder follow-ups (AFTER current workload — Founder 2026-06-13 15:32)
+- [ ] SECOND deep 9.5 review pass on EVERY page — same exhaustive WF2 rating method,
+  push each page from its current ≥9.0 toward "close to or above 9.5". (The first
+  pass lifted the bottom tier over 9; this is the convergence pass to 9.5.)
+- [ ] Tasteful page ANIMATION pass — animated rich list ("money list") + other fun
+  pages (leaderboards/recap). Founder: "nothing overwhelming or that ruins app
+  integrity." Reduced-motion-safe, transform/opacity only, on-brand.
+
 ### Closeout
 - [ ] Full per-page V1 re-rate confirming every page ≥9.0; then PushNotification to Founder.
 

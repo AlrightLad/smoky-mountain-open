@@ -88,25 +88,23 @@
 @keyframes pbiShimmer{0%{transform:translateX(-520px)}60%{transform:translateX(540px)}100%{transform:translateX(540px)}}
 #pbi-flag{transform-box:fill-box;transform-origin:left center}
 @media (prefers-reduced-motion: no-preference){
+/* v8.25.73 PERF — was 9 concurrent CSS animations + 2 blur filters over the
+   running Lottie canvas → jank on mobile (Founder: "more laggy"). Cut to TWO
+   cheap transform-only animations (one slow cloud + the flag flutter); the rays/
+   fog/dew/extra-clouds are now static, and the blur filters are removed below.
+   The scene stays rich (depth, bloom, rays, stripes) but composites cleanly. */
 .pbi-c1{animation:pbiDrift 80s linear infinite alternate}
-.pbi-c2{animation:pbiDrift 60s linear infinite alternate}
-.pbi-c3{animation:pbiDrift 45s linear infinite alternate}
-.pbi-fog{animation:pbiFog 34s ease-in-out infinite}
-.pbi-ray1{animation:pbiRay 9s ease-in-out infinite}
-.pbi-ray2{animation:pbiRay 9s ease-in-out 3s infinite}
-.pbi-ray3{animation:pbiRay 9s ease-in-out 6s infinite}
 #pbi-flag{animation:pbiFlutter 4.5s ease-in-out infinite}
-.pbi-dew{animation:pbiShimmer 11s ease-in-out infinite}
 }
 </style>
 </defs>
 
 <!-- BAND 1 · sky: linear base + radial bloom blurred so the low horizon blooms instead of banding -->
 <rect width="1080" height="1080" fill="url(#pbiSkyBase)"/>
-<rect width="1080" height="900" fill="url(#pbiBloom)" filter="url(#pbiHaze)"/>
+<rect width="1080" height="900" fill="url(#pbiBloom)"/>
 
 <!-- god-ray cone: thin blurred triangles fanning up from the sun, staggered breathing -->
-<g clip-path="url(#pbiHorizon)" filter="url(#pbiSoft)">
+<g clip-path="url(#pbiHorizon)">
 <polygon class="pbi-ray1" points="626,652 470,40 540,30" fill="#f6e6b4"/>
 <polygon class="pbi-ray2" points="626,652 612,20 690,28" fill="#f0d488"/>
 <polygon class="pbi-ray3" points="626,652 760,46 836,70" fill="#f6e6b4"/>
@@ -121,12 +119,12 @@
 <g opacity="0.16" fill="#a89870"><path class="pbi-c3" d="M430 110 q24 -20 56 -6 q22 -14 46 6 l2 22 l-118 2 q-14 -10 14 -22z"/></g>
 
 <!-- BAND 2 · far ridge: high value, low saturation, soft (blurred) edge — recedes into sky -->
-<path d="M0 642 Q 240 612 470 632 Q 720 612 1080 636 L1080 700 L0 700 Z" fill="#52614e" opacity="0.7" filter="url(#pbiSoft)"/>
+<path d="M0 642 Q 240 612 470 632 Q 720 612 1080 636 L1080 700 L0 700 Z" fill="#52614e" opacity="0.7"/>
 
 <!-- BAND 3 · mid hills: rim-lit crest + fog ribbon in the valley -->
 <path d="M0 706 Q 270 666 540 692 Q 800 668 1080 700 L1080 800 L0 800 Z" fill="#33503c"/>
 <path d="M0 706 Q 270 666 540 692 Q 800 668 1080 700" fill="none" stroke="#bfa86a" stroke-width="3" opacity="0.45"/>
-<g clip-path="url(#pbiHorizon)"><ellipse class="pbi-fog" cx="540" cy="724" rx="430" ry="34" fill="#dfe6da" filter="url(#pbiSoft)"/></g>
+<g clip-path="url(#pbiHorizon)"><ellipse class="pbi-fog" cx="540" cy="724" rx="430" ry="34" fill="#dfe6da"/></g>
 
 <!-- BAND 4 · fairway: full-saturation green, mowing stripes converging to the flag (vanishing point ~626,720) -->
 <rect y="760" width="1080" height="320" fill="#2f5740"/>
@@ -147,12 +145,12 @@
 <rect class="pbi-dew" x="60" y="820" width="320" height="260" fill="url(#pbiDew)" opacity="0.7" transform="skewX(-22)"/>
 
 <!-- ONE organic asymmetric bunker (lower-left): sand body, shadow-side stroke, cast shadow -->
-<path d="M 150 980 C 90 940 130 902 210 906 C 300 902 372 922 388 962 C 402 1004 320 1028 236 1024 C 168 1022 198 1008 150 980 Z" fill="#1c3424" opacity="0.5" transform="translate(14 16)" filter="url(#pbiSoft)"/>
+<path d="M 150 980 C 90 940 130 902 210 906 C 300 902 372 922 388 962 C 402 1004 320 1028 236 1024 C 168 1022 198 1008 150 980 Z" fill="#1c3424" opacity="0.5" transform="translate(14 16)"/>
 <path d="M 150 980 C 90 940 130 902 210 906 C 300 902 372 922 388 962 C 402 1004 320 1028 236 1024 C 168 1022 198 1008 150 980 Z" fill="#e6cf9c"/>
 <path d="M 150 980 C 90 940 130 902 210 906 C 300 902 372 922 388 962" fill="none" stroke="#b89a62" stroke-width="6" opacity="0.7"/>
 
 <!-- lit putting green disc at the vanishing point, with a soft cast shadow -->
-<ellipse cx="630" cy="724" rx="58" ry="15" fill="#173023" opacity="0.45" transform="translate(8 5)" filter="url(#pbiSoft)"/>
+<ellipse cx="630" cy="724" rx="58" ry="15" fill="#173023" opacity="0.45" transform="translate(8 5)"/>
 <ellipse cx="630" cy="722" rx="56" ry="14" fill="#74bd84"/>
 <ellipse cx="630" cy="722" rx="56" ry="14" fill="none" stroke="#bfa86a" stroke-width="1.5" opacity="0.4"/>
 
