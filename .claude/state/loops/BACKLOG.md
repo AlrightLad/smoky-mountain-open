@@ -149,8 +149,14 @@ when every item below is [x].
   purpose (a felt banner there would fight the dark hero for the single peak — a
   net hierarchy loss). (Pulse-row differentiation + HCP/BEST count-up = convergence
   -pass levers.)
-- [ ] SETTINGS 8.0 → unify caddie picker onto theme-row component, migrate Location
-  off inline styles, section motion, coin glyph on balance.
+- [x] SETTINGS 8.0 → DONE v8.25.77 (LIVE+V1): caddie picker rebuilt on the shared
+  .theme-row component (was bespoke .pb-caddie-row w/ ~8 inline-style triplets) —
+  circular per-caddie accent avatar chip, brass active ring + check + locked/PRO-SHOP
+  treatment identical to the theme picker right above it, so Display reads as ONE
+  radio language (V1-confirmed: The Caddy active w/ brass ring, Old Tom/Birdie/Bag
+  Room Guy w/ lock all clean). Coin glyph + count-up on the ParCoin balance; section
+  entrance cascade (staggeredReveal). (Location inline-style migration = minor
+  convergence-pass cleanup; it already uses set-row tokens.)
 - [ ] PLAY NOW LIVE 8.2 → re-skin FIR/GIR + Finish button off legacy green into
   moss/brass, tokenize turn summary + confirm/publish panels, contrast harden,
   birdie micro-celebration.
