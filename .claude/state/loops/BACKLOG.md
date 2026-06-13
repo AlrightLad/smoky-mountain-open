@@ -38,11 +38,11 @@ finish.
 - [x] Profile "Recent play" → 3 rounds, show-all button removed — DONE v8.25.45 (full ledger still via the tappable Rounds-count stat).
 - [x] Shop shelf order LOWEST→HIGHEST rarity + rarity legend — DONE v8.25.45.
 - [x] Caddies in the SHOP matching Settings — DONE v8.25.46 (Caddies shelf renders from window.pbCaddies, the Settings source).
-- [ ] Season Recap alignment (match standings + annual) — workflow wf_a96deb82 investigating; implement its fix.
-- [ ] Merch → Parbaughs "coming soon" poster-art page — workflow designing; implement.
-- [ ] Leaderboards / Season Recap tasteful entrance animations — workflow designing; implement.
-- [ ] Add course via PHOTO SCAN / UPLOAD — workflow assessing feasibility (zero-budget OCR); likely a plan + Founder decision.
-- [ ] Shop cosmetic ITEMS revamp + ADD more — workflow proposing catalog additions; implement.
+- [x] Season Recap alignment — DONE v8.25.47 (annual calendar-year; fixed the "_year" key in data.js so Wrapped is correct too).
+- [x] Merch → "coming soon" poster page — DONE v8.25.48 (vintage clubhouse/course SVG poster; verified).
+- [x] Shop cosmetic ITEMS — DONE v8.25.49 (+7 new items wired worn-render, retired The Sleeve).
+- [ ] Leaderboards / Season Recap entrance animations — SPECCED + ready in .claude/state/batch-0613/anim.md + synth plan (3 animate.js helpers: staggeredReveal/barFill/fadeInScale, reduced-motion early-return, stagger cap, transform/opacity only; wire standings.js after innerHTML + seasonrecap.js line 198). Higher blast radius (core animate.js) — execute with fresh context + V1 verify motion-on AND reduced-motion.
+- [ ] Add course via PHOTO SCAN — T1 (guided chart-a-course, $0, no gate) + T2 (free-source fallback, legal-attrib check) SPECCED in .claude/state/batch-0613/scan.md + task-queue/founder/course-photo-scan-decision.md; build T1+T2 (default). T3 (true photo OCR) FOUNDER-GATED (Anthropic key + CF deploy) — surfaced for decision.
 - [~] PLANNING ONLY (no code): hole diagram self-position + yardage — DONE: plan written to task-queue/founder/hole-diagram-self-position-plan.md (3 lanes + recommendation; Founder picks the lane).
 
 ## Swing + shop (active Founder iteration 2026-06-12)
