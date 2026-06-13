@@ -6,7 +6,14 @@ Router.register("records", function() {
   var players = PB.getPlayers();
   var rec = PB.getRecords();
 
-  var h = '<div class="sh"><h2>Records</h2></div>';
+  // v8.25.60 — editorial masthead (matches Members/Standings/Scramble) replacing
+  // the legacy .sh header, with the single most impressive live record as a deck
+  // so the page leads with a real number, not a generic title (WF2 audit).
+  var _mFull = rounds.filter(function(r){ return (!r.holesPlayed || r.holesPlayed >= 18) && r.format !== "scramble" && r.format !== "scramble4" && r.score; });
+  var _mBest = _mFull.length ? _mFull.reduce(function(a, b){ return a.score < b.score ? a : b; }) : null;
+  var h = '<div class="roster-masthead"><div class="roster-eyebrow">THE RECORD BOOK</div><h1 class="roster-headline">The numbers.</h1>';
+  if (_mBest) h += '<p style="font-family:var(--font-mono);font-size:12px;color:var(--cb-mute);margin:10px 0 0;letter-spacing:.3px">Best round · <b style="color:var(--cb-ink)">' + _mBest.score + '</b> by ' + escHtml(_mBest.playerName) + (_mBest.course ? ' at ' + escHtml(_mBest.course) : '') + '</p>';
+  h += '</div>';
 
   // Season standings card (prominent at top)
   var year = new Date().getFullYear();
@@ -118,7 +125,7 @@ Router.register("records", function() {
       (subtitle ? '<span style="font-size:11px;font-weight:500;color:var(--cb-mute);margin-top:2px;letter-spacing:.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + subtitle + '</span>' : '') +
       '</span></span>';
     var cardStyle = isHeadline ? ' style="border-left:2px solid rgba(var(--gold-rgb),.45);padding-left:calc(var(--sp-4) - 2px)"' : '';
-    return '<div class="hof-card"' + cardStyle + '><div class="hof-title" onclick="toggleSection(\'rec-' + id + '\')" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px"><span style="min-width:0;display:flex">' + titleBlock + '</span><span id="rec-' + id + '-toggle" style="font-size:12px;color:var(--muted);display:inline-flex;transition:transform .2s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="transition:transform .2s;color:var(--muted)"><path d="M9 18l6-6-6-6"/></svg></span></div><div id="rec-' + id + '" style="display:none">' + content + '</div></div>';
+    return '<div class="hof-card"' + cardStyle + '><div class="hof-title" onclick="toggleSection(\'rec-' + id + '\')" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px"><span style="min-width:0;display:flex">' + titleBlock + '</span><span id="rec-' + id + '-toggle" style="font-size:12px;color:var(--muted);display:inline-flex;transition:transform .2s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14" style="transition:transform .2s;color:var(--muted);' + (isHeadline ? 'transform:rotate(90deg)' : '') + '"><path d="M9 18l6-6-6-6"/></svg></span></div><div id="rec-' + id + '" style="display:' + (isHeadline ? 'block' : 'none') + '">' + content + '</div></div>';
   }
 
   // 1. Event Champions — collapsible hofCard matching all other sections
