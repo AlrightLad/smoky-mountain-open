@@ -41,8 +41,8 @@ finish.
 - [x] Season Recap alignment — DONE v8.25.47 (annual calendar-year; fixed the "_year" key in data.js so Wrapped is correct too).
 - [x] Merch → "coming soon" poster page — DONE v8.25.48 (vintage clubhouse/course SVG poster; verified).
 - [x] Shop cosmetic ITEMS — DONE v8.25.49 (+7 new items wired worn-render, retired The Sleeve).
-- [ ] Leaderboards / Season Recap entrance animations — SPECCED + ready in .claude/state/batch-0613/anim.md + synth plan (3 animate.js helpers: staggeredReveal/barFill/fadeInScale, reduced-motion early-return, stagger cap, transform/opacity only; wire standings.js after innerHTML + seasonrecap.js line 198). Higher blast radius (core animate.js) — execute with fresh context + V1 verify motion-on AND reduced-motion.
-- [ ] Add course via PHOTO SCAN — T1 (guided chart-a-course, $0, no gate) + T2 (free-source fallback, legal-attrib check) SPECCED in .claude/state/batch-0613/scan.md + task-queue/founder/course-photo-scan-decision.md; build T1+T2 (default). T3 (true photo OCR) FOUNDER-GATED (Anthropic key + CF deploy) — surfaced for decision.
+- [x] Leaderboards / Season Recap entrance animations — DONE v8.25.50 (staggeredReveal + fadeInScale in animate.js, reduced-motion early-return + stagger cap + transform/opacity only; wired Standings rows + Season Recap stat-boxes/cards + count-up). V1-verified the board still renders (no blank-row regression).
+- [ ] Add course via PHOTO SCAN — T1 (guided chart-a-course + photo-as-reference, $0) + T2 (free-source fallback, legal-attrib check). SPECCED in .claude/state/batch-0613/scan.md + task-queue/founder/course-photo-scan-decision.md. Highest-impact-if-wrong (writes to the shared course-data path) — build carefully with fresh context, V1-verify a 9h + 18h chart end-to-end. T3 (true photo OCR) FOUNDER-GATED (Anthropic key + CF deploy) — decision surfaced.
 - [~] PLANNING ONLY (no code): hole diagram self-position + yardage — DONE: plan written to task-queue/founder/hole-diagram-self-position-plan.md (3 lanes + recommendation; Founder picks the lane).
 
 ## Swing + shop (active Founder iteration 2026-06-12)
