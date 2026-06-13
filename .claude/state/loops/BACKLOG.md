@@ -93,8 +93,10 @@ when every item below is [x].
   capture. (scramblelive token migration deferred to a polish pass.)
 - [ ] PROFILE 6.3 → kill inline-style body, migrate sections to pf-*/tokens, one
   type scale, reduce tab/collapsible load, entrance+count-up motion.
-- [ ] RECORDS 6.3 → editorial masthead, open headline sections (show records on
-  arrival), hero record-board, count-up, migrate off legacy .hof-card.
+- [x] RECORDS 6.3 → DONE v8.25.60 (LIVE+V1): editorial masthead ('The numbers.')
+  leading on the league best round; Event Champions + All-time records open on
+  arrival (records visible immediately), long tail stays collapsed. (Hero
+  record-board + count-up + .hof-card→tr-* migration = follow-up polish.)
 - [ ] SEASON RECAP 6.3 → rebuild landing on roster-masthead, real podium medals,
   champion hero, award tiles (fix 28px-wrapper-on-14px-SVG bug); Wrapped token unify.
 - [ ] TRIPS/EVENTS 6.6 → "tee sheet" event card, fill fold, masthead-integrate CTA,
@@ -128,8 +130,13 @@ when every item below is [x].
 
 ### Named design redesigns (WF1 specs; some overlap the page lifts above)
 - [ ] SWING SCENE redesign — richer dawn course (WF1 swing-scene-design spec).
-- [ ] SHOP ITEM fidelity — name-vs-art audit + legibility (re-run failed WF1
-  shop-item-fidelity agent — it errored Overloaded).
+- [ ] SHOP ITEM fidelity + EXPANSION (Founder 2026-06-13 13:59: "not enough items
+  and they are too cheap parcoin-wise AND design-wise"). Three axes: (1) MORE items
+  across categories, (2) RAISE ParCoin prices (current floor too low — economy
+  DESIGN change, but Founder-directed = authorized; NOT cash IAP), (3) richer
+  design + name-vs-art fidelity + legibility (re-run failed WF1 shop-item-fidelity
+  agent — it errored Overloaded). Re-cost the whole rarity ladder so price tracks
+  rarity/effort.
 - [ ] RICH LIST redesign — podium/tiers/momentum (WF1 rich-list-design spec).
 - [ ] STANDINGS redesign (folds into the page lift above).
 - [ ] MERCH loading screen redesign (WF1 merch-loading-design spec).
