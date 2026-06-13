@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-13T15:28:14.876949Z",
+  "generated_at": "2026-06-13T15:40:46.865591Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 85.6,
   "overall_grade": "A-",
@@ -920,7 +920,7 @@
           },
           {
             "file": "src/pages/feed.js",
-            "lines": 898,
+            "lines": 911,
             "budget": 800
           },
           {
@@ -959,7 +959,7 @@
     "A6_architecture": {
       "score": 92,
       "status": "green",
-      "label": "3 file-size findings · 1 function-count drift",
+      "label": "2 file-size findings · 1 function-count drift",
       "source": ".claude/state/aggregates/architecture-review.json + src/ walk",
       "weak_points": [
         {
@@ -1052,13 +1052,24 @@
     }
   ],
   "audit_trigger": {
-    "sha": "b1b80ee8",
-    "subject": "cron(routine): post-commit dashboard regen (AMD-019 + AMD-020 Class A auto-clean)",
-    "committed_at": "2026-06-13T11:27:41-04:00",
-    "trigger": "cron",
-    "is_app_commit": false,
-    "app_files_touched": [],
-    "total_files_touched": 4
+    "sha": "09d2ba8e",
+    "subject": "feat(feed): consolidate all bots into one branded 'The Caddy' (v8.25.72)",
+    "committed_at": "2026-06-13T11:39:33-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "public/sw.js",
+      "src/core/firebase.js",
+      "src/core/router-activity-feed.js",
+      "src/core/router.js",
+      "src/core/sync-attestation.js",
+      "src/core/utils.js",
+      "src/pages/bounties.js",
+      "src/pages/chat-calendar.js",
+      "src/pages/faq.js",
+      "src/pages/feed.js"
+    ],
+    "total_files_touched": 38
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
