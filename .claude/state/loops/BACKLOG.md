@@ -205,7 +205,18 @@ when every item below is [x].
   flag, tee box the golfer stands on — ONE cohesive illustrated style WITH the
   cartoon golfer. Replaced the clashing photo + the glitchy posterize interim
   (rainbow banding). No filters/anims → perf-safe. V1-verified ready + mid-swing.
-- [ ] SWING ANIMATION REPLACEMENT (Founder 2026-06-13 18:52: knees STILL flickering
+- [ ] SWING FIGURE UPGRADE (optional — flicker ROOT-FIXED v8.25.94; this is the
+  "comical figure" taste upgrade). CANDIDATE FOUND via browser: a DIFFERENT golfer
+  figure (NOT the MJ Mograph one) at
+  https://assets-v2.lottiefiles.com/a/9d26b8bc-2bcc-11f0-baa0-fbf653826c7f/n3LKHNPYvY.lottie
+  — layers l-hand/l-arm/head/body/legs, 692×538, fr30, op180. PATH (fresh budget):
+  download → unzip → render-VET (is it cleaner/more pro than the current cartoon?)
+  → if yes, build a NEW recolor MAP for ITS source colors (the current MAP is
+  MJ-Mograph-specific) OR use as-is if palette fits → integrate (swap LOTTIE_URL +
+  dims) → V1 + Founder sign-off. CAVEAT: it's still a cartoon Lottie; "award-winning"
+  may need a PREMIUM/commissioned animation beyond free LottieFiles (the free golfer-
+  figure pool is just MJ-Mograph + this one). Tools: [[reference_design_tools_kit]].
+- [x] SWING ANIMATION (knee flicker) — superseded note: flicker ROOT-FIXED v8.25.94
   after 3 fixes) — DEFINITIVE DIAGNOSIS via browser: the app's golf-swing animation
   IS the LottieFiles "golf swing by MJ Mograph" source (confirmed identical — same
   30 layers head/torso/right-leg/left-leg, 1920², fr24, op96; .lottie at
