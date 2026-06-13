@@ -197,7 +197,19 @@ when every item below is [x].
   contrast + 'Arriving' dilution = convergence-pass + the shop EXPANSION below.)
 
 ### Named design redesigns (WF1 specs; some overlap the page lifts above)
-- [x] SWING SCENE redesign — DONE v8.25.81 (LIVE+V1): the SVG path was a dead end
+- [ ] SWING SCENE COHESION REBUILD (Founder 2026-06-13 17:15) — REOPENED. The
+  realistic PHOTO backdrop (v8.25.81) and the CARTOON Lottie golfer CLASH: "not the
+  same art style nor cohesive." Founder wants ONE cohesive style, leaning REALISTIC,
+  as an "extreme visual win / great introduction." Direction: (1) reference real
+  PRO tee-off videos (a player hitting off the tee box down the fairway) and
+  replicate that motion; (2) the cartoon Lottie can be ALTERED or REPLACED — Founder
+  open to a new/personalized animation; (3) use ONLINE TOOLS — Founder named **Figma
+  Make** as great for onboarding animations; also use online tools to GRADE/RATE
+  pages + get alteration recommendations; (4) keep the realistic photo direction (he
+  likes the real colors) — make the FIGURE match it (realistic), OR commit fully to
+  one illustrated style end-to-end. Substantial creative task — execute with fresh
+  budget + the online tools, not a rushed pass. ([[reference_online_asset_sourcing]])
+- [x] SWING SCENE redesign (v1) — DONE v8.25.81 (LIVE+V1): the SVG path was a dead end
   for "realistic" (Founder: "sky isn't green but realistic colors", "SVG not doing
   it justice"). Sourced a LICENSE-FREE real dawn-fairway PHOTO (Pexels) via the new
   online-asset approach ([[reference_online_asset_sourcing]]) and swapped it in for
@@ -261,8 +273,19 @@ when every item below is [x].
   pages (leaderboards/recap). Founder: "nothing overwhelming or that ruins app
   integrity." Reduced-motion-safe, transform/opacity only, on-brand.
 
-### Closeout
-- [ ] Full per-page V1 re-rate confirming every page ≥9.0; then PushNotification to Founder.
+### Closeout — Founder-defined sequence (2026-06-13 17:15): do these IN ORDER, only
+### after ALL tasks/items above are complete.
+- [ ] 1. Full per-page V1 re-rate confirming every page ≥9.0 (strive 9.5).
+- [ ] 2. FULL E2E test with MULTIPLE DATA scenarios spanning INDEPENDENT users AND
+  CROSS-LEAGUE users (multi-league isolation, friend/messaging, no data leak).
+- [ ] 3. FULL PEN TEST (AgentShield + Firestore rules + auth + injection + rate
+  limits + the exploit-test capstone), repair every finding.
+- [ ] 4. Polish + review pass over whatever 2–3 surface.
+- [ ] 5. If E2E + data-test + pen-test all PASS → DONE. PushNotification to Founder;
+  then WAIT on Founder for remaining founder-checklist items + dashboard/app review.
+- [ ] Throughout: use online tools (Figma Make for onboarding/animations; online
+  page graders/raters for recommendations) per Founder 2026-06-13 17:15 — get pages
+  at/above 9.5, incorporate alterations as you go.
 
 ## Swing + shop (active Founder iteration 2026-06-12)
 - [x] Sign-in swing rebuild — DONE v8.25.38→.41 on staging+prod: professional Lottie golfer recolored to brass/cream/felt-green (golf-swing-pb.json), CANVAS renderer (kills the structural knee z-fight), inline dawn course scene (green/hills/flag/sun) behind him, AUTO-OPEN flow (one tap or auto-tee → native-speed swing → app opens itself; no gate, no skip, no double-click). Verified via CAP_WITH_INTRO capture. Founder evaluating knees-in-motion on staging; hairline-seam fallback ready if any residual shudder.
