@@ -143,7 +143,7 @@ var PRO_SHOP_CATALOG = [
   {id:"pc40_hickory_brass",cat:"border", tier:"locker", name:"Hickory & Brass",price:700, ringClass:"ring-hickory", preview:"#7a4a28", desc:"Hickory-grain wood ringed in brass ferrule. The shaft they played before steel was legal."},
   {id:"pc42_founders_crest",cat:"border",tier:"cabinet",name:"The Founders' Crest",price:1500, ringClass:"ring-claret", preview:"#cfd2d6", desc:"The crest in relief inside an engraved-silver bezel, a slow light sweeping across it. The priciest ring money can buy — the Green Jacket it is not."},
   // C · SCORECARD SKINS (live)
-  {id:"pc28_the_sleeve",   cat:"card", tier:"proshop", name:"The Sleeve",      price:300, preview:"#cabd98", css:"border:1px solid #c2b48c;border-left:4px solid #b3a378;background:linear-gradient(160deg,rgba(202,189,152,.16),rgba(232,224,196,.1))", desc:"Kraft three-ball sleeve stock, the flap torn open. Smells like a fresh dozen."},
+  {id:"pc28_the_sleeve",   cat:"card", tier:"proshop", retired:true, name:"The Sleeve",      price:300, preview:"#cabd98", css:"border:1px solid #c2b48c;border-left:4px solid #b3a378;background:linear-gradient(160deg,rgba(202,189,152,.16),rgba(232,224,196,.1))", desc:"Kraft three-ball sleeve stock, the flap torn open. Smells like a fresh dozen."},  // v8.25.49 retired — redundant kraft with pc08 Parchment; owned copies still resolve/equip forever
   {id:"pc41_trophy_room",  cat:"card", tier:"locker",  name:"The Trophy Room", price:900, preview:"#5a4632", css:"border-left:5px solid #5a4632;background:linear-gradient(90deg,rgba(90,70,50,.22),rgba(90,70,50,.05) 55%,transparent)", desc:"Walnut-panel ground with an engraved-brass plaque header. The room where the silver lives."},
   // E · TITLES + bag-tag plate (live)
   {id:"pc36_member_tag",   cat:"title", tier:"proshop", name:"Member No. __",  price:500, plate:true, preview:"#7a4a28", desc:"Renders your title as a leather bag tag with a brass rivet. Quietly states you were here early."},
@@ -156,7 +156,17 @@ var PRO_SHOP_CATALOG = [
   {id:"pc32_sandy",        cat:"flair", tier:"proshop", name:"Sandy",          price:350, arriving:true, preview:"#d9c389", desc:"An up-and-down from the bunker throws a little sand-splash and a one-putt tick. Hardest par in golf."},
   {id:"pc33_snowman",      cat:"flair", tier:"range",   name:"The Snowman",    price:200, arriving:true, preview:"#cfe2d4", desc:"An honest 8 slumps a melting snowman onto the card with a wry 'noted.' Own the blow-up."},
   // F · TEE MARKERS (live)
-  {id:"pc34_whipping",     cat:"teemarker", tier:"range", name:"Whipping & Glue", price:250, preview:"#7a4a28", desc:"A hickory butt wrapped in red whipping thread. Old-world, like your short game."}
+  {id:"pc34_whipping",     cat:"teemarker", tier:"range", name:"Whipping & Glue", price:250, preview:"#7a4a28", desc:"A hickory butt wrapped in red whipping thread. Old-world, like your short game."},
+  // — Founder batch 2026-06-13: 7 new on-brand cosmetics across categories. Ring/
+  //   card/nameplate carry worn-render classes (preview==worn); ball/tee/flair use
+  //   the existing preview pattern (their categories render off preview/glyph). —
+  {id:"pc44_iron_blade",      cat:"border",    tier:"proshop", name:"The Iron Blade", price:450, ringClass:"ring-iron-blade", preview:"#7a6a5c", desc:"Raw iron filed smooth, a single brass rivet at twelve. Duffer or scratch, you earned your swings."},
+  {id:"pc45_ledger",          cat:"card",      tier:"range",   name:"The Ledger",     price:200, preview:"#f5f3ee", css:"border:1px solid #e8e4d8;border-left:4px solid #d4cec0;background:linear-gradient(180deg,#faf8f3,#f5f3ee)", desc:"Blank cream ledger stock, a single blue pencil rule up top. No frills. Just score."},
+  {id:"pc46_clubhouse_crest", cat:"nameplate", tier:"locker",  name:"The Clubhouse Crest", price:650, preview:"#6b4a28", desc:"Embossed saddle leather, two crossed clubs at the shaft. Founding wood-grain beneath."},
+  {id:"pc51_chalk_board",     cat:"nameplate", tier:"range",   name:"The Chalk Board", price:250, preview:"#2a2a2a", desc:"Deep-slate manual-scoreboard chalk, your name in white. Raw honest scoring, no paint."},
+  {id:"pc47_quartered_leather", cat:"ball",    tier:"proshop", name:"The Quartered Leather", price:400, preview:"#8a6f55", desc:"A scrap of rich saddle leather, quartered on a brass ring. Hit it straight; mark it well."},
+  {id:"pc49_wooden_peg",      cat:"teemarker", tier:"range",   name:"The Wooden Peg", price:150, preview:"#6b4a28", desc:"A hickory dowel snapped clean, branded with a single burn-mark. From the bag on Granddad's cart."},
+  {id:"pc50_eagle_soar",      cat:"flair",     tier:"locker",  name:"The Eagle Soar", price:700, arriving:true, preview:"#4a7cb8", desc:"Two-under and a bird bursts off your card with a sharp whistle. Gone in a flash."}
 ];
 // Legacy items kept ON SALE in the Paint Locker (the best ~15); every other
 // legacy item is retired from sale. Owned items are grandfathered forever —
@@ -316,7 +326,7 @@ Router.register("shop", function() {
     } else if (item.cat === 'nameplate') {
       // v8.25.43 — reuse the WORN .plate-* class (preview == worn), centered on a
       // clean surface stage, instead of a hardcoded inline approximation.
-      var _npCls = { pc05_locker_brass: 'plate-locker-brass', pc06_yardage_book: 'plate-yardage', pc07_leaderboard_sunday: 'plate-sunday', pc29_stimp_13: 'plate-stimp' }[item.id] || 'plate-locker-brass';
+      var _npCls = { pc05_locker_brass: 'plate-locker-brass', pc06_yardage_book: 'plate-yardage', pc07_leaderboard_sunday: 'plate-sunday', pc29_stimp_13: 'plate-stimp', pc46_clubhouse_crest: 'plate-clubhouse-crest', pc51_chalk_board: 'plate-chalk-board' }[item.id] || 'plate-locker-brass';
       c += '<div class="shop-surface-stage"><span class="shop-plate-name ' + _npCls + '">' + escHtml(_myName) + '</span></div>';
     } else if (item.cat === 'card') {
       c += '<div style="border-radius:var(--radius);background:var(--bg3);margin-bottom:8px;padding:8px 10px;text-align:left;' + (item.css || '') + '"><div style="font-size:9px;font-weight:600;color:var(--cream)">' + escHtml(_myName) + '</div><div style="font-size:8px;color:var(--muted);margin-top:1px">Honey Run · 92</div></div>';
@@ -415,7 +425,7 @@ Router.register("shop", function() {
       h += '</div></div>';
       return;
     }
-    var items = PRO_SHOP_CATALOG.filter(function(i) { return i.cat === shelf.cat && !i.earnedBy; });
+    var items = PRO_SHOP_CATALOG.filter(function(i) { return i.cat === shelf.cat && !i.earnedBy && !i.retired; });
     if (!items.length) return;
     // v8.25.45 — sort each shelf LOWEST→HIGHEST rarity (Founder: the tiers ARE the
     // rarity ladder — show the progression). range < proshop < locker < cabinet;

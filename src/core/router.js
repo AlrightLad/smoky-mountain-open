@@ -311,6 +311,7 @@ function playerRingClass(p) {
   if (b === 'pc39_wax_seal') return 'ring-wax-seal';
   if (b === 'pc40_hickory_brass') return 'ring-hickory';
   if (b === 'pc42_founders_crest') return 'ring-claret';
+  if (b === 'pc44_iron_blade') return 'ring-iron-blade'; // v8.25.49 Founder-batch
   return '';
 }
 // ── Cosmetic helpers ──
@@ -350,7 +351,8 @@ function getPlayerCardClass(p) {
     'pc09_member_guest': 'card-skin-member-guest',
     'pc10_major_sunday': 'card-skin-major-sunday',
     'pc28_the_sleeve': 'card-skin-sleeve',
-    'pc41_trophy_room': 'card-skin-trophy-room'
+    'pc41_trophy_room': 'card-skin-trophy-room',
+    'pc45_ledger': 'card-skin-ledger'
   };
   return m[p.equippedCosmetics.card] || '';
 }
@@ -400,6 +402,8 @@ function pbNameplateClass(p) {
   // v8.24.76 — pc29 was sold (500 coins) + fully described but UNMAPPED with no
   // CSS, so equipping it changed nothing (dead purchase, P9 no-op). Now wired.
   if (n === 'pc29_stimp_13') return 'plate-stimp';
+  if (n === 'pc46_clubhouse_crest') return 'plate-clubhouse-crest'; // v8.25.49 Founder-batch
+  if (n === 'pc51_chalk_board') return 'plate-chalk-board';
   return '';
 }
 // v8.24.68 — unified, golf-oriented marker art. ONE source of truth for both

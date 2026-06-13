@@ -4931,6 +4931,13 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 .feed-row.card-skin-sleeve{border:1px solid #c2b48c;border-left:4px solid #b3a378;background:linear-gradient(160deg,rgba(202,189,152,.18),rgba(232,224,196,.1)),repeating-linear-gradient(105deg,transparent 0 3px,rgba(150,130,90,.05) 3px 4px)}
 .feed-row.card-skin-trophy-room{border-left:5px solid #5a4632;background:linear-gradient(100deg,rgba(90,70,50,.24),rgba(107,84,64,.12) 45%,rgba(74,56,40,.06));box-shadow:inset 0 0 20px rgba(40,28,16,.2)}
 .feed-row.card-skin-trophy-room::before{content:"";position:absolute;left:5px;top:8px;bottom:8px;width:3px;background:linear-gradient(180deg,#e2bd78,#9c7c38);box-shadow:0 0 2px rgba(0,0,0,.4);pointer-events:none}
+/* v8.25.49 — Founder-batch new cosmetics, worn-render classes (preview==worn) */
+.ring-iron-blade{border:3px solid #7a6a5c !important;box-shadow:0 0 0 1px #5a4a3c,inset 0 0 6px rgba(90,70,50,.4);background-image:repeating-linear-gradient(92deg,rgba(0,0,0,.08) 0 1px,transparent 1px 2px)}
+.ring-iron-blade::after{content:"";position:absolute;top:0;left:50%;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f6e7b6,#8a6a2e);box-shadow:0 -1px 1px rgba(0,0,0,.5);pointer-events:none}
+.feed-row.card-skin-ledger{border:1px solid #e8e4d8;border-left:4px solid #d4cec0;background:linear-gradient(180deg,#faf8f3,#f5f3ee);box-shadow:inset 0 1px 2px rgba(100,80,50,.06)}
+.feed-row.card-skin-ledger::after{content:"";position:absolute;left:10px;right:10px;top:16px;height:1px;background:#4a7cb8;opacity:.32;pointer-events:none}
+.plate-clubhouse-crest{padding:2px 12px;border-radius:3px;color:#3a2818 !important;position:relative;background:linear-gradient(165deg,#8a5a30,#6e4422 55%,#5a3418);text-shadow:0 1px 0 rgba(255,255,255,.15);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 -1px 0 rgba(0,0,0,.4),0 1px 2px rgba(0,0,0,.35)}
+.plate-chalk-board{padding:2px 10px;border-radius:2px;color:#f0e8d8 !important;background:#2a2a2a;font-family:var(--font-mono);letter-spacing:.8px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.15),0 1px 2px rgba(0,0,0,.6)}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    ONBOARDING WALKTHROUGH (FTUE) — .pbw-* overlay/spotlight/stage/CTA
