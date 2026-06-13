@@ -244,13 +244,14 @@ when every item below is [x].
   grounded on the box teeing DOWN the fairway (alignment fix), dark scrim for text.
   V1-confirmed (ready + mid-swing). Sent to Founder for the 9.5 verdict. NEXT on the
   same approach: merch + shop-item raster art (below). COURSE_SVG now dead — cleanup.
-- [ ] SHOP ITEM fidelity + EXPANSION (Founder 2026-06-13 13:59: "not enough items
-  and they are too cheap parcoin-wise AND design-wise"). Three axes: (1) MORE items
-  across categories, (2) RAISE ParCoin prices (current floor too low — economy
-  DESIGN change, but Founder-directed = authorized; NOT cash IAP), (3) richer
-  design + name-vs-art fidelity + legibility (re-run failed WF1 shop-item-fidelity
-  agent — it errored Overloaded). Re-cost the whole rarity ladder so price tracks
-  rarity/effort.
+- [~] SHOP ITEM fidelity + EXPANSION (Founder 2026-06-13 13:59) — AXIS 2 (re-price)
+  DONE v8.25.88 (LIVE): whole catalog re-cost x2 (floor 100→200, ceiling 2500→5000,
+  rarity ordering preserved, round numbers, free stays free) — cosmetics no longer
+  "too cheap." Cosmetic-only ParCoin, NOT cash IAP (no gambling-leg impact).
+  REMAINING: axis (1) MORE items across categories (reuse existing worn-render
+  classes), axis (3) richer design + name-vs-art fidelity via online-sourced art
+  ([[reference_online_asset_sourcing]], reconsider photo vs illustrated per the
+  swing cohesion lesson). Both = fresh-budget creative work.
 - [ ] RICH LIST redesign — podium/tiers/momentum (WF1 rich-list-design spec).
 - [ ] STANDINGS redesign (folds into the page lift above).
 - [ ] MERCH coming-soon image — Founder 2026-06-13: the SVG poster "isn't doing it
