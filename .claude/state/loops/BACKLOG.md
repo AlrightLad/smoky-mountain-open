@@ -130,11 +130,25 @@ when every item below is [x].
 - [x] WAGERS 7.4 → DONE v8.25.69 (LIVE): editorial masthead ('On the line.') + felt
   BANKROLL HERO band (44px brass numeral, count-up) replacing the 14px footnote.
   (Opponent call-out rail + per-card count-up = follow-up.)
-- [ ] STANDINGS 7.4 → render The Chase for 1-golfer board, suppress dead Avg col, fix
-  "1 rds" grammar (standings.js:245), crown thin trophies honestly (≥3 rounds),
-  count-up the points.
-- [ ] HOME 7.8 → stats strip surface + count-up, nemesis felt banner, entrance
-  choreography, differentiate PULSE rows, one asymmetric hierarchy peak.
+- [x] STANDINGS 7.4 → DONE (already shipped, V1-confirmed 2026-06-13): the 7.4
+  rating predated the v8.25.50 + The-Chase work. Live state verified as a member:
+  editorial masthead ('The board so far.' Fraunces + brass accent + deck + dateline
+  + IN-SEASON badge), SPRING/SUMMER/FALL scope tabs, The Chase band (title fight +
+  viewer tug-of-war, renders at ≥2 golfers — this Summer season has 1 so it's
+  correctly sparse, not bland), Trophy Watch gated ≥3 rounds w/ '1 rd' grammar,
+  points count-up (data-count), row staggeredReveal, Season Archive + Courses.
+  Rds/Avg cols are CSS-hidden on mobile (clean #/Member/Pts) so 'dead Avg col' is
+  already a non-issue on the member-primary viewport. (Desktop Avg-suppression +
+  1-golfer 'first on the board' framing = optional convergence-pass polish.)
+- [x] HOME 7.8 → DONE v8.25.76 (LIVE+V1): added the missing entrance choreography
+  (top-down staggeredReveal over the mobile-home blocks, greeting on the 0ms slot
+  = instant). Assessed as a member first: the page already had its asymmetric peak
+  (dark felt 'Ready when you are' hero), editorial greeting, the brass-double-rule
+  'By the Numbers' stat band (round-count count-up via router hook), and League
+  Pulse — so the lift was the motion, not a restructure. Nemesis chip kept LIGHT on
+  purpose (a felt banner there would fight the dark hero for the single peak — a
+  net hierarchy loss). (Pulse-row differentiation + HCP/BEST count-up = convergence
+  -pass levers.)
 - [ ] SETTINGS 8.0 → unify caddie picker onto theme-row component, migrate Location
   off inline styles, section motion, coin glyph on balance.
 - [ ] PLAY NOW LIVE 8.2 → re-skin FIR/GIR + Finish button off legacy green into
