@@ -384,10 +384,20 @@ Router.register("shop", function() {
   for (var fp = 1; fp <= 2; fp++) h += _proShopCard(_sellable[(_heroIdx + fp) % _sellable.length]);
   h += '</div></div></div>';
 
+  // v8.25.45 — rarity legend so the tier chips read as a ladder (Founder: "what's
+  // the difference between Pro Shop / Member's Locker / Champion's Cabinet / Range
+  // Bucket — they're the rarities"). Each shelf is now sorted to match this order.
+  h += '<div class="shop-rarity-legend">Rarity climbs left → right: <b>Range Bucket</b> → <b>Pro Shop</b> → <b>Member’s Locker</b> → <b>Champion’s Cabinet</b></div>';
+
   // ── Category shelves ──
   PRO_SHOP_SHELVES.forEach(function(shelf) {
     var items = PRO_SHOP_CATALOG.filter(function(i) { return i.cat === shelf.cat && !i.earnedBy; });
     if (!items.length) return;
+    // v8.25.45 — sort each shelf LOWEST→HIGHEST rarity (Founder: the tiers ARE the
+    // rarity ladder — show the progression). range < proshop < locker < cabinet;
+    // ties break by price so cheaper pieces of a tier come first.
+    var _tr = { range: 0, proshop: 1, locker: 2, cabinet: 3, commem: 4 };
+    items.sort(function(a, b) { return (_tr[a.tier] == null ? 1 : _tr[a.tier]) - (_tr[b.tier] == null ? 1 : _tr[b.tier]) || (a.price || 0) - (b.price || 0); });
     h += '<div class="shop-shelf"><div class="shop-shelf__head"><span class="shop-shelf__title">' + shelf.title + '</span><span class="shop-shelf__meta">' + shelf.meta + '</span></div>';
     h += '<div class="shop-shelf__rail">';
     items.forEach(function(item) { h += _proShopCard(item); });
