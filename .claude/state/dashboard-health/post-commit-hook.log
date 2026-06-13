@@ -2,3 +2,16 @@
 [scaffold-from-templates] done: scaffolded=0 skipped=15
 
 --- scripts/scan-shipped-proposals.py ---
+[scan-shipped] approved/ is empty; nothing to scan
+
+--- scripts/aggregate-telemetry.py ---
+[aggregate] wrote .claude\state\telemetry\aggregates\current-snapshot.json (write-content-changed)
+[aggregate] meter_status=wired-real
+[aggregate] events=34492 handoffs=1 bubbles=7 proposals_pending=0
+
+--- scripts/ingest-session-transcripts.py ---
+[ingest-session-transcripts] scanned 14b32e71-e98c-4be1-819e-5288e4bfd93c.jsonl: +34 new entries (offset 266257675\u2192266839094)
+[ingest-session-transcripts] scanned 306 JSONL file(s), found 34 new assistant turns
+[ingest-session-transcripts] wrote session-transcript-summary.json (379 buckets, 20469900077 total tokens, 315 sessions) [write-content-changed]
+
+--- scripts/aggregate-token-usage.py ---
