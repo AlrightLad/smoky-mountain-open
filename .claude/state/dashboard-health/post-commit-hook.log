@@ -210,3 +210,8 @@ visual-gate: ALL 12 PAGES RENDER CONTENT
 [ingest-session-transcripts] scanned 306 JSONL file(s), found 0 new assistant turns
 [ingest-session-transcripts] skipped session-transcript-summary.json (379 buckets, 20534774952 total tokens, 315 sessions) [skip-idempotent-fresh-79s]
 [ingest-session-transcripts] SELF-TEST OK: 306 JSONLs \u2192 20534774952 tokens across 379 buckets
+
+--- P9.5 self-test ---
+[ingest-session-transcripts] scanned 306 JSONL file(s), found 0 new assistant turns
+[ingest-session-transcripts] skipped session-transcript-summary.json (379 buckets, 20534774952 total tokens, 315 sessions) [skip-idempotent-fresh-80s]
+[ingest-session-transcripts] SELF-TEST OK: 306 JSONLs \u2192 20534774952 tokens across 379 buckets
