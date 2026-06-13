@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-13T03:01:42.441797Z",
+  "generated_at": "2026-06-13T03:05:15.902375Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 86.3,
   "overall_grade": "A-",
@@ -1046,19 +1046,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "0762691d",
-    "subject": "feat(shop): +7 new on-brand cosmetics (wired worn-render) + retire The Sleeve (v8.25.49)",
-    "committed_at": "2026-06-12T23:01:17-04:00",
-    "trigger": "app-commit",
-    "is_app_commit": true,
-    "app_files_touched": [
-      "public/sw.js",
-      "src/core/router.js",
-      "src/core/utils.js",
-      "src/pages/shop.js",
-      "src/styles/components.css"
-    ],
-    "total_files_touched": 9
+    "sha": "6ba71a9a",
+    "subject": "chore(state): batch 0613 progress (7 items shipped) + course-scan founder decision + animations/scan specced for fresh-context execution",
+    "committed_at": "2026-06-12T23:04:42-04:00",
+    "trigger": "substrate-commit",
+    "is_app_commit": false,
+    "app_files_touched": [],
+    "total_files_touched": 2
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
