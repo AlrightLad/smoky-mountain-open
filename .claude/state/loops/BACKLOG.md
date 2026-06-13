@@ -48,9 +48,20 @@ blanket-bump). The 9.5 gap is genuine PER-PAGE work: richer COLOR on the monochr
 cream pages, DENSITY/rhythm, more MOTION, consistent elevation on bespoke cards.
 Multi-batch marathon — per page: capture → upgrade across the 4 dims → V1-verify
 against the actual bg → ship → Founder reacts (he owns ≥9.5 per AMD-028).
-- [x] FOUNDATION START — HOME depth (v8.25.100, LIVE+V1): warm brass dawn-glow backdrop
-  on `[data-page="home"]` (breaks the flat-cream field) + First-Week card lifted off
-  `--el-1`→`--shadow-sm`. Founder reacting to the direction.
+- [x] FOUNDATION — 4-DIM SYSTEMIC PASS (v8.25.100-103, LIVE+V1, all dims hit at once):
+  • DEPTH: home dawn-glow + card lift (.100); cohesive lit-from-above atmosphere across
+    16 content pages (.101) — one warm light source vs flat edge-to-edge beige.
+  • MOTION: app-wide press-scale on every `.tappable` (.102) — iOS-style physical press
+    on all cards/rows (was primary-CTA-only), reduced-motion-safe.
+  • COLOR+PREMIUM: brass magazine-rule accent on the shared `.roster-masthead` eyebrow
+    (.103) across all 20 pages — injects brand brass into the ink-on-cream headers.
+  V1-verified on home + feed + members. Founder reacting to the direction (asked 2×).
+- [x] DATA-INTEGRITY pass — VERIFIED CLEAN on the value-dense pages (cross-checked vs prod
+  source via SA read 2026-06-13): HOME (1 round / best 125 / handicap correctly pending),
+  RICHLIST (every parcoinsLifetime traces exactly; [TEST] Smoke filtered by isMemberVisible),
+  MEMBERS handicaps (Kayvan 33.3 / Kiyan 29.4 / Mr Parbaugh 20.9 / Nick 49.7 all = prod
+  computedHandicap, sensibly derived from real rounds). Materialized values trace to source;
+  computed displays (standings pts) derive deterministically from these. No fabrication found.
 - [ ] Per-page 4-dim grind across ALL member pages (home deepen, feed, rounds, profile,
   standings, richlist, wagers, chat, settings, playnow, more, leagues, trips, scorecard,
   courses, records, trophyroom, season-recap) — color + density + motion + elevation each.
