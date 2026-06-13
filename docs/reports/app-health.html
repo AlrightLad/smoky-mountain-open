@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-13T14:48:17.645742Z",
+  "generated_at": "2026-06-13T14:52:52.004257Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 86.3,
   "overall_grade": "A-",
@@ -1007,11 +1007,11 @@
     "A12_operational": {
       "score": 75,
       "status": "yellow",
-      "label": "pipeline=yellow · 6 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "label": "pipeline=yellow · 7 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
       "weak_points": [
         {
-          "what": "6 of last 10 cron watcher runs hit skip-dirty",
+          "what": "7 of last 10 cron watcher runs hit skip-dirty",
           "where": "scripts/cron/logs/*-downloads-watcher.log",
           "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
         }
@@ -1030,7 +1030,7 @@
       "dimension": "A5_code_quality"
     },
     {
-      "what": "6 of last 10 cron watcher runs hit skip-dirty",
+      "what": "7 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
@@ -1045,22 +1045,22 @@
       "dimension": "A5_code_quality"
     },
     {
-      "what": "6 of last 10 cron watcher runs hit skip-dirty",
+      "what": "7 of last 10 cron watcher runs hit skip-dirty",
       "where": "scripts/cron/logs/*-downloads-watcher.log",
       "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
       "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "0706af5d",
-    "subject": "feat(courses): editorial masthead + legible score line + motion â€” 7.2 lift (v8.25.66)",
-    "committed_at": "2026-06-13T10:47:53-04:00",
+    "sha": "d4be9481",
+    "subject": "fix(themes): Azalea description + toast; fix stale Bluebird copy (v8.25.67)",
+    "committed_at": "2026-06-13T10:52:26-04:00",
     "trigger": "app-commit",
     "is_app_commit": true,
     "app_files_touched": [
       "public/sw.js",
       "src/core/utils.js",
-      "src/pages/courses.js"
+      "src/pages/settings.js"
     ],
     "total_files_touched": 5
   },
