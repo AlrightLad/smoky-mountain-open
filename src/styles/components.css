@@ -477,6 +477,12 @@ input.s:disabled,
 .roster-skip:focus{left:0}
 .roster-masthead{padding:28px 16px 12px}
 .roster-eyebrow{font-family:var(--font-mono);font-size:var(--hq-eyebrow-size);font-weight:700;letter-spacing:2.5px;color:var(--cb-eyebrow);text-transform:uppercase;margin-bottom:14px}
+/* Magazine masthead accent (Founder 4-dim push: bolder color + premium): a short
+   brass rule between the eyebrow and the Fraunces headline — the editorial device
+   top-tier mastheads (Monocle/NYT section fronts) use to anchor the headline +
+   inject the brand brass into the otherwise ink-on-cream header. CSS-only via
+   ::after → lands on all 20 pages that share .roster-masthead, zero markup change. */
+.roster-eyebrow::after{content:'';display:block;width:30px;height:2px;border-radius:1px;background:var(--cb-brass);margin-top:9px;opacity:.92}
 .roster-headline{font-family:var(--font-display);font-size:var(--hq-hero-size);font-style:italic;font-weight:700;line-height:0.98;letter-spacing:-2px;color:var(--cb-ink);margin:0}
 
 .roster-scope{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:6px 16px 4px}
