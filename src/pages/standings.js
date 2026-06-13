@@ -210,7 +210,7 @@ Router.register("standings", function(params) {
       h += '<td><div class="roster-name"><span class="std-name-txt">' + escHtml(name) + '</span>' + (isViewer ? '<span class="std-you-chip">YOU</span>' : '') + '</div>' + (titleSub ? '<div class="roster-handle">' + titleSub + '</div>' : '') + '</td>';
       h += '<td class="roster-num roster-col-rounds"><span class="roster-rounds">' + (s.rounds || 0) + '</span></td>';
       h += '<td class="roster-num std-col-avg"><span class="std-avg">' + (s.avg || "—") + '</span></td>';
-      h += '<td class="roster-num"><span class="std-pts">' + (s.points || 0) + '</span></td>';
+      h += '<td class="roster-num"><span class="std-pts" data-count="' + (s.points || 0) + '">' + (s.points || 0) + '</span></td>';
       h += '</tr>';
     });
     h += '</tbody></table>';
@@ -229,7 +229,7 @@ Router.register("standings", function(params) {
     function _twLeader(label, statKey, formatVal, sortDir) {
       var pool = standings.filter(function(s) {
         var v = s[statKey];
-        return v != null && !isNaN(v) && (statKey === "best" || statKey === "rounds" || s.rounds >= 3);
+        return v != null && !isNaN(v) && (statKey === "rounds" || s.rounds >= 3);
       });
       if (!pool.length) return null;
       pool.sort(function(a, b) {
@@ -242,7 +242,7 @@ Router.register("standings", function(params) {
     var trophies = [];
     var t1 = _twLeader("STROKE AVG", "avg", function(v){ return (+v).toFixed(1); }, "asc"); if (t1) trophies.push(t1);
     var t2 = _twLeader("BEST ROUND", "best", function(v){ return String(v); }, "asc"); if (t2) trophies.push(t2);
-    var t3 = _twLeader("MOST ROUNDS", "rounds", function(v){ return v + " rds"; }, "desc"); if (t3) trophies.push(t3);
+    var t3 = _twLeader("MOST ROUNDS", "rounds", function(v){ return v + " rd" + (v !== 1 ? "s" : ""); }, "desc"); if (t3) trophies.push(t3);
     if (typeof PB !== "undefined" && PB.getRounds) {
       var allRounds = PB.getRounds() || [];
       var perPlayer = {};
