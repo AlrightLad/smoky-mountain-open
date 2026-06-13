@@ -12,9 +12,12 @@ function isGoldMember(uid) {
 }
 
 Router.register("richlist", function() {
-  var h = '<div class="sh"><h2>Rich List</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
-
-  h += '<div style="text-align:center;padding:16px;font-size:11px;color:var(--muted)">Top 10 ParCoin holders · Lifetime earned</div>';
+  // v8.25.89 — editorial masthead (the "money list") replacing the legacy .sh/<h2>
+  // header, matching Rounds/Standings/Members. Founder called it the money list.
+  var h = '<div class="roster-masthead"><button class="back" onclick="Router.back(\'home\')" style="margin-bottom:12px">← Back</button>';
+  h += '<div class="roster-eyebrow">PARCOIN LEADERS · LIFETIME</div>';
+  h += '<h1 class="roster-headline">The money list.</h1>';
+  h += '<p style="font-family:var(--font-ui);font-size:13px;color:var(--cb-mute);margin:8px 0 0">The top 10 ParCoin earners, all-time.</p></div>';
   h += '<div id="rich-list-content"><div class="loading"><div class="spinner"></div>Loading…</div></div>';
 
   // Power-ups section
@@ -74,6 +77,12 @@ Router.register("richlist", function() {
         rh += _renderRichRow(p, i);
       });
       el.innerHTML = rh;
+      // v8.25.89 — the money list animates IN: rows cascade up + every lifetime
+      // total counts up from 0. Content loads async (after the router's post-nav
+      // count-up hook fires), so trigger both here. transform/opacity only;
+      // reduced-motion no-ops inside staggeredReveal.
+      if (window.staggeredReveal) window.staggeredReveal(el.querySelectorAll('.lb-card'), { gap: 60, duration: 380 });
+      if (window.initCountAnimations) window.initCountAnimations(el);
     }).catch(function() {
       var el = document.getElementById("rich-list-content");
       if (el) el.innerHTML = renderLoadError("the rich list", "Router.go('richlist', {}, true)");
@@ -116,7 +125,7 @@ function _renderRichRow(p, i) {
   h += '<div class="lb-detail">Balance: ' + (p.parcoins || 0).toLocaleString() + '</div></div></div>';
   // Stacked value: brass hero number + 9px LIFETIME micro-label with coin glyph.
   h += '<div style="display:flex;flex-direction:column;align-items:flex-end;line-height:1.05">';
-  h += '<div class="lb-pts" style="font-size:20px">' + (p.parcoinsLifetime || 0).toLocaleString() + '</div>';
+  h += '<div class="lb-pts" style="font-size:20px" data-count="' + (p.parcoinsLifetime || 0) + '">0</div>';
   h += '<div style="display:flex;align-items:center;gap:3px;margin-top:2px;font-size:9px;font-weight:700;letter-spacing:.6px;color:var(--cb-mute);text-transform:uppercase">' + _richCoinSvg + 'Lifetime</div>';
   h += '</div>';
   h += '</div>';
