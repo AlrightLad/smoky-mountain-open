@@ -205,17 +205,22 @@ when every item below is [x].
   flag, tee box the golfer stands on — ONE cohesive illustrated style WITH the
   cartoon golfer. Replaced the clashing photo + the glitchy posterize interim
   (rainbow banding). No filters/anims → perf-safe. V1-verified ready + mid-swing.
-- [ ] SWING FIGURE UPGRADE (optional — flicker ROOT-FIXED v8.25.94; this is the
-  "comical figure" taste upgrade). CANDIDATE FOUND via browser: a DIFFERENT golfer
-  figure (NOT the MJ Mograph one) at
-  https://assets-v2.lottiefiles.com/a/9d26b8bc-2bcc-11f0-baa0-fbf653826c7f/n3LKHNPYvY.lottie
-  — layers l-hand/l-arm/head/body/legs, 692×538, fr30, op180. PATH (fresh budget):
-  download → unzip → render-VET (is it cleaner/more pro than the current cartoon?)
-  → if yes, build a NEW recolor MAP for ITS source colors (the current MAP is
-  MJ-Mograph-specific) OR use as-is if palette fits → integrate (swap LOTTIE_URL +
-  dims) → V1 + Founder sign-off. CAVEAT: it's still a cartoon Lottie; "award-winning"
-  may need a PREMIUM/commissioned animation beyond free LottieFiles (the free golfer-
-  figure pool is just MJ-Mograph + this one). Tools: [[reference_design_tools_kit]].
+- [~] SWING FIGURE UPGRADE (optional) — RENDER-VET DONE 2026-06-13, candidate REJECTED.
+  Downloaded + unzipped the candidate .lottie + rendered it as a 6-frame filmstrip
+  vs the current swing (harness: .claude/state/lottie-dl/vet.mjs, lottie-web 5.13.0).
+  VERDICT: the candidate is a person RIDING IN A GOLF CART (clubs in the back), NOT
+  a swing at all → unsuitable for a tee-shot intro. The current MJ-Mograph swing,
+  by contrast, renders as a clean, correct, recognizable golf swing (address →
+  backswing → top → impact → follow-through) in brand brass/cream. ALSO V1-verified
+  the LIVE composited intro on staging (CAP_WITH_INTRO, post-flicker-fix v8.25.94):
+  cohesive illustrated dawn scene + clean swing + STABLE legs (no flicker) +
+  "TAP TO START YOUR ADVENTURE" — the Founder hasn't seen this post-fix state; his
+  last "knees flickering" was PRE-v8.25.94. CONCLUSION: the current swing is the
+  right, clean asset and stands. The only other free LottieFiles golfer figure is
+  this cart animation, so an "award-winning" figure upgrade needs a PREMIUM/
+  commissioned swing (Founder taste/source/budget) — same class as the shop raster,
+  surface together. Captures: .claude/state/lottie-dl/vet-{candidate,current}.png +
+  verify-swingcheck98/. Tools: [[reference_design_tools_kit]].
 - [x] SWING ANIMATION (knee flicker) — superseded note: flicker ROOT-FIXED v8.25.94
   after 3 fixes) — DEFINITIVE DIAGNOSIS via browser: the app's golf-swing animation
   IS the LottieFiles "golf swing by MJ Mograph" source (confirmed identical — same
@@ -388,6 +393,16 @@ when every item below is [x].
   V1-verified that way. The smoke + E2E suites run clean in CI (GitHub Actions) —
   so this full E2E closeout runs THERE (or on a Founder workstation with a free
   port), not in-agent. gh-auth would also let me read CI results.
+  RE-ATTEMPTED 2026-06-13 via the rules-test path (`firebase emulators:exec --only
+  firestore "npm run test:rules"`) to verify the CROSS-LEAGUE ISOLATION outcome
+  without the Vite dev server → BLOCKED: Firestore emulator port 8080 is already
+  held by a pre-existing java emulator (owner unknown — left it per concurrent-
+  session caution; not mine to kill). Both local E2E paths (browser + rules-test)
+  need that emulator, so local is conclusively blocked in-agent. BUT the isolation
+  outcome is ALREADY verified elsewhere: the v8-rules.spec.js suite is CI-green, the
+  exploit-test capstone (.claude/state/exploit-test-2026-06-12.md) was GREEN, and
+  the rules were audited + reconciled (tasks #19/#40). So #2 is the browser-level
+  re-confirmation in CI, not a gap in isolation coverage.
 - [~] 3. FULL PEN TEST — APP-LAYER PASS (2026-06-13): secret scan CLEAN (the only
   client "key" is the Firebase web apiKey, public-by-design — security is via rules
   + auth; real secrets prod-SA + functions/.env are gitignored ✓). AgentShield scan
