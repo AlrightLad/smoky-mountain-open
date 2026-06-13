@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-13T17:00:50.572305Z",
+  "generated_at": "2026-06-13T17:06:53.774925Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 86.3,
   "overall_grade": "A-",
@@ -940,7 +940,7 @@
           },
           {
             "file": "src/pages/playnow-scoring.js",
-            "lines": 897,
+            "lines": 914,
             "budget": 800
           },
           {
@@ -1052,13 +1052,18 @@
     }
   ],
   "audit_trigger": {
-    "sha": "aa4ef856",
-    "subject": "chore: mark TROPHY+SWING-SCENE done, log merch/shop online-asset tasks + regen",
-    "committed_at": "2026-06-13T12:59:39-04:00",
-    "trigger": "substrate-commit",
-    "is_app_commit": false,
-    "app_files_touched": [],
-    "total_files_touched": 22
+    "sha": "c05b151b",
+    "subject": "feat(playnow-live): re-skin live scoring off legacy green + birdie/eagle burst (v8.25.82)",
+    "committed_at": "2026-06-13T13:06:13-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "public/sw.js",
+      "src/core/utils.js",
+      "src/pages/playnow-scoring.js",
+      "src/styles/components.css"
+    ],
+    "total_files_touched": 6
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
