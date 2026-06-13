@@ -305,11 +305,15 @@ when every item below is [x].
   headcover, struck-brass COMING SOON plate, PARBAUGHS MERCH header, claret pennant,
   York-PA maker's ribbon, double brass border + editorial 'Merch.' masthead.
   V1-verified premium retail-poster quality.
-- [ ] SHOP ITEM art via online realistic imagery — Founder 2026-06-13: the SVG
-  cosmetic art "isn't doing it justice." For the items where a photoreal object
-  beats SVG (apparel, headcovers, bag tags, markers), source license-free product
-  photos (Pexels) + process locally (crop/tint to the rarity palette). Pair with the
-  EXPANSION below. ([[reference_online_asset_sourcing]])
+- [~] SHOP ITEM art + MERCH via AI gen — PIPELINE BUILT v8.25.95+ (plug-and-play):
+  scripts/_gen-gemini-art.mjs generates premium cosmetic art (enamel club pin,
+  struck-brass medallion, calfskin bag tag, sterling marker, green jacket,
+  hole-in-one marker) + a merch hero flat-lay via Google Gemini 2.5 Flash Image
+  (free 500/day). ONLY BLOCKER: the free key → scripts/.secrets/gemini-key.txt
+  (gitignored). The instant the Founder drops it: run the script → review PNGs in
+  public/img/gen/ → wire winners into shop.js item render + merch.js. (AI makes
+  IMAGES not Lottie, so this covers shop/merch, not the swing animation.) Founder
+  action = aistudio.google.com → Get API key. ([[reference_design_tools_kit]])
 - [x] LINEN DRAFT theme REPLACEMENT — DONE v8.25.63 (LIVE+V1): replaced with
   "Bluebird" (crisp white + near-black navy ink ~11:1 + tour-blue accent — the only
   cool/blue theme, distinct from the 5 warm palettes). id kept; name → Bluebird.
