@@ -34,6 +34,12 @@ and anchors mobile screenshots around 8 — so on already-polished pages roughly
   editorial stat-band to a card, recolor the canonical empty-state border).
 - **~⅓ are genuine small wins** — all harvested from HOME + round-history this pass.
 
+**Tool exhausted:** after ~17 calls the Gemini free multimodal tier hit its daily
+quota (HTTP 429). 12 pages critiqued (home…trips); 5 captures on disk awaiting a
+quota reset (teetimes/drills/range/records/findplayers — `.claude/state/verify-*-conv/`).
+Trips (7.8) confirmed the pattern a 12th time: avatar "standardize" (already ringed),
+mono nav-labels (taste), breathing-room (marginal) — no new genuine win.
+
 **Conclusion:** the Gemini-nit sweep hit firm diminishing returns after the HOME
 wins. Acting on the misread/taste items = the over-correction regression risk
 [[feedback_contrast_verify_each_change]] warns about. The remaining leap to **≥9.5**
