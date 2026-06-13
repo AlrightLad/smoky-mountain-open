@@ -586,7 +586,34 @@ function sendChat() {
   // v8.24.89 — cap length so a single chat doc can't be arbitrarily large
   // (unbounded-write surface, page-sweep #14). 500 chars is plenty for trash talk.
   if (text.length > 500) text = text.slice(0, 500);
-  db.collection("chat").add(leagueDoc("chat", { id:genId(), text:text, authorId:currentUser?currentUser.uid:"anon", authorName:currentProfile?PB.getDisplayName(currentProfile):"Anon", createdAt:fsTimestamp() }))
-    .then(function(){input.value=""}).catch(function(){Router.toast("Failed to send")});
+  var _authorName = currentProfile ? PB.getDisplayName(currentProfile) : "Anon";
+  db.collection("chat").add(leagueDoc("chat", { id:genId(), text:text, authorId:currentUser?currentUser.uid:"anon", authorName:_authorName, createdAt:fsTimestamp() }))
+    .then(function(){ input.value=""; _notifyChatBurst(_authorName, text); }).catch(function(){Router.toast("Failed to send")});
+}
+
+// v8.25.65 — notify the league when someone talks trash (Founder: "when users use
+// the trash-talk chat they should be notified"). COALESCED so a rapid back-and-forth
+// doesn't spam: each sender fires at most one chat notification per 20-min app
+// session window (recipients learn "someone's posting" without a ding per message).
+// The throttle is a module var (not sessionStorage — that key list is constrained
+// per CLAUDE.md); it resets on reload, so the first message after reopening always
+// announces. Mirrors the tee_posted league-broadcast guards (league scope +
+// test/real boundary + skip self/banned). Push only reaches members who opted in.
+var _CHAT_NOTIF_THROTTLE_MS = 20 * 60 * 1000;
+var _lastChatNotifTs = 0;
+function _notifyChatBurst(authorName, text) {
+  if (typeof sendNotification !== "function" || !currentUser || typeof PB === "undefined" || !PB.getPlayers) return;
+  var now = Date.now();
+  if (now - _lastChatNotifTs < _CHAT_NOTIF_THROTTLE_MS) return; // burst already announced
+  _lastChatNotifTs = now;
+  var leagueId = (typeof getActiveLeague === "function") ? getActiveLeague() : null;
+  var writerIsTest = !!(currentProfile && currentProfile.isTestAccount);
+  var snippet = text.length > 60 ? text.slice(0, 60) + "…" : text;
+  PB.getPlayers().forEach(function(p) {
+    if (!p || p.id === currentUser.uid || (typeof isBannedRole === "function" && isBannedRole(p))) return;
+    if (leagueId && (!p.leagues || p.leagues.indexOf(leagueId) === -1)) return; // league scope
+    if (!!p.isTestAccount !== writerIsTest) return; // test/real boundary
+    sendNotification(p.id, { type: "chat_message", title: "Trash talk in the clubhouse", message: authorName + ": " + snippet, page: "chat" });
+  });
 }
 
