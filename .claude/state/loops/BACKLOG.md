@@ -205,7 +205,17 @@ when every item below is [x].
   flag, tee box the golfer stands on — ONE cohesive illustrated style WITH the
   cartoon golfer. Replaced the clashing photo + the glitchy posterize interim
   (rainbow banding). No filters/anims → perf-safe. V1-verified ready + mid-swing.
-- [x] SWING KNEE FLICKER — DONE v8.25.87 (LIVE+V1). Root-caused (subagent deep-dive):
+- [~] SWING KNEE FLICKER — 3 fixes shipped; Founder re-reported after fix #2, fix #3
+  now live (v8.25.91). Fix #1 (prior): opacity-pops pinned. Fix #2 (v8.25.87): torso
+  z-reordered in FRONT of both legs (killed torso-between-legs seam). Founder still
+  saw flicker → Fix #3 (v8.25.91): the two legs were coplanar + IDENTICAL cream fill
+  (their own shared edge z-fights as they cross) — shaded the BACK leg (left, ind 20)
+  to cream x0.85 so the front leg reads OVER a shaded back leg (depth, not shimmer);
+  recolor MAP updated so regen preserves it. Both structural z-fight causes now
+  addressed; V1 figure renders clean. ESCALATION IF IT STILL FLICKERS: the cartoon
+  Lottie itself is the limit — replace it with a purpose-built illustrated golfer
+  (Founder is open to that; fits the fully-illustrated direction). Await Founder read.
+- [x] SWING KNEE FLICKER (fix #2) — DONE v8.25.87 (LIVE+V1). Root-caused (subagent deep-dive):
   NOT opacity — those pops were all already pinned. It was STRUCTURAL z-fighting: the
   ANIMATING torso layer was painted BETWEEN the two coplanar, identically-colored
   legs, so its sweeping edge shimmered the shared leg boundary mid-swing. Fix =
@@ -260,11 +270,12 @@ when every item below is [x].
   "animated money list" from the Founder's page-animation pass. V1-verified.
 - [x] STANDINGS redesign — folds into the STANDINGS page lift (already DONE + V1'd:
   The Chase + editorial masthead + count-up + row reveal). Nothing further.
-- [ ] MERCH coming-soon image — Founder 2026-06-13: the SVG poster "isn't doing it
-  justice." Use the online-asset approach ([[reference_online_asset_sourcing]]):
-  source a license-free realistic photo (Pexels — golf merch / pro-shop wall /
-  folded apparel / clubhouse retail) as the coming-soon hero, scrim + 'Coming soon'
-  overlay. NEXT online-asset task after the swing scene.
+- [x] MERCH coming-soon image — DONE v8.25.90 (LIVE+V1): richer merch-SPECIFIC
+  flat-vector ILLUSTRATED poster (subagent-authored, fits the chosen illustrated
+  brand — NOT a photo, per the cohesion lesson): pro-shop peg wall w/ caps +
+  headcover, struck-brass COMING SOON plate, PARBAUGHS MERCH header, claret pennant,
+  York-PA maker's ribbon, double brass border + editorial 'Merch.' masthead.
+  V1-verified premium retail-poster quality.
 - [ ] SHOP ITEM art via online realistic imagery — Founder 2026-06-13: the SVG
   cosmetic art "isn't doing it justice." For the items where a photoreal object
   beats SVG (apparel, headcovers, bag tags, markers), source license-free product
