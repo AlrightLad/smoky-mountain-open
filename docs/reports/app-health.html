@@ -822,9 +822,9 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-13T02:27:23.474142Z",
+  "generated_at": "2026-06-13T02:32:50.090558Z",
   "source": "scripts/aggregate-app-health.py",
-  "overall_score": 86.8,
+  "overall_score": 86.3,
   "overall_grade": "A-",
   "incidents_deduction": {
     "sev1": 0,
@@ -838,9 +838,9 @@
         "path": ".claude/state/incidents/2026-05-21-process-failures.md"
       }
     ],
-    "pre_deduction_score": 91.8,
+    "pre_deduction_score": 91.3,
     "deduction": 5,
-    "post_deduction_score": 86.8
+    "post_deduction_score": 86.3
   },
   "dimensions": {
     "A1_roadmap": {
@@ -894,7 +894,7 @@
           "what_action": "Split into modules per AMD-027 budget"
         },
         {
-          "what": "src/pages/members-detail.js is 984 lines (budget 800)",
+          "what": "src/pages/members-detail.js is 981 lines (budget 800)",
           "where": "src/pages/members-detail.js",
           "what_action": "Split into modules per AMD-027 budget"
         }
@@ -924,7 +924,7 @@
           },
           {
             "file": "src/pages/members-detail.js",
-            "lines": 984,
+            "lines": 981,
             "budget": 800
           },
           {
@@ -999,11 +999,17 @@
       "weak_points": []
     },
     "A12_operational": {
-      "score": 85,
-      "status": "green",
-      "label": "pipeline=yellow · 2 recent skip-dirty · error-tracking=True · incident-doc=True",
+      "score": 75,
+      "status": "yellow",
+      "label": "pipeline=yellow · 3 recent skip-dirty · error-tracking=True · incident-doc=True",
       "source": ".claude/state/aggregates/approvals-pipeline.json + scripts/cron/logs/ + package.json + docs/",
-      "weak_points": [],
+      "weak_points": [
+        {
+          "what": "3 of last 10 cron watcher runs hit skip-dirty",
+          "where": "scripts/cron/logs/*-downloads-watcher.log",
+          "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs"
+        }
+      ],
       "details": {
         "watcher_last_status": "PASS",
         "watcher_exit_reason": "skip-dirty"
@@ -1016,6 +1022,12 @@
       "where": "src/pages/rounds.js",
       "what_action": "Split into modules per AMD-027 budget",
       "dimension": "A5_code_quality"
+    },
+    {
+      "what": "3 of last 10 cron watcher runs hit skip-dirty",
+      "where": "scripts/cron/logs/*-downloads-watcher.log",
+      "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
+      "dimension": "A12_operational"
     }
   ],
   "founder_attention": [],
@@ -1025,16 +1037,28 @@
       "where": "src/pages/rounds.js",
       "what_action": "Split into modules per AMD-027 budget",
       "dimension": "A5_code_quality"
+    },
+    {
+      "what": "3 of last 10 cron watcher runs hit skip-dirty",
+      "where": "scripts/cron/logs/*-downloads-watcher.log",
+      "what_action": "Check that .husky/post-commit doesn't dirty the tree mid-run; verify routinePatterns allowlist covers all auto-generated outputs",
+      "dimension": "A12_operational"
     }
   ],
   "audit_trigger": {
-    "sha": "3039781e",
-    "subject": "chore(verify): swing v44 fairway + tap-to-start + finish-hold artifacts (verified)",
-    "committed_at": "2026-06-12T22:27:02-04:00",
-    "trigger": "substrate-commit",
-    "is_app_commit": false,
-    "app_files_touched": [],
-    "total_files_touched": 9
+    "sha": "ee509ae8",
+    "subject": "feat(profile+shop): recent-play = 3 rounds (no show-all button) + shop shelves sorted lowestâ†’highest rarity + rarity legend (v8.25.45)",
+    "committed_at": "2026-06-12T22:32:25-04:00",
+    "trigger": "app-commit",
+    "is_app_commit": true,
+    "app_files_touched": [
+      "public/sw.js",
+      "src/core/utils.js",
+      "src/pages/members-detail.js",
+      "src/pages/shop.js",
+      "src/styles/components.css"
+    ],
+    "total_files_touched": 7
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
