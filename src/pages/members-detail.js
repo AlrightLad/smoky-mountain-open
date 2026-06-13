@@ -186,29 +186,29 @@ function renderMemberDetailWithData(p) {
 
   // ── XP LEVEL BAR (compact) ──
   var pct = Math.min(100, Math.round(((lvl.xp - lvl.currentLevelXp) / Math.max(1, lvl.nextLevelXp - lvl.currentLevelXp)) * 100));
-  h += '<div style="padding:8px 16px 14px;cursor:pointer;border-bottom:1px solid var(--border)" onclick="Router.go(\'trophyroom\',{id:\'' + pid + '\'})">';
-  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:4px">';
-  h += '<div style="font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.3px">Lv. ' + lvl.level + ' · ' + lvl.name + '</div>';
-  h += '<div style="font-size:10px;color:var(--muted)">' + lvl.xp.toLocaleString() + ' XP <span style="color:var(--muted2)">→ Trophies</span></div></div>';
+  h += '<div class="pf-xp pf-reveal" onclick="Router.go(\'trophyroom\',{id:\'' + pid + '\'})">';
+  h += '<div class="pf-xp__head">';
+  h += '<div class="pf-xp__lvl">Lv. ' + lvl.level + ' · ' + lvl.name + '</div>';
+  h += '<div class="pf-xp__xp">' + lvl.xp.toLocaleString() + ' XP <em>→ Trophies</em></div></div>';
   // NOTE: the fill div's inline linear-gradient + width are load-bearing —
   // tests/e2e/flows/04-ui-layout-regression.spec.js locates the profile XP
-  // fill by exactly that inline style. Radii tokenized only.
-  h += '<div style="height:5px;background:var(--bg3);border-radius:var(--radius-sm);overflow:hidden"><div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,var(--gold2),var(--gold3));border-radius:var(--radius-sm);transition:width .4s"></div></div>';
+  // fill by exactly that inline style. Wrapper/labels/track → .pf-xp__* tokens.
+  h += '<div class="pf-xp__track"><div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,var(--gold2),var(--gold3));border-radius:var(--radius-sm);transition:width .4s"></div></div>';
   h += '</div>';
 
   // ── PARCOIN WALLET ──
   var coinBalance = getParCoinBalance(pid);
   var coinLifetime = getParCoinLifetime(pid);
-  h += '<div style="padding:0 16px 10px;display:flex;gap:8px">';
-  h += '<div style="flex:1;background:linear-gradient(135deg,rgba(var(--gold-rgb),.08),rgba(var(--gold-rgb),.03));border:1px solid rgba(var(--gold-rgb),.15);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;gap:10px">';
-  h += '<div style="width:32px;height:32px;border-radius:50%;background:rgba(var(--gold-rgb),.12);display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="var(--gold)" stroke-width="1.3"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7M7 11.5h5a2 2 0 010 0"/></svg></div>';
-  h += '<div><div style="font-size:16px;font-weight:700;color:var(--gold)" data-count="' + coinBalance + '">' + coinBalance.toLocaleString() + '</div>';
-  h += '<div style="font-size:9px;color:var(--muted);letter-spacing:.5px">PARCOINS</div></div>';
+  h += '<div class="pf-wallet pf-reveal">';
+  h += '<div class="pf-wallet__main">';
+  h += '<div class="pf-wallet__icon"><svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="var(--gold)" stroke-width="1.3"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7M7 11.5h5a2 2 0 010 0"/></svg></div>';
+  h += '<div><div class="pf-wallet__bal" data-count="' + coinBalance + '">' + coinBalance.toLocaleString() + '</div>';
+  h += '<div class="pf-wallet__cap">PARCOINS</div></div>';
   h += '</div>';
   if (coinLifetime > coinBalance) {
-    h += '<div style="flex-shrink:0;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;text-align:center;min-width:76px">';
-    h += '<div style="font-size:14px;font-weight:700;color:var(--cream)" data-count="' + coinLifetime + '">' + coinLifetime.toLocaleString() + '</div>';
-    h += '<div style="font-size:8px;color:var(--muted);letter-spacing:.5px">LIFETIME</div></div>';
+    h += '<div class="pf-wallet__life">';
+    h += '<div class="pf-wallet__life-val" data-count="' + coinLifetime + '">' + coinLifetime.toLocaleString() + '</div>';
+    h += '<div class="pf-wallet__life-cap">LIFETIME</div></div>';
   }
   h += '</div>';
 
@@ -232,7 +232,7 @@ function renderMemberDetailWithData(p) {
       ? (typeof rivalryCaddyLine === "function" ? rivalryCaddyLine(nem, nemName) : nemName + ": " + recStr)
       : (nem.leading ? profName + " owns " + nemName + ", " + recStr + "." : nem.trailing ? nemName + " has " + profName + "'s number, " + nem.losses + "–" + nem.wins + "." : profName + " and " + nemName + " are dead even, " + recStr + ".");
     var recClass = nem.leading ? "nemesis-card__rec--up" : nem.trailing ? "nemesis-card__rec--down" : "nemesis-card__rec--even";
-    h += '<div class="nemesis-card" onclick="showRivalryDetail(\'' + pid + '\',\'' + nem.id + '\')" tabindex="0" role="button" aria-label="' + escHtml(nemLabel + ": " + nemName + ", record " + recStr) + '" onkeydown="if(event.key===\'Enter\'){showRivalryDetail(\'' + pid + '\',\'' + nem.id + '\')}">';
+    h += '<div class="nemesis-card pf-reveal" onclick="showRivalryDetail(\'' + pid + '\',\'' + nem.id + '\')" tabindex="0" role="button" aria-label="' + escHtml(nemLabel + ": " + nemName + ", record " + recStr) + '" onkeydown="if(event.key===\'Enter\'){showRivalryDetail(\'' + pid + '\',\'' + nem.id + '\')}">';
     h += '<div class="nemesis-card__eyebrow">' + escHtml(nemLabel) + '</div>';
     h += '<div class="nemesis-card__body">';
     h += '<div class="nemesis-card__av">' + renderAvatar(nem.opp, 52, false) + '</div>';
@@ -251,13 +251,13 @@ function renderMemberDetailWithData(p) {
     }
     h += '</div>';
   } else if (isOwnProfile) {
-    h += '<div class="nemesis-card nemesis-card--empty"><div class="nemesis-card__eyebrow">Your Nemesis</div><div class="nemesis-card__line">No rival yet — play the same course, same day as another Parbaugh and the Caddy starts keeping count.</div></div>';
+    h += '<div class="nemesis-card nemesis-card--empty pf-reveal"><div class="nemesis-card__eyebrow">Your Nemesis</div><div class="nemesis-card__line">No rival yet — play the same course, same day as another Parbaugh and the Caddy starts keeping count.</div></div>';
   }
 
   // ── STAT GRID ──
   // Geometry lives entirely on .stats-grid / .stat-box tokens (components.css);
   // the old inline grid-template-columns duplicated the class default.
-  h += '<div class="stats-grid">';
+  h += '<div class="stats-grid pf-reveal">';
   h += statBox(hcap !== null ? hcap : "—", "Handicap");
   h += statBox(avg || "—", "Avg Score");
   var bestScore = best ? best.score : "—";
@@ -298,7 +298,7 @@ function renderMemberDetailWithData(p) {
   h += '</div>';
 
   // ── PROFILE TABS ──
-  h += '<div class="toggle-bar" id="profile-tabs">';
+  h += '<div class="toggle-bar pf-reveal" id="profile-tabs">';
   h += '<button class="a" onclick="document.querySelectorAll(\'[data-ptab]\').forEach(function(e){e.style.display=\'none\'});document.getElementById(\'ptab-overview\').style.display=\'block\';document.querySelectorAll(\'#profile-tabs button\').forEach(function(b){b.className=\'\'});this.className=\'a\'">Overview</button>';
   h += '<button onclick="document.querySelectorAll(\'[data-ptab]\').forEach(function(e){e.style.display=\'none\'});document.getElementById(\'ptab-stats\').style.display=\'block\';document.querySelectorAll(\'#profile-tabs button\').forEach(function(b){b.className=\'\'});this.className=\'a\'">Stats</button>';
   h += '<button onclick="document.querySelectorAll(\'[data-ptab]\').forEach(function(e){e.style.display=\'none\'});document.getElementById(\'ptab-gear\').style.display=\'block\';document.querySelectorAll(\'#profile-tabs button\').forEach(function(b){b.className=\'\'});this.className=\'a\'">Gear</button>';
@@ -877,6 +877,12 @@ function renderMemberDetailWithData(p) {
   h += '</div>'; // close .pf-page
   document.querySelector('[data-page="members"]').innerHTML = h;
   setTimeout(initCountAnimations, 50);
+  // v8.25.74 — entrance cascade on the hero blocks below the masthead (XP bar →
+  // wallet → nemesis → stat grid → tabs). The masthead stays instant as the
+  // page anchor (no reveal class). transform/opacity only, reduced-motion
+  // no-ops inside staggeredReveal. Does not alter .stats-grid children (the
+  // layout-regression spec asserts exactly 6 .stat-box) or the XP fill style.
+  if (window.staggeredReveal) window.staggeredReveal(document.querySelectorAll('[data-page="members"] .pf-reveal'), { gap: 55, duration: 340 });
 
   // Async load ParCoin transaction history (self-only — private per rules)
   var histEl = isOwnProfile ? document.getElementById("parcoin-history-" + pid) : null;

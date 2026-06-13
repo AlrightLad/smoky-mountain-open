@@ -699,6 +699,27 @@ input.s:disabled,
 .pf-empty--error{border-color:rgba(var(--red-rgb),.35)}
 .pf-empty--error .pf-empty__h{color:var(--red)}
 
+/* XP level bar (tappable → Trophy Room) + ParCoin wallet — the two prominent
+   hero blocks below the masthead. Migrated off inline-style soup to token
+   recipes (v8.25.74 profile lift). NOTE: the XP fill div KEEPS its inline
+   linear-gradient + width — tests/e2e/flows/04-ui-layout-regression.spec.js
+   locates the fill by exactly that inline style (XP-parity regression guard);
+   only the wrapper + labels + track are tokenized here. */
+.pf-xp{padding:8px 16px 14px;cursor:pointer;border-bottom:1px solid var(--border)}
+.pf-xp__head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:4px}
+.pf-xp__lvl{font-size:12px;font-weight:700;color:var(--gold);letter-spacing:.3px}
+.pf-xp__xp{font-size:10px;color:var(--muted)}
+.pf-xp__xp em{color:var(--muted2);font-style:normal}
+.pf-xp__track{height:5px;background:var(--bg3);border-radius:var(--radius-sm);overflow:hidden}
+.pf-wallet{padding:0 16px 10px;display:flex;gap:8px}
+.pf-wallet__main{flex:1;background:linear-gradient(135deg,rgba(var(--gold-rgb),.08),rgba(var(--gold-rgb),.03));border:1px solid rgba(var(--gold-rgb),.15);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:center;gap:10px}
+.pf-wallet__icon{width:32px;height:32px;border-radius:50%;background:rgba(var(--gold-rgb),.12);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pf-wallet__bal{font-size:16px;font-weight:700;color:var(--gold);font-family:var(--font-display)}
+.pf-wallet__cap{font-size:9px;color:var(--muted);letter-spacing:.5px}
+.pf-wallet__life{flex-shrink:0;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;text-align:center;min-width:76px}
+.pf-wallet__life-val{font-size:14px;font-weight:700;color:var(--cream);font-family:var(--font-display)}
+.pf-wallet__life-cap{font-size:8px;color:var(--muted);letter-spacing:.5px}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    STATS
    ═══════════════════════════════════════════════════════════════════════════ */
