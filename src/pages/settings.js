@@ -610,7 +610,8 @@ var _THEME_SWATCHES = {
 var _THEME_DESCS = {
   clubhouse:       "The house default. Quiet confidence, tournament program.",
   twilight_links:  "Dusk over the coastal course. Cool air, warm brass.",
-  linen_draft:     "Bright morning light, reading chair by the window.",
+  linen_draft:     "A bluebird day. Crisp white, clear sky, sharp lines.",
+  azalea:          "Augusta's azaleas. Soft blush, deep rose, refined.",
   champion_sunday: "Burgundy worn after a win.",
   bourbon_room:    "The lodge after the round. Earned with tenure.",
   course_record:   "Ledger paper and silver brass. The rarest."
@@ -618,7 +619,8 @@ var _THEME_DESCS = {
 var _THEME_TOASTS = {
   clubhouse:       "Back to the Clubhouse. Never a bad call.",
   twilight_links:  "Twilight Links. Last group out, lights coming on.",
-  linen_draft:     "Linen Draft. Crisp as a morning tee time.",
+  linen_draft:     "Bluebird. Clear skies, perfect for golf.",
+  azalea:          "Azalea. The prettiest corner of the course.",
   champion_sunday: "Champion Sunday. You earned the burgundy.",
   bourbon_room:    "Bourbon Room. Pull up a chair by the fire.",
   course_record:   "Course Record. The rarest page in the ledger."
