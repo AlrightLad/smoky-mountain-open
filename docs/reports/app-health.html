@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-13T04:26:13.955386Z",
+  "generated_at": "2026-06-13T04:27:49.621073Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 86.3,
   "overall_grade": "A-",
@@ -1052,13 +1052,13 @@
     }
   ],
   "audit_trigger": {
-    "sha": "ce2cbafc",
-    "subject": "chore(state): distance-to-pin shipped â€” BACKLOG + founder spec closed + V1 captures",
-    "committed_at": "2026-06-13T00:25:51-04:00",
+    "sha": "3fd2808b",
+    "subject": "Overnight triage 2026-06-13 - STAND DOWN: concurrent marathon agent shipped distance-to-pin (v8.25.55); dropped STOP to avoid prod-push race",
+    "committed_at": "2026-06-13T00:27:26-04:00",
     "trigger": "substrate-commit",
     "is_app_commit": false,
     "app_files_touched": [],
-    "total_files_touched": 5
+    "total_files_touched": 3
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
