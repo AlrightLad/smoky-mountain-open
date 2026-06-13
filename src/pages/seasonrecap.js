@@ -13,16 +13,21 @@ Router.register("seasonrecap", function(params) {
   });
   var indivRounds = allRounds.filter(function(r){ return r.format !== "scramble" && r.format !== "scramble4" && (!r.holesPlayed || r.holesPlayed >= 18); });
   
-  var h = '<div class="sh"><h2>' + year + ' Recap</h2><button class="back" onclick="Router.back(\'standings\')">← Back</button></div>';
-  
-  h += '<div style="text-align:center;padding:24px 16px;background:linear-gradient(180deg,var(--grad-hero),var(--bg));border-bottom:1px solid var(--border)">';
-  h += '';
-  h += '<div style="font-family:var(--font-display);font-size:24px;color:var(--gold);font-weight:700">' + year + ' Season Recap</div>';
-  h += '<div style="font-size:11px;color:var(--muted);margin-top:6px">The full year · January – December</div>';
-  // v8.24.44 — Wrapped entry (growth #2): the story-format personal recap.
-  // v8.25.9 — SVG play glyph, not the ▶ emoji (Founder: "we do not do emojis,
-  // they feel cheap and gross — we do SVG icons").
-  h += '<button class="btn-sm green" style="margin-top:14px;min-height:44px;padding:0 22px;display:inline-flex;align-items:center;gap:7px" onclick="Router.go(\'wrapped\')"><svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M4.5 3.2v9.6a.6.6 0 00.92.5l7.2-4.8a.6.6 0 000-1l-7.2-4.8a.6.6 0 00-.92.5z"/></svg>Play your Wrapped</button>';
+  // v8.25.61 — season-award GATING (Founder 2026-06-13: "award night + season
+  // awards hidden until each season is completed"). Mirrors the Wrapped Dec-1
+  // gate: the CURRENT year before Dec 1 is still being played, so the champion +
+  // awards are not crowned yet. A past year (or on/after Dec 1) shows full results.
+  var _now = new Date();
+  var seasonOver = !(year >= _now.getFullYear() && _now < new Date(year, 11, 1));
+
+  // v8.25.61 — editorial masthead (matches Members/Standings/Records/Scramble)
+  // replacing the centered grad-hero block that read a design generation behind.
+  var h = '<div class="roster-masthead">';
+  h += '<button class="back" onclick="Router.back(\'standings\')" style="margin-bottom:12px">← Back</button>';
+  h += '<div class="roster-eyebrow">SEASON RECAP · ' + year + '</div>';
+  h += '<h1 class="roster-headline">The year in full.</h1>';
+  h += '<p style="font-family:var(--font-mono);font-size:12px;color:var(--cb-mute);margin:10px 0 0;letter-spacing:.3px">January – December · ' + allRounds.length + ' round' + (allRounds.length === 1 ? '' : 's') + (seasonOver ? '' : ' so far') + '</p>';
+  h += '<div style="margin-top:14px"><button class="btn-sm green" style="min-height:44px;padding:0 22px;display:inline-flex;align-items:center;gap:7px" onclick="Router.go(\'wrapped\')"><svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" aria-hidden="true"><path d="M4.5 3.2v9.6a.6.6 0 00.92.5l7.2-4.8a.6.6 0 000-1l-7.2-4.8a.6.6 0 00-.92.5z"/></svg>Play your Wrapped</button></div>';
   h += '</div>';
   
   // Overall stats
@@ -37,8 +42,8 @@ Router.register("seasonrecap", function(params) {
   h += '<div class="stat-box"><div class="stat-val">' + Object.keys(uniqueCourses).length + '</div><div class="stat-label">Courses Played</div></div>';
   h += '</div>';
   
-  // Champion
-  if (season.standings.length) {
+  // Champion — only crowned once the season is over (gating).
+  if (seasonOver && season.standings.length) {
     var champ = season.standings[0];
     h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--gold)">Season Champion</span></div>';
     h += '<div class="card" style="border-color:rgba(var(--gold-rgb),.3);background:linear-gradient(135deg,var(--grad-card),var(--card))">';
@@ -163,31 +168,39 @@ Router.register("seasonrecap", function(params) {
     awards.push({icon:"<svg viewBox='0 0 16 16' width='14' height='14' fill='none' stroke='currentColor' stroke-width='1.5'><circle cx='8' cy='8' r='6'/><circle cx='8' cy='8' r='3'/><circle cx='8' cy='8' r='.8' fill='currentColor'/></svg>", title:"Consistency King", winner: consistencyData[0].name, detail: "±" + Math.round(consistencyData[0].stdDev*10)/10 + " stroke variance"});
   }
   
-  awards.forEach(function(a) {
-    h += '<div class="card" style="margin-bottom:8px"><div style="padding:14px 16px;display:flex;align-items:center;gap:14px">';
-    h += '<div style="font-size:28px;flex-shrink:0">' + a.icon + '</div>';
-    h += '<div><div style="font-size:10px;font-weight:600;color:var(--cb-ink-link);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">' + a.title + '</div>';
-    h += '<div style="font-size:15px;font-weight:700;color:var(--cream)">' + escHtml(a.winner) + '</div>';
-    h += '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + escHtml(a.detail) + '</div>';
-    h += '</div></div></div>';
-  });
-  
-  if (!awards.length) {
-    h += '<div class="card"><div class="empty"><div class="empty-text">No awards yet, log some rounds!</div></div></div>';
+  if (!seasonOver) {
+    // Gating (Founder): awards crown only when the season closes.
+    h += '<div class="card"><div style="padding:18px 16px;text-align:center">';
+    h += '<div style="font-family:var(--font-display);font-style:italic;font-weight:700;font-size:17px;color:var(--cb-ink)">Awards crown when the season closes.</div>';
+    h += '<div style="font-size:12px;color:var(--cb-mute);margin-top:6px;line-height:1.5;max-width:300px;margin-left:auto;margin-right:auto">The ' + year + ' season is still being played — Champion, Low Round, the Grinder and the rest stay sealed until <b style="color:var(--cb-ink)">December 31</b>. Keep teeing it up.</div></div></div>';
+  } else {
+    awards.forEach(function(a) {
+      // .sr-award__ico is a real brass icon chip (the old inline font-size:28px
+      // wrapper did nothing — the SVG is a fixed 14px, so it just added dead box).
+      h += '<div class="card sr-award"><div style="padding:14px 16px;display:flex;align-items:center;gap:14px">';
+      h += '<div class="sr-award__ico">' + a.icon + '</div>';
+      h += '<div><div class="sr-award__title">' + a.title + '</div>';
+      h += '<div class="sr-award__winner">' + escHtml(a.winner) + '</div>';
+      h += '<div class="sr-award__detail">' + escHtml(a.detail) + '</div>';
+      h += '</div></div></div>';
+    });
+    if (!awards.length) {
+      h += '<div class="card"><div class="empty"><div class="empty-text">No awards yet, log some rounds!</div></div></div>';
+    }
   }
   h += '</div>';
   
   // Final standings
   if (season.standings.length) {
-    h += '<div class="section"><div class="sec-head"><span class="sec-title">Final Standings</span></div>';
+    h += '<div class="section"><div class="sec-head"><span class="sec-title">' + (seasonOver ? 'Final' : 'Current') + ' Standings</span></div>';
     season.standings.forEach(function(s, idx) {
-      var medal = idx === 0 ? "1st" : idx === 1 ? "2nd" : idx === 2 ? "3rd" : (idx+1) + ".";
+      var chipCls = idx === 0 ? 'sr-rank--gold' : idx === 1 ? 'sr-rank--silver' : idx === 2 ? 'sr-rank--bronze' : '';
       h += '<div class="card" style="margin-bottom:6px"><div style="padding:12px 16px;display:flex;justify-content:space-between;align-items:center">';
       h += '<div style="display:flex;align-items:center;gap:12px">';
-      h += '<div style="font-size:18px;width:28px;text-align:center">' + medal + '</div>';
-      h += '<div><div style="font-size:13px;font-weight:600">' + escHtml(s.name||s.username) + '</div>';
-      h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + s.rounds + ' rds · Avg: ' + (s.avg||"—") + '</div></div></div>';
-      h += '<div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--gold)">' + s.points + '</div>';
+      h += '<div class="sr-rank ' + chipCls + '">' + (idx + 1) + '</div>';
+      h += '<div><div style="font-size:13px;font-weight:600;color:var(--cb-ink)">' + escHtml(s.name||s.username) + '</div>';
+      h += '<div style="font-size:10px;color:var(--cb-mute);margin-top:2px">' + s.rounds + ' rd' + (s.rounds === 1 ? '' : 's') + ' · Avg ' + (s.avg||"—") + '</div></div></div>';
+      h += '<div style="font-family:var(--font-display);font-size:20px;font-weight:700;color:var(--cb-brass)">' + s.points + '</div>';
       h += '</div></div>';
     });
     h += '</div>';

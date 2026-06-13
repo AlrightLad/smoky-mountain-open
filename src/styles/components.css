@@ -1954,6 +1954,18 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 .scr-team__sub{font-family:var(--font-mono);font-size:10px;color:var(--cb-mute);margin-top:6px}
 .scr-team__empty{font-size:12px;color:var(--cb-mute);margin-top:6px}
 
+/* Season Recap — award tiles + medal rank chips (v8.25.61) */
+.sr-award{margin-bottom:8px}
+.sr-award__ico{width:38px;height:38px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:10px;background:rgba(var(--gold-rgb),.12);color:var(--cb-brass);box-shadow:inset 0 0 0 1px rgba(var(--gold-rgb),.28)}
+.sr-award__ico svg{width:18px;height:18px}
+.sr-award__title{font-family:var(--font-mono);font-size:10px;font-weight:700;color:var(--cb-brass);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:2px}
+.sr-award__winner{font-family:var(--font-display);font-style:italic;font-weight:700;font-size:16px;color:var(--cb-ink);line-height:1.1}
+.sr-award__detail{font-size:11px;color:var(--cb-mute);margin-top:3px}
+.sr-rank{width:30px;height:30px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border-radius:50%;font-family:var(--font-mono);font-size:13px;font-weight:700;color:var(--cb-mute);background:var(--cb-chalk-2);border:1px solid var(--cb-chalk-3)}
+.sr-rank--gold{color:#3a2a0c;background:linear-gradient(135deg,#f0dca6,#caa75c);border-color:#b4893e}
+.sr-rank--silver{color:#3a3a3a;background:linear-gradient(135deg,#e8e8ea,#c4c6ca);border-color:#a8aab0}
+.sr-rank--bronze{color:#3a220c;background:linear-gradient(135deg,#e0b088,#bf8050);border-color:#9c6535}
+
 /* Parbaugh stroke indicator */
 .ls-stroke{display:flex;align-items:center;justify-content:space-between;margin:12px 0 0;padding:8px 12px;border-radius:8px;background:var(--cb-chalk-2);border:1px solid var(--cb-chalk-3);font-size:11px;font-weight:600;color:var(--cb-mute)}
 .ls-stroke.is-on{background:rgba(var(--gold-rgb),.1);border-color:rgba(var(--gold-rgb),.28);color:var(--cb-brass)}
