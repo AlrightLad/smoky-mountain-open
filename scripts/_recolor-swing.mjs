@@ -60,6 +60,12 @@ const MAP = [
   // slightly-darker CREAM_SHADE — natural front-over-back depth, no shimmer.
   // (Same hue, ~0.85 value; the front "right leg" keeps plain CREAM.)
   { from: [0.9, 0.059, 0.391], to: CREAM_SHADE, role: 'back (left) leg fill — shaded for depth (anti-flicker sentinel)' },
+  // v8.25.94 — the back (left) leg's white STROKES were the LAST z-fight source:
+  // two coplanar legs with identical WHITE outlines shimmer at their crossing
+  // edge (fix #3 shaded the fill but not the strokes). Source left-leg strokes
+  // were nudged to this near-white sentinel so they remap to CREAM_SHADE too —
+  // the back leg is now uniformly shaded (fill + outline), no white-on-white seam.
+  { from: [0.95, 1, 1], to: CREAM_SHADE, role: 'back (left) leg white STROKE — shaded to kill the residual knee shimmer' },
   // --- BLUE / PURPLE trousers + shoe/leg accents -> FELT-GREEN ---
   { from: [0.31, 0.259, 1], to: FELT, role: 'blue-purple trouser/shoe fill' },
   { from: [0.231, 0.184, 0.855], to: FELT_DARK, role: 'blue trouser/cap stroke' },
