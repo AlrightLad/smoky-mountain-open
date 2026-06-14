@@ -203,6 +203,13 @@ docs/reports/sessions.html
 .lighthouseci-live/
 .lighthouseci/
 
+# 2026-06-14 chronic-pulse fix: app-health.html (a local dashboard, same policy
+# as the other docs/reports/* dashboards above) + the dashboard-health hook logs
+# are REWRITTEN by the post-commit regen hook on every commit. Tracking them
+# caused a "commit regen artifact" pulse on every ship. Untracked → tree converges.
+docs/reports/app-health.html
+.claude/state/dashboard-health/*.log
+
 # 2026-05-29: transient/local evidence artifacts (not deliverables). Root-level
 # E2E sweep log is regenerated each run; boot-smoke + critique-resume PNGs are
 # local V1 evidence that stays out of the PUBLIC repo (matches visual-gate +
