@@ -822,7 +822,7 @@
     <script id="report-data" type="application/json">
 {
   "schema_version": "app-health-v1.1",
-  "generated_at": "2026-06-14T01:51:41.193115Z",
+  "generated_at": "2026-06-14T01:58:27.344780Z",
   "source": "scripts/aggregate-app-health.py",
   "overall_score": 86.3,
   "overall_grade": "A-",
@@ -1052,23 +1052,18 @@
     }
   ],
   "audit_trigger": {
-    "sha": "154663fb",
-    "subject": "feat(merch): P+rose logo composited onto premium product line + COMING SOON labels",
-    "committed_at": "2026-06-13T21:50:29-04:00",
+    "sha": "21b0960d",
+    "subject": "feat(brand): Caddy Notes brand-refresh entry + shop crest flavor â†’ rose-and-P",
+    "committed_at": "2026-06-13T21:58:02-04:00",
     "trigger": "app-commit",
     "is_app_commit": true,
     "app_files_touched": [
-      "public/img/merch/cap.jpg",
-      "public/img/merch/flatlay.jpg",
-      "public/img/merch/headcover.jpg",
-      "public/img/merch/polo.jpg",
-      "public/img/merch/quarterzip.jpg",
-      "public/img/merch/towel.jpg",
       "public/sw.js",
       "src/core/utils.js",
-      "src/pages/merch.js"
+      "src/pages/caddynotes.js",
+      "src/pages/shop.js"
     ],
-    "total_files_touched": 15
+    "total_files_touched": 8
   },
   "cadence": {
     "policy": "Per-commit (any commit re-runs the audit via husky post-commit hook) + per-cron-cycle (5-min watcher fires regen-all + this aggregator). For PARBAUGHS app commits specifically, the is_app_commit flag is set so the dashboard distinguishes app-code-driven refreshes from substrate-driven ones.",
