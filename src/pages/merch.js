@@ -55,7 +55,7 @@ Router.register("merch", function () {
   h += '</div></div>';
 
   // Note + maker's ribbon footer
-  h += '<div style="padding:18px 16px 6px"><div style="background:var(--cb-chalk-2);border:1px solid rgba(var(--cb-brass-rgb),.22);border-radius:var(--r-2);padding:14px 16px;font-family:var(--font-ui);font-size:13px;color:var(--cb-charcoal);line-height:1.5">Not for sale yet — the Commissioner will sound the horn when the pro shop opens. ParCoin pricing + member sizing to follow.</div></div>';
+  h += '<div style="padding:18px 16px 6px"><div style="background:var(--cb-chalk-2);border:1px solid rgba(var(--cb-brass-rgb),.22);border-radius:var(--r-2);padding:14px 16px;font-family:var(--font-ui);font-size:13px;color:var(--cb-charcoal);line-height:1.5">Not for sale yet — the Commissioner will sound the horn when the shop opens. The line drops in seasonal releases, priced in real currency (no ParCoins — those are for the Pro Shop cosmetics). Member sizing to follow.</div></div>';
   h += '<div style="text-align:center;padding:14px 16px 4px"><span style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:3px;color:var(--cb-mute);text-transform:uppercase">Est · York PA · Parbaughs Golf Co.</span></div>';
 
   h += renderPageFooter();

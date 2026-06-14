@@ -304,6 +304,13 @@
   }
 
   function maybeShow() {
+    // AUTH GATE (Founder 2026-06-14 "animation is still playing before sign in"):
+    // the swing is a SIGNED-IN arrival moment. router.js fires Router.go("home")
+    // on cold load BEFORE onAuthStateChanged resolves, so an unauthenticated open
+    // would render home and play the swing OVER the sign-in screen. Only play once
+    // a member is actually signed in. (currentUser is the shared core IIFE global;
+    // null when signed out, set in onAuthStateChanged before enterApp re-arms.)
+    if (typeof currentUser === "undefined" || !currentUser) return false;
     // reduce-motion no longer SUPPRESSES the swing — the Founder wants the arrival
     // moment on EVERY sign-in. Only an explicit opt-out (pb_intro_enabled='0'),
     // already-seen-this-session, or a live overlay short-circuits.
