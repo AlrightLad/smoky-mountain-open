@@ -52,6 +52,25 @@ REBUILD:
 - id-stable: keep existing ring ids; the decoration is an upgraded RENDER of the same
   owned item, so nobody loses what they bought.
 
+## CRITICAL ARCHITECTURAL CONSTRAINT (found 2026-06-14, step-1 build)
+Extending decorations (`::before`/`::after` with negative inset, reaching beyond the
+avatar circle) require the **ring-class element to be `overflow:visible`**. But
+`.pf-av` (the profile avatar) is `overflow:hidden` (the Simon photo-fit fix) — so an
+extending decoration **clips to the circle on the profile**, the main showcase.
+`.ring-claret` extends its jug-handle `::after` only because it sets `overflow:visible`
+on itself — which works ONLY where the circular photo crop lives on a SEPARATE inner
+element. So the extending-decoration build MUST first establish, per avatar surface
+(pf-av profile / 40px feed / leaderboard), that:
+  (a) the ring-class element can be `overflow:visible` WITHOUT un-cropping the photo
+      (i.e. the `overflow:hidden` circular crop is on an inner element, not the ring
+      element), OR
+  (b) restructure getAvatar so the decoration renders on an outer `overflow:visible`
+      wrapper and the photo crop on an inner `overflow:hidden` div — a core-render
+      change that must keep the no-decoration path byte-identical + be V1'd on every
+      surface before ship.
+This is why step-1 used a NON-extending struck-metal border (safe, ships clean) and
+the extending-frame leap is sequenced as careful core-render work, not a depth-tail rush.
+
 ## Sequence
 1. Decoration render layer + the no-op-safe path (verify avatars unchanged).
 2. 3-4 flagship decorations (one static struck-brass laurel + one animated) as proof.
