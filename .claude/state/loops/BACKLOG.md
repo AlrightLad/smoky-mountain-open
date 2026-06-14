@@ -595,3 +595,28 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
 - #76 SHOP (severely behind): NOT ENOUGH items + current items not cohesive / not on-brand / not golf-aesthetic. Expand the catalog AND elevate every cosmetic to AWARD-WINNING using ALL tools (generator-first: Imagen for art/textures, then composite) + memory. Level-lock + showcase already started; this adds breadth + a brand/golf-aesthetic quality bar.
 - #68 MERCH: multiple items under ONE photo = customer confusion. Give EACH item its own professional product photo; polish to Holderness & Bourne caliber (logo + rubber-hose motif per brand recipe).
 - #67 SWING + animation generally: severely behind; Cuphead rubber-hose rebuild; generator-first. Stays DO-LAST among features but is a priority once shop/merch land.
+
+## FOUNDER DIRECTION (2026-06-14 20:07) — COSMETICS NEED A VISUAL OVERHAUL, not a re-theme
+- [ ] COSMETICS FULL OVERHAUL (#76 escalated) — "these rings and cosmetics suck really
+  bad, we need a full overhaul. Reference other apps that have profile banners and rings
+  like DISCORD." The v8.25.167-168 re-theme was rename+recolour ONLY (still plain CSS
+  borders) — Founder rightly says that's "nothing new." REAL ASK: rebuild rings →
+  Discord-style AVATAR DECORATIONS (rich animated decorative frames/glows AROUND the
+  avatar, not Npx-solid borders) + profile BANNERS → rich/animated (Discord profile-banner
+  caliber). PLAN: (1) RESEARCH Discord avatar-decorations + profile-banners (the Founder
+  named the reference) — design language, how they frame without covering the avatar
+  ([[feedback_rings_frame_not_cover_photo]]); (2) design the PARBAUGHS equivalent in the
+  rubber-hose × H&B identity (layered glow + gradient/struck-metal border-image + tasteful
+  animation, or generated decoration art); (3) rebuild worn-render (router.js playerRingClass
+  + the ring CSS) + the shop preview; (4) V1 on real avatars, ship per-tier, Founder taste
+  sign-off (AMD-028). Worn-cosmetic COHESION (naming/colour) is already done; this is the
+  MATERIAL/MOTION leap. Large multi-ship fresh-creative effort — drive it properly.
+- [x] SHOP photo → country-club CHECK-IN (Founder 2026-06-14 20:07: "country club check-in,
+  nothing extremely fancy, personable, fitting the art style") — DONE v8.25.169 (LIVE):
+  replaced the fancy trophy-hall concept with a warm rubber-hose check-in scene (friendly
+  attendant, brass bell, caps, cream walls) via Vertex Imagen; slim masthead banner.
+- [ ] LOADING SCREEN revamp (Founder 2026-06-14 20:07, paired with swing #67) — revamp the
+  loading screen alongside the swing-animation rework. Confirmed still on the list.
+- PROD-VISIBILITY note: SW auto-update is robust (reg.update on load + 30-min + skipWaiting +
+  controllerchange→reload). Prod verified at 8.25.169. "Nothing new" was partly stale-PWA
+  (close+reopen forces it) + partly the re-theme being too subtle (hence the overhaul above).
