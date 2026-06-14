@@ -827,6 +827,18 @@ input.s:disabled,
 .pf-headline{word-break:break-word}
 .pf-realname{font-family:var(--font-ui);font-size:14px;color:var(--cb-charcoal);margin-top:10px}
 .pf-meta{font-family:var(--font-mono);font-size:11px;letter-spacing:0.5px;color:var(--cb-mute);margin-top:6px;text-transform:uppercase}
+/* #41 — identity felt focal hero (v8.25.163). The portrait row becomes the page's
+   asymmetric felt focal peak; text is recolored from the default ink/charcoal/mute
+   (which would vanish on dark felt) to chalk/brass — every value AA-verified on the
+   felt ground (#0F3D2E worst case): chalk #F4EFE4 ~11:1, chalk-2 ~10:1, chalk-3
+   ~9:1, brass-3 #E0BB60 ~7:1. The avatar keeps its inline equipped-cosmetic ring
+   (it already frames, not covers, the photo) — felt just makes it pop. */
+.pf-hero{padding:18px 18px;gap:18px;border-radius:var(--r-3);margin-bottom:18px}
+.pf-hero .roster-eyebrow{color:var(--cb-brass-3)}
+.pf-hero .roster-headline,.pf-hero .pf-headline{color:var(--cb-chalk)}
+.pf-hero .pf-realname{color:var(--cb-chalk-2)}
+.pf-hero .pf-meta{color:var(--cb-chalk-3)}
+@media (max-width:560px){.pf-hero{padding:16px 15px}}
 .pf-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:16px}
 .pf-badges span{font-family:var(--font-mono)}
 .pf-bio{font-family:var(--font-display);font-style:italic;font-size:16px;line-height:1.55;color:var(--cb-charcoal);margin-top:18px;max-width:62ch}

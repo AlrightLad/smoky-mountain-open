@@ -110,7 +110,12 @@ function renderMemberDetailWithData(p) {
 
   // Editorial masthead: portrait row (avatar + identity column).
   h += '<div class="roster-masthead pf-masthead">';
-  h += '<div class="pf-portrait">';
+  // #41 — identity FELT FOCAL HERO: only the portrait row (avatar + serif name +
+  // eyebrow + meta) becomes the asymmetric felt focal peak. Badges/bio/actions/XP/
+  // wallet stay on the paper canvas below — deliberately NOT swept into the felt
+  // (the auto-spec over-scoped that and would have buried the action buttons in
+  // dark felt). Text recolored to chalk/brass on felt via .pf-hero overrides.
+  h += '<div class="pf-portrait pb-card pb-card--felt pf-hero">';
   h += '<div class="pf-av" style="width:104px;height:104px;font-size:40px;border:3px solid ' + _profColor + ';box-shadow:' + _profShadowCombined + _profAnimCss + '"' + (canEditPhoto ? ' onclick="uploadMemberPhoto(\'' + pid + '\')"' : '') + '>' + Router.getAvatar(p);
   if (canEditPhoto) h += '<div class="pf-av__edit"><svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M11 2l3 3-8 8H3v-3z"/></svg></div>';
   h += '<div class="pf-av__lvl">' + lvl.level + '</div>';
