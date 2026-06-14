@@ -32,11 +32,11 @@ var COSMETICS_CATALOG = [
   {id:"border_obsidian",   cat:"border", name:"Obsidian Edge",     price:800, desc:"Dark volcanic glass",       css:"3px solid #2d2d2d",          preview:"#555555"},
   {id:"border_platinum",   cat:"border", name:"Platinum Band",     price:1000, desc:"Rare platinum finish",      css:"3px solid #e5e4e2",          preview:"#e5e4e2"},
   {id:"border_rainbow",    cat:"border", name:"Prismatic Ring",    price:1000, desc:"Multicolor gradient ring",  css:"3px solid #ff6b6b",          preview:"#ff6b6b"},
-  {id:"border_neon_green", cat:"border", name:"Neon Green",         price:1500, desc:"Animated neon green pulse",             css:"3px solid #39ff14",   preview:"#39ff14"},
-  {id:"border_crimson_ember",cat:"border",name:"Crimson Ember",     price:1500, desc:"Animated smoldering ember ring",     css:"3px solid #cc3300",   preview:"#cc3300"},
-  {id:"border_pulse_gold", cat:"border", name:"Pulse Gold",        price:2000,desc:"Animated golden pulse glow",            css:"3px solid #c9a84c",   preview:"#c9a84c"},
-  {id:"border_rainbow_shift",cat:"border",name:"Rainbow Shift",    price:3000,desc:"Animated color-cycling ring",           css:"3px solid #ff6b6b",   preview:"#ff6b6b"},
-  {id:"border_shimmer",    cat:"border", name:"Diamond Sparkle",   price:5000,desc:"Ultra-premium animated diamond ring",   css:"3px solid #b9f2ff",   preview:"#b9f2ff"},
+  {id:"border_neon_green",lvl:5,  cat:"border", name:"Neon Green",         price:1500, desc:"Animated neon green pulse",             css:"3px solid #39ff14",   preview:"#39ff14"},
+  {id:"border_crimson_ember",lvl:5, cat:"border",name:"Crimson Ember",     price:1500, desc:"Animated smoldering ember ring",     css:"3px solid #cc3300",   preview:"#cc3300"},
+  {id:"border_pulse_gold",lvl:10,  cat:"border", name:"Pulse Gold",        price:2000,desc:"Animated golden pulse glow",            css:"3px solid #c9a84c",   preview:"#c9a84c"},
+  {id:"border_rainbow_shift",lvl:12, cat:"border",name:"Rainbow Shift",    price:3000,desc:"Animated color-cycling ring",           css:"3px solid #ff6b6b",   preview:"#ff6b6b"},
+  {id:"border_shimmer",lvl:15,     cat:"border", name:"Diamond Sparkle",   price:5000,desc:"Ultra-premium animated diamond ring",   css:"3px solid #b9f2ff",   preview:"#b9f2ff"},
 
   // ── PROFILE BANNERS — Basic: 100-200, Mid: 300-500, Premium: 750+ ──
   {id:"banner_default",    cat:"banner", name:"Theme Default",     price:0,   desc:"Uses your active theme gradient, free for all",  css:"linear-gradient(180deg,var(--grad-hero),var(--bg))", preview:"var(--gold)"},
@@ -95,7 +95,7 @@ var COSMETICS_CATALOG = [
   {id:"title_hot_streak",    cat:"title", name:"Hot Streak",          price:800, desc:"On fire lately, rounds keep getting better",     css:"", preview:"#ef4444"},
   {id:"title_sandbagger",    cat:"title", name:"Sandbagger",          price:1000, desc:"Handicap says 25, plays like a 15. We see you.", css:"", preview:"var(--gold)"},
   {id:"title_course_legend", cat:"title", name:"Course Legend",       price:1000, desc:"Owns a course, everyone knows your name there", css:"", preview:"var(--gold)"},
-  {id:"title_big_spender",   cat:"title", name:"Big Spender",         price:1500, desc:"ParCoins flow like water from your wallet",       css:"", preview:"var(--gold)"},
+  {id:"title_big_spender",lvl:5,    cat:"title", name:"Big Spender",         price:1500, desc:"ParCoins flow like water from your wallet",       css:"", preview:"var(--gold)"},
   {id:"title_the_ace",       cat:"title", name:"The Ace",             price:0,   desc:"Reserved, awarded for a hole-in-one",            css:"", preview:"#FFD700", reserved:true},
   {id:"title_founding_four", cat:"title", name:"The Original Four",   price:0,   desc:"Reserved, founding members only",                css:"", preview:"var(--gold)", reserved:true},
   {id:"title_commissioner",  cat:"title", name:"The Commissioner",    price:0,   desc:"Reserved, league commissioner only",             css:"", preview:"var(--gold)", reserved:true}
@@ -116,15 +116,15 @@ var PRO_SHOP_CATALOG = [
   // B · Nameplates — NEW surface, arriving (renders next ship)
   {id:"pc05_locker_brass", cat:"nameplate", tier:"locker", name:"Locker Brass", price:1000, preview:"#caa75c", desc:"Brushed brass behind your name, engraved serif, two screw heads. Your locker, everywhere."},
   {id:"pc06_yardage_book", cat:"nameplate", tier:"proshop", name:"The Yardage Book", price:700, preview:"#d8d2c0", desc:"Graph paper, a hand-sketched green contour, a penciled carry number fading behind your name."},
-  {id:"pc07_leaderboard_sunday", cat:"nameplate", tier:"locker", name:"Leaderboard Sunday", price:1500, preview:"#1d3a2a", desc:"Hand-set white letters on deep green, straight off the manual board. Sunday at a major, every day."},
+  {id:"pc07_leaderboard_sunday",lvl:5,  cat:"nameplate", tier:"locker", name:"Leaderboard Sunday", price:1500, preview:"#1d3a2a", desc:"Hand-set white letters on deep green, straight off the manual board. Sunday at a major, every day."},
   // C · Scorecard skins — render via getPlayerCardCss (live now)
   {id:"pc08_pencil_parchment", cat:"card", tier:"proshop", name:"Pencil & Parchment", price:800, preview:"#cabd98", css:"border:1px solid #c2b48c;border-left:4px solid #b3a378;background:linear-gradient(0deg,rgba(202,189,152,.12),rgba(232,224,196,.16)),repeating-linear-gradient(0deg,transparent 0 7px,rgba(150,135,95,.07) 7px 8px)", desc:"Vintage paper stock, dot-grid rules, your numbers in pencil grey."},
   {id:"pc09_member_guest", cat:"card", tier:"locker", name:"The Member-Guest", price:1000, preview:"#e9dfc4", css:"border-top:3px double rgba(180,137,62,.85);border-bottom:3px double rgba(180,137,62,.85);background:linear-gradient(180deg,rgba(244,238,220,.16),rgba(233,223,196,.1))", desc:"Cream card, double brass rules, your league's name as a pale watermark."},
-  {id:"pc10_major_sunday", cat:"card", tier:"locker", name:"Major Sunday", price:1800, preview:"#0d2818", css:"border-left:6px solid #0d2818;background:linear-gradient(90deg,rgba(13,40,24,.2),rgba(13,40,24,.05) 55%,transparent)", desc:"Broadcast lower-third styling: deep-green chyron bars. Your 92 never looked so televised."},
+  {id:"pc10_major_sunday",lvl:8,  cat:"card", tier:"locker", name:"Major Sunday", price:1800, preview:"#0d2818", css:"border-left:6px solid #0d2818;background:linear-gradient(90deg,rgba(13,40,24,.2),rgba(13,40,24,.05) 55%,transparent)", desc:"Broadcast lower-third styling: deep-green chyron bars. Your 92 never looked so televised."},
   // D · Feed flair — NEW surface, arriving
   {id:"pc11_tap_in_tip",   cat:"flair", tier:"proshop", name:"Tap-In Tip", price:600, arriving:true, preview:"#caa75c", desc:"Your reactions land as a brass ball-marker stamp with a tiny press."},
   {id:"pc12_birdie_drop",  cat:"flair", tier:"locker", name:"Birdie Drop", price:1200, arriving:true, preview:"#3f7d4e", desc:"Under-par rounds: a ball drops into the cup on your feed card. One bounce, rattle, done."},
-  {id:"pc13_gallery_roar", cat:"flair", tier:"locker", name:"The Gallery Roar", price:1500, arriving:true, preview:"#b4893e", desc:"Personal bests: a hat-tip ripple and a short polite-applause burst on first view."},
+  {id:"pc13_gallery_roar",lvl:5,  cat:"flair", tier:"locker", name:"The Gallery Roar", price:1500, arriving:true, preview:"#b4893e", desc:"Personal bests: a hat-tip ripple and a short polite-applause burst on first view."},
   // E · Titles + the Engraving (plate renders live now)
   {id:"pc14_engraving",    cat:"title", tier:"proshop", name:"The Engraving", price:800, plate:true, preview:"#caa75c", desc:"Your equipped title renders as a small engraved brass plate instead of italic text. Applies to any title you own."},
   {id:"pc15_cart_path",    cat:"title", tier:"range", name:"Cart Path Only", price:500, preview:"#8a8674", desc:"For the member whose ball has seen more concrete than fairway. Worn with pride or not at all."},
@@ -135,8 +135,8 @@ var PRO_SHOP_CATALOG = [
   {id:"pc19_persimmon",    cat:"teemarker", tier:"proshop", name:"Persimmon", price:700, preview:"#7a4a28", desc:"A tiny persimmon driver head, brass sole plate, whipping and all. Feel player."},
   {id:"pc20_parbaugh_marker", cat:"teemarker", tier:"locker", name:"The Parbaugh", price:1000, preview:"#b4893e", desc:"The league crest cast as a founding-gold marker. Fly the flag."},
   // G · Caddy voice packs — NEW, arriving
-  {id:"pc21_old_tom",      cat:"voice", tier:"locker", name:"Old Tom", price:1600, arriving:true, preview:"#6f6a5b", desc:"Gruff links wisdom. \"Aye. Intae the wind, that's a three-club day. Swing easy.\""},
-  {id:"pc22_bag_room",     cat:"voice", tier:"locker", name:"Bag Room Guy", price:1600, arriving:true, preview:"#6f6a5b", desc:"The heckling friend. \"Big number brewing on 14? Prove me wrong, I'd love that.\""},
+  {id:"pc21_old_tom",lvl:8,       cat:"voice", tier:"locker", name:"Old Tom", price:1600, arriving:true, preview:"#6f6a5b", desc:"Gruff links wisdom. \"Aye. Intae the wind, that's a three-club day. Swing easy.\""},
+  {id:"pc22_bag_room",lvl:8,      cat:"voice", tier:"locker", name:"Bag Room Guy", price:1600, arriving:true, preview:"#6f6a5b", desc:"The heckling friend. \"Big number brewing on 14? Prove me wrong, I'd love that.\""},
   // I · Trophy Cabinet — commemorative, never for sale
   {id:"pc24_green_jacket", cat:"border", tier:"commem", name:"The Green Jacket", price:0, earnedBy:"Season champion only", ringClass:"", preview:"#1d3a2a", desc:"Deep-green wool ring, three small brass buttons, your championship year engraved at six o'clock."},
   {id:"pc25_ace_marker",   cat:"teemarker", tier:"commem", name:"Ace Marker", price:0, earnedBy:"Hole-in-one only", preview:"#e9d9ae", desc:"A gold ball on a brass pedestal, date engraved. There is no second way to get this, and everyone knows it."},
@@ -150,12 +150,12 @@ var PRO_SHOP_CATALOG = [
   {id:"pc27_pitch_mark",   cat:"ball", tier:"proshop", name:"Pitch-Mark",     price:700, preview:"#cfd2d6", desc:"Milled silver, a crosshair engraved dead center. Reads your line for you. Allegedly."},
   {id:"pc43_ctp_marker",   cat:"ball", tier:"commem",  name:"Closest to the Pin", price:0, earnedBy:"Season closest-to-pin leader", preview:"#b58a3a", desc:"Brass disc, a flagstick struck clean through it. Earned on the green, never in the shop."},
   // A · RINGS (live)
-  {id:"pc39_wax_seal",     cat:"border", tier:"locker", name:"The Wax Seal",   price:1800, ringClass:"ring-wax-seal", preview:"#7a2e2e", desc:"A claret wax seal pressed at six o'clock, a ribbon tail beneath. Correspondence from the committee."},
+  {id:"pc39_wax_seal",lvl:8,      cat:"border", tier:"locker", name:"The Wax Seal",   price:1800, ringClass:"ring-wax-seal", preview:"#7a2e2e", desc:"A claret wax seal pressed at six o'clock, a ribbon tail beneath. Correspondence from the committee."},
   {id:"pc40_hickory_brass",cat:"border", tier:"locker", name:"Hickory & Brass",price:1400, ringClass:"ring-hickory", preview:"#7a4a28", desc:"Hickory-grain wood ringed in brass ferrule. The shaft they played before steel was legal."},
   {id:"pc42_founders_crest",cat:"border",tier:"cabinet",lvl:12,name:"The Founders' Crest",price:3000, ringClass:"ring-claret", preview:"#cfd2d6", desc:"The crest in relief inside an engraved-silver bezel, a slow light sweeping across it. The priciest ring money can buy — unlocks at Level 12. The Green Jacket it is not."},
   // C · SCORECARD SKINS (live)
   {id:"pc28_the_sleeve",   cat:"card", tier:"proshop", retired:true, name:"The Sleeve",      price:600, preview:"#cabd98", css:"border:1px solid #c2b48c;border-left:4px solid #b3a378;background:linear-gradient(160deg,rgba(202,189,152,.16),rgba(232,224,196,.1))", desc:"Kraft three-ball sleeve stock, the flap torn open. Smells like a fresh dozen."},  // v8.25.49 retired — redundant kraft with pc08 Parchment; owned copies still resolve/equip forever
-  {id:"pc41_trophy_room",  cat:"card", tier:"locker",  name:"The Trophy Room", price:1800, preview:"#5a4632", css:"border-left:5px solid #5a4632;background:linear-gradient(90deg,rgba(90,70,50,.22),rgba(90,70,50,.05) 55%,transparent)", desc:"Walnut-panel ground with an engraved-brass plaque header. The room where the silver lives."},
+  {id:"pc41_trophy_room",lvl:8,   cat:"card", tier:"locker",  name:"The Trophy Room", price:1800, preview:"#5a4632", css:"border-left:5px solid #5a4632;background:linear-gradient(90deg,rgba(90,70,50,.22),rgba(90,70,50,.05) 55%,transparent)", desc:"Walnut-panel ground with an engraved-brass plaque header. The room where the silver lives."},
   // E · TITLES + bag-tag plate (live)
   {id:"pc36_member_tag",   cat:"title", tier:"proshop", name:"Member No. __",  price:1000, plate:true, preview:"#7a4a28", desc:"Renders your title as a leather bag tag with a brass rivet. Quietly states you were here early."},
   {id:"pc37_sandbagger",   cat:"title", tier:"range",   name:"The Sandbagger's Confession", price:500, preview:"#8a8674", desc:"\"Said it was a practice round.\" Wears the truth so you don't have to."},
@@ -181,7 +181,7 @@ var PRO_SHOP_CATALOG = [
   // — Founder batch 2026-06-13: premium quality-leap pieces (enamel/medallion/
   //   cloisonne/pairing-sheet/sterling). Rings + plate carry worn-render classes
   //   (preview==worn); ball reuses pbMarkerGlyph (56px shop / 12px worn). —
-  {id:"pc52_crest_pin",    cat:"border",    tier:"locker",  name:"The Club Pin",     price:1700,  ringClass:"ring-crest-pin", preview:"#1f5135", desc:"Hard-enamel cloisonne: the rose-and-P mark on deep clubhouse green, struck in a polished brass bezel. The lapel pin they hand you when you join."},
+  {id:"pc52_crest_pin",lvl:8,     cat:"border",    tier:"locker",  name:"The Club Pin",     price:1700,  ringClass:"ring-crest-pin", preview:"#1f5135", desc:"Hard-enamel cloisonne: the rose-and-P mark on deep clubhouse green, struck in a polished brass bezel. The lapel pin they hand you when you join."},
   {id:"pc53_medallion",    cat:"border",    tier:"cabinet", lvl:6, name:"The Medallion",    price:2800, ringClass:"ring-medallion", preview:"#caa75c", desc:"A struck championship medallion, laurel in relief around the rim, a slow gleam crossing the strike. Heavy in the hand — unlocks at Level 6."},
   {id:"pc54_calfskin_tag", cat:"nameplate", tier:"locker",  name:"The Calfskin Tag", price:1400,  preview:"#7a4a28", desc:"Pebbled saddle leather, a hard-enamel green roundel riveted at the left, your name embossed deep. The bag tag the caddymaster knows by sight."},
   {id:"pc55_pairing_sheet",cat:"card",      tier:"proshop", name:"The Pairing Sheet",price:900,  preview:"#f2ecda", css:"border:1px solid #d8cfa8;border-left:4px solid #1f5135;background:linear-gradient(0deg,rgba(244,238,214,.18),rgba(252,248,232,.2)),repeating-linear-gradient(0deg,transparent 0 8px,rgba(31,81,53,.06) 8px 9px)", desc:"Tournament-issue pairing sheet: cream stock, a green committee rule down the spine, tee-time grid faint behind your score."},
