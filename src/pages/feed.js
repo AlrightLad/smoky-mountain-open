@@ -146,13 +146,13 @@ Router.register("feed", function() {
         // identity here, so already-stored docs render branded without a
         // Firestore migration. Human posts keep their real member player.
         var isBot = (typeof isCaddyAuthor === "function") ? isCaddyAuthor(msg)
-          : (!!msg.system || msg.authorName === "The Caddy" || msg.authorName === "Parbaughs");
+          : (!!msg.system || msg.authorName === "The Caddy" || msg.authorName === "The Caddies" || msg.authorName === "Parbaughs");
         var player = (!isBot && msg.authorId) ? PB.getPlayer(msg.authorId) : null;
         items.push({
           type: "chat",
-          player: isBot ? (typeof PB_CADDY !== "undefined" ? PB_CADDY : { id: "the-caddy", name: "The Caddy", bot: true }) : player,
+          player: isBot ? (typeof PB_CADDY !== "undefined" ? PB_CADDY : { id: "the-caddy", name: "The Caddies", bot: true }) : player,
           playerId: isBot ? "" : (msg.authorId || ""),
-          author: isBot ? "The Caddy" : (msg.authorName || msg.user || "Member"),
+          author: isBot ? "The Caddies" : (msg.authorName || msg.user || "Member"),
           text: msg.text || "",
           ts: tsMillis(msg.createdAt) || (msg.timestamp || 0),
           system: isBot
@@ -439,8 +439,8 @@ function _renderWeeklyReport(report) {
   if (!report) return "";
   var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   var weekLabel = months[report.weekStart.getMonth()] + " " + report.weekStart.getDate();
-  var h = '<section class="feed-report" aria-label="The Caddy\'s Report">';
-  h += '<div class="feed-report__masthead"><div class="feed-report__kicker">The Caddy\'s Report</div><div class="feed-report__week">Week of ' + escHtml(weekLabel) + '</div></div>';
+  var h = '<section class="feed-report" aria-label="The Caddies\' Report">';
+  h += '<div class="feed-report__masthead"><div class="feed-report__kicker">The Caddies\' Report</div><div class="feed-report__week">Week of ' + escHtml(weekLabel) + '</div></div>';
   if (report.empty) {
     h += '<div class="feed-report__quiet">Quiet week at the club. First tee\'s yours.</div>';
   } else {
@@ -706,12 +706,12 @@ function _renderRoundCompact(item) {
 // not two). Member chats render their real avatar + name as before.
 function _renderChatCard(item) {
   var isSystem = item.system || (typeof isCaddyPlayer === "function" && isCaddyPlayer(item.player));
-  var who = isSystem ? "The Caddy" : (item.author || "Member");
-  var aria = (isSystem ? "The Caddy (automated)" : who) + " posted, " + feedTimeAgo(item.ts);
+  var who = isSystem ? "The Caddies" : (item.author || "Member");
+  var aria = (isSystem ? "The Caddies (automated)" : who) + " posted, " + feedTimeAgo(item.ts);
   var h = '<article class="feed-card feed-card--chat' + (isSystem ? ' feed-card--caddy' : '') + '" role="article" aria-label="' + escHtml(aria) + '">';
   h += '<div class="feed-card__head">';
   if (isSystem) {
-    var caddy = (typeof PB_CADDY !== "undefined") ? PB_CADDY : { id: "the-caddy", name: "The Caddy", bot: true };
+    var caddy = (typeof PB_CADDY !== "undefined") ? PB_CADDY : { id: "the-caddy", name: "The Caddies", bot: true };
     h += renderAvatar(caddy, 40, false);
     h += '<div class="feed-card__who">';
     h += '<div class="feed-card__name">' + renderUsername(caddy, "font-family:var(--font-display);font-style:italic;font-weight:600;font-size:16px;") + '</div>';

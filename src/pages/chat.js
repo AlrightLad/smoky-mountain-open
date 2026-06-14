@@ -94,7 +94,7 @@ Router.register("chat", function() {
         var d = doc.data();
         // Filter out auto-generated system messages — clubhouse is for human conversation only
         if (d.authorId === "system" || d.system) return;
-        if (d.authorName === "Parbaughs" || d.authorName === "The Caddy") return;
+        if (d.authorName === "Parbaughs" || d.authorName === "The Caddy" || d.authorName === "The Caddies") return;
         if (d.isStory) return; // post-round stories go to activity feed, not chat
         liveChat.push(Object.assign({_docId:doc.id}, d));
       });
