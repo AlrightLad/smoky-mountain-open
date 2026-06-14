@@ -255,26 +255,26 @@ var Router = (function() {
 // are themselves top-level — can share the exact same logic as Router.getAvatar.
 function isCaddyPlayer(p) {
   if (!p) return false;
+  // Match the canonical id/bot flag OR either bot NAME — legacy docs were authored
+  // "The Caddy"; new docs "The Caddies" (v8.25.157 rename). Both normalize here.
   return p.id === "the-caddy" || p.authorId === "the-caddy" || p.bot === true ||
-         p.name === "The Caddy" || p.username === "The Caddy" || p.authorName === "The Caddy" ||
-         p.author === "The Caddy";
+         p.name === "The Caddy" || p.username === "The Caddy" || p.authorName === "The Caddy" || p.author === "The Caddy" ||
+         p.name === "The Caddies" || p.username === "The Caddies" || p.authorName === "The Caddies" || p.author === "The Caddies";
 }
-// The branded mark: a felt-green disc with a brass flagstick + flag (the
-// Parbaughs club mark). The ⛳ glyph is the one emoji explicitly allowed for The
-// Caddy per CLAUDE.md, but we draw a crisp brass SVG flag so it scales cleanly
-// at every size and stays on the Clubhouse palette. Fills the inherited slot.
+// v8.25.157 (#73, Founder) — "The Caddies" now wears a CREW portrait: the four
+// caddies (Murphy, Old Tom, Birdie, Bag Room Guy) in a 2x2 quad on aged paper,
+// circle-cropped by the inherited slot. Falls back to a felt disc + brass flag
+// if the image can't load (offline / cache miss), so the bot always has a mark.
 function caddyAvatarMark() {
-  return '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--cb-felt);border-radius:inherit">' +
-    '<svg viewBox="0 0 24 24" width="64%" height="64%" fill="none" aria-hidden="true">' +
-    '<path d="M8 4v16" stroke="var(--cb-brass-3)" stroke-width="1.6" stroke-linecap="round"/>' +
-    '<path d="M8 4.6l9 2.7-9 2.7z" fill="var(--cb-brass)"/>' +
-    '<circle cx="8" cy="20" r="1.5" fill="var(--cb-brass-3)"/>' +
-    '</svg></div>';
+  var src = ((typeof window !== "undefined" && window.__PB_BASE__) ? window.__PB_BASE__ : "/") + "img/avatars/caddy-crew.jpg";
+  return '<div style="width:100%;height:100%;background:var(--cb-felt);border-radius:inherit;overflow:hidden">' +
+    '<img src="' + src + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.style.display=\'none\'">' +
+    '</div>';
 }
 // The bot badge: a small brass mono "BOT" chip that trails The Caddy's name so
 // humans-vs-bot is legible at a glance. Identical across leagues.
 function caddyBotBadge() {
-  return '<span class="pb-bot-badge" aria-label="Automated post by The Caddy">BOT</span>';
+  return '<span class="pb-bot-badge" aria-label="Automated post by The Caddies">BOT</span>';
 }
 
 // ── GLOBAL UTILITY: profile border color ────────────────────────────────────

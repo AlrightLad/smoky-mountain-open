@@ -235,7 +235,7 @@ function loadHomeActivityFeed() {
       // canonical identity OR any legacy shape, so already-stored docs render
       // through the single Caddy identity (no Firestore migration).
       var isSystem = (typeof isCaddyAuthor === "function") ? isCaddyAuthor(msg)
-        : (!!msg.system || msg.authorId === "system" || msg.authorName === "The Caddy" || msg.authorName === "Parbaughs");
+        : (!!msg.system || msg.authorId === "system" || msg.authorName === "The Caddy" || msg.authorName === "The Caddies" || msg.authorName === "Parbaughs");
       var text = msg.text || "";
       // Skip automated messages that duplicate other feed items
       if (text.indexOf("range session") !== -1 && isSystem) return;
@@ -244,7 +244,7 @@ function loadHomeActivityFeed() {
       var dest = "";
       if (msg.linkType === "event" && msg.tripId) dest = "Router.go('scorecard',{tripId:'" + msg.tripId + "'})";
       else if (msg.linkType === "round" && msg.roundId) dest = "Router.go('rounds',{roundId:'" + msg.roundId + "'})";
-      items.push({type:"chat", playerId: isSystem ? "" : (msg.authorId||""), name:(isSystem ? "The Caddy" : msg.authorName || msg.user || "Member"), sub:text, ts:tsMillis(msg.createdAt) || (msg.timestamp || 0), system:isSystem, dest:dest});
+      items.push({type:"chat", playerId: isSystem ? "" : (msg.authorId||""), name:(isSystem ? "The Caddies" : msg.authorName || msg.user || "Member"), sub:text, ts:tsMillis(msg.createdAt) || (msg.timestamp || 0), system:isSystem, dest:dest});
     });
     pending--; tryRender();
   }).catch(function() { pending--; tryRender(); });

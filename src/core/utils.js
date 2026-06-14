@@ -4,7 +4,7 @@
    ================================================ */
 
 // ── App version — single source of truth ──
-var APP_VERSION = "8.25.156";
+var APP_VERSION = "8.25.157";
 
 // ── Onboarding walkthrough (FTUE) — foundation constants/helpers ──
 // WALKTHROUGH_MAJOR is decoupled from APP_VERSION so a patch bump never
@@ -67,7 +67,12 @@ function leagueDoc(name, data) {
 // truth all bot WRITES route through. PB_CADDY.id is a reserved sentinel —
 // no real member can ever own it (Firebase UIDs are 28 chars), so the
 // render-layer match below can never collide with a human.
-var PB_CADDY = { id: "the-caddy", authorId: "the-caddy", name: "The Caddy", bot: true };
+// v8.25.157 (#73, Founder) — renamed the bot identity "The Caddy" -> "The Caddies"
+// (it speaks for the whole crew — Murphy, Old Tom, Birdie, Bag Room Guy — and now
+// wears a crew portrait). id stays "the-caddy" so all routing/detection + already-
+// stored bot docs (authored "The Caddy") keep matching; detection accepts BOTH
+// names (no Firestore migration).
+var PB_CADDY = { id: "the-caddy", authorId: "the-caddy", name: "The Caddies", bot: true };
 
 // isCaddyAuthor(doc) — TRUE when a stored doc is bot content, under either the
 // new canonical identity OR a legacy shape. Used by the render layer to
@@ -355,7 +360,7 @@ function pbSetBlocked(uid, shouldBlock) {
 
 function pbLog() { if (PB_DEBUG && console.log) console.log.apply(console, arguments); }
 function pbWarn() {
-  // Surface Firestore critical errors to the console. v8.25.156 — SPLIT the two
+  // Surface Firestore critical errors to the console. v8.25.157 — SPLIT the two
   // critical classes: INDEX / FAILED_PRECONDITION errors are always real +
   // actionable (a missing composite index), so they still write to the prod
   // `errors` collection for the admin panel. PERMISSION-DENIED, however, is
