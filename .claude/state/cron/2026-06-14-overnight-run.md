@@ -99,7 +99,8 @@ closed_total=0** (see § 3a.note — post-archive, explained); git HEAD=92d8dcb5
 **zero dashboard diff** — the post-commit cron at HEAD `92d8dcb5`
 (`cron(routine): post-commit dashboard regen`) had already produced byte-identical
 output, so `git status --porcelain` was empty both before and after the regen. No
-provenance race to reconcile this cycle.
+provenance race *at regen time* — **but a later cron sweep created one after my
+wellness writes; see the Post-commit provenance note at the end of this journal.**
 
 **Meter-status honesty (metric-integrity self-correction).** The snapshot reports
 `_meter_status: "wired-real"` and the round-trip `[meter-wiring]` block passes 7/7
@@ -257,10 +258,18 @@ review.
   founder-checklist count change is consistent with the prior root-cause (commit
   `1db94a24` archive). The `wired-real` meter was **not** framed as a new finding
   (caps null → F1a stays live).
-- **Did I sweep concurrent work to inflate this cron's output?** No — the git tree was
-  **clean after regen** (zero dashboard diff), so there were no concurrent artifacts to
-  sweep and no provenance race to reconcile this cycle (simpler than 06-13). The
-  strict-pathspec commit carries exactly the 2 wellness files + this journal (3 files).
+- **Did I sweep concurrent work to inflate this cron's output?** No — strict pathspec
+  only, never `git add -A`. **Post-commit correction (see Post-commit provenance note
+  below):** the git tree was clean *at regen time*, but between my wellness writes
+  (00:04:35 / 00:05:16 EDT) and my commit, a concurrent `cron(routine)` auto-commit
+  (`78f8c85e`, `git add -u`-style "auto-commit telemetry output before watcher
+  preflight", 00:05:49 EDT) swept my two **tracked** wellness files into ITS commit. So
+  my commit `a0fadc8c` carries only this journal (1 file); the wellness files are
+  committed in `78f8c85e` (content **verified byte-identical** to my writes via
+  `git diff HEAD` empty + token/checkpoint spot-check). Provenance split, **work
+  intact** — the documented cron-sweeps-staged-work race, same class as 06-13. The two
+  concurrent merch-session artifacts (`_gen-merch-v2.mjs`, `merch-prompts.json`) were
+  correctly **left untouched** (not mine).
 - **Wellness:** the refresh records a genuine clean heartbeat with real
   delta root-causing + meter self-correction; counters labeled F1a estimates,
   lighter than 06-13 (one anomaly traced, not padded), over-threshold flag +

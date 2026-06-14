@@ -16,12 +16,20 @@ Router.register("merch", function () {
     catch (e) { return "img/merch/" + name; }
   }
 
+  // v8.25.117 — Founder's full lineup (real-cash, seasonal). Realistic studio
+  // photography (Vertex Imagen 4, vetted prompts) of BLANK premium pieces with
+  // the P+rose mark composited at each embroidery spot; the leisure tee carries
+  // a Cuphead-style cartoon print. Brand palette, deliberate colourway variation.
   var LINE = [
-    { img: "cap.jpg", name: "The Tour Cap", note: "Structured six-panel · rose-and-P mark" },
-    { img: "polo.jpg", name: "The Clubhouse Polo", note: "Pima pique · felt-green collar" },
-    { img: "quarterzip.jpg", name: "The Fairway Quarter-Zip", note: "Brushed knit · cream placket" },
-    { img: "towel.jpg", name: "The Caddy Towel", note: "Woven stripe · brass grommet" },
-    { img: "headcover.jpg", name: "The Driver Headcover", note: "Hand-knit · claret pom" }
+    { img: "hoodie.jpg",      name: "The Clubhouse Hoodie",  note: "Heavyweight black brushed fleece" },
+    { img: "quarterzip.jpg",  name: "The Fairway Quarter-Zip", note: "Athletic four-way stretch · brass pull" },
+    { img: "polo.jpg",        name: "The Tour Pro Shirt",    note: "Breathable tour piqué · felt-green collar" },
+    { img: "tee.jpg",         name: "The Leisure Tee",       note: "Soft cotton · vintage cartoon print" },
+    { img: "headcovers.jpg",  name: "The Leather Headcovers", note: "Tooled leather · driver, woods, mallet & blade" },
+    { img: "yardagebook.jpg", name: "The Yardage Book",      note: "Forest-green leather · brass ribbon" },
+    { img: "balls.jpg",       name: "Parbaughs Golf Balls",  note: "Tour white · sleeve of three" },
+    { img: "ballmarker.jpg",  name: "The Ball Marker",       note: "Struck antique brass" },
+    { img: "tees.jpg",        name: "The Tees",              note: "Hardwood · club-colour bands" }
   ];
 
   // Editorial masthead (shared roster recipe → brass rule + Fraunces headline)
