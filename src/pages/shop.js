@@ -264,12 +264,10 @@ Router.register("shop", function() {
   h += '<h1 class="roster-headline">Spend it like you earned it.</h1>';
   h += '</div>';
 
-  // 3m.A Wallet hero — brass double-rule balance card
-  h += '<section class="shop-wallet" aria-label="Your wallet">';
-  h += '<div class="shop-wallet__eyebrow">Your balance</div>';
-  h += '<div class="shop-wallet__balance" aria-live="polite" aria-label="Your Parcoin balance, ' + balance + '">' + balance.toLocaleString() + '</div>';
-  h += '<div class="shop-wallet__sub">Parcoin' + (lifetime ? ' · ' + lifetime.toLocaleString() + ' earned all-time' : '') + '</div>';
-  h += '</section>';
+  // 3m.A Wallet — compact balance CHIP (#41 v8.25.156, critic #10: the shop read
+  // as a wallet, not a store, because a tall balance card dominated above the
+  // fold. Slimmed to a one-line brass ledger chip so the goods lead sooner.)
+  h += '<div class="shop-balance-chip" aria-label="Your Parcoin balance, ' + balance + '"><svg viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7"/></svg><strong>' + balance.toLocaleString() + '</strong> ParCoin' + (lifetime ? ' <span class="shop-balance-chip__sub">· ' + lifetime.toLocaleString() + ' all-time</span>' : '') + '</div>';
 
   // 3m.A.2 Recent activity ledger (async, truthful grouped render)
   h += '<section class="shop-ledger" aria-label="Recent activity">';

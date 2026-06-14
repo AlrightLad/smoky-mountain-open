@@ -4393,6 +4393,11 @@ img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width:
 .shop-wrap { max-width: 720px; margin: 0 auto; padding: 0 16px 40px; }
 .shop-wrap .roster-masthead { padding: 28px 0 12px; }
 
+/* #41 v8.25.156 — compact balance chip (replaces the tall .shop-wallet hero so
+   the shop leads with goods). Brass ledger pill near the masthead. */
+.shop-balance-chip { display: inline-flex; align-items: center; gap: 7px; margin: 6px 0 18px; padding: 7px 14px; border-radius: 999px; font-family: var(--font-mono); font-size: 13px; font-weight: 700; color: var(--cb-brass-deep); background: rgba(var(--cb-brass-rgb), .09); border: 1px solid rgba(var(--cb-brass-rgb), .30); box-shadow: inset 0 1px 0 rgba(255,255,255,.4); }
+.shop-balance-chip strong { font-size: 15px; color: var(--cb-brass-deep); }
+.shop-balance-chip__sub { font-weight: 600; color: var(--cb-mute); font-size: 11px; }
 .shop-wallet {
   border-top: 2px solid var(--cb-brass);
   border-bottom: 2px solid var(--cb-brass);
