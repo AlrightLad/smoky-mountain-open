@@ -51,7 +51,12 @@ Router.register("richlist", function() {
       var el = document.getElementById("rich-list-content");
       if (!el) return;
       if (!players.length) {
-        el.innerHTML = '<div style="padding:24px;text-align:center;font-size:12px;color:var(--muted)">No one has earned coins yet. Go play!</div>';
+        // v8.25.123 — branded "be the first" empty state (was bland grey text).
+        el.innerHTML = '<div class="lb-empty-hero">' +
+          '<div class="lb-empty-coin"><svg viewBox="0 0 48 48" width="46" height="46" fill="none" stroke="var(--cb-brass)" stroke-width="1.6"><circle cx="24" cy="24" r="19"/><path d="M24 12v24M18 18h9a4.5 4.5 0 010 9h-9"/></svg></div>' +
+          '<div class="lb-empty-title">The vault’s wide open.</div>' +
+          '<div class="lb-empty-sub">No one’s banked a ParCoin yet — log a round and your name lands at the top of the money list first.</div>' +
+          '<button class="lb-empty-cta" onclick="Router.go(\'activity\')">Play your first round →</button></div>';
         return;
       }
       // Deterministic ordering: lifetime desc, then name asc as a stable tie-breaker
@@ -72,16 +77,20 @@ Router.register("richlist", function() {
         if (val !== prevVal) { rank = i + 1; prevVal = val; }
         p._rank = rank;
       });
-      var rh = '';
-      players.forEach(function(p, i) {
-        rh += _renderRichRow(p, i);
-      });
+      // v8.25.123 — money list reborn as a real leaderboard: a celebratory PODIUM
+      // for the top 3 + a personal "your standing" band (rank + gap to climb) +
+      // the rest of the field as rows. Was a flat thin row list that read empty.
+      var myUid = currentUser ? currentUser.uid : null;
+      var rh = _renderMyStanding(players, myUid) + _renderPodium(players.slice(0, 3));
+      var rest = players.slice(3);
+      if (rest.length) {
+        rh += '<div class="section" style="margin-top:6px"><div class="sec-head"><span class="sec-title">The rest of the field</span></div>';
+        rest.forEach(function(p, i) { rh += _renderRichRow(p, i + 3); });
+        rh += '</div>';
+      }
       el.innerHTML = rh;
-      // v8.25.89 — the money list animates IN: rows cascade up + every lifetime
-      // total counts up from 0. Content loads async (after the router's post-nav
-      // count-up hook fires), so trigger both here. transform/opacity only;
-      // reduced-motion no-ops inside staggeredReveal.
-      if (window.staggeredReveal) window.staggeredReveal(el.querySelectorAll('.lb-card'), { gap: 60, duration: 380 });
+      // animate IN: podium columns + rows cascade, lifetime totals count up from 0.
+      if (window.staggeredReveal) window.staggeredReveal(el.querySelectorAll('.lb-podium__col,.lb-card'), { gap: 60, duration: 380 });
       if (window.initCountAnimations) window.initCountAnimations(el);
     }).catch(function() {
       var el = document.getElementById("rich-list-content");
@@ -130,6 +139,50 @@ function _renderRichRow(p, i) {
   h += '</div>';
   h += '</div>';
   return h;
+}
+
+// v8.25.123 — top-3 podium (center = leader, tallest). Avatars carry their rank
+// ring; lifetime totals count up. Gracefully handles 1-2 earners.
+function _renderPodium(top3) {
+  if (!top3.length) return '';
+  var cols = [top3[1], top3[0], top3[2]];   // 2nd · 1st · 3rd
+  var places = [2, 1, 3];
+  var h = '<div class="lb-podium">';
+  cols.forEach(function(p, idx) {
+    var pl = places[idx];
+    if (!p) { h += '<div class="lb-podium__col lb-podium__col--ghost lb-podium__col--p' + pl + '"><div class="lb-podium__pedestal">' + pl + '</div></div>'; return; }
+    var av = (typeof renderAvatar === 'function') ? renderAvatar(Object.assign({}, p, { id: p._id }), pl === 1 ? 66 : 54) : '';
+    h += '<div class="lb-podium__col lb-podium__col--p' + pl + '">';
+    h += '<div class="lb-podium__crown">' + (pl === 1 ? '<svg viewBox="0 0 24 24" width="18" height="18" fill="var(--cb-brass)" aria-hidden="true"><path d="M3 8l4 4 5-7 5 7 4-4-2 11H5z"/></svg>' : '') + '</div>';
+    h += '<div class="lb-podium__av">' + av + '</div>';
+    h += '<div class="lb-podium__name">' + escHtml(p._displayName) + '</div>';
+    h += '<div class="lb-podium__val" data-count="' + (p.parcoinsLifetime || 0) + '">0</div>';
+    h += '<div class="lb-podium__lbl">' + _richCoinSvg + ' lifetime</div>';
+    h += '<div class="lb-podium__pedestal">' + pl + '</div>';
+    h += '</div>';
+  });
+  h += '</div>';
+  return h;
+}
+
+// v8.25.123 — personal "your standing" band: always shows the viewer where they
+// rank + the gap to climb, so the page is personally relevant even when sparse.
+function _renderMyStanding(players, uid) {
+  if (!uid) return '';
+  var me = null, idx = -1;
+  players.forEach(function(p, i) { if (p._id === uid) { me = p; idx = i; } });
+  var life = (typeof getParCoinLifetime === 'function') ? getParCoinLifetime(uid) : 0;
+  if (!me) {
+    return '<div class="lb-standing lb-standing--off"><div class="lb-standing__l"><div class="lb-standing__eyebrow">Your standing</div>' +
+      '<div class="lb-standing__line">Not on the board yet</div></div>' +
+      '<div class="lb-standing__hint">' + life.toLocaleString() + ' lifetime · bank coins to climb</div></div>';
+  }
+  var above = idx > 0 ? players[idx - 1] : null;
+  var gap = above ? ((above.parcoinsLifetime || 0) - (me.parcoinsLifetime || 0)) : 0;
+  var hint = above ? (gap.toLocaleString() + ' behind ' + escHtml(above._displayName)) : 'You lead the money list';
+  return '<div class="lb-standing"><div class="lb-standing__l"><div class="lb-standing__eyebrow">Your standing</div>' +
+    '<div class="lb-standing__line">#' + me._rank + ' · ' + (me.parcoinsLifetime || 0).toLocaleString() + ' lifetime</div></div>' +
+    '<div class="lb-standing__hint">' + hint + '</div></div>';
 }
 
 function _renderPowerUp(name, cost, desc, key) {

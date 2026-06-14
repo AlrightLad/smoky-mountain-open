@@ -5327,3 +5327,30 @@ img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width:
 .ring-founders-crest::after{content:"";position:absolute;inset:-5px;border-radius:50%;pointer-events:none;
   background:conic-gradient(from 0deg,transparent 0 80%,rgba(255,255,255,.78) 88%,transparent 95%);animation:claretSweep 5s linear infinite}
 @media (prefers-reduced-motion: reduce){.ring-founders-crest::after{animation:none}}
+
+/* ═══ RICH LIST: podium + your-standing + empty hero (v8.25.123) ═══
+   The "money list" reborn as a real leaderboard — celebratory top-3 podium,
+   a personal standing band, and a branded empty state (was a thin flat row
+   list that read empty for small/new leagues). Tokens only → themes everywhere. */
+.lb-standing{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 16px 14px;padding:11px 16px;border-radius:var(--r-3);background:linear-gradient(180deg,rgba(var(--cb-brass-rgb),.10),rgba(var(--cb-brass-rgb),.03));border:1px solid rgba(var(--cb-brass-rgb),.28)}
+.lb-standing__eyebrow{font-family:var(--font-mono);font-size:8.5px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase;color:var(--cb-brass-deep)}
+.lb-standing__line{font-family:var(--font-display);font-weight:700;font-size:16px;color:var(--cb-ink);margin-top:2px}
+.lb-standing__hint{font-family:var(--font-ui);font-size:11px;color:var(--cb-mute);text-align:right;flex-shrink:0;max-width:46%}
+.lb-podium{display:flex;align-items:flex-end;justify-content:center;gap:8px;padding:10px 16px 6px}
+.lb-podium__col{flex:1;max-width:130px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.lb-podium__crown{height:20px;display:flex;align-items:center}
+.lb-podium__av{position:relative}
+.lb-podium__name{font-family:var(--font-display);font-weight:600;font-size:12px;color:var(--cb-ink);margin-top:7px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-podium__val{font-family:var(--font-display);font-weight:800;font-size:17px;color:var(--cb-brass-deep);margin-top:1px}
+.lb-podium__lbl{display:flex;align-items:center;gap:3px;font-family:var(--font-mono);font-size:8px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:7px}
+.lb-podium__pedestal{width:100%;border-radius:var(--r-2) var(--r-2) 0 0;display:flex;align-items:flex-start;justify-content:center;padding-top:6px;font-family:var(--font-display);font-weight:800;font-size:15px;color:var(--cb-chalk);box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
+.lb-podium__col--p1 .lb-podium__pedestal{height:56px;background:linear-gradient(180deg,var(--cb-brass),var(--cb-brass-deep))}
+.lb-podium__col--p2 .lb-podium__pedestal{height:40px;background:linear-gradient(180deg,#cdc9c1,#9aa0a8)}
+.lb-podium__col--p3 .lb-podium__pedestal{height:30px;background:linear-gradient(180deg,#c79152,#8a5a2b)}
+.lb-podium__col--ghost{opacity:.32}
+.lb-podium__col--ghost .lb-podium__pedestal{color:var(--cb-mute);box-shadow:none}
+.lb-empty-hero{margin:12px 16px;padding:32px 22px;text-align:center;border-radius:var(--r-4);background:linear-gradient(180deg,var(--cb-paper),var(--cb-chalk-2));border:1px solid rgba(var(--cb-brass-rgb),.22);box-shadow:var(--shadow-sm)}
+.lb-empty-coin{margin-bottom:10px}
+.lb-empty-title{font-family:var(--font-display);font-style:italic;font-weight:700;font-size:21px;color:var(--cb-ink)}
+.lb-empty-sub{font-family:var(--font-ui);font-size:13px;color:var(--cb-mute);line-height:1.5;margin:8px auto 0;max-width:340px}
+.lb-empty-cta{margin-top:16px;font-family:var(--font-display);font-weight:700;font-size:14px;padding:10px 22px;border-radius:var(--r-2);border:none;cursor:pointer;background:linear-gradient(180deg,var(--cb-brass),var(--cb-brass-deep));color:var(--cb-chalk);box-shadow:0 6px 16px rgba(var(--cb-brass-rgb),.32)}
