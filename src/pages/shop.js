@@ -318,6 +318,7 @@ Router.register("shop", function() {
       case 'pc31_halved':      p = '<path d="M7 3v18M17 3v18"/><path d="M7 5l5 1.5L7 8M17 9l-5 1.5 5 1.5"/>'; break; // two crossed flagsticks
       case 'pc32_sandy':       p = '<circle cx="12" cy="9" r="3"/><path d="M4 16c2-2 4 1 6-1s4 1 6-1 3 1 4 0"/><path d="M9 5l-1-2M15 5l1-2M6 8L4 7M18 8l2-1"/>'; break; // ball + sand splash
       case 'pc33_snowman':     p = '<circle cx="12" cy="8" r="3.2"/><circle cx="12" cy="15.5" r="4.3"/>'; break; // the honest 8
+      case 'pc50_eagle_soar':  p = '<path d="M3 13c3-2.5 6-2 9 .5 3-2.5 6-3 9-.5"/><path d="M12 13.5V10"/><path d="M10.6 8.2L12 6l1.4 2.2"/>'; break; // eagle bursting off the card
       default:                 p = '<circle cx="12" cy="12" r="3"/><path d="M12 4v3M12 17v3M4 12h3M17 12h3"/>';
     }
     return '<svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">' + p + '</svg>';

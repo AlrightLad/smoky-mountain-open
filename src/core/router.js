@@ -390,7 +390,11 @@ function getPlayerCardClass(p) {
     'pc10_major_sunday': 'card-skin-major-sunday',
     'pc28_the_sleeve': 'card-skin-sleeve',
     'pc41_trophy_room': 'card-skin-trophy-room',
-    'pc45_ledger': 'card-skin-ledger'
+    'pc45_ledger': 'card-skin-ledger',
+    // v8.25.114 — pc55 (900c) had NO worn class + no mapping, so equipping the
+    // pairing sheet rendered NOTHING (dead purchase, P9 no-op). Worn class
+    // .card-skin-pairing-sheet authored in components.css; wire it.
+    'pc55_pairing_sheet': 'card-skin-pairing-sheet'
   };
   return m[p.equippedCosmetics.card] || '';
 }
@@ -449,6 +453,11 @@ function pbNameplateClass(p) {
   if (n === 'pc29_stimp_13') return 'plate-stimp';
   if (n === 'pc46_clubhouse_crest') return 'plate-clubhouse-crest'; // v8.25.49 Founder-batch
   if (n === 'pc51_chalk_board') return 'plate-chalk-board';
+  // v8.25.114 — pc54 (1400c) previewed via the shop map but was ABSENT here, so
+  // equipping the calfskin tag rendered NOTHING on the name (dead purchase, P9
+  // no-op — same bug class fixed for pc29). The .plate-calfskin-tag worn class
+  // already exists (components.css). Wire it.
+  if (n === 'pc54_calfskin_tag') return 'plate-calfskin-tag';
   return '';
 }
 // v8.24.68 — unified, golf-oriented marker art. ONE source of truth for both
@@ -536,6 +545,25 @@ function pbMarkerGlyph(id, px) {
         + '<path d="M8 8.5l1.5 1M15 9l-1.3 1.2M9 15l1.2-1M15.5 14.5l-1.4-1" stroke="#8a9099" stroke-width=".7" opacity=".6"/>'
         + '<circle cx="12" cy="12" r="2" fill="#1f5fa0"/><circle cx="11.3" cy="11.3" r=".7" fill="#bcd6f2"/>'
         + '<defs><radialGradient id="stg' + px + '" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#f4f6f8"/><stop offset="55%" stop-color="#dfe2e6"/><stop offset="100%" stop-color="#a9aeb5"/></radialGradient></defs>';
+      break;
+    // v8.25.114 — pc47 + pc49 were sold LIVE but had NO glyph case, so they fell
+    // to default:'' and rendered NOTHING when worn (dead purchase, P9 no-op —
+    // same bug class fixed for pc08/pc29/pc36). Authored at the pc56 material bar.
+    case 'pc47_quartered_leather': // scrap of saddle leather, quartered, on a brass ring
+      s = '<circle cx="12" cy="12" r="9.4" fill="#b4893e"/>'
+        + '<circle cx="12" cy="12" r="9.4" fill="none" stroke="#8a6526" stroke-width="1"/>'
+        + '<path d="M5.2 9a9.4 9.4 0 0113.6 0" stroke="#e2bd78" stroke-width="1" opacity=".5" fill="none"/>'
+        + '<rect x="6" y="6" width="12" height="12" rx="1.6" fill="#8a6f55"/>'
+        + '<rect x="6" y="6" width="12" height="12" rx="1.6" fill="none" stroke="#5f4a38" stroke-width=".9"/>'
+        + '<path d="M12 6.4v11.2M6.4 12h11.2" stroke="#4f3d2d" stroke-width=".7" stroke-dasharray="1 1.1" opacity=".75"/>'
+        + '<path d="M7.4 7.6a8 8 0 016.8-.3" stroke="#a98a6a" stroke-width=".7" opacity=".5" fill="none"/>';
+      break;
+    case 'pc49_wooden_peg': // hickory dowel snapped clean, single burn-mark
+      s = '<path d="M9.3 4.2h5.4l-.5 14.1c0 1.7-1 2.7-2.2 2.7s-2.2-1-2.2-2.7z" fill="#7a4a28"/>'
+        + '<path d="M9.3 4.2h5.4l-.06 1.5-5.28 0z" fill="#caa75c" opacity=".55"/>'
+        + '<path d="M10.6 7.5v10.2M12.6 7.5v10.6" stroke="#5a3418" stroke-width=".6" opacity=".5"/>'
+        + '<ellipse cx="12" cy="12.4" rx="1.7" ry="2.2" fill="#3a2412"/>'
+        + '<ellipse cx="12" cy="12.4" rx=".85" ry="1.15" fill="#1c1008"/>';
       break;
     default: return '';
   }

@@ -5142,6 +5142,13 @@ img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width:
 .ring-iron-blade::after{content:"";position:absolute;top:0;left:50%;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f6e7b6,#8a6a2e);box-shadow:0 -1px 1px rgba(0,0,0,.5);pointer-events:none}
 .feed-row.card-skin-ledger{border:1px solid #e8e4d8;border-left:4px solid #d4cec0;background:linear-gradient(180deg,#faf8f3,#f5f3ee);box-shadow:inset 0 1px 2px rgba(100,80,50,.06)}
 .feed-row.card-skin-ledger::after{content:"";position:absolute;left:10px;right:10px;top:16px;height:1px;background:#4a7cb8;opacity:.32;pointer-events:none}
+/* pc55 — tournament pairing sheet: cream stock, a green committee rule down the
+   spine, faint tee-time grid behind the score. v8.25.114 worn class (was a dead
+   purchase — no class, no mapping). */
+.feed-row.card-skin-pairing-sheet{border:1px solid #d8cfa8;border-left:4px solid #1f5135;
+  background:linear-gradient(0deg,rgba(244,238,214,.18),rgba(252,248,232,.2)),
+   repeating-linear-gradient(0deg,transparent 0 8px,rgba(31,81,53,.06) 8px 9px)}
+.feed-row.card-skin-pairing-sheet::before{content:"";position:absolute;left:4px;top:0;bottom:0;width:1px;background:rgba(31,81,53,.4);pointer-events:none}
 .plate-clubhouse-crest{padding:2px 12px;border-radius:3px;color:#3a2818 !important;position:relative;background:linear-gradient(165deg,#8a5a30,#6e4422 55%,#5a3418);text-shadow:0 1px 0 rgba(255,255,255,.15);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 -1px 0 rgba(0,0,0,.4),0 1px 2px rgba(0,0,0,.35)}
 .plate-chalk-board{padding:2px 10px;border-radius:2px;color:#f0e8d8 !important;background:#2a2a2a;font-family:var(--font-mono);letter-spacing:.8px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.15),0 1px 2px rgba(0,0,0,.6)}
 
