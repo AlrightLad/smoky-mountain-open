@@ -511,3 +511,7 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
 - [ ] Swing-animation page rework (#67, DO LAST among features) — Cuphead rubber-hose rebuild
 - [ ] Level-100 exclusive animated rubber-hose THEME (#75, end) — vastly different, on-page cartoons + animations; extensive critique loop
 - [ ] Final QA gauntlet (#74): E2E all pages + data flows -> pen test -> resolve every finding -> health check
+
+## NEW FOUNDER ITEMS (2026-06-14 16:03)
+- [ ] Shop as the retention ENGINE (#76): expand to PLENTY of items; some level-locked before purchase; varied unlock methods (level / achievement / season / play); unlocked items showcase on profile + in-play to signal tenure & golf dedication. The come-back-and-unlock loop.
+- [ ] Brand cohesiveness review + enhance (#77): unify rubber-hose (Cuphead) with Holderness & Bourne premium aesthetic app-wide; rubber-hose = youthful character layer rendered INSIDE H&B-grade presentation; tour clothing branded with logo + rubber-hose cartoons. Audit, enhance/change what's off. See memory project_brand_rubberhose_x_hb.
