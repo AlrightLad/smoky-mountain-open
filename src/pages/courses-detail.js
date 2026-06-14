@@ -17,9 +17,15 @@ function renderCourseDetail(courseId) {
   if (coursePhotoSrc && coursePhotoSrc !== COURSE_DEFAULT_IMG) {
     h += '<div id="course-photo-area" class="course-banner"><img alt="" src="' + coursePhotoSrc + '" onerror="this.parentElement.style.display=\'none\'"></div>';
   } else {
-    // No photo: branded per-course monogram hero (v8.23.53), same lane identity
-    // as the directory thumbnail (courseThumbLane/courseThumbInitials in courses.js).
-    h += '<div id="course-photo-area" class="c-thumb-ph--' + courseThumbLane(c.name) + '" style="height:110px;margin:0 16px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;overflow:hidden"><span class="course-hero-mono">' + escHtml(courseThumbInitials(c.name)) + '</span></div>';
+    // No member photo yet — a warm rubber-hose golf-course illustration placeholder
+    // (Founder 2026-06-14, Cuphead register), with a small course monogram chip so
+    // it's still tied to THIS course. Replaced live by loadCoursePhotos() once a
+    // member uploads (single → banner, multiple → carousel).
+    var _ph = ((typeof window !== "undefined" && window.__PB_BASE__) ? window.__PB_BASE__ : "/") + "img/course-placeholder.jpg";
+    h += '<div id="course-photo-area" class="course-banner course-placeholder">';
+    h += '<img alt="Rubber-hose golf course illustration" src="' + _ph + '">';
+    h += '<span class="course-placeholder__chip c-thumb-ph--' + courseThumbLane(c.name) + '">' + escHtml(courseThumbInitials(c.name)) + '</span>';
+    h += '</div>';
   }
   h += '<div class="section"><div class="c-detail-info">' + c.loc + ' · Rating: ' + c.rating + ' · Slope: ' + c.slope + ' · Par: ' + c.par + '</div>';
   if (c.tee || c.yards) {

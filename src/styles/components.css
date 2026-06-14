@@ -104,7 +104,11 @@
    These early rules add only box-shadow, layered on via cascade. Property sets
    don't overlap — no override conflict like the v8.7.1 .rr-sidebar__footer case.
    Do not "fix" by consolidating — the duplication is the design. (v8.8.0 note) */
-.card{box-shadow:var(--shadow-sm)}
+/* #41 v8.25.141 — the shared legacy card (27 page files) gained a top inner
+   highlight so it reads as lifted pressed stock above the paper canvas, not a
+   flat rectangle (the critique's #1 "flat paper-on-paper" defect). Additive
+   shadow only — no layout/contrast change. */
+.card{box-shadow:inset 0 1px 0 rgba(255,255,255,.5), var(--shadow-sm)}
 .next-trip{box-shadow:var(--shadow-md)}
 .hcap-box{box-shadow:var(--shadow-md)}
 .hof-card{box-shadow:var(--shadow-sm)}
@@ -952,6 +956,12 @@ textarea.ff-input{min-height:60px;resize:vertical}
   box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 1px 2px rgba(28,24,14,.06), 0 5px 14px -8px rgba(28,24,14,.16)!important;overflow:hidden}
 .course-banner{height:160px;overflow:hidden;margin:0 16px;border-radius:var(--radius)}
 .course-banner img{width:100%;height:100%;object-fit:cover}
+/* #41 v8.25.141 — rubber-hose illustration placeholder until a member uploads a
+   real photo (Founder 2026-06-14), with a small course-monogram chip overlaid so
+   it still reads as THIS course. */
+.course-placeholder{position:relative;background:var(--cb-chalk-2)}
+.course-placeholder img{width:100%;height:100%;object-fit:cover}
+.course-placeholder__chip{position:absolute;left:12px;bottom:12px;display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 8px;border-radius:8px;font-family:var(--font-display);font-style:italic;font-weight:700;font-size:15px;letter-spacing:-.02em;color:var(--cb-chalk);text-transform:uppercase;box-shadow:0 2px 6px rgba(20,19,15,.35),inset 0 1px 0 rgba(255,255,255,.15)}
 .c-detail-info{font-size:var(--text-base);color:var(--muted);margin-bottom:8px}
 .review-head{font-size:var(--text-base);color:var(--gold)}
 .review-text{font-size:var(--text-base);color:var(--muted);margin-top:4px;line-height:1.4}

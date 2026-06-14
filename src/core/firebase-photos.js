@@ -86,7 +86,7 @@ function loadCoursePhotos(courseId) {
         ch += '</div>';
         ch += '<div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:5px">';
         photos.forEach(function(p, i) {
-          ch += '<div class="cc-dot" data-idx="' + i + '" style="width:7px;height:7px;border-radius:50%;background:' + (i===0?'var(--gold)':'rgba(255,255,255,.4)') + ';cursor:pointer" onclick="slideCourseCarousel(' + i + ',' + photos.length + ')"></div>';
+          ch += '<div class="cc-dot" data-idx="' + i + '" style="width:7px;height:7px;border-radius:50%;background:' + (i===0?'var(--cb-brass)':'rgba(255,255,255,.4)') + ';cursor:pointer" onclick="slideCourseCarousel(' + i + ',' + photos.length + ')"></div>';
         });
         ch += '</div></div>';
         el.outerHTML = ch;
@@ -100,7 +100,7 @@ function slideCourseCarousel(idx, total) {
   if (!track) return;
   track.style.transform = "translateX(-" + (idx * (100/total)) + "%)";
   var dots = document.querySelectorAll(".cc-dot");
-  dots.forEach(function(d) { d.style.background = parseInt(d.dataset.idx) === idx ? "var(--gold)" : "rgba(255,255,255,.4)"; });
+  dots.forEach(function(d) { d.style.background = parseInt(d.dataset.idx) === idx ? "var(--cb-brass)" : "rgba(255,255,255,.4)"; });
 }
 
 // Preload member photos for avatar display
