@@ -12,11 +12,7 @@ Router.register("activity", function() {
   // page opened as "Range" with NO path to start a round — the new member's #1
   // taught task dead-ended. The page is now the Play hub: start-a-round CTA
   // first (live round indicator when one is running), Range below it.
-  var h = '<div class="sh"><h2>Play</h2>';
-  // v8.24.61 — demoted to a ghost button so the felt-green "Start a round"
-  // card is the single, unambiguous primary action (was two competing primaries).
-  h += '<button class="btn-sm outline" onclick="startRangeSession()">Hit the Range</button>';
-  h += '</div>';
+  var h = '<div class="sh"><h2>Play</h2></div>';
   var _live = (typeof liveState !== "undefined" && liveState && liveState.active);
   h += '<div style="padding:0 16px 12px">';
   if (_live) {
@@ -35,6 +31,25 @@ Router.register("activity", function() {
     h += '</div></div>';
   }
   h += '</div>';
+
+  // v8.25.112 — "ways to play" secondary set. "Start a round" stays THE primary
+  // (felt hero above); Scramble (was invisible on the Play hub — buried in More)
+  // and Hit the Range ride below it as clearly-subordinate cream cards. Surfaces
+  // the full play surface (P10) + gives the thin hub a real shape, without a
+  // second competing felt primary (the v8.24.61 intent).
+  var _waySvg = function (p) { return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="var(--cb-brass)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + p + '</svg>'; };
+  var _wayCard = function (route, onclick, icon, title, sub) {
+    var act = onclick ? ('onclick="' + onclick + '"') : ('onclick="Router.go(\'' + route + '\')" onkeydown="if(event.key===\'Enter\')Router.go(\'' + route + '\')"');
+    return '<button type="button" class="tappable" ' + act + ' style="text-align:left;background:var(--cb-paper);border:1px solid var(--cb-chalk-3);border-radius:var(--r-3);padding:13px 14px;cursor:pointer;box-shadow:var(--shadow-sm);font-family:inherit">' +
+      icon +
+      '<div style="font-family:var(--font-display);font-weight:700;font-size:14px;color:var(--cb-ink);margin-top:9px;line-height:1.15">' + title + '</div>' +
+      '<div style="font-family:var(--font-ui);font-size:11px;color:var(--cb-mute);margin-top:2px;line-height:1.3">' + sub + '</div></button>';
+  };
+  h += '<div style="padding:0 16px 14px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">';
+  h += _wayCard('scramble', null, _waySvg('<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>'), 'Scramble', 'Team play, best ball');
+  h += _wayCard(null, 'startRangeSession()', _waySvg('<path d="M6 22V3l10 2.6L6 8.2"/><circle cx="6" cy="22" r="1.3" fill="var(--cb-brass)"/>'), 'Hit the Range', 'Log a practice session');
+  h += '</div></div>';
+
   h += renderActivityRange();
   h += renderPageFooter();
   document.querySelector('[data-page="activity"]').innerHTML = h;
