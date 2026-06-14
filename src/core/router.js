@@ -161,14 +161,23 @@ var Router = (function() {
     } else if (player.stockAvatar) {
       imgSrc = player.stockAvatar;
     }
-    // (no else) — no photo on file falls through to the initial disc below.
+    // (no else) — no photo on file falls through to a DEFAULT avatar below.
     var nm = player.username || player.name || '?';
     var initial = nm.charAt(0).toUpperCase();
+    // Deterministic by uid (stable per member) so a default never changes between
+    // renders. Falls back to name when no id.
+    var hashKey = String(player.id || player.claimedFrom || nm);
     var hash = 0;
-    for (var i = 0; i < nm.length; i++) hash = ((hash << 5) - hash) + nm.charCodeAt(i);
+    for (var i = 0; i < hashKey.length; i++) hash = ((hash << 5) - hash) + hashKey.charCodeAt(i);
     var disc = AVATAR_DISCS[Math.abs(hash) % AVATAR_DISCS.length];
-    var discDiv = '<div style="display:' + (imgSrc ? 'none' : 'flex') + ';width:100%;height:100%;align-items:center;justify-content:center;color:var(--cb-chalk);font-weight:700;font-size:18px;background:' + disc + ';border-radius:inherit">' + initial + '</div>';
-    if (!imgSrc) return discDiv;
+    // v8.25.125 (Founder) — members without a custom photo get one of 4 unique
+    // rubber-hose character avatars instead of a letter initial. The initial disc
+    // is kept ONLY as the final onerror fallback if the default image fails.
+    if (!imgSrc) {
+      var _b = (typeof window !== "undefined" && window.__PB_BASE__) ? window.__PB_BASE__ : "/";
+      imgSrc = _b + "img/avatars/default-" + (Math.abs(hash) % 4 + 1) + ".jpg";
+    }
+    var discDiv = '<div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;color:var(--cb-chalk);font-weight:700;font-size:18px;background:' + disc + ';border-radius:inherit">' + initial + '</div>';
     return '<img alt="" src="' + imgSrc + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">' + discDiv;
   }
 
