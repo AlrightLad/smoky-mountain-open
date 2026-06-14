@@ -176,7 +176,7 @@
   // Beat 7 (LAST) — meet your caddy: explain WHAT it is, PREVIEW each voice on
   // tap (not select-and-jump), confirm with "Start playing". Defaults to The Caddy.
   function _beatPickCaddie() {
-    var roster = window.pbCaddies || [{ id: "caddy", name: "The Caddy" }];
+    var roster = window.pbCaddies || [{ id: "caddy", name: "Murphy" }];
     // 2×2 grid — four voices now (The Caddy / Old Tom / Birdie free, Bag Room
     // Guy earned). A 1×4 row crowded the longer names on a phone-width card.
     var thumbs = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">';

@@ -26,7 +26,12 @@
   // character portrait (Cuphead register, Founder) rendered in the Settings
   // picker + Pro Shop card instead of a letter chip. public/img/avatars/caddy-*.jpg.
   var CADDIES = [
-    { id: "caddy",   name: "The Caddy",     cap: "ball",      accent: "var(--cb-brass)",      locked: false, img: "img/avatars/caddy-caddy.jpg",   blurb: "Steady and calm. Reads the moment, speaks only when it helps." },
+    // v8.25.131 (Founder) — the default persona was generically "The Caddy" while
+    // the others are people; named him MURPHY to match. (id stays "caddy" so all
+    // voice lookups + the saved default keep working; "The Caddy" remains the
+    // league's automated dispatcher/bot identity — PB_CADDY — separate from the
+    // personal guide persona you pick.)
+    { id: "caddy",   name: "Murphy",        cap: "ball",      accent: "var(--cb-brass)",      locked: false, img: "img/avatars/caddy-caddy.jpg",   blurb: "Steady and calm. Reads the moment, speaks only when it helps." },
     { id: "oldtom",  name: "Old Tom",       cap: "flat",      accent: "var(--cb-brass-deep)", locked: false, tell: "pipe", img: "img/avatars/caddy-oldtom.jpg", blurb: "An old links hand. Economical with words, long on wisdom." },
     // v8.25.6 — fourth voice (Founder: "make 4 caddies, all different
     // personalities"). Birdie is the hype friend: all encouragement, big
