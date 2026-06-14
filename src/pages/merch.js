@@ -21,10 +21,10 @@ Router.register("merch", function () {
   // the P+rose mark composited at each embroidery spot; the leisure tee carries
   // a Cuphead-style cartoon print. Brand palette, deliberate colourway variation.
   var LINE = [
-    { img: "hoodie.jpg",      name: "The Clubhouse Hoodie",  note: "Heavyweight black brushed fleece" },
-    { img: "quarterzip.jpg",  name: "The Fairway Quarter-Zip", note: "Athletic four-way stretch · brass pull" },
-    { img: "polo.jpg",        name: "The Tour Pro Shirt",    note: "Breathable tour piqué · felt-green collar" },
-    { img: "tee.jpg",         name: "The Leisure Tee",       note: "Soft cotton · vintage cartoon print" },
+    { img: "hoodie.png",      name: "The Clubhouse Hoodie",  note: "Heavyweight black brushed fleece" },
+    { img: "quarterzip.png",  name: "The Fairway Quarter-Zip", note: "Athletic four-way stretch · brass pull" },
+    { img: "polo.png",        name: "The Tour Pro Shirt",    note: "Breathable tour piqué · felt-green collar" },
+    { img: "tee.png",         name: "The Leisure Tee",       note: "Soft cotton · vintage cartoon print" },
     { img: "headcovers.jpg",  name: "The Leather Headcovers", note: "Tooled leather · driver, woods, mallet & blade" },
     { img: "yardagebook.jpg", name: "The Yardage Book",      note: "Forest-green leather · brass ribbon" },
     { img: "balls.png",       name: "Parbaughs Golf Balls",  note: "Tour white · sleeve of three" },
