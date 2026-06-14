@@ -1484,8 +1484,11 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 .tr-marquee{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;padding:0 var(--tr-gutter)}
 /* Trophy cells share one geometry with .ach-card: chalk face, soft brass
    hairline, --radius-lg, el-1 (full-brass border retired as too loud). */
-.tr-cell{text-align:center;padding:16px 12px;background:var(--cb-chalk);border:1px solid rgba(var(--cb-brass-rgb),.35);border-radius:var(--radius-lg);box-shadow:var(--el-1)}
-.tr-cell__emblem{display:flex;align-items:center;justify-content:center;width:46px;height:46px;margin:0 auto 10px;border-radius:50%;color:var(--cb-brass);background:radial-gradient(circle at 50% 30%,rgba(var(--cb-brass-rgb),.20),rgba(var(--cb-brass-rgb),.06));border:1px solid rgba(var(--cb-brass-rgb),.5)}
+/* #41 v8.25.147 — recently-earned trophies were flat chalk cards with a tinted
+   disc. Now lifted paper-stock cards + STRUCK-BRASS medallion emblems (warm
+   metallic gradient + top highlight + inset + drop shadow, dark-ink glyph). */
+.tr-cell{text-align:center;padding:16px 12px;background:var(--cb-paper);border:1px solid rgba(20,19,15,.10);border-radius:var(--radius-lg);box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 1px 2px rgba(28,24,14,.06), 0 5px 14px -8px rgba(28,24,14,.16)}
+.tr-cell__emblem{display:flex;align-items:center;justify-content:center;width:46px;height:46px;margin:0 auto 10px;border-radius:50%;color:#4a3410;background:radial-gradient(circle at 38% 28%,#f2dca6,#caa75c 52%,#8c6a2e 92%);border:1px solid #8a6526;box-shadow:inset 0 1px 1px rgba(255,247,222,.65),inset 0 -2px 3px rgba(0,0,0,.32),0 2px 5px -1px rgba(0,0,0,.4)}
 .tr-cell__emblem svg{width:20px;height:20px}
 .tr-cell__name{font-family:var(--font-display);font-style:italic;font-weight:700;font-size:15px;color:var(--cb-ink);line-height:1.15}
 .tr-cell__meta{font-family:var(--font-mono);font-size:9.5px;letter-spacing:.8px;text-transform:uppercase;color:var(--cb-moss);margin-top:6px}
