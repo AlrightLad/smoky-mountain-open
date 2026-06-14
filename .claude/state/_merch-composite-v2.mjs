@@ -5,7 +5,7 @@ import { readFileSync, writeFileSync } from 'fs';
 
 const club = readFileSync('public/img/logo/themes/app/clubhouse.png').toString('base64');     // green-on-transparent (light grounds)
 const knock = readFileSync('public/img/logo/themes/app/knockout.png').toString('base64');     // cream/brass (dark/green grounds)
-const cuphead = readFileSync('public/img/gen/cuphead-golfer-rh1.png').toString('base64'); // authentic rubber-hose
+const cuphead = readFileSync('public/img/gen/cuphead-golfer-rh2.png').toString('base64'); // authentic rubber-hose (Founder picked rh2 — dynamic swing pose)
 
 // per item: src, out, logo variant, center (frac), width (frac of out), or cuphead overlay
 const ITEMS = [
