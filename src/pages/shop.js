@@ -190,7 +190,14 @@ var PRO_SHOP_CATALOG = [
 // Legacy items kept ON SALE in the Paint Locker (the best ~15); every other
 // legacy item is retired from sale. Owned items are grandfathered forever —
 // ownership and equip are untouched by retirement.
-var PAINT_LOCKER_KEEP = ["border_pulse_gold","border_shimmer","border_rainbow_shift","border_neon_green","border_crimson_ember","banner_classic","banner_camo_pair","banner_masters_pair","banner_azalea_pair","banner_usga_pair","banner_dark_pair","banner_light_pair","banner_champ_pair","card_gold_foil","card_vintage"];
+// v8.25.121 — Founder shop revamp ("a lot of designs can go, off-brand"): the
+// garish RGB/neon light-effect rings (rainbow_shift, neon_green, crimson_ember,
+// rainbow) read as Discord/gamer and clash with the cream/felt/brass/claret H&B
+// aesthetic — RETIRED from the sale floor (owned copies grandfathered: their
+// .ring-* classes + playerRingClass mappings remain so they still equip/render).
+// Kept + re-skinned to MATERIAL: pulse_gold → brushed brass + slow gleam;
+// shimmer (ice-diamond) stays (on-brand cool sparkle, not neon).
+var PAINT_LOCKER_KEEP = ["border_pulse_gold","border_shimmer","banner_classic","banner_camo_pair","banner_masters_pair","banner_azalea_pair","banner_usga_pair","banner_dark_pair","banner_light_pair","banner_champ_pair","card_gold_foil","card_vintage"];
 var PRO_SHOP_TIERS = {
   range:   {label:"Range Bucket"},
   proshop: {label:"Pro Shop"},

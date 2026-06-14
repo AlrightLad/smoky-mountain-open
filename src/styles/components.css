@@ -2882,7 +2882,15 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 @keyframes nameGlowPulse{0%,100%{text-shadow:0 0 8px currentColor,0 0 2px currentColor}50%{text-shadow:0 0 18px currentColor,0 0 32px currentColor,0 0 4px currentColor}}
 
 /* ── RING CLASSES ── */
-.ring-pulse-gold{animation:ringPulse 2s ease-in-out infinite}
+/* v8.25.121 — re-skinned from a garish pulsing box-shadow glow to a brushed-brass
+   billet with a slow gleam sweep (on-brand material, tasteful motion). */
+.ring-pulse-gold{border:3px solid transparent!important;position:relative;background:
+  radial-gradient(circle at 50% 50%,transparent 69%,transparent 69%) padding-box,
+  linear-gradient(118deg,#8c6a2e 4%,#f0dca6 16%,#caa75c 36%,#b4893e 54%,#f0dca6 76%,#8c6a2e 96%) border-box;
+  box-shadow:inset 0 0 6px rgba(120,90,30,.4),0 3px 9px -4px rgba(0,0,0,.55)}
+.ring-pulse-gold::after{content:"";position:absolute;inset:-3px;border-radius:50%;pointer-events:none;
+  background:conic-gradient(from 0deg,transparent 0 82%,rgba(255,255,255,.7) 89%,transparent 95%);animation:claretSweep 5.5s linear infinite}
+@media (prefers-reduced-motion:reduce){.ring-pulse-gold::after{animation:none}}
 .ring-diamond-sparkle{animation:ringShimmer 2s linear infinite}
 .ring-rainbow-shift{animation:ringRainbow 3s linear infinite}
 .ring-neon-green{animation:ringNeonGreen 1.8s ease-in-out infinite}
@@ -5165,11 +5173,12 @@ img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width:
   box-shadow:0 0 0 1px rgba(0,0,0,.35),inset 0 0 8px rgba(0,0,0,.45),0 4px 10px -4px rgba(0,0,0,.6)}
 .ring-crest-pin::before{content:"";position:absolute;inset:11%;border-radius:50%;
   background:conic-gradient(from -40deg,transparent 0 18%,rgba(255,255,255,.45) 24% 30%,transparent 38%);pointer-events:none}
-.ring-crest-pin::after{content:"";position:absolute;left:50%;top:50%;width:46%;height:46%;transform:translate(-50%,-50%);pointer-events:none;
-  background:
-    linear-gradient(48deg,transparent 44%,#e2bd78 46% 54%,transparent 56%),
-    linear-gradient(-48deg,transparent 44%,#e2bd78 46% 54%,transparent 56%);
-  filter:drop-shadow(0 1px 0 rgba(0,0,0,.5))}
+/* v8.25.121 — the diagonal-X stand-in read as an abstract X, not the brand mark.
+   Now the real rose-and-P crest device (cream P + brass rose, reads on the green
+   enamel field) struck into the pin centre. */
+.ring-crest-pin::after{content:"";position:absolute;left:50%;top:50%;width:54%;height:54%;transform:translate(-50%,-50%);pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2040%2040%22%3E%3Ctext%20x%3D%2218.5%22%20y%3D%2230%22%20font-family%3D%22Georgia%2CTimes%20New%20Roman%2Cserif%22%20font-size%3D%2230%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22%23f4efe4%22%3EP%3C%2Ftext%3E%3Cellipse%20cx%3D%2226%22%20cy%3D%2213.5%22%20rx%3D%224.6%22%20ry%3D%225.4%22%20fill%3D%22%23e7c77e%22%20stroke%3D%22%23caa75c%22%20stroke-width%3D%221.1%22%2F%3E%3Cpath%20d%3D%22M24%2019l2%203%202-3%22%20fill%3D%22%23cde0cf%22%2F%3E%3C%2Fsvg%3E") center/contain no-repeat;
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,.5))}
 /* pc53 — championship medallion: 7-stop struck brass, laurel-dot rim, gleam sweep */
 .ring-medallion{border:5px solid transparent!important;position:relative;background:
   radial-gradient(circle at 38% 32%,#f2dca6,#caa75c 46%,#8c6a2e 86%) padding-box,
