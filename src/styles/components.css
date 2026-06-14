@@ -5738,6 +5738,12 @@ img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width:
 /* — shop: felt balance focal-peak (TUNED compact so the goods still lead the
    fold — the balance was deliberately slimmed in a prior pass; this keeps it a
    material focal moment, not a dominating wallet card) + brass-rail ledger — */
+/* #76 pro-shop atmosphere banner — slim decorative strip under the masthead;
+   constrained height so the goods still lead. pressed-card framing + a soft
+   bottom fade so it sits as material, not a raw image. */
+.shop-hero-banner{height:120px;margin:4px 0 16px;border-radius:var(--r-3);overflow:hidden;position:relative;border:1px solid rgba(20,19,15,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 6px 18px -8px rgba(28,24,14,.20)}
+.shop-hero-banner img{width:100%;height:100%;object-fit:cover;object-position:center 42%;display:block}
+.shop-hero-banner::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(180deg,transparent 60%,rgba(20,19,15,.14))}
 .shop-balance-hero{margin:6px 0 18px;padding:14px 20px 15px;text-align:left}
 .shop-balance-hero__eyebrow{display:flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass-3)}
 .shop-balance-hero__eyebrow svg{color:var(--cb-brass-3);flex-shrink:0}

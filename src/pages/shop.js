@@ -269,6 +269,12 @@ Router.register("shop", function() {
   h += '<h1 class="roster-headline">Spend it like you earned it.</h1>';
   h += '</div>';
 
+  // #76 — pro-shop atmosphere banner (Vertex Imagen, rubber-hose × H&B country-club
+  // scene: walnut shelving, brass trophies, caps, headcovers, felt runner). Slim
+  // decorative strip (the goods still lead just below). JS-computed URL handles the
+  // GitHub-Pages base path. Generated asset — easy to swap on Founder taste call.
+  h += '<div class="shop-hero-banner"><img src="' + (new URL("img/gen/shop-hero.png", document.baseURI)).href + '" alt="The Parbaughs pro shop" loading="lazy"></div>';
+
   // 3m.A Wallet — compact balance CHIP (#41 v8.25.156, critic #10: the shop read
   // as a wallet, not a store, because a tall balance card dominated above the
   // fold. Slimmed to a one-line brass ledger chip so the goods lead sooner.)
