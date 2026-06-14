@@ -273,7 +273,7 @@ Router.register("shop", function() {
   // scene: walnut shelving, brass trophies, caps, headcovers, felt runner). Slim
   // decorative strip (the goods still lead just below). JS-computed URL handles the
   // GitHub-Pages base path. Generated asset — easy to swap on Founder taste call.
-  h += '<div class="shop-hero-banner"><img src="' + (new URL("img/gen/shop-hero.png", document.baseURI)).href + '" alt="The Parbaughs pro shop" loading="lazy"></div>';
+  h += '<div class="shop-hero-banner"><img src="' + (new URL("img/shop/hero.png", document.baseURI)).href + '" alt="The Parbaughs pro shop" loading="lazy" onerror="this.closest(\'.shop-hero-banner\').style.display=\'none\'"></div>';
 
   // 3m.A Wallet — compact balance CHIP (#41 v8.25.156, critic #10: the shop read
   // as a wallet, not a store, because a tall balance card dominated above the
