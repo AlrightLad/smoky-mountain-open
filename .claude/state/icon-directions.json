@@ -1,0 +1,8 @@
+[
+ {"id":"green-cream","name":"Green on Cream (approved colorway)","ground":"radial:#FCFAF5->#EDE4CF","markColorway":"green","markCrop":"full","faviconCrop":"full","ring":"none","rationale":"His exact approved colorway on warm cream — dark green mark = max contrast, clean at small size","score":9.0},
+ {"id":"green-white","name":"Green on White (crispest)","ground":"radial:#FFFFFF->#F1ECE0","markColorway":"green","markCrop":"full","faviconCrop":"full","ring":"none","rationale":"Brightest ground, sharpest favicon contrast","score":8.8},
+ {"id":"green-cream-ring","name":"Green on Cream + brass ring","ground":"radial:#FCFAF5->#E8DEC6","markColorway":"green","markCrop":"full","faviconCrop":"full","ring":"brass","rationale":"Editorial coaster framing, brass hairline","score":8.7},
+ {"id":"green-cream-pbud","name":"Green on Cream, favicon drops stem tail","ground":"radial:#FCFAF5->#EDE4CF","markColorway":"green","markCrop":"full","faviconCrop":"p-bud","ring":"none","rationale":"App icon full mark; favicon trims the thin tail for legibility","score":8.6},
+ {"id":"brass-green","name":"Green mark on soft brass","ground":"radial:#E7C77E->#C9A24A","markColorway":"green","markCrop":"full","faviconCrop":"full","ring":"none","rationale":"Warm gold ground, heritage medallion feel","score":8.0},
+ {"id":"felt-current","name":"Felt-green knockout (current — rejected)","ground":"radial:#1A4B37->#0C2A1F","markColorway":"knockout","markCrop":"full","faviconCrop":"full","ring":"brass","rationale":"Current shipped — Founder rejected colorway + not clean at 32","score":5.0}
+]
