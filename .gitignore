@@ -244,3 +244,7 @@ docs/reports/sessions.html
 
 # Lottie download scratch (swing-figure exploration)
 .claude/state/lottie-dl/
+
+# Raw AI-gen image scratch (heavy PNGs; optimized JPGs in public/img/merch committed)
+public/img/gen/
+.claude/state/gen/

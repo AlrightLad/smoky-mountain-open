@@ -1,26 +1,64 @@
-/* ================================================
-   PAGE: MERCH — "coming soon" illustrated retail poster
-   ================================================
-   v8.25.90 (Founder 2026-06-13): the prior clubhouse-scene SVG poster "isn't
-   doing it justice." Replaced with a richer, merch-SPECIFIC flat-vector
-   illustrated poster (subagent-authored): a warm pro-shop peg wall with caps +
-   headcovers, a struck-brass "COMING SOON" plate, the PARBAUGHS MERCH header, a
-   claret pennant, and a York-PA maker's ribbon — premium retail-poster quality,
-   cohesive with the app's fully-illustrated brand (the chosen direction). Pure
-   inline SVG, self-contained gradients (mrch* ids), no external asset/filter.
-   ================================================ */
-Router.register("merch", function() {
-  // Editorial masthead (matches Rounds/Standings/Members/Rich-list), replacing
-  // the legacy .sh/<h2> header.
-  var h = '<div class="roster-masthead"><button class="back" onclick="Router.back(\'home\')" style="margin-bottom:12px">← Back</button>';
-  h += '<div class="roster-eyebrow">THE PRO SHOP</div>';
-  h += '<h1 class="roster-headline">Merch.</h1></div>';
+/* ═══════════════════════════════════════════════════════════════════════════
+   PAGE: MERCH — "the pro shop" premium product preview (coming soon)
 
-  h += '<div class="merch-poster">';
-  h += `<svg viewBox="0 0 400 560" width="100%" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Parbaughs merch — coming soon" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="mrchSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c2f3e"/><stop offset="0.42" stop-color="#3a4a4a"/><stop offset="0.7" stop-color="#7a6a48"/><stop offset="1" stop-color="#caa45e"/></linearGradient><linearGradient id="mrchWall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#33503a"/><stop offset="1" stop-color="#284032"/></linearGradient><linearGradient id="mrchShelf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a6a3c"/><stop offset="0.5" stop-color="#6f5230"/><stop offset="1" stop-color="#5a4226"/></linearGradient><linearGradient id="mrchPlate" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e7cd83"/><stop offset="0.45" stop-color="#cda84e"/><stop offset="0.55" stop-color="#b6913c"/><stop offset="1" stop-color="#9a7a30"/></linearGradient><linearGradient id="mrchPlateIn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a3a2e"/><stop offset="1" stop-color="#17251c"/></linearGradient><linearGradient id="mrchCard" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f1ebde"/><stop offset="1" stop-color="#e6ddc9"/></linearGradient><linearGradient id="mrchCap1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9533a"/><stop offset="1" stop-color="#a23c27"/></linearGradient><linearGradient id="mrchCap2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f6b6a"/><stop offset="1" stop-color="#2c4d4d"/></linearGradient><linearGradient id="mrchHC1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f3ecdf"/><stop offset="1" stop-color="#e2d8c3"/></linearGradient><linearGradient id="mrchHC2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#436c46"/><stop offset="1" stop-color="#2f4f33"/></linearGradient><linearGradient id="mrchRibbon" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8543b"/><stop offset="1" stop-color="#9d3b27"/></linearGradient><radialGradient id="mrchGlow" cx="0.5" cy="0.34" r="0.62"><stop offset="0" stop-color="#f4d98c" stop-opacity="0.5"/><stop offset="1" stop-color="#f4d98c" stop-opacity="0"/></radialGradient><linearGradient id="mrchFloor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#caa45e"/><stop offset="1" stop-color="#8f6e3c"/></linearGradient></defs><rect width="400" height="560" fill="#15232e"/><rect x="14" y="14" width="372" height="532" rx="10" fill="url(#mrchSky)"/><rect x="14" y="14" width="372" height="532" rx="10" fill="url(#mrchGlow)"/><g><rect x="22" y="60" width="356" height="356" rx="4" fill="url(#mrchWall)"/><g stroke="#244031" stroke-width="2" opacity="0.55"><line x1="62" y1="60" x2="62" y2="416"/><line x1="118" y1="60" x2="118" y2="416"/><line x1="174" y1="60" x2="174" y2="416"/><line x1="230" y1="60" x2="230" y2="416"/><line x1="286" y1="60" x2="286" y2="416"/><line x1="342" y1="60" x2="342" y2="416"/></g><rect x="22" y="60" width="356" height="60" fill="#000000" opacity="0.16"/></g><g><rect x="44" y="92" width="62" height="56" rx="3" fill="url(#mrchPlateIn)" opacity="0.45"/><path d="M48 132 q27 -34 54 0 v8 h-54 z" fill="url(#mrchCap2)"/><path d="M48 132 q27 -34 54 0 q-27 -10 -54 0 z" fill="#ffffff" opacity="0.1"/><path d="M48 140 q-9 -3 -18 4 q14 -2 18 2 z" fill="#23413f"/><circle cx="75" cy="118" r="2.5" fill="#c9a84c"/></g><g><rect x="118" y="92" width="62" height="56" rx="3" fill="url(#mrchPlateIn)" opacity="0.45"/><path d="M122 132 q27 -34 54 0 v8 h-54 z" fill="url(#mrchCap1)"/><path d="M122 132 q27 -34 54 0 q-27 -10 -54 0 z" fill="#ffffff" opacity="0.12"/><path d="M122 140 q-9 -3 -18 4 q14 -2 18 2 z" fill="#8d3220"/><circle cx="149" cy="118" r="2.5" fill="#efe9dc"/></g><g><rect x="294" y="92" width="62" height="56" rx="3" fill="url(#mrchPlateIn)" opacity="0.45"/><path d="M298 132 q27 -34 54 0 v8 h-54 z" fill="url(#mrchHC2)"/><path d="M298 132 q27 -34 54 0 q-27 -10 -54 0 z" fill="#ffffff" opacity="0.1"/><path d="M298 140 q-9 -3 -18 4 q14 -2 18 2 z" fill="#23413f"/><circle cx="325" cy="118" r="2.5" fill="#c9a84c"/></g><g><rect x="232" y="84" width="50" height="66" rx="22" fill="url(#mrchHC1)"/><rect x="232" y="84" width="50" height="20" rx="10" fill="#c9a84c"/><rect x="232" y="104" width="50" height="4" fill="#b5472f"/><rect x="232" y="120" width="50" height="3" fill="#2f4f33"/><circle cx="257" cy="78" r="6" fill="#c9a84c"/></g><g><rect x="36" y="416" width="328" height="20" rx="3" fill="url(#mrchShelf)"/><rect x="36" y="416" width="328" height="6" fill="#ffffff" opacity="0.14"/><rect x="44" y="436" width="14" height="64" fill="#5a4226"/><rect x="342" y="436" width="14" height="64" fill="#5a4226"/></g><g><rect x="78" y="388" width="84" height="32" rx="3" fill="url(#mrchCard)"/><rect x="78" y="388" width="84" height="32" rx="3" fill="#15232e" opacity="0.06"/><path d="M86 412 q34 -22 68 0 z" fill="url(#mrchHC2)"/><path d="M86 412 q34 -22 68 0 q-34 -8 -68 0 z" fill="#ffffff" opacity="0.12"/><rect x="92" y="406" width="56" height="4" fill="#c9a84c"/></g><g><rect x="240" y="388" width="84" height="32" rx="3" fill="url(#mrchCard)"/><rect x="240" y="388" width="84" height="32" rx="3" fill="#15232e" opacity="0.06"/><path d="M248 412 q34 -22 68 0 z" fill="url(#mrchCap1)"/><path d="M248 412 q34 -22 68 0 q-34 -8 -68 0 z" fill="#ffffff" opacity="0.12"/><rect x="254" y="406" width="56" height="4" fill="#2f4f33"/></g><rect x="36" y="500" width="328" height="44" rx="3" fill="url(#mrchFloor)"/><rect x="36" y="500" width="328" height="44" rx="3" fill="#5a4226" opacity="0.18"/><line x1="120" y1="500" x2="108" y2="544" stroke="#7a5a30" stroke-width="2" opacity="0.4"/><line x1="220" y1="500" x2="216" y2="544" stroke="#7a5a30" stroke-width="2" opacity="0.4"/><line x1="300" y1="500" x2="312" y2="544" stroke="#7a5a30" stroke-width="2" opacity="0.4"/><g><rect x="200" y="206" width="2.4" height="118" fill="#7c5f33"/><path d="M202.4 206 L240 214 L202.4 230 Z" fill="#b5472f"/><path d="M202.4 206 L240 214 L221 210 Z" fill="#cf5a40"/><circle cx="201.6" cy="204" r="4" fill="#c9a84c"/></g><g transform="translate(200 244)"><rect x="-118" y="-44" width="236" height="88" rx="10" fill="#0f1c16" opacity="0.34"/><rect x="-112" y="-40" width="224" height="80" rx="8" fill="url(#mrchPlate)"/><rect x="-112" y="-40" width="224" height="80" rx="8" fill="none" stroke="#8a6a2c" stroke-width="1.5"/><rect x="-103" y="-31" width="206" height="62" rx="5" fill="url(#mrchPlateIn)"/><rect x="-103" y="-31" width="206" height="62" rx="5" fill="none" stroke="#d8b85e" stroke-width="1.5"/><circle cx="-103" cy="-31" r="3" fill="#e7cd83"/><circle cx="103" cy="-31" r="3" fill="#e7cd83"/><circle cx="-103" cy="31" r="3" fill="#e7cd83"/><circle cx="103" cy="31" r="3" fill="#e7cd83"/><text x="0" y="-12" text-anchor="middle" font-family="monospace" font-size="9" letter-spacing="5" fill="#cda84e">THE PRO SHOP</text><text x="0" y="14" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="26" font-weight="700" letter-spacing="2.5" fill="#f1ebde">COMING SOON</text><line x1="-60" y1="24" x2="60" y2="24" stroke="#c9a84c" stroke-width="1" opacity="0.7"/></g><g transform="translate(200 110)"><text x="0" y="0" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="22" font-weight="700" letter-spacing="3" fill="#f1ebde">PARBAUGHS</text><text x="0" y="22" text-anchor="middle" font-family="monospace" font-size="8.5" letter-spacing="6" fill="#e7cd83">M E R C H</text></g><g transform="translate(200 470)"><path d="M-150 0 L-130 -14 L150 -14 L130 0 L150 14 L-130 14 Z" fill="url(#mrchRibbon)"/><path d="M-150 0 L-130 -14 L130 -14 L150 0 L130 14 L-130 14 Z" fill="none" stroke="#7a2c1c" stroke-width="1" opacity="0.5"/><path d="M-130 -14 L-122 -14 L-142 0 L-122 14 L-130 14 L-150 0 Z" fill="#7a2c1c" opacity="0.45"/><path d="M130 -14 L122 -14 L142 0 L122 14 L130 14 L150 0 Z" fill="#7a2c1c" opacity="0.45"/><text x="0" y="4" text-anchor="middle" font-family="monospace" font-size="9" letter-spacing="4" fill="#f4e9d6">EST · YORK PA · PARBAUGHS GOLF CO.</text></g><circle cx="44" cy="46" r="3" fill="#c9a84c"/><circle cx="356" cy="46" r="3" fill="#c9a84c"/><rect x="14" y="14" width="372" height="532" rx="10" fill="none" stroke="#c9a84c" stroke-width="1.5" opacity="0.6"/><rect x="20" y="20" width="360" height="520" rx="7" fill="none" stroke="#c9a84c" stroke-width="0.75" opacity="0.35"/></svg>`;
+   v8.25.107 (Founder 2026-06-13/14): the prior single illustrated SVG poster
+   was "severely behind." Replaced with a real product GALLERY built from
+   AI-generated (Vertex Imagen 4) studio product photography, brand-locked to
+   the Clubhouse palette (cream / felt-green / brass / claret) and trademark-
+   clean (crossed-clubs emblem only). Images are web-optimized JPGs in
+   public/img/merch/ (~30-70kb each). Editorial masthead + flat-lay hero + a
+   five-piece line preview, all "coming soon" until the shop opens.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+Router.register("merch", function () {
+  function imgUrl(name) {
+    try { return new URL("img/merch/" + name, document.baseURI).href; }
+    catch (e) { return "img/merch/" + name; }
+  }
+
+  var LINE = [
+    { img: "cap.jpg", name: "The Tour Cap", note: "Structured six-panel · crossed-clubs crest" },
+    { img: "polo.jpg", name: "The Clubhouse Polo", note: "Pima pique · felt-green collar" },
+    { img: "quarterzip.jpg", name: "The Fairway Quarter-Zip", note: "Brushed knit · brass pull" },
+    { img: "towel.jpg", name: "The Caddy Towel", note: "Woven stripe · brass grommet" },
+    { img: "headcover.jpg", name: "The Driver Headcover", note: "Hand-knit · claret pom" }
+  ];
+
+  // Editorial masthead (shared roster recipe → brass rule + Fraunces headline)
+  var h = '<div class="roster-masthead" style="padding-bottom:6px"><button class="back" onclick="Router.back(\'more\')" style="margin-bottom:12px">← Back</button>';
+  h += '<div class="roster-eyebrow">Parbaughs · Pro Shop</div>';
+  h += '<h1 class="roster-headline">The line.</h1>';
+  h += '<div style="font-family:var(--font-ui);font-size:14px;color:var(--cb-charcoal);line-height:1.5;margin-top:12px;max-width:440px">A first look at the Parbaughs collection — country-club staples in our colors. <span style="color:var(--cb-brass-deep);font-weight:600">Coming soon.</span></div>';
   h += '</div>';
 
-  h += '<div class="merch-note">Caps, headcovers, towels and more — in the works. The Commissioner will sound the horn when the shop opens.</div>';
+  // Flat-lay hero
+  h += '<div style="padding:8px 16px 4px">';
+  h += '<div style="position:relative;border-radius:var(--r-4);overflow:hidden;box-shadow:var(--shadow-md);border:1px solid rgba(var(--cb-brass-rgb),.22)">';
+  h += '<img src="' + imgUrl("flatlay.jpg") + '" alt="The Parbaughs collection — polo, cap, towel and headcover" loading="lazy" style="display:block;width:100%;height:auto">';
+  h += '<div style="position:absolute;left:0;bottom:0;right:0;padding:26px 16px 12px;background:linear-gradient(to top,rgba(20,19,15,.62),transparent)">';
+  h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass-3)">The Collection</div>';
+  h += '<div style="font-family:var(--font-display);font-style:italic;font-weight:700;font-size:22px;color:var(--cb-chalk);line-height:1.1;margin-top:3px">Pro-shop staples, Parbaughs colors.</div>';
+  h += '</div></div></div>';
 
+  // Line preview grid (2-up)
+  h += '<div style="padding:18px 16px 0"><div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:12px">Preview the line</div>';
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">';
+  LINE.forEach(function (it) {
+    h += '<div style="background:var(--cb-paper);border:1px solid var(--cb-chalk-3);border-radius:var(--r-3);overflow:hidden;box-shadow:var(--shadow-sm)">';
+    h += '<div style="position:relative;background:var(--cb-chalk-2)"><img src="' + imgUrl(it.img) + '" alt="' + escHtml(it.name) + '" loading="lazy" style="display:block;width:100%;height:auto">';
+    h += '<div style="position:absolute;top:8px;right:8px;font-family:var(--font-mono);font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cb-brass-deep);background:rgba(var(--bg-rgb),.9);padding:3px 7px;border-radius:var(--r-1)">Soon</div></div>';
+    h += '<div style="padding:10px 12px 12px">';
+    h += '<div style="font-family:var(--font-display);font-weight:600;font-size:14px;color:var(--cb-ink);line-height:1.2">' + escHtml(it.name) + '</div>';
+    h += '<div style="font-family:var(--font-ui);font-size:11px;color:var(--cb-mute);margin-top:3px;line-height:1.35">' + escHtml(it.note) + '</div>';
+    h += '</div></div>';
+  });
+  h += '</div></div>';
+
+  // Note + maker's ribbon footer
+  h += '<div style="padding:18px 16px 6px"><div style="background:var(--cb-chalk-2);border:1px solid rgba(var(--cb-brass-rgb),.22);border-radius:var(--r-2);padding:14px 16px;font-family:var(--font-ui);font-size:13px;color:var(--cb-charcoal);line-height:1.5">Not for sale yet — the Commissioner will sound the horn when the pro shop opens. ParCoin pricing + member sizing to follow.</div></div>';
+  h += '<div style="text-align:center;padding:14px 16px 4px"><span style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:3px;color:var(--cb-mute);text-transform:uppercase">Est · York PA · Parbaughs Golf Co.</span></div>';
+
+  h += renderPageFooter();
   document.querySelector('[data-page="merch"]').innerHTML = h;
+  if (window.staggeredReveal) window.staggeredReveal(document.querySelectorAll('[data-page="merch"] > *'), { gap: 44, duration: 300 });
 });
