@@ -1,0 +1,8 @@
+Unattended marathon mode ON — armed 2026-06-14T15:43Z.
+
+Founder "start autonomously" + ultracode + "continue without me babysitting".
+The Stop hook (.claude/hooks/stop-continue.sh) now blocks turn-end while
+BACKLOG.md has open "- [ ]" items, so the marathon self-continues.
+
+Remove this file (or drop a STOP file) when the backlog is truly clear or the
+Founder says stop.

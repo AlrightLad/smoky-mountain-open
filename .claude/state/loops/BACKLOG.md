@@ -498,3 +498,16 @@ when every item below is [x].
 - [~] Resend EMAIL SEND — needs the Resend API key. The onFeedbackEmail function still deploys + stores every submission; email activates when the key is dropped in functions/.env. Do NOT block the loop on this.
 - [~] GitHub-issue triage — `gh` is not authenticated in this environment (`gh auth login` is interactive / a Founder credential). Founder can run `! gh auth login` in-session to unblock; until then the in-app feedback board (Admin) is the working triage channel.
 - [~] parcoin Stage-2 (cash-IAP server-authoritative economy) — Founder-gated by his own rules: economy DESIGN change + payments (AMD-018 gate 4) + a gambling-leg legal review (cash-in pressures the not-gambling "no consideration" leg). Exact target list (client-trusted balance, wager settlement CF, bounty claim CF) is documented in the exploit-test report; build when the Founder green-lights the cash model.
+
+## CURRENT MARATHON (2026-06-14 — Founder "start autonomously" + ultracode + "no babysitting")
+UI 9.5 critique loop (#41) — drain per-page queue, then features. Plan + fix-queue:
+`.claude/state/ui-critique-2026-06-14/PROGRESS.md`. DONE so far: foundation
+(.pb-card/.pb-btn-brass), drills, partygames, chat-skeleton, courses, bounties,
+calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
+- [ ] 7.4-cluster page lifts to 9.5 (profile, standings, trips, challenges, teetimes, scramble, trophyroom, more, settings, records, wrapped) + shop IA lift — apply .pb-card material + felt focal peak + WCAG-AA contrast + identity-below-masthead
+- [ ] Re-run the 22-page critique workflow; loop until every page clears the 9.5 bar
+- [ ] Merch lineup polish pass (#68) — review the 9 product shots + Cuphead leisure tee
+- [ ] Caddy-crew identity (#73): rename bot "The Caddy" -> "The Caddies"/"Caddy Crew" + crew profile photo (composite the 4 caddies)
+- [ ] Swing-animation page rework (#67, DO LAST among features) — Cuphead rubber-hose rebuild
+- [ ] Level-100 exclusive animated rubber-hose THEME (#75, end) — vastly different, on-page cartoons + animations; extensive critique loop
+- [ ] Final QA gauntlet (#74): E2E all pages + data flows -> pen test -> resolve every finding -> health check
