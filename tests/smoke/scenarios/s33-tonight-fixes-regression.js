@@ -1,24 +1,25 @@
 // S33 — regression guards for the 2026-06-12 fix wave (v8.25.5-.10). Pure
 // client-logic, no emulator/seed/visual needed. Locks in three Founder-reported
 // fixes so they can't silently regress:
-//   1. Theme picker shows all 6 themes (3 ready + 3 locked teasers).
+//   1. Theme picker shows all 7 themes (4 ready + 3 locked teasers).
+//      (v8.25.64 added Azalea as a 4th default theme; count is now 7, not 6.)
 //   2. Caddie roster is 4 voices and "Birdie" is wired across beats.
 //   3. Scramble-team derivation counts a course+date only when EVERY member
 //      shares a scramble round there (real team scramble, no cross-team bleed).
 module.exports = {
   id: 'S33',
-  name: 'fix-wave regression — 6 themes / 4 caddies / scramble all-members derivation',
+  name: 'fix-wave regression — 7 themes / 4 caddies / scramble all-members derivation',
   run: async function (ctx) {
     var page = ctx.page;
     var r = await page.evaluate(function () {
       var out = { fails: [] };
 
-      // 1. Themes — all six visible (unlocked user sees 3 default + 3 locked).
+      // 1. Themes — all seven visible (a no-unlock user sees 4 default + 3 locked).
       if (typeof getAvailableThemes === 'function') {
         var themes = getAvailableThemes([]);
         out.themeCount = themes.length;
         out.lockedCount = themes.filter(function (t) { return t.locked; }).length;
-        if (themes.length !== 6) out.fails.push('themes != 6 (' + themes.length + ')');
+        if (themes.length !== 7) out.fails.push('themes != 7 (' + themes.length + ')');
         if (out.lockedCount !== 3) out.fails.push('locked themes != 3 (' + out.lockedCount + ')');
       } else { out.fails.push('getAvailableThemes missing'); }
 
@@ -53,6 +54,6 @@ module.exports = {
       return out;
     });
     if (r.fails && r.fails.length) throw new Error(r.fails.join(' | '));
-    return { passed: true, details: 'themes=6 (3 locked) · caddies=4 (Birdie wired) · scramble derive: all-members=1, partial=0 (no bleed)' };
+    return { passed: true, details: 'themes=7 (3 locked) · caddies=4 (Birdie wired) · scramble derive: all-members=1, partial=0 (no bleed)' };
   }
 };
