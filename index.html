@@ -93,7 +93,7 @@ html{background:var(--bg)!important}body{font-family:'Inter',system-ui,sans-seri
   <div class="pbs-inner">
     <!-- Header: logo left, brand center, spacer right -->
     <div class="pbs-header">
-      <div class="pbs-logo"><img id="pbs-logo-img" src="Logo.jpg" alt="" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=&quot;width:100%;height:100%;background:linear-gradient(135deg,var(--gold),#8b6914);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:Fraunces,Georgia,serif;font-size:20px;font-weight:700;color:var(--bg)&quot;>P</div>'"></div>
+      <div class="pbs-logo"><img id="pbs-logo-img" src="%BASE_URL%img/logo/themes/app/clubhouse.png" alt="" style="width:100%;height:100%;object-fit:contain;display:block;padding:5px;box-sizing:border-box" onerror="this.style.display='none';this.parentElement.innerHTML='<div style=&quot;width:100%;height:100%;background:linear-gradient(135deg,var(--gold),#8b6914);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:Fraunces,Georgia,serif;font-size:20px;font-weight:700;color:var(--bg)&quot;>P</div>'"></div>
       <div class="pbs-brand-center">
         <div class="pbs-brand-name">The Parbaughs</div>
         <div class="pbs-brand-sub">Members Only</div>
@@ -125,7 +125,7 @@ html{background:var(--bg)!important}body{font-family:'Inter',system-ui,sans-seri
 
 <!-- ============ AUTH SCREEN ============ -->
 <div id="authScreen" class="auth-screen">
-  <div class="auth-logo"><img alt="The Parbaughs" src="Logo.jpg" onerror="this.style.display='none'"></div>
+  <div class="auth-logo"><img alt="The Parbaughs" data-pb-logo src="%BASE_URL%img/logo/themes/app/clubhouse.png" onerror="this.style.display='none'"></div>
   <div class="auth-title">THE PARBAUGHS</div>
   <div class="auth-sub">Members Only</div>
 
@@ -177,7 +177,7 @@ html{background:var(--bg)!important}body{font-family:'Inter',system-ui,sans-seri
   <!-- ── READING ROOM SIDEBAR (v8.3.0 · desktop only) ── -->
   <aside class="rr-sidebar" id="rrSidebar" aria-label="Primary navigation">
     <div class="rr-sidebar__mark">
-      <div class="rr-sidebar__mark-icon">P</div>
+      <img class="rr-sidebar__mark-icon" data-pb-logo src="%BASE_URL%img/logo/themes/app/clubhouse.png" alt="">
       <div class="rr-sidebar__mark-wm">Parbaughs</div>
     </div>
     <div class="rr-sidebar__section">League</div>

@@ -73,6 +73,7 @@ function applyTheme(themeId) {
     html.setAttribute("data-theme", themeId);
   }
   try { localStorage.setItem("pb_theme", themeId); } catch (e) { /* quota or private mode */ }
+  syncThemeLogos();
 }
 
 function getCurrentTheme() {
@@ -81,6 +82,30 @@ function getCurrentTheme() {
   if (palette && THEMES[palette]) return palette;
   var attr = document.documentElement.getAttribute("data-theme");
   return (attr && THEMES[attr]) ? attr : DEFAULT_THEME_ID;
+}
+
+/* pbThemeLogoUrl — the per-theme P+rose brandmark (Founder-approved IMG_4603,
+   recolored per theme by .claude/state/_logotheme.mjs → public/img/logo/themes/app/).
+   In-app surfaces (sidebar mark, auth coaster) call this so the logo's colorway
+   tracks the active palette. Base-aware (GitHub Pages subpath vs Firebase root). */
+function pbThemeLogoUrl(themeId) {
+  themeId = themeId || getCurrentTheme();
+  if (!THEMES[themeId]) themeId = DEFAULT_THEME_ID;
+  var base = (typeof window !== "undefined" && window.__PB_BASE__) ? window.__PB_BASE__ : "/";
+  return base + "img/logo/themes/app/" + themeId + ".png";
+}
+
+/* syncThemeLogos — point every [data-pb-logo] element at the current theme's
+   logo. Called from applyTheme so a theme switch recolors the brandmark live. */
+function syncThemeLogos() {
+  if (typeof document === "undefined") return;
+  try {
+    var url = pbThemeLogoUrl();
+    var els = document.querySelectorAll("[data-pb-logo]");
+    for (var i = 0; i < els.length; i++) {
+      if (els[i].getAttribute("src") !== url) els[i].setAttribute("src", url);
+    }
+  } catch (e) { /* pre-DOM or detached — applyTheme re-runs and reconciles */ }
 }
 
 function getAvailableThemes(unlockedIds) {
@@ -197,6 +222,8 @@ if (typeof window !== "undefined") {
   window.DEFAULT_THEME_ID = DEFAULT_THEME_ID;
   window.applyTheme = applyTheme;
   window.getCurrentTheme = getCurrentTheme;
+  window.pbThemeLogoUrl = pbThemeLogoUrl;
+  window.syncThemeLogos = syncThemeLogos;
   window.getAvailableThemes = getAvailableThemes;
   window.initTheme = initTheme;
   window.reconcileThemeFromProfile = reconcileThemeFromProfile;

@@ -1013,8 +1013,11 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
     radial-gradient(140% 118% at 50% 40%, transparent 42%, rgba(0,0,0,.34) 100%),
     linear-gradient(168deg, var(--cb-green-2) 0%, var(--cb-green) 46%, var(--cb-felt) 100%);
 }
-.auth-logo{width:84px;height:84px;border-radius:var(--r-4);overflow:hidden;margin-bottom:20px;background:var(--cb-ink);border:1.5px solid rgba(var(--cb-brass-rgb),.55);box-shadow:0 10px 30px rgba(0,0,0,.34)}
-.auth-logo img{width:100%;height:100%;object-fit:cover}
+/* Cream coaster: the per-theme brandmark (data-pb-logo) is a dark-figure-on-
+   transparent mark, so it rides a warm cream medallion to read against the dark
+   felt entrance. Theme-tailored — syncThemeLogos swaps the colorway live. */
+.auth-logo{width:84px;height:84px;border-radius:var(--r-4);overflow:hidden;margin-bottom:20px;background:radial-gradient(120% 120% at 38% 30%,#FCFAF5,#ECE3CF);border:1.5px solid rgba(var(--cb-brass-rgb),.55);box-shadow:0 10px 30px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.6)}
+.auth-logo img{width:100%;height:100%;object-fit:contain;padding:11px;box-sizing:border-box}
 .auth-title{font-family:var(--font-display);font-size:32px;font-weight:800;color:var(--cb-brass-3);letter-spacing:1.5px;line-height:1.04;margin-bottom:7px;font-variation-settings:"opsz" 60}
 .auth-sub{font-family:var(--font-mono);font-size:10px;font-weight:600;color:var(--cb-chalk-3);letter-spacing:5px;text-transform:uppercase;margin-bottom:30px}
 .auth-form{width:100%;max-width:340px;box-sizing:border-box;background:var(--cb-chalk);border:1px solid rgba(var(--cb-brass-rgb),.26);border-radius:var(--r-4);padding:22px 20px 20px;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 22px 50px rgba(0,0,0,.36),0 8px 18px rgba(0,0,0,.22)}
@@ -1489,8 +1492,8 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 #pbShareTemplate{position:absolute;left:-9999px;top:0;width:1080px;height:1080px;background:#070b10;font-family:-apple-system,'Helvetica Neue',Helvetica,Arial,sans-serif;box-sizing:border-box;overflow:hidden;color:#fff}
 .pbs-inner{width:1080px;height:1080px;padding:40px 56px 36px;box-sizing:border-box;display:flex;flex-direction:column}
 .pbs-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid rgba(201,168,76,.14)}
-.pbs-logo{width:52px;height:52px;border-radius:var(--r-3);overflow:hidden;flex-shrink:0}
-.pbs-logo img{width:100%;height:100%;object-fit:cover;display:block}
+.pbs-logo{width:52px;height:52px;border-radius:var(--r-3);overflow:hidden;flex-shrink:0;background:#F4EFE4}
+.pbs-logo img{width:100%;height:100%;object-fit:contain;display:block}
 .pbs-brand-center{text-align:center;flex:1;padding:0 16px}
 .pbs-brand-name{font-family:'Fraunces',Georgia,serif;font-size:20px;font-weight:700;color:#c9a84c;letter-spacing:2px}
 .pbs-brand-sub{font-size:10px;color:#3d4a5c;letter-spacing:4px;margin-top:2px;text-transform:uppercase}
@@ -2952,6 +2955,9 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-display); font-weight: 700; font-size: 15px; letter-spacing: -0.5px;
 }
+/* When the mark is the brandmark <img> (data-pb-logo, dark-on-transparent),
+   drop the green tile so the theme-tailored logo reads on the light rail. */
+img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width: 30px; height: 30px; border-radius: 0; }
 .rr-sidebar__mark-wm {
   font-family: var(--font-display); font-size: 20px; font-weight: 700;
   color: var(--cb-ink); letter-spacing: -0.5px;

@@ -1,0 +1,12 @@
+import { chromium } from 'playwright';
+import { readFileSync, writeFileSync } from 'fs';
+const names=['01-serif-P-vine','02-P-rose-bowl','03-geometric-P-line-rose','04-P-rose-terminal','05-negspace-rose-P','06-monoline-P-rose','07-PB-rose','08-P-rose-badge'];
+const labels=['1 serif P+vine','2 P, rose in bowl','3 geometric P+line rose','4 P, rose terminal','5 neg-space rose P','6 monoline P+rose','7 PB+rose','8 P+rose badge'];
+const imgs=names.map(n=>readFileSync('public/img/gen/logos3/'+n+'.png').toString('base64'));
+const b=await chromium.launch();
+const cell=300,cols=4,lab=26,W=cols*cell,H=2*(cell+lab);
+const pg=await b.newPage({viewport:{width:W,height:H}});
+await pg.setContent('<body style="margin:0"><canvas id="c" width="'+W+'" height="'+H+'"></canvas></body>');
+await pg.evaluate(async ({imgs,labels,cell,cols,lab})=>{const c=document.getElementById('c'),x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);for(let i=0;i<imgs.length;i++){const im=new Image();im.src='data:image/png;base64,'+imgs[i];await im.decode();const col=i%cols,row=Math.floor(i/cols),ox=col*cell,oy=row*(cell+lab);x.drawImage(im,ox,oy,cell,cell);x.fillStyle='#14130f';x.font='600 13px Georgia,serif';x.textAlign='center';x.fillText(labels[i],ox+cell/2,oy+cell+18);x.strokeStyle='#ddd';x.strokeRect(ox,oy,cell,cell);}},{imgs,labels,cell,cols,lab});
+writeFileSync('public/img/gen/logos3/_montage.png',Buffer.from(await pg.evaluate(()=>document.getElementById('c').toDataURL('image/png').split(',')[1]),'base64'));
+await b.close();console.log('montage3 done');
