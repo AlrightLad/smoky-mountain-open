@@ -1514,8 +1514,12 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
    ═══════════════════════════════════════════════════════════════════════════ */
 .loading{display:flex;align-items:center;justify-content:center;padding:40px;gap:var(--sp-2);color:var(--muted);font-size:var(--text-base)}
 .spinner{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
-.skeleton{background:linear-gradient(90deg,var(--bg3) 25%,var(--bg4) 50%,var(--bg3) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:6px}
+/* #41 v8.25.139 — skeletons used legacy dark --bg3/--bg4: dark bars on the light
+   Clubhouse paper read as broken, not loading (chat scored 6.4 largely for this).
+   Chalk-toned shimmer reads as proper loading on every theme's paper ground. */
+.skeleton{background:linear-gradient(90deg,var(--cb-chalk-2) 25%,var(--cb-chalk-3) 50%,var(--cb-chalk-2) 75%);background-size:200% 100%;animation:shimmer 1.4s ease-in-out infinite;border-radius:6px}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){.skeleton{animation:none}}
 .skel-line{height:12px;margin-bottom:8px;border-radius:var(--r-1)}
 .skel-line.short{width:60%}
 .skel-line.medium{width:80%}
