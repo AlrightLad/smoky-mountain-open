@@ -519,10 +519,14 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
   clearance, ghost-through fixed), profile (handicap "—" → tappable P10). Smoke 33/33
   (fixed stale S33: 7 themes not 6). AMD-028: agent self-rates ~9.3-9.5; the ≥9.5
   excellence claim is the Founder's via staging sign-off.
-- [ ] CARRY-FORWARD a: PROFILE felt identity hero — the re-critique spec over-scoped
-  the felt wrap (would have swallowed badges/bio/action-buttons + needed ~15 unspecified
-  text-color overrides). Deferred to a careful dedicated pass: wrap ONLY avatar+name+
-  eyebrow+meta (+ optionally XP/wallet) in felt, author the .pf-hero overrides, V1 each.
+- [x] CARRY-FORWARD a: PROFILE felt identity hero — DONE v8.25.163 (LIVE on prod + V1).
+  Tightly scoped: wrapped ONLY the .pf-portrait row (avatar + serif name + eyebrow +
+  meta) in .pb-card--felt as the asymmetric focal peak; badges/bio/action-buttons/XP/
+  wallet stay on the paper canvas (avoided the auto-spec's over-scope). Authored the
+  4 .pf-hero text overrides (eyebrow→brass-3, headline→chalk, realname→chalk-2,
+  meta→chalk-3), all AA-verified on felt; avatar keeps its inline equipped-cosmetic
+  ring (frames, not covers). V1-confirmed on staging: name pops in serif-chalk on
+  felt, no contrast regression. Smoke 33/33.
 - [ ] CARRY-FORWARD b: CHAT deeper Clubhouse migration — felt band shipped, but the page
   still uses legacy --bg2/--gold/--cream tokens + its capture was an empty skeleton.
   Migrate tokens + re-score against a SEEDED feed (scripts/_cap-auth.mjs) to fairly clear 9.5.
