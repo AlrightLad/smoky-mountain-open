@@ -27,9 +27,9 @@ Router.register("merch", function () {
     { img: "tee.jpg",         name: "The Leisure Tee",       note: "Soft cotton · vintage cartoon print" },
     { img: "headcovers.jpg",  name: "The Leather Headcovers", note: "Tooled leather · driver, woods, mallet & blade" },
     { img: "yardagebook.jpg", name: "The Yardage Book",      note: "Forest-green leather · brass ribbon" },
-    { img: "balls.jpg",       name: "Parbaughs Golf Balls",  note: "Tour white · sleeve of three" },
+    { img: "balls.png",       name: "Parbaughs Golf Balls",  note: "Tour white · sleeve of three" },
     { img: "ballmarker.jpg",  name: "The Ball Marker",       note: "Struck antique brass" },
-    { img: "tees.jpg",        name: "The Tees",              note: "Hardwood · club-colour bands" }
+    { img: "tees.png",        name: "The Tees",              note: "Hardwood · club-colour bands" }
   ];
 
   // Editorial masthead (shared roster recipe → brass rule + Fraunces headline)
