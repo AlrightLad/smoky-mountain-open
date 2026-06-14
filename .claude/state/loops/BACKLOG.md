@@ -545,6 +545,23 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
 
 ## NEW FOUNDER ITEMS (2026-06-14 16:03)
 - [ ] Shop as the retention ENGINE (#76): expand to PLENTY of items; some level-locked before purchase; varied unlock methods (level / achievement / season / play); unlocked items showcase on profile + in-play to signal tenure & golf dedication. The come-back-and-unlock loop.
+  DE-RISKED 2026-06-14 (ready-to-execute plan): catalog already has ~134 items
+  (border 32, banner 22, card 21, title 20, etc.) so "more items" is secondary to
+  the UNLOCK LOOP + quality bar. Render branch VERIFIED SAFE (shop.js ~L405-409:
+  isOwned/Equipped/Equip all precede the `lvl` gate → adding lvl: to more items
+  NEVER strips access from members who already own them; lock only affects the
+  not-yet-owned PURCHASE state). Only 3 items currently gated (pc04 L8, pc42 L12,
+  pc53 L6 — all by level). CONCRETE NEXT STEP: (a) curate a progression LADDER over
+  the PRESTIGE tier only (leave the 100+ sub-~2000-coin items freely buyable from
+  L1 so low-level members have plenty): e.g. price≥1500→L5, ≥2000→L10, ≥3000→L15,
+  animated/5000 ultra→L20 — hand-tag ~15-20 prestige items with lvl: (NOT a
+  price-derived auto-gate, which would lock half the catalog at once = economy-design
+  shift). (b) Add the non-level unlock methods (achievement via earnedBy already
+  exists; add season/play-streak gates with their own lock copy). (c) Showcase: the
+  worn-render already shows equipped cosmetics on profile + in-play; add a "tenure"
+  read (e.g. highest-tier-unlocked badge). Founder may want a taste-check on the
+  exact ladder thresholds (progression feel). Then elevate cosmetic ART to
+  award-winning/brand/golf via Vertex Imagen (generator-first) — the bigger lift.
 - [ ] Brand cohesiveness review + enhance (#77): unify rubber-hose (Cuphead) with Holderness & Bourne premium aesthetic app-wide; rubber-hose = youthful character layer rendered INSIDE H&B-grade presentation; tour clothing branded with logo + rubber-hose cartoons. Audit, enhance/change what's off. See memory project_brand_rubberhose_x_hb.
 
 ## FOUNDER REFINEMENTS (2026-06-14 17:34) — fold into existing items
