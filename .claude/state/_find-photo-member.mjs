@@ -1,0 +1,10 @@
+import { readFileSync } from 'fs';
+const sa = JSON.parse(readFileSync('scripts/.secrets/prod-service-account.json','utf8'));
+const admin = (await import('firebase-admin')).default;
+if (!admin.apps.length) admin.initializeApp({ credential: admin.credential.cert(sa), projectId: sa.project_id });
+const db = admin.firestore();
+const snap = await db.collection('members').get();
+const withPhoto = [];
+snap.forEach(d => { const m = d.data(); if (m.photoUrl || m.photo) withPhoto.push({ uid: d.id, name: m.name || m.username || '?', kind: m.photoUrl ? 'url' : 'data', len: (m.photoUrl||m.photo||'').length }); });
+console.log('members with photos:', withPhoto.length);
+withPhoto.slice(0,12).forEach(m => console.log(' ', m.uid, '·', m.name, '·', m.kind, m.len));
