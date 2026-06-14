@@ -5073,10 +5073,14 @@ img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width:
 .shop-item__state--arriving{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cb-mute);padding:8px 0;border-top:1px dashed var(--cb-mute-3)}
 
 /* ── Ornamental rings (Discord-decoration style, not flat color) ── */
-.ring-gallery-rope{border:3px solid #e7dcc3!important;box-shadow:0 0 0 1px #b8a87e,inset 0 0 0 1px #b8a87e}
-.ring-gallery-rope::after{content:"";position:absolute;inset:-7px;border-radius:50%;background:radial-gradient(circle at 50% 0%,#9a7c3a 2.5px,transparent 3px),radial-gradient(circle at 100% 50%,#9a7c3a 2.5px,transparent 3px),radial-gradient(circle at 50% 100%,#9a7c3a 2.5px,transparent 3px),radial-gradient(circle at 0% 50%,#9a7c3a 2.5px,transparent 3px);pointer-events:none}
-.ring-fescue{border:3px solid #b9a04b!important;position:relative}
-.ring-fescue::after{content:"";position:absolute;left:8%;right:8%;bottom:-4px;height:38%;border-radius:0 0 50% 50%;background:repeating-linear-gradient(100deg,transparent 0 2px,rgba(202,170,72,.85) 2px 3.2px,transparent 3.2px 6px);mask:linear-gradient(to top,#000 30%,transparent);-webkit-mask:linear-gradient(to top,#000 30%,transparent);animation:fescueSway 3.4s ease-in-out infinite;pointer-events:none}
+/* v8.25.129 — braided-rope texture on the band + domed brass stanchion studs
+   (highlight+core+rim) at the compass points, vs a flat cream ring + flat dots. */
+.ring-gallery-rope{border:4px solid transparent!important;position:relative;background:linear-gradient(#efe6d0,#d6c8a4) padding-box,repeating-linear-gradient(45deg,#e7dcc3 0 3px,#cdbf9c 3px 6px) border-box;box-shadow:inset 0 0 0 1px rgba(154,124,58,.35)}
+.ring-gallery-rope::after{content:"";position:absolute;inset:-7px;border-radius:50%;pointer-events:none;background:radial-gradient(circle at 50% 0%,#f4e0aa 1.3px,#9a7c3a 2.8px,transparent 3.4px),radial-gradient(circle at 100% 50%,#f4e0aa 1.3px,#9a7c3a 2.8px,transparent 3.4px),radial-gradient(circle at 50% 100%,#f4e0aa 1.3px,#9a7c3a 2.8px,transparent 3.4px),radial-gradient(circle at 0% 50%,#f4e0aa 1.3px,#9a7c3a 2.8px,transparent 3.4px)}
+/* v8.25.129 — two blade layers at different angles + opacities (front sharp, back
+   soft) sway as one, for depth vs a single rigid hatch band that sheared flat. */
+.ring-fescue{border:3px solid #a8923f!important;position:relative;box-shadow:inset 0 0 0 1px rgba(120,100,40,.3)}
+.ring-fescue::after{content:"";position:absolute;left:4%;right:4%;bottom:-5px;height:44%;border-radius:0 0 50% 50%;background:repeating-linear-gradient(98deg,transparent 0 2px,rgba(184,160,64,.92) 2px 3px,transparent 3px 5.5px),repeating-linear-gradient(86deg,transparent 0 3px,rgba(216,192,98,.55) 3px 4px,transparent 4px 7px);mask:linear-gradient(to top,#000 25%,transparent);-webkit-mask:linear-gradient(to top,#000 25%,transparent);animation:fescueSway 3.4s ease-in-out infinite;pointer-events:none}
 @keyframes fescueSway{0%,100%{transform:skewX(-3deg)}50%{transform:skewX(3deg)}}
 .ring-fried-egg{border:4px solid #d9c389!important;box-shadow:0 0 0 2px #c4ab6c,0 6px 10px -4px rgba(160,130,60,.7);position:relative}
 .ring-fried-egg::after{content:"";position:absolute;left:-9px;top:55%;width:10px;height:7px;border-radius:60% 40% 50% 50%;background:#d9c389;transform:rotate(-24deg);pointer-events:none}
