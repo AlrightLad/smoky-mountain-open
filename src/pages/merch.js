@@ -1,13 +1,16 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   PAGE: MERCH — "the pro shop" premium product preview (coming soon)
+   PAGE: MERCH — "the pro shop" The Tour Collection (coming soon)
 
-   v8.25.108 (Founder 2026-06-13/14): real product GALLERY built from Vertex
-   Imagen 4 studio photography of BLANK premium pieces, then the Founder-approved
-   P+rose brandmark composited onto each garment's embroidery position (cream/
-   felt logo on cream surfaces, cream/brass knockout on the green quarter-zip) —
-   "put the parbaugh logo on the items not the clubs logo." Holderness & Bourne
-   editorial restraint; every piece labelled COMING SOON. Web-optimized JPGs in
-   public/img/merch/ (~34-70kb each). Masthead + flat-lay hero + five-piece line.
+   v8.25.18x (Founder 2026-06-14): brand-split rebuild. The P+rose mark is the
+   TOUR / golf-aesthetic brand (rubber-hose is the separate leisure/casual line),
+   so merch is sold the way real golf-apparel brands sell it: a realistic model
+   wearing the line on a dramatic links course (Bandon-Dunes feel) leading the
+   page, then a Holderness-&-Bourne tour CAPSULE — premium fabric, minimal
+   branding, tour colorway (tournament white / tour navy / black / heather grey),
+   NOT beige+green. All imagery generated via the parbaughs-image-gen skill
+   (Vertex Imagen 4 → local finishing pass): ghost-mannequin packshots with the
+   real P+rose crest composited in post + on-course campaign photography.
+   Committed web assets in public/img/merch/ (NEVER img/gen/ — that's gitignored).
    ═══════════════════════════════════════════════════════════════════════════ */
 
 Router.register("merch", function () {
@@ -16,49 +19,46 @@ Router.register("merch", function () {
     catch (e) { return "img/merch/" + name; }
   }
 
-  // v8.25.117 — Founder's full lineup (real-cash, seasonal). Realistic studio
-  // photography (Vertex Imagen 4, vetted prompts) of BLANK premium pieces with
-  // the P+rose mark composited at each embroidery spot; the leisure tee carries
-  // a Cuphead-style cartoon print. Brand palette, deliberate colourway variation.
-  var LINE = [
-    { img: "hoodie.png",      name: "The Clubhouse Hoodie",  note: "Heavyweight black brushed fleece" },
-    { img: "quarterzip.png",  name: "The Fairway Quarter-Zip", note: "Athletic four-way stretch · brass pull" },
-    { img: "polo.png",        name: "The Tour Pro Shirt",    note: "Breathable tour piqué · felt-green collar" },
-    { img: "tee.png",         name: "The Leisure Tee",       note: "Soft cotton · vintage cartoon print" },
-    { img: "headcovers.jpg",  name: "The Leather Headcovers", note: "Tooled leather · driver, woods, mallet & blade" },
-    { img: "yardagebook.jpg", name: "The Yardage Book",      note: "Forest-green leather · brass ribbon" },
-    { img: "balls.png",       name: "Parbaughs Golf Balls",  note: "Tour white · sleeve of three" },
-    { img: "ballmarker.jpg",  name: "The Ball Marker",       note: "Struck antique brass" },
-    { img: "tees.png",        name: "The Tees",              note: "Hardwood · club-colour bands" }
+  // THE TOUR CAPSULE — P+rose, premium fabric, minimal branding, tour colorway.
+  var TOUR = [
+    { img: "polo.jpg",       name: "The Tour Pro Shirt",     note: "Tournament-white performance piqué · clean self-collar" },
+    { img: "quarterzip.jpg", name: "The Fairway Quarter-Zip", note: "Tour-navy brushed knit · brass pull" },
+    { img: "hoodie.jpg",     name: "The Clubhouse Hoodie",   note: "Heavyweight black brushed fleece" },
+    { img: "tee.jpg",        name: "The Tour Tee",           note: "Heather-grey combed cotton · soft hand" }
   ];
 
-  // Editorial masthead (shared roster recipe → brass rule + Fraunces headline)
+  // THE PRO SHOP — accessories carry the brand accents (forest green / brass).
+  var ACCESSORIES = [
+    { img: "headcovers.jpg",  name: "The Leather Headcovers", note: "Tooled leather · driver, woods, mallet & blade" },
+    { img: "yardagebook.jpg", name: "The Yardage Book",       note: "Forest-green leather · brass ribbon" },
+    { img: "balls.png",       name: "Parbaughs Golf Balls",   note: "Tour white · sleeve of three" },
+    { img: "ballmarker.jpg",  name: "The Ball Marker",        note: "Struck antique brass" },
+    { img: "tees.png",        name: "The Tees",               note: "Hardwood · club-colour bands" }
+  ];
+
+  // ── Editorial masthead ────────────────────────────────────────────────────
   var h = '<div class="roster-masthead" style="padding-bottom:6px"><button class="back" onclick="Router.back(\'more\')" style="margin-bottom:12px">← Back</button>';
   h += '<div class="roster-eyebrow">Parbaughs · Pro Shop</div>';
-  h += '<h1 class="roster-headline">The line.</h1>';
-  h += '<div style="font-family:var(--font-ui);font-size:14px;color:var(--cb-charcoal);line-height:1.5;margin-top:12px;max-width:440px">A first look at the Parbaughs collection — country-club staples in our colors. <span style="color:var(--cb-brass-deep);font-weight:600">Coming soon.</span></div>';
+  h += '<h1 class="roster-headline">The Tour Collection.</h1>';
+  h += '<div style="font-family:var(--font-ui);font-size:14px;color:var(--cb-charcoal);line-height:1.5;margin-top:12px;max-width:460px">Tournament-grade pieces in the colors the pros compete in — premium fabric, the quiet P+rose mark, nothing loud. <span style="color:var(--cb-brass-deep);font-weight:600">Coming soon.</span></div>';
   h += '</div>';
 
-  // Flagship hero — ONE product, not a mixed flat-lay. The prior flatlay.jpg
-  // showed polo+cap+towel+headcover in one frame, which the Founder flagged as
-  // "multiple items under one photo = customer confusion." The marquee piece
-  // leads; every other item gets its own photo in the grid below (slice(1)).
-  var _hero = LINE[0]; // The Clubhouse Hoodie
-  h += '<div style="padding:8px 16px 4px">';
-  h += '<div style="position:relative;border-radius:var(--r-4);overflow:hidden;box-shadow:var(--shadow-md);border:1px solid rgba(var(--cb-brass-rgb),.22)">';
-  h += '<img src="' + imgUrl(_hero.img) + '" alt="' + escHtml(_hero.name) + ' — the Parbaughs flagship piece" loading="lazy" style="display:block;width:100%;height:auto">';
-  h += '<div style="position:absolute;left:0;bottom:0;right:0;padding:26px 16px 12px;background:linear-gradient(to top,rgba(20,19,15,.66),transparent)">';
-  h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass-3)">The Flagship</div>';
-  h += '<div style="font-family:var(--font-display);font-style:italic;font-weight:700;font-size:22px;color:var(--cb-chalk);line-height:1.1;margin-top:3px">' + escHtml(_hero.name) + '.</div>';
-  h += '<div style="font-family:var(--font-ui);font-size:12px;color:rgba(244,239,228,.86);margin-top:4px">' + escHtml(_hero.note) + '</div>';
+  // ── Cinematic on-course HERO (the golf appeal) — full-bleed links campaign ──
+  h += '<div style="padding:8px 16px 4px"><div style="position:relative;border-radius:var(--r-4);overflow:hidden;box-shadow:var(--shadow-md);border:1px solid rgba(var(--cb-brass-rgb),.22);aspect-ratio:16/9;background:var(--cb-chalk-2)">';
+  h += '<img src="' + imgUrl("lifestyle-fairway.jpg") + '" alt="A Parbaughs golfer on a coastal links fairway at golden hour" loading="lazy" style="display:block;width:100%;height:100%;object-fit:cover">';
+  h += '<div style="position:absolute;left:0;right:0;bottom:0;padding:30px 18px 14px;background:linear-gradient(to top,rgba(20,19,15,.74),rgba(20,19,15,.18),transparent)">';
+  h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass-3)">Tour · Links · Parbaughs</div>';
+  h += '<div style="font-family:var(--font-display);font-style:italic;font-weight:700;font-size:23px;color:var(--cb-chalk);line-height:1.08;margin-top:4px">Made for the walk.</div>';
+  h += '<div style="font-family:var(--font-ui);font-size:12px;color:rgba(244,239,228,.86);margin-top:4px;max-width:420px">The tour line, on the kind of course it was built for.</div>';
   h += '</div></div></div>';
 
-  // Line preview grid (2-up)
-  h += '<div style="padding:18px 16px 0"><div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:12px">Preview the line</div>';
+  // ── The Tour Capsule (2-up packshots) ──────────────────────────────────────
+  h += '<div style="padding:20px 16px 0"><div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:4px">The Tour Capsule</div>';
+  h += '<div style="font-family:var(--font-ui);font-size:12px;color:var(--cb-mute);margin-bottom:12px">Holderness &amp; Bourne restraint — let the fabric talk.</div>';
   h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">';
-  LINE.slice(1).forEach(function (it) { // slice(1): flagship is the hero above, not repeated here
+  TOUR.forEach(function (it) {
     h += '<div style="background:var(--cb-paper);border:1px solid var(--cb-chalk-3);border-radius:var(--r-3);overflow:hidden;box-shadow:var(--shadow-sm)">';
-    h += '<div style="position:relative;background:var(--cb-chalk-2)"><img src="' + imgUrl(it.img) + '" alt="' + escHtml(it.name) + '" loading="lazy" style="display:block;width:100%;height:auto"></div>';
+    h += '<div style="position:relative;background:var(--cb-chalk-2);aspect-ratio:1/1"><img src="' + imgUrl(it.img) + '" alt="' + escHtml(it.name) + '" loading="lazy" style="display:block;width:100%;height:100%;object-fit:cover"></div>';
     h += '<div style="padding:11px 12px 13px">';
     h += '<div style="font-family:var(--font-display);font-weight:600;font-size:14px;color:var(--cb-ink);line-height:1.2">' + escHtml(it.name) + '</div>';
     h += '<div style="font-family:var(--font-ui);font-size:11px;color:var(--cb-mute);margin-top:3px;line-height:1.35">' + escHtml(it.note) + '</div>';
@@ -67,8 +67,32 @@ Router.register("merch", function () {
   });
   h += '</div></div>';
 
-  // Note + maker's ribbon footer
-  h += '<div style="padding:18px 16px 6px"><div style="background:var(--cb-chalk-2);border:1px solid rgba(var(--cb-brass-rgb),.22);border-radius:var(--r-2);padding:14px 16px;font-family:var(--font-ui);font-size:13px;color:var(--cb-charcoal);line-height:1.5">Not for sale yet — the Commissioner will sound the horn when the shop opens. The line drops in seasonal releases, priced in real currency (no ParCoins — those are for the Pro Shop cosmetics). Member sizing to follow.</div></div>';
+  // ── Editorial lifestyle band (teebox + clubhouse) ──────────────────────────
+  h += '<div style="padding:20px 16px 0"><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">';
+  [["lifestyle-teebox.jpg", "On the tee"], ["lifestyle-clubhouse.jpg", "First light, first tee"]].forEach(function (pair) {
+    h += '<div style="position:relative;border-radius:var(--r-3);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--cb-chalk-3);aspect-ratio:3/4;background:var(--cb-chalk-2)">';
+    h += '<img src="' + imgUrl(pair[0]) + '" alt="' + escHtml(pair[1]) + '" loading="lazy" style="display:block;width:100%;height:100%;object-fit:cover">';
+    h += '<div style="position:absolute;left:0;right:0;bottom:0;padding:18px 12px 9px;background:linear-gradient(to top,rgba(20,19,15,.62),transparent)"><div style="font-family:var(--font-mono);font-size:8.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--cb-chalk)">' + escHtml(pair[1]) + '</div></div>';
+    h += '</div>';
+  });
+  h += '</div></div>';
+
+  // ── The Pro Shop accessories (2-up) ────────────────────────────────────────
+  h += '<div style="padding:20px 16px 0"><div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:12px">The Pro Shop</div>';
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">';
+  ACCESSORIES.forEach(function (it) {
+    h += '<div style="background:var(--cb-paper);border:1px solid var(--cb-chalk-3);border-radius:var(--r-3);overflow:hidden;box-shadow:var(--shadow-sm)">';
+    h += '<div style="position:relative;background:var(--cb-chalk-2);aspect-ratio:1/1"><img src="' + imgUrl(it.img) + '" alt="' + escHtml(it.name) + '" loading="lazy" style="display:block;width:100%;height:100%;object-fit:cover"></div>';
+    h += '<div style="padding:11px 12px 13px">';
+    h += '<div style="font-family:var(--font-display);font-weight:600;font-size:14px;color:var(--cb-ink);line-height:1.2">' + escHtml(it.name) + '</div>';
+    h += '<div style="font-family:var(--font-ui);font-size:11px;color:var(--cb-mute);margin-top:3px;line-height:1.35">' + escHtml(it.note) + '</div>';
+    h += '<div style="font-family:var(--font-mono);font-size:8.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--cb-brass-deep);margin-top:8px">Coming Soon</div>';
+    h += '</div></div>';
+  });
+  h += '</div></div>';
+
+  // ── Note + maker's ribbon footer ───────────────────────────────────────────
+  h += '<div style="padding:20px 16px 6px"><div style="background:var(--cb-chalk-2);border:1px solid rgba(var(--cb-brass-rgb),.22);border-radius:var(--r-2);padding:14px 16px;font-family:var(--font-ui);font-size:13px;color:var(--cb-charcoal);line-height:1.5">Not for sale yet — the Commissioner will sound the horn when the shop opens. The line drops in seasonal releases, priced in real currency (no ParCoins — those are for the Pro Shop cosmetics). A separate rubber-hose leisure line follows. Member sizing to come.</div></div>';
   h += '<div style="text-align:center;padding:14px 16px 4px"><span style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:3px;color:var(--cb-mute);text-transform:uppercase">Est · York PA · Parbaughs Golf Co.</span></div>';
 
   h += renderPageFooter();
