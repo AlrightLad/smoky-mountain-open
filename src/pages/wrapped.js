@@ -45,7 +45,7 @@ function _renderWrappedPending(year) {
   // Secondary band — fills the void below the focal-peak hero with a preview of
   // what unlocks Dec 1, plus a tappable affordance (P10: says WHAT + WHAT-ACTION,
   // and looks tappable via a brass-underlined control, not dead tan text).
-  h += '<div class="pb-card pb-card--felt pb-card--recessed wrapped-pending-band">';
+  h += '<div class="pb-card pb-card--felt wrapped-pending-band">';
   h += '<div style="font-family:var(--font-mono);font-size:10px;letter-spacing:2.5px;color:var(--cb-brass-3,#E0BB60);text-transform:uppercase;margin-bottom:10px">Unlocks December 1</div>';
   h += '<div style="display:flex;flex-direction:column;gap:9px">';
   h += '<div class="wrapped-pending-row"><span>Your scoring year</span><span class="wrapped-pending-row-v">' + (yc > 0 ? (yc + ' round' + (yc === 1 ? '' : 's')) : 'not started') + '</span></div>';
