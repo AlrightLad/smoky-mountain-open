@@ -31,6 +31,17 @@ select:focus-visible {
 
 html{background:var(--bg)!important}
 body{font-family:'Inter',sans-serif;background:transparent!important;color:var(--cream);min-height:100vh;min-height:100dvh;max-width:680px;margin:0 auto;overflow-x:hidden;-webkit-font-smoothing:antialiased;letter-spacing:-.01em}
+/* ── #72 (v8.25.135): long user strings must FIT, never run off the screen edge.
+   body has overflow-x:hidden, so an over-long username / course name / email was
+   being CLIPPED at the edge (the Founder's "running off the edges") instead of
+   wrapping. Two robust guards for ALL users + ALL data:
+   1) long unbreakable tokens may wrap anywhere they'd otherwise overflow;
+   2) flex/grid children may shrink below their longest word (min-width:0), so a
+      name column reflows instead of pushing its row past the screen.
+   overflow-wrap:anywhere only breaks a word when it WOULD overflow — short
+   labels/nav are unaffected. */
+#mainApp{overflow-wrap:anywhere}
+#mainApp [class*="row"],#mainApp [class*="card"],#mainApp [class*="item"],#mainApp [class*="__main"],#mainApp [class*="__name"],#mainApp [class*="-name"],#mainApp [class*="-info"],#mainApp [class*="__info"],#mainApp [class*="__head"],#mainApp [class*="-head"],#mainApp [class*="__body"],#mainApp [class*="-left"],#mainApp [class*="-right"],#mainApp [class*="__col"],#mainApp [class*="__meta"]{min-width:0}
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 input[type=number]{-moz-appearance:textfield}
 input[type=date]{-webkit-appearance:none;appearance:none;min-width:0;font-size:14px}
