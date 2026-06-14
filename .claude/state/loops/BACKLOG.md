@@ -543,6 +543,17 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
 
 ## NEW FOUNDER ITEMS (2026-06-14 16:03)
 - [ ] Shop as the retention ENGINE (#76): expand to PLENTY of items; some level-locked before purchase; varied unlock methods (level / achievement / season / play); unlocked items showcase on profile + in-play to signal tenure & golf dedication. The come-back-and-unlock loop.
+  PROGRESS this turn: (1) LEVEL-LOCK LADDER live v8.25.165 (17 prestige items L5-L15,
+  DOM-verified). (2) COHESION RE-THEME pass-1 live v8.25.167 (Founder chose
+  cohesion-first): 12 off-brand/gamer cosmetics → golf/Parbaughs (Neon Green→Fairway
+  Pulse, Rainbow Shift→Major Season [cycles the 4 majors' colours], Ice Blue→Bluebird,
+  Flame→Bunker Sand, Fire→Sunset Nine, Prismatic→Magnolia Row, Crimson Ember→Sunday
+  Ember; banners Ocean Drive→Coastal Links, Arctic Dawn→Frost Delay, Thunder Storm→
+  Weather Horn [recoloured off purple], Crimson Tide→Sunday Charge, Ember Glow→Sunset
+  Back-Nine). Id-stable (ownership persists); 3 animated rings' keyframes recoloured
+  neon→golf-prestige. REMAINING cohesion: cards/titles/markers/flair/name shelves
+  sweep for off-brand items; then new items for breadth; then varied unlock methods
+  (season/streak) + tenure showcase badge + award-winning generated ART (Vertex Imagen).
   DE-RISKED 2026-06-14 (ready-to-execute plan): catalog already has ~134 items
   (border 32, banner 22, card 21, title 20, etc.) so "more items" is secondary to
   the UNLOCK LOOP + quality bar. Render branch VERIFIED SAFE (shop.js ~L405-409:
