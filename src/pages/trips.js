@@ -70,7 +70,25 @@ Router.register("trips", function(params) {
 
   // Active / upcoming events
   if (activeTrips.length) {
-    activeTrips.forEach(function(t) { h += tripCard(t); });
+    // #41 — felt focal-peak hero promoting the soonest event. Fills the top of
+    // the board with focal material (was a thin row floating on dead paper).
+    // Every value traces to the real next active trip (P9).
+    var _next = activeTrips[0];
+    var _nextMembers = (_next.members || []).length;
+    var _nextRounds = (_next.courses || []).length;
+    var _nextStatus = _next.champion ? 'COMPLETE' : (_next.status === 'active' ? 'IN PLAY' : 'NEXT UP');
+    h += '<div style="padding:2px 16px 12px"><div class="pb-card pb-card--felt" style="padding:20px 22px;cursor:pointer" onclick="Router.go(\'scorecard\',{tripId:\'' + _next.id + '\'})">';
+    h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.4px;color:var(--cb-brass-3)">' + _nextStatus + '</div>';
+    h += '<div style="font-family:var(--font-display);font-style:italic;font-weight:700;font-size:24px;color:var(--cb-chalk);line-height:1.12;margin-top:4px">' + escHtml(_next.name) + '</div>';
+    h += '<div style="font-family:var(--font-mono);font-size:12px;color:var(--cb-chalk-3);margin-top:6px;letter-spacing:.2px">' + escHtml(_next.dates) + ' · ' + escHtml(_next.location) + '</div>';
+    h += '<div style="display:flex;gap:18px;margin-top:14px;padding-top:13px;border-top:1px solid rgba(244,239,228,.16)">';
+    h += '<div><div style="font-family:var(--font-display);font-weight:700;font-size:19px;color:var(--cb-chalk)">' + _nextMembers + '</div><div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--cb-brass-3);text-transform:uppercase;margin-top:1px">Players</div></div>';
+    h += '<div><div style="font-family:var(--font-display);font-weight:700;font-size:19px;color:var(--cb-chalk)">' + _nextRounds + '</div><div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--cb-brass-3);text-transform:uppercase;margin-top:1px">Rounds</div></div>';
+    h += '<div style="margin-left:auto;align-self:center;font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1px;color:var(--cb-chalk-3);text-transform:uppercase;display:flex;align-items:center;gap:5px">Open card <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="var(--cb-brass-3)" stroke-width="2.2"><path d="M9 6l6 6-6 6"/></svg></div>';
+    h += '</div></div></div>';
+    // Remaining active events render as cards below the hero (slice(1) so the
+    // soonest event is not shown twice — once as the hero, once as a card).
+    activeTrips.slice(1).forEach(function(t) { h += tripCard(t); });
   } else {
     // #41 v8.25.149 — felt focal-peak empty state (was flat legacy --gold/--muted
     // text), the lone primary CTA, fills the board instead of a thin dead zone.
@@ -93,6 +111,26 @@ Router.register("trips", function(params) {
     pastTrips.forEach(function(t) { h += tripCard(t); });
     h += '</div>';
   }
+
+  // #41 — season ledger secondary band on a brass left-rail spine. Fills the
+  // lower void with a designed grouped surface instead of dead beige. When the
+  // past-events shelf is empty it is a *designed* P10 empty surface (WHAT it is
+  // + WHAT resolves it), not blank paper. All counts trace to filtered trips (P9).
+  var _champs = trips.filter(function(t) { return !!t.champion; }).length;
+  h += '<div style="padding:6px 16px 2px"><div class="pb-card pb-card--rail" style="padding:16px 18px">';
+  h += '<div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.4px;color:var(--cb-brass-deep)">THE SEASON LEDGER</div>';
+  h += '<div style="display:flex;gap:22px;margin-top:12px">';
+  h += '<div><div style="font-family:var(--font-display);font-weight:700;font-size:21px;color:var(--cb-ink)">' + activeTrips.length + '</div><div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--cb-brass-deep);text-transform:uppercase;margin-top:1px">Upcoming</div></div>';
+  h += '<div><div style="font-family:var(--font-display);font-weight:700;font-size:21px;color:var(--cb-ink)">' + pastTrips.length + '</div><div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--cb-brass-deep);text-transform:uppercase;margin-top:1px">Played</div></div>';
+  h += '<div><div style="font-family:var(--font-display);font-weight:700;font-size:21px;color:var(--cb-ink)">' + _champs + '</div><div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1px;color:var(--cb-brass-deep);text-transform:uppercase;margin-top:1px">Champions</div></div>';
+  h += '</div>';
+  if (!pastTrips.length) {
+    h += '<div class="pb-card pb-card--recessed" style="margin-top:14px;padding:14px 16px;text-align:center">';
+    h += '<div style="font-family:var(--font-display);font-style:italic;font-weight:700;font-size:15px;color:var(--cb-ink)">No finished events yet.</div>';
+    h += '<div style="font-family:var(--font-ui);font-size:12px;color:var(--cb-ink-faint);margin-top:4px;line-height:1.45">Champions and final standings land here once an event wraps. Start one above to fill the ledger.</div>';
+    h += '</div>';
+  }
+  h += '</div></div>';
 
   h += renderPageFooter();
   document.querySelector('[data-page="trips"]').innerHTML = h;

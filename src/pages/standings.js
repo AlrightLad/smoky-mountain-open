@@ -184,6 +184,7 @@ Router.register("standings", function(params) {
 
   // ── Standings table ───────────────────────────────────────────────────
   if (standings.length) {
+    h += '<div class="pb-card std-board">';
     h += '<table class="roster-table">';
     h += '<thead><tr>';
     h += '<th class="std-rank-col" scope="col">#</th>';
@@ -214,6 +215,7 @@ Router.register("standings", function(params) {
       h += '</tr>';
     });
     h += '</tbody></table>';
+    h += '</div>'; // end .pb-card.std-board
   } else {
     h += '<div class="std-empty">';
     h += '<div class="std-empty__title">' + (isUpcoming ? "Tee off is coming." : "Nobody on the board yet.") + '</div>';

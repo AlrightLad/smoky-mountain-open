@@ -53,7 +53,7 @@ Router.register("calendar", function() {
   h += _calCreateFormHTML(calSelectedDate || todayStr);
 
   // ── Body: grid or list ──
-  h += '<div id="cal-body" tabindex="-1" class="cal-body">';
+  h += '<div id="cal-body" tabindex="-1" class="cal-body pb-card">';
   h += (calView === "list") ? _calListHTML(todayStr) : _calGridHTML(todayStr);
   h += '</div>';
 

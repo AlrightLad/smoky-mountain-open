@@ -32,26 +32,42 @@ Router.register("more", function() {
   // ── Section renderer ── one paper card per group (10px radius, --cb-mute-3
   // hairline border + row separators), mono brass eyebrow, 13px gap between
   // sections. Rows stay above the 44pt floor: 13px pad x2 + 36px tile = 62px.
-  function section(title, items) {
+  function section(title, items, material) {
+    // Group identity now lives on the CARD material, not smuggled into per-row
+    // accents: ParCoin (the revenue/identity group) is the page's one felt
+    // focal peak; every other group is honest pressed paper. This composes the
+    // .pb-card / .pb-card--felt material classes instead of re-declaring stock,
+    // so the whole page reads as one intentional system instead of one styled
+    // card next to flat hairline rows. (#41 more-page signature move.)
+    var isFelt = material === 'felt';
     var sh = '<div style="padding:0 16px;margin-bottom:13px">';
-    sh += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-eyebrow);margin-bottom:6px;padding-left:2px">' + title + '</div>';
-    sh += '<div style="background:var(--cb-paper);border:1px solid rgba(20,19,15,.10);border-radius:10px;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 1px 2px rgba(28,24,14,.06), 0 5px 14px -8px rgba(28,24,14,.15)">';
+    sh += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:' + (isFelt ? 'var(--cb-brass-3)' : 'var(--cb-eyebrow)') + ';margin-bottom:6px;padding-left:2px">' + title + '</div>';
+    sh += '<div class="pb-card more-group' + (isFelt ? ' pb-card--felt more-group--felt' : '') + '" style="overflow:hidden">';
     items.forEach(function(l, i) {
       // Priority rows (revenue/growth) earn a stronger brass wash + a 3px
       // brass left-edge bar so they read as elevated, not just another tinted
       // row. Routine rows stay flat. The left bar eats 3px of pad on the left
       // so the tile/label column still aligns to the same optical gutter.
-      var rowBg = l.accent
+      // On felt the brass-wash-on-paper accent treatment fails contrast, so the
+      // accent left-bar + tile route to the on-green brass (--cb-brass-3) and
+      // all text moves to chalk; row separators switch from dark ink to a faint
+      // chalk hairline. On paper, the original AA-safe ink treatment is kept.
+      var rowBg = (l.accent && !isFelt)
         ? 'background:rgba(var(--cb-brass-rgb),.11);box-shadow:inset 3px 0 0 var(--cb-brass);'
-        : '';
+        : (l.accent && isFelt ? 'box-shadow:inset 3px 0 0 var(--cb-brass-3);' : '');
       var rowPad = l.accent ? 'padding:14px 14px 14px 11px;' : 'padding:13px 14px;';
-      sh += '<div role="button" tabindex="0" onkeydown="if(event.key===\'Enter\')Router.go(\'' + l.page + '\')" onclick="Router.go(\'' + l.page + '\')" style="cursor:pointer;' + rowBg + (i > 0 ? 'border-top:1px solid var(--cb-mute-3);' : '') + '-webkit-tap-highlight-color:transparent">';
+      var sep = isFelt ? 'border-top:1px solid rgba(var(--cb-chalk-rgb) / .12);' : 'border-top:1px solid var(--cb-mute-3);';
+      var tileBg = isFelt ? 'rgba(var(--cb-chalk-rgb) / .08)' : (l.accent ? 'rgba(var(--cb-brass-rgb),.12)' : 'var(--cb-chalk-2)');
+      var tileFg = isFelt ? 'var(--cb-brass-3)' : (l.accent ? 'var(--cb-brass-deep)' : 'var(--cb-ink-2)');
+      var labelFg = isFelt ? 'var(--cb-chalk)' : 'var(--cb-ink)';
+      var subFg = isFelt ? 'var(--cb-mute-3)' : 'var(--cb-mute)';
+      sh += '<div role="button" tabindex="0" onkeydown="if(event.key===\'Enter\')Router.go(\'' + l.page + '\')" onclick="Router.go(\'' + l.page + '\')" style="cursor:pointer;' + rowBg + (i > 0 ? sep : '') + '-webkit-tap-highlight-color:transparent">';
       sh += '<div style="' + rowPad + 'display:flex;align-items:center;gap:13px">';
-      sh += '<div style="width:36px;height:36px;border-radius:10px;background:' + (l.accent ? 'rgba(var(--cb-brass-rgb),.12)' : 'var(--cb-chalk-2)') + ';color:' + (l.accent ? 'var(--cb-brass-deep)' : 'var(--cb-ink-2)') + ';display:flex;align-items:center;justify-content:center;flex-shrink:0">' + l.icon + '</div>';
-      sh += '<div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:' + (l.accent ? '700' : '600') + ';color:var(--cb-ink)">' + l.label + '</div>';
-      if (l.sub) sh += '<div style="font-size:11px;color:var(--cb-mute);margin-top:1px">' + l.sub + '</div>';
+      sh += '<div style="width:36px;height:36px;border-radius:10px;background:' + tileBg + ';color:' + tileFg + ';display:flex;align-items:center;justify-content:center;flex-shrink:0">' + l.icon + '</div>';
+      sh += '<div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:' + (l.accent ? '700' : '600') + ';color:' + labelFg + '">' + l.label + '</div>';
+      if (l.sub) sh += '<div style="font-size:11px;color:' + subFg + ';margin-top:1px">' + l.sub + '</div>';
       sh += '</div>';
-      sh += chev('var(--cb-mute-2)');
+      sh += chev(isFelt ? 'var(--cb-brass-3)' : 'var(--cb-mute-2)');
       sh += '</div></div>';
     });
     sh += '</div></div>';
@@ -62,7 +78,7 @@ Router.register("more", function() {
   h += section("ParCoin Economy", [
     {icon:icn('<circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M8.5 8.5h5a2.5 2.5 0 010 5H8.5"/>'), label:"Cosmetics Shop", sub:"Rings, banners, cards, names, titles", page:"shop", accent:true},
     {icon:icn('<path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/>'), label:"Rich List & Power-Ups", sub:"Top earners, Double XP, Handicap Shield", page:"richlist", accent:true}
-  ]);
+  ], 'felt');
 
   // ── Competition ──
   h += section("Competition", [

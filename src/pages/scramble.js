@@ -172,12 +172,23 @@ function renderTeamList() {
     // #41 v8.25.151 — felt focal-peak empty state with a faux "team card" preview
     // (two avatar wells + & + a 0–0 record line) so it reads as "your team goes
     // here", not a thin grey two-person glyph on dead cream. Lone brass CTA.
-    h += '<div style="padding:6px 16px 2px"><div class="pb-card pb-card--felt" style="padding:24px 22px;text-align:center">';
-    h += '<div class="scr-faux"><span class="scr-faux__av">?</span><span class="scr-faux__amp">&</span><span class="scr-faux__av">?</span></div>';
+    h += '<div style="padding:6px 16px 2px"><div class="pb-card pb-card--felt scr-hero">';
+    h += '<div class="scr-hero__kick">THE TEAM ROOM</div>';
+    h += '<div class="scr-hero__slot"><div class="scr-faux"><span class="scr-faux__av">?</span><span class="scr-faux__amp">&</span><span class="scr-faux__av">?</span></div></div>';
     h += '<div class="scr-faux__rec">0 – 0 · your record awaits</div>';
     h += '<div style="font-family:var(--font-display);font-style:italic;font-weight:700;font-size:21px;color:var(--cb-chalk);line-height:1.15;margin-top:14px">Pick a partner.</div>';
     h += '<div style="font-family:var(--font-ui);font-size:13px;color:rgba(244,239,228,.84);margin:8px auto 0;line-height:1.5;max-width:320px">Form a 2-, 3-, or 4-player scramble team, track your W–L record, and chase team low scores together.</div>';
     h += '<button class="pb-btn-brass" style="margin-top:16px" onclick="Router.go(\'scramble\',{create:true})">Create a team</button>';
+    h += '</div></div>';
+    h += '<div style="padding:0 16px 2px"><div class="pb-card scr-how">';
+    h += '<div class="scr-how__kick">HOW SCRAMBLE WORKS</div>';
+    h += '<ol class="scr-how__steps">';
+    h += '<li><span class="scr-how__n">1</span><span class="scr-how__t"><b>Form a team.</b> Pick 2, 3, or 4 partners and name your crew.</span></li>';
+    h += '<li><span class="scr-how__n">2</span><span class="scr-how__t"><b>Log team rounds.</b> Best ball, one score &mdash; chase your team low together.</span></li>';
+    h += '<li><span class="scr-how__n">3</span><span class="scr-how__t"><b>Challenge a team.</b> Same-size crews go head-to-head for a W&ndash;L record.</span></li>';
+    h += '</ol></div></div>';
+    h += '<div style="padding:0 16px 6px"><div class="pb-card pb-card--felt scr-band">';
+    h += '<span class="scr-band__mark">THE PARBAUGHS</span><span class="scr-band__dot">&middot;</span><span class="scr-band__t">Scramble teams, est. 2026</span>';
     h += '</div></div>';
   }
 

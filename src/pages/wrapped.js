@@ -34,12 +34,25 @@ function _renderWrappedPending(year) {
   // #41 v8.25.155 — anchor content in the upper third (was dead-center with a
   // ~70% void) + a felt radial vignette glow behind it so the screen reads as a
   // composed editorial moment, not a lonely centered block.
-  var h = '<div style="position:fixed;inset:0;z-index:900;background:radial-gradient(125% 80% at 50% 26%, rgba(255,247,222,.07), transparent 58%), ' + bg + ';color:' + fg + ';display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;padding:28vh 32px 32px;gap:14px">';
-  h += '<button onclick="Router.back(\'seasonrecap\')" style="position:absolute;top:calc(14px + env(safe-area-inset-top));left:16px;background:none;border:none;color:' + mute + ';font-size:13px;cursor:pointer">← Back</button>';
-  h += '<div style="font-family:var(--font-mono);font-size:11px;letter-spacing:3px;color:var(--gold,#b58a3a);text-transform:uppercase">' + year + ' · In Progress</div>';
-  h += '<div style="font-family:var(--font-display);font-style:italic;font-weight:700;font-size:30px;line-height:1.15">Your year is still<br>being written.</div>';
-  h += '<div style="font-size:13px;color:' + mute + ';max-width:300px;line-height:1.5">Your ' + year + ' Wrapped unlocks <b style="color:' + fg + '">December 1</b>. ' + (yc > 0 ? (yc + ' round' + (yc === 1 ? '' : 's') + ' in the books so far — keep teeing it up.') : 'Log a round and your story starts here.') + '</div>';
-  h += '<svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="var(--gold,#b58a3a)" stroke-width="1.4" style="margin-top:6px;opacity:.85"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+  var h = '<div style="position:fixed;inset:0;z-index:900;background:radial-gradient(125% 80% at 50% 22%, rgba(255,247,222,.08), transparent 60%), ' + bg + ';color:' + fg + ';display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;padding:calc(13vh + env(safe-area-inset-top)) 20px calc(28px + env(safe-area-inset-bottom));gap:18px;overflow-y:auto">';
+  h += '<button onclick="Router.back(\'seasonrecap\')" style="position:absolute;top:calc(14px + env(safe-area-inset-top));left:16px;background:none;border:none;color:' + mute + ';font-size:13px;cursor:pointer;z-index:2">← Back</button>';
+  h += '<div class="pb-card pb-card--felt wrapped-pending-hero">';
+  h += '<div style="font-family:var(--font-mono);font-size:11px;letter-spacing:3px;color:var(--cb-brass-3,#E0BB60);text-transform:uppercase">' + year + ' · In Progress</div>';
+  h += '<div style="font-family:var(--font-display);font-style:italic;font-weight:700;font-size:31px;line-height:1.12;color:var(--cb-chalk,#F4EFE4)">Your year is still<br>being written.</div>';
+  h += '<div style="font-size:13px;color:rgba(241,234,211,.78);max-width:300px;line-height:1.5">Your ' + year + ' Wrapped unlocks <b style="color:var(--cb-chalk,#F4EFE4)">December 1</b>. ' + (yc > 0 ? (yc + ' round' + (yc === 1 ? '' : 's') + ' in the books so far — keep teeing it up.') : 'Log a round and your story starts here.') + '</div>';
+  h += '<div class="wrapped-pending-medallion" aria-hidden="true"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#2a1e08" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.2 2"/></svg></div>';
+  h += '</div>';
+  // Secondary band — fills the void below the focal-peak hero with a preview of
+  // what unlocks Dec 1, plus a tappable affordance (P10: says WHAT + WHAT-ACTION,
+  // and looks tappable via a brass-underlined control, not dead tan text).
+  h += '<div class="pb-card pb-card--felt pb-card--recessed wrapped-pending-band">';
+  h += '<div style="font-family:var(--font-mono);font-size:10px;letter-spacing:2.5px;color:var(--cb-brass-3,#E0BB60);text-transform:uppercase;margin-bottom:10px">Unlocks December 1</div>';
+  h += '<div style="display:flex;flex-direction:column;gap:9px">';
+  h += '<div class="wrapped-pending-row"><span>Your scoring year</span><span class="wrapped-pending-row-v">' + (yc > 0 ? (yc + ' round' + (yc === 1 ? '' : 's')) : 'not started') + '</span></div>';
+  h += '<div class="wrapped-pending-row"><span>Home course &amp; best round</span><span class="wrapped-pending-row-v">pending</span></div>';
+  h += '<div class="wrapped-pending-row"><span>League finish &amp; share card</span><span class="wrapped-pending-row-v">pending</span></div>';
+  h += '</div>';
+  h += '<button class="wrapped-pending-cta" onclick="Router.go(\'playnow\')">' + (yc > 0 ? 'Log another round' : 'Log your first round') + '</button>';
   h += '</div>';
   var el = document.querySelector('[data-page="wrapped"]');
   if (el) el.innerHTML = h;

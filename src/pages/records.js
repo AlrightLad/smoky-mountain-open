@@ -69,17 +69,33 @@ Router.register("records", function() {
     // fill + shadow and gets a quieter dashed brass hairline, so a tap-to-act
     // prompt reads at a glance without competing with a real number (AMD-026
     // actionable surfacing).
-    var ctaStyle = hasCount ? '' :
-      'border-style:dashed;border-color:rgba(var(--gold-rgb),.22);background:transparent;box-shadow:none';
-    var s = '<div class="card" onclick="Router.go(\'' + route + '\')" style="cursor:pointer;margin-bottom:0;' + ctaStyle + '"><div style="padding:14px 12px;text-align:center">';
+    // v8.25.162 (records contrast/P10 fix) — empty/zero tiles drop the ad-hoc
+    // dashed-transparent override (read as a BROKEN card, not a prompt) for the
+    // canonical .pb-card--recessed inset-well material via the page-scoped
+    // .rec-stat--empty hook. Live-count tiles keep the solid .pb-card filled stock.
+    var tileCls = hasCount ? 'pb-card rec-stat' : 'pb-card pb-card--recessed rec-stat rec-stat--empty';
+    var s = '<div class="' + tileCls + '" onclick="Router.go(\'' + route + '\')" style="cursor:pointer;margin-bottom:0"><div style="padding:14px 12px;text-align:center">';
     // v8.24.67 — zero numeral muted (brass reserved for real values per the
     // brass-role rule; a gold "0" reads as a broken stat, P9/P10 dead-state).
-    s += '<div style="font-size:20px;font-family:var(--font-display);font-weight:700;color:' + (hasCount ? 'var(--gold)' : 'var(--cb-mute-3)') + '">' + v + '</div>';
+    // v8.25.162 — empty-tile zero numeral was --cb-mute-3 (#C9C5BD ~1.2:1 on the
+    // canvas — the pale tan-on-tan that read as a broken stat). Promoted to
+    // --cb-brass-deep (AA on the recessed well) so an honest zero reads as a real,
+    // not-yet-earned record. Live counts keep brass --gold per the brass-role rule.
+    s += '<div style="font-size:20px;font-family:var(--font-display);font-weight:700;color:' + (hasCount ? 'var(--gold)' : 'var(--cb-brass-deep)') + '">' + v + '</div>';
     // Label stays AA (--cb-mute) on both tile kinds; on a prompt tile it reads
     // as the thing-being-prompted, on a count tile as the stat name.
     s += '<div style="font-size:10px;color:var(--cb-mute);margin-top:2px;text-transform:uppercase;letter-spacing:.8px">' + label + '</div>';
     if (cap) {
-      s += '<div style="font-size:9px;color:' + capColor + ';margin-top:4px;letter-spacing:0.4px;line-height:1.3">' + cap + '</div>';
+      // v8.25.162 (P10) — on an empty tile the caption IS the call-to-action, so it
+      // renders as a brass-underlined affordance (.rec-stat__cta) in --cb-brass-deep
+      // (AA on the recessed well) instead of dead --cb-ink-faint label text, making
+      // 'Tap to start one' / 'Tap to log the first' / 'Form a scramble team' clearly
+      // tappable. Live-count tiles keep the quiet brass populated-hint inline.
+      if (hasCount) {
+        s += '<div style="font-size:9px;color:' + capColor + ';margin-top:4px;letter-spacing:0.4px;line-height:1.3">' + cap + '</div>';
+      } else {
+        s += '<div class="rec-stat__cta">' + cap + '</div>';
+      }
     }
     s += '</div></div>';
     return s;

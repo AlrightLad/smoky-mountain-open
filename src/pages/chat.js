@@ -79,8 +79,10 @@ Router.register("chat", function() {
     h += '</div>';
   }
   
-  // Chat feed
-  h += '<div style="margin:0 16px 6px"><div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Trash Talk</div></div>';
+  // Chat feed — felt focal band gives the clubhouse conversation a real masthead
+  // (the page critique flagged it as reading flat). Compact: 2 lines, keeps the
+  // height-constrained flex column breathing room for the feed below.
+  h += '<div class="chat-tt-band pb-card pb-card--felt"><div class="chat-tt__title">Trash Talk</div><div class="chat-tt__sub">No score is safe from commentary.</div></div>';
   h += '<div id="chatFeed" class="section">' + skeletonFeed() + '</div>';
   h += '<div class="chat-input-row"><input type="text" id="chatInput" maxlength="500" placeholder="Talk trash..." onkeydown="if(event.key===\'Enter\')sendChat()"><button onclick="sendChat()">Send</button></div>';
   document.querySelector('[data-page="chat"]').innerHTML = h;

@@ -258,7 +258,15 @@ function renderMemberDetailWithData(p) {
   // Geometry lives entirely on .stats-grid / .stat-box tokens (components.css);
   // the old inline grid-template-columns duplicated the class default.
   h += '<div class="stats-grid pf-reveal">';
-  h += statBox(hcap !== null ? hcap : "—", "Handicap");
+  // P10: a missing handicap is not a dead dash. When null, the tile becomes a
+  // tappable affordance that says WHAT (no WHS index yet) + ACTION (open the
+  // tracker) instead of an inert "—". Keeps the .stat-box class so the
+  // layout-regression spec's "exactly 6 .stat-box" assertion still holds.
+  if (hcap !== null) {
+    h += statBox(hcap, "Handicap");
+  } else {
+    h += '<div class="stat-box stat-box--link pf-hcap-empty" onclick="toggleSection(\'ps-hcap-' + pid + '\')"><div class="stat-val">—</div><div class="stat-label">Set up handicap <svg viewBox="0 0 12 12" width="9" height="9" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M3 9l6-6M5 3h4v4"/></svg></div></div>';
+  }
   h += statBox(avg || "—", "Avg Score");
   var bestScore = best ? best.score : "—";
   var bestRoundId = best ? best.roundId : null;

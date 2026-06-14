@@ -271,10 +271,14 @@ Router.register("shop", function() {
   // 3m.A Wallet — compact balance CHIP (#41 v8.25.156, critic #10: the shop read
   // as a wallet, not a store, because a tall balance card dominated above the
   // fold. Slimmed to a one-line brass ledger chip so the goods lead sooner.)
-  h += '<div class="shop-balance-chip" aria-label="Your Parcoin balance, ' + balance + '"><svg viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7"/></svg><strong>' + balance.toLocaleString() + '</strong> ParCoin' + (lifetime ? ' <span class="shop-balance-chip__sub">· ' + lifetime.toLocaleString() + ' all-time</span>' : '') + '</div>';
+  h += '<div class="pb-card pb-card--felt shop-balance-hero" aria-label="Your ParCoin balance, ' + balance + '">';
+  h += '<div class="shop-balance-hero__eyebrow"><svg viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7"/></svg><span>YOUR WALLET</span></div>';
+  h += '<div class="shop-balance-hero__amount"><strong>' + balance.toLocaleString() + '</strong> <span class="shop-balance-hero__unit">ParCoin</span></div>';
+  if (lifetime) h += '<div class="shop-balance-hero__sub">' + lifetime.toLocaleString() + ' earned all-time</div>';
+  h += '</div>';
 
   // 3m.A.2 Recent activity ledger (async, truthful grouped render)
-  h += '<section class="shop-ledger" aria-label="Recent activity">';
+  h += '<section class="pb-card pb-card--rail shop-ledger" aria-label="Recent activity">';
   h += '<div class="shop-sec-head"><h2 class="shop-sec-title">Recent activity</h2>';
   if (uid) h += '<button type="button" class="shop-sec-link" onclick="Router.go(\'members\',{id:\'' + uid + '\'})">Full history</button>';
   h += '</div>';

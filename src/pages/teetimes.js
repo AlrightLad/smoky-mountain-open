@@ -62,8 +62,10 @@ Router.register("teetimes", function() {
     h += '<div style="font-family:var(--font-ui);font-size:13px;color:rgba(244,239,228,.84);margin:8px auto 0;line-height:1.5;max-width:320px">Post a tee time and your crew can RSVP \u2014 never wonder who\u2019s playing this weekend again.</div>';
     h += '<button class="pb-btn-brass" style="margin-top:16px" onclick="Router.go(\'tee-create\')">Post a tee time</button>';
     h += '</div></div>';
-    h += '<div style="margin-top:20px;text-align:left">';
-    h += '<div style="font-size:9px;color:var(--cb-mute);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;text-align:center">Example tee times</div>';
+    h += '<div style="padding:6px 16px 2px"><div class="pb-card pb-card--recessed tt-preview">';
+    h += '<div class="tt-preview-eyebrow">Preview · what a posted sheet looks like</div>';
+    h += '<div class="tt-preview-hint">Tap <strong>Post a tee time</strong> above to add the first real one.</div>';
+    h += '<div class="tt-preview-rows">';
     var exTees = [
       "Honey Run \u00b7 Saturday 8:30 AM \u00b7 2 spots open",
       "Out Door CC \u00b7 Sunday 7:00 AM \u00b7 Need 3 more",
@@ -79,9 +81,9 @@ Router.register("teetimes", function() {
     // separate, full-strength chip: AA-legible --cb-mute-1 (5.09:1) ink on a
     // solid paper fill so the SAMPLE label reads clearly.
     exTees.forEach(function(ex) {
-      h += '<div style="display:flex;align-items:center;gap:9px;padding:11px 13px;margin-bottom:6px;background:var(--cb-paper);border:1px dashed var(--border);border-radius:var(--r-2);font-size:12px;pointer-events:none;cursor:default" aria-hidden="true"><span style="width:6px;height:6px;border-radius:50%;background:var(--cb-mute-2);flex:none"></span><span style="flex:1;color:var(--cb-mute-2)">' + ex + '</span><span style="flex:none;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--cb-mute-1);background:var(--cb-paper);border:1px solid var(--cb-mute-1);border-radius:var(--r-5);padding:2px 7px">Sample</span></div>';
+      h += '<div class="tt-preview-row" aria-hidden="true"><span class="tt-preview-dot"></span><span class="tt-preview-label">' + ex + '</span><span class="tt-preview-pill">Sample</span></div>';
     });
-    h += '</div>';
+    h += '</div></div></div>';
   }
   upcoming.forEach(function(t) { h += '<div class="section">' + renderTeeCard(t) + '</div>'; });
 

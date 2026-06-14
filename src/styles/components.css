@@ -183,7 +183,15 @@
    each frame — the Founder-reported "flicker when scrolling." The .97 translucent
    bg was re-blending over moving content per scroll frame on mobile; isolating
    the layer composites it once. transform is safe on position:fixed. */
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(var(--bg-rgb),.97);border-top:1px solid var(--border);box-shadow:0 -8px 24px rgba(0,0,0,.10);display:flex;justify-content:space-around;align-items:stretch;padding:6px 0 calc(env(safe-area-inset-bottom,20px) + 6px);padding-bottom:calc(max(env(safe-area-inset-bottom,20px),20px) + 6px);height:auto;min-height:64px;transform:translateZ(0);-webkit-backface-visibility:hidden;backface-visibility:hidden}
+/* #41 v8.25.162 — fully opaque (was .97, which let page content ghost UP through
+   the fixed nav — re-critique flagged settings' Notifications header bleeding
+   through). Opaque + the global page bottom-clearance below = content never sits
+   under the nav. No backdrop-blur, so the v8.12 scroll-flicker fix is preserved. */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgb(var(--bg-rgb));border-top:1px solid var(--border);box-shadow:0 -8px 24px rgba(0,0,0,.10);display:flex;justify-content:space-around;align-items:stretch;padding:6px 0 calc(env(safe-area-inset-bottom,20px) + 6px);padding-bottom:calc(max(env(safe-area-inset-bottom,20px),20px) + 6px);height:auto;min-height:64px;transform:translateZ(0);-webkit-backface-visibility:hidden;backface-visibility:hidden}
+/* Bottom-nav clearance lives on #mainApp (the scroll container), NOT on
+   [data-page] — those nest inside #mainApp, so padding on both would stack into
+   ~190px of dead space. chat/dm opt out of #mainApp scroll (overflow:hidden) and
+   carry their own composer clearance. See #mainApp rule below. */
 .bottom-nav button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;color:var(--muted);font-size:var(--text-xs);font-weight:500;letter-spacing:.3px;padding:var(--sp-2) 0 4px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:color var(--duration-fast) var(--ease-default)}
 .bottom-nav button.a{color:var(--gold)}
 /* Premium active-tab indicator (Founder 4-dim push: clearer wayfinding + premium
@@ -195,7 +203,7 @@
 .bottom-nav button:hover{color:var(--cb-brass)}
 .bottom-nav button:hover svg{stroke:var(--cb-brass)}
 .bottom-nav button svg{width:22px;height:22px;stroke:var(--muted);fill:none;stroke-width:1.5;transition:stroke var(--duration-fast) var(--ease-default)}
-#mainApp{padding-bottom:100px}
+#mainApp{padding-bottom:calc(80px + max(env(safe-area-inset-bottom,20px),20px))}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    HERO
@@ -1245,8 +1253,12 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .cal-create:hover{background:var(--cb-brass);color:var(--cb-felt)}
 .cal-meta{font-family:var(--font-mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--cb-mute);padding:12px 0 6px}
 
-/* Month grid (semantic table, role=grid) */
-.cal-body{margin-top:2px}
+/* Month grid (semantic table, role=grid) — sits on pressed pb-card stock so the
+   board reads as a material surface above the canvas (#41 9.5 convergence). The
+   companion rule clips the square-cornered table inside the card's radius. */
+.cal-body{margin-top:10px}
+.cal-body.pb-card{overflow:hidden;padding:0}
+.cal-body.pb-card .cal-th{padding-top:12px}
 .cal-table{width:100%;border-collapse:collapse;table-layout:fixed}
 .cal-th{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute);text-align:left;padding:8px 8px 10px;border-bottom:1px solid var(--cb-chalk-3)}
 .cal-cell{vertical-align:top;border:1px solid var(--cb-chalk-3);border-top:none;border-left:none;height:114px;padding:0;position:relative}
@@ -1456,6 +1468,12 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
    .dm-page-wrap pattern (single-surface chat) for the multi-section Clubhouse. */
 [data-page="chat"]{display:flex;flex-direction:column;height:calc(100vh - 52px);height:calc(100dvh - 52px);overflow:hidden;padding-bottom:calc(66px + max(env(safe-area-inset-bottom, 20px), 20px))}
 [data-page="chat"] > *{flex-shrink:0}
+/* Felt focal band for the Trash Talk masthead (#41 9.5 convergence) — gives the
+   clubhouse conversation a material focal moment instead of a flat tiny eyebrow.
+   Compact so the height-constrained flex column keeps room for the feed. */
+.chat-tt-band{margin:2px 16px 10px;padding:11px 15px;border-radius:var(--r-3)}
+.chat-tt__title{font-family:var(--font-display);font-style:italic;font-weight:700;font-size:20px;line-height:1.05;color:var(--cb-chalk)}
+.chat-tt__sub{font-family:var(--font-ui);font-size:11.5px;color:rgba(244,239,228,.82);margin-top:2px}
 #chatFeed{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column}
 /* v8.23.59 — Empty Trash Talk feed centers in its frame instead of pinning to
    the top over a void (which read as a failed load). Only the lone empty card
@@ -5627,3 +5645,90 @@ img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width:
 .rec-sig--empty .rec-sig__big{color:var(--cb-mute-3);font-weight:700;font-size:22px}
 .rec-sig__unit{font-size:13px;font-weight:600;color:var(--cb-mute);margin-left:3px}
 .rec-sig__detail{font-family:var(--font-ui);font-size:11px;color:var(--cb-mute);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   #41 — 9.5 CONVERGENCE BATCH (v8.25.162): felt focal-peak heroes + material
+   depth + WCAG-AA contrast + P10 empty states across the still-short member
+   pages (standings, wrapped, records, teetimes, scramble, more, shop). Every
+   color is contrast-verified against the ACTUAL ground it lands on — felt
+   surfaces use light chalk/brass-3; paper surfaces use ink/brass-deep; no
+   muted tan-on-tan label is left failing. Composes the .pb-card material
+   system; never re-declares stock.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* — standings: felt leader band + pb-card board — */
+.std-board{margin-top:0;padding:6px 4px 4px;overflow:hidden}
+.std-board .roster-table{margin-top:0}
+.std-board .roster-table thead th{border-bottom-color:rgba(20,19,15,.12)}
+.std-board .std-row--leader td{position:relative;background:linear-gradient(157deg,#15463a,#0F3D2E 58%,#0b3226);border-bottom:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.09)}
+.std-board .std-row--leader td:first-child{border-top-left-radius:var(--r-2);border-bottom-left-radius:var(--r-2);box-shadow:inset 0 1px 0 rgba(255,255,255,.09), inset 8px 0 16px -10px rgba(0,0,0,.45)}
+.std-board .std-row--leader td:last-child{border-top-right-radius:var(--r-2);border-bottom-right-radius:var(--r-2)}
+.std-board .std-row--leader{box-shadow:0 8px 22px -12px rgba(0,0,0,.5)}
+.std-board .std-row--leader .std-rank{font-family:var(--font-display);font-size:24px;font-weight:700;color:var(--cb-brass);text-shadow:0 1px 0 rgba(0,0,0,.35)}
+.std-board .std-row--leader .std-name-txt{display:inline-block;background:var(--cb-paper);color:var(--cb-ink);font-family:var(--font-display);font-style:italic;font-weight:700;padding:3px 10px;border-radius:var(--r-2);box-shadow:0 1px 2px rgba(0,0,0,.25);max-width:160px}
+.std-board .std-row--leader .roster-handle{color:var(--cb-chalk-3)}
+.std-board .std-row--leader .std-pts{color:var(--cb-chalk);text-shadow:0 1px 0 rgba(0,0,0,.3)}
+.std-board .std-row--leader .std-avg{color:var(--cb-chalk-3)}
+.std-board .std-row--leader .std-you-chip{color:#2a1e08;background:linear-gradient(180deg,#dcb868,#b4893e);box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.std-board .std-row--leader.std-row--you td{box-shadow:inset 0 1px 0 rgba(255,255,255,.09)}
+.std-board .std-row--leader.std-row--you td:first-child{box-shadow:inset 0 1px 0 rgba(255,255,255,.09), inset 8px 0 16px -10px rgba(0,0,0,.45)}
+
+/* — wrapped: felt pending hero + struck-brass countdown medallion + secondary band — */
+.wrapped-pending-hero{max-width:340px;width:100%;padding:30px 26px 26px;display:flex;flex-direction:column;align-items:center;gap:14px;border-radius:var(--r-3)}
+.wrapped-pending-medallion{margin-top:4px;width:62px;height:62px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid #8a6526;background:radial-gradient(120% 120% at 50% 22%,#e6c478,#c9a155 46%,#b4893e 74%,#a67c34);box-shadow:inset 0 1px 0 rgba(255,247,222,.65), inset 0 -2px 5px rgba(110,80,28,.45), 0 3px 10px -2px rgba(20,19,15,.5)}
+.wrapped-pending-band{max-width:340px;width:100%;padding:18px 20px;text-align:left;border-radius:var(--r-3)}
+.wrapped-pending-row{display:flex;align-items:baseline;justify-content:space-between;gap:14px;font-size:13px;color:var(--cb-chalk-2,#EBE5D6)}
+.wrapped-pending-row-v{font-family:var(--font-mono);font-size:11px;letter-spacing:.5px;color:rgba(241,234,211,.62);text-transform:uppercase;white-space:nowrap}
+.wrapped-pending-cta{margin-top:16px;width:100%;min-height:44px;background:none;border:none;border-bottom:2px solid var(--cb-brass-3,#E0BB60);padding:9px 0 7px;font-family:var(--font-ui);font-weight:700;font-size:13px;letter-spacing:.3px;color:var(--cb-brass-3,#E0BB60);cursor:pointer;transition:color var(--duration-fast,.15s) ease,border-color var(--duration-fast,.15s) ease}
+.wrapped-pending-cta:hover{color:var(--cb-chalk,#F4EFE4);border-bottom-color:var(--cb-chalk,#F4EFE4)}
+.wrapped-pending-cta:active{transform:translateY(1px)}
+@media (prefers-reduced-motion:reduce){.wrapped-pending-cta{transition:none}}
+
+/* — records: empty-tile recessed well + AA zero + tappable CTA caption — */
+.rec-stat__cta{display:inline-block;margin-top:5px;font-family:var(--font-mono);font-size:9px;font-weight:600;letter-spacing:.4px;line-height:1.3;color:var(--cb-brass-deep);border-bottom:1px solid rgba(var(--cb-brass-rgb),.55);padding-bottom:1px}
+.rec-stat--empty:active .rec-stat__cta{border-bottom-color:var(--cb-brass-deep)}
+
+/* — teetimes: branded preview well (replaces faux SAMPLE rows) + AA labels — */
+.tt-preview{padding:14px 14px 8px;margin-top:4px;text-align:left}
+.tt-preview-eyebrow{font-family:var(--font-mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--cb-brass-deep);text-align:center;margin-bottom:4px}
+.tt-preview-hint{font-family:var(--font-ui);font-size:11.5px;line-height:1.45;color:var(--cb-ink);text-align:center;margin-bottom:12px}
+.tt-preview-hint strong{color:var(--cb-brass-deep);font-weight:700}
+.tt-preview-rows{display:flex;flex-direction:column}
+.tt-preview-row{display:flex;align-items:center;gap:9px;padding:10px 2px;font-size:12px;pointer-events:none;cursor:default;border-top:1px solid rgba(20,19,15,.08)}
+.tt-preview-row:first-child{border-top:none}
+.tt-preview-dot{width:6px;height:6px;border-radius:50%;background:var(--cb-mute-2);flex:none}
+.tt-preview-label{flex:1;color:var(--cb-ink-faint);font-family:var(--font-ui)}
+.tt-preview-pill{flex:none;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--cb-brass-deep);background:var(--cb-paper);border:1px solid var(--cb-brass-deep);border-radius:var(--r-5);padding:2px 7px;font-family:var(--font-mono)}
+
+/* — scramble: signature team-slot hero + how-it-works strip + felt closing band — */
+.scr-hero{padding:20px 22px 24px;text-align:center}
+.scr-hero__kick{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass-3);text-align:left;margin-bottom:14px;opacity:.9}
+.scr-hero__slot{display:inline-flex;padding:16px 26px;border-radius:var(--r-3);background:rgba(0,0,0,.18);box-shadow:inset 0 1px 4px rgba(0,0,0,.32),inset 0 0 0 1px rgba(244,239,228,.06)}
+.scr-how{padding:18px 18px 16px;margin-top:10px}
+.scr-how__kick{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass-deep);margin-bottom:12px}
+.scr-how__steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.scr-how__steps li{display:flex;align-items:flex-start;gap:12px}
+.scr-how__n{flex:0 0 auto;width:24px;height:24px;border-radius:50%;background:var(--cb-brass);color:var(--cb-ink);font-family:var(--font-display);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;line-height:1}
+.scr-how__t{font-family:var(--font-ui);font-size:13px;line-height:1.45;color:var(--cb-ink)}
+.scr-how__t b{font-weight:700;color:var(--cb-ink)}
+.scr-band{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:7px;padding:13px 18px;margin-top:10px}
+.scr-band__mark{font-family:var(--font-display);font-style:italic;font-weight:700;font-size:14px;color:var(--cb-chalk)}
+.scr-band__dot{color:var(--cb-brass-3)}
+.scr-band__t{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cb-chalk-3)}
+
+/* — more: material-driven group identity (ParCoin felt peak, rest pressed paper) — */
+.more-group{border-radius:10px}
+.more-group--felt{border-radius:10px}
+
+/* — shop: felt balance focal-peak (TUNED compact so the goods still lead the
+   fold — the balance was deliberately slimmed in a prior pass; this keeps it a
+   material focal moment, not a dominating wallet card) + brass-rail ledger — */
+.shop-balance-hero{margin:6px 0 18px;padding:14px 20px 15px;text-align:left}
+.shop-balance-hero__eyebrow{display:flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass-3)}
+.shop-balance-hero__eyebrow svg{color:var(--cb-brass-3);flex-shrink:0}
+.shop-balance-hero__amount{margin-top:5px;font-family:var(--font-display);font-weight:600;line-height:.95;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.shop-balance-hero__amount strong{font-size:clamp(34px,10vw,46px);color:var(--cb-brass-3);font-weight:600}
+.shop-balance-hero__unit{font-size:clamp(14px,4vw,18px);font-style:italic;color:var(--cb-chalk);letter-spacing:-.3px;margin-left:4px}
+.shop-balance-hero__sub{margin-top:7px;font-family:var(--font-mono);font-size:10.5px;font-weight:600;letter-spacing:1.2px;text-transform:uppercase;color:var(--cb-chalk-3)}
+.shop-ledger.pb-card{padding:16px 18px;margin:0 0 36px}
+.shop-ledger.pb-card .shop-ledger__body{margin-top:10px}
