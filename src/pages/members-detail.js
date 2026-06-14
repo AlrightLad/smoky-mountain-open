@@ -71,7 +71,6 @@ function renderMemberDetailWithData(p) {
   var titlePlateClass = _tp === "pc36_member_tag" ? "title-tag-leather" : "title-engraved";
   var isBeta = PB.getPlayers().indexOf(p) < 30;
   var isOwnProfile = currentUser && (pid === currentUser.uid || (currentProfile && pid === currentProfile.claimedFrom));
-  var canEditPhoto = isOwnProfile;
 
   // ── EDITORIAL PORTRAIT MASTHEAD (CLUBHOUSE_SPEC-HQ-3o) ──
   // Mirrors the roster (3e) editorial language: mono eyebrow + Fraunces italic
@@ -116,8 +115,9 @@ function renderMemberDetailWithData(p) {
   // (the auto-spec over-scoped that and would have buried the action buttons in
   // dark felt). Text recolored to chalk/brass on felt via .pf-hero overrides.
   h += '<div class="pf-portrait pb-card pb-card--felt pf-hero">';
-  h += '<div class="pf-av" style="width:104px;height:104px;font-size:40px;border:3px solid ' + _profColor + ';box-shadow:' + _profShadowCombined + _profAnimCss + '"' + (canEditPhoto ? ' onclick="uploadMemberPhoto(\'' + pid + '\')"' : '') + '>' + Router.getAvatar(p);
-  if (canEditPhoto) h += '<div class="pf-av__edit"><svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M11 2l3 3-8 8H3v-3z"/></svg></div>';
+  // v8.25.172 (Founder 2026-06-14) — photo editing now lives ONLY in Edit profile
+  // (single edit surface); the profile avatar is display-only (no floating pencil).
+  h += '<div class="pf-av pf-hero-av" style="width:104px;height:104px;font-size:40px;border:3px solid ' + _profColor + ';box-shadow:' + _profShadowCombined + _profAnimCss + '">' + Router.getAvatar(p);
   h += '<div class="pf-av__lvl">' + lvl.level + '</div>';
   h += '</div>';
   h += '<div class="pf-id">';

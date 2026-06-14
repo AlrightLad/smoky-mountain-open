@@ -48,17 +48,14 @@ function renderMemberEditForm(p) {
   var h = '<div class="sh"><h2>Edit profile</h2><button class="back" onclick="Router.go(\'members\',{id:\'' + pid + '\'})">← Back</button></div>';
 
   h += '<div class="form-section"><div class="form-title">Basic info</div>';
-  h += formField("Display name", "edit-name", p.name, "text");
-  h += formField("Username", "edit-username", p.username || "", "text", "Permanent · Cannot be changed");
-  h += '<div class="ff"><label class="ff-label">Username</label><div class="ff-input" style="background:var(--bg4);color:var(--muted)">' + escHtml(p.username || "") + ' <span style="font-size:9px">(permanent)</span></div></div>';
-  h += formField("Nickname", "edit-nick", p.nick || "", "text", "e.g. The Commissioner");
-  
-  // Display name preference
-  h += '<div class="ff"><label class="ff-label">Show on scorecards & feed as</label><select class="ff-input" id="edit-displayPref">';
-  h += '<option value="name"' + ((p.displayPref||"name")==="name"?" selected":"") + '>Display Name (' + escHtml(p.name) + ')</option>';
-  h += '<option value="username"' + (p.displayPref==="username"?" selected":"") + '>Username (' + escHtml(p.username||"") + ')</option>';
-  h += '<option value="nick"' + (p.displayPref==="nick"?" selected":"") + '>Nickname (' + escHtml(p.nick||p.name) + ')</option>';
-  h += '</select></div>';
+  // v8.25.172 (Founder 2026-06-14) — ONE source of truth. Profile photo is changed
+  // HERE (not via a floating pencil on the avatar). Username = what shows on the app
+  // everywhere; Player name = your real name, optional. The old duplicate-username /
+  // nickname / "show as" preference are retired (getDisplayName is now username-first).
+  h += '<div class="ff"><label class="ff-label">Profile photo</label>';
+  h += '<button type="button" class="btn-sm outline" onclick="uploadMemberPhoto(\'' + pid + '\')" style="display:inline-flex;align-items:center;gap:6px"><svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" style="vertical-align:middle"><path d="M11 2l3 3-8 8H3v-3z"/></svg>Change photo</button></div>';
+  h += formField("Username", "edit-username", p.username || "", "text", "What shows on the app · 3+ characters, must be unique");
+  h += formField("Player name", "edit-name", p.name || "", "text", "Your real name — optional");
   h += formField("Score range", "edit-range", p.range || "", "text", "e.g. 85-95");
   
   // Equipped title selector
@@ -190,8 +187,11 @@ function saveMemberEdit(pid) {
   var updates = {
     name: document.getElementById("edit-name").value,
     username: document.getElementById("edit-username").value,
-    nick: document.getElementById("edit-nick").value,
-    displayPref: document.getElementById("edit-displayPref").value,
+    // v8.25.172 — nick/displayPref retired from the form (username is the single
+    // displayed identity). Preserve any existing nick; pin displayPref to username
+    // so any legacy reader stays consistent with getDisplayName.
+    nick: (currentProfile && currentProfile.nick) || "",
+    displayPref: "username",
     equippedTitle: document.getElementById("edit-title").value,
     equippedCosmetics: {
       border: document.getElementById("edit-ring") ? document.getElementById("edit-ring").value : ((currentProfile && currentProfile.equippedCosmetics) ? currentProfile.equippedCosmetics.border : ""),

@@ -689,10 +689,11 @@ var PB = (function() {
 
   function getDisplayName(p) {
     if (!p) return "Unknown";
-    var pref = p.displayPref || "name";
-    if (pref === "username" && p.username) return p.username;
-    if (pref === "nick" && p.nick) return p.nick;
-    return p.name || p.username || "Unknown";
+    // v8.25.172 (Founder 2026-06-14) — SINGLE SOURCE OF TRUTH: the username is what
+    // shows on the app, everywhere. This matches renderUsername (already username-first)
+    // so live-rendered names and stamped author-names are finally consistent. p.name is
+    // now just the optional real-life "player name" metadata. (displayPref/nick retired.)
+    return p.username || p.name || "Unknown";
   }
 
   // Single source of truth for a round/event format's member-facing name, so the
