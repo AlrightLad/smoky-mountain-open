@@ -1,13 +1,13 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    PAGE: MERCH — "the pro shop" premium product preview (coming soon)
 
-   v8.25.107 (Founder 2026-06-13/14): the prior single illustrated SVG poster
-   was "severely behind." Replaced with a real product GALLERY built from
-   AI-generated (Vertex Imagen 4) studio product photography, brand-locked to
-   the Clubhouse palette (cream / felt-green / brass / claret) and trademark-
-   clean (crossed-clubs emblem only). Images are web-optimized JPGs in
-   public/img/merch/ (~30-70kb each). Editorial masthead + flat-lay hero + a
-   five-piece line preview, all "coming soon" until the shop opens.
+   v8.25.108 (Founder 2026-06-13/14): real product GALLERY built from Vertex
+   Imagen 4 studio photography of BLANK premium pieces, then the Founder-approved
+   P+rose brandmark composited onto each garment's embroidery position (cream/
+   felt logo on cream surfaces, cream/brass knockout on the green quarter-zip) —
+   "put the parbaugh logo on the items not the clubs logo." Holderness & Bourne
+   editorial restraint; every piece labelled COMING SOON. Web-optimized JPGs in
+   public/img/merch/ (~34-70kb each). Masthead + flat-lay hero + five-piece line.
    ═══════════════════════════════════════════════════════════════════════════ */
 
 Router.register("merch", function () {
@@ -17,9 +17,9 @@ Router.register("merch", function () {
   }
 
   var LINE = [
-    { img: "cap.jpg", name: "The Tour Cap", note: "Structured six-panel · crossed-clubs crest" },
+    { img: "cap.jpg", name: "The Tour Cap", note: "Structured six-panel · rose-and-P mark" },
     { img: "polo.jpg", name: "The Clubhouse Polo", note: "Pima pique · felt-green collar" },
-    { img: "quarterzip.jpg", name: "The Fairway Quarter-Zip", note: "Brushed knit · brass pull" },
+    { img: "quarterzip.jpg", name: "The Fairway Quarter-Zip", note: "Brushed knit · cream placket" },
     { img: "towel.jpg", name: "The Caddy Towel", note: "Woven stripe · brass grommet" },
     { img: "headcover.jpg", name: "The Driver Headcover", note: "Hand-knit · claret pom" }
   ];
@@ -45,11 +45,11 @@ Router.register("merch", function () {
   h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">';
   LINE.forEach(function (it) {
     h += '<div style="background:var(--cb-paper);border:1px solid var(--cb-chalk-3);border-radius:var(--r-3);overflow:hidden;box-shadow:var(--shadow-sm)">';
-    h += '<div style="position:relative;background:var(--cb-chalk-2)"><img src="' + imgUrl(it.img) + '" alt="' + escHtml(it.name) + '" loading="lazy" style="display:block;width:100%;height:auto">';
-    h += '<div style="position:absolute;top:8px;right:8px;font-family:var(--font-mono);font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cb-brass-deep);background:rgba(var(--bg-rgb),.9);padding:3px 7px;border-radius:var(--r-1)">Soon</div></div>';
-    h += '<div style="padding:10px 12px 12px">';
+    h += '<div style="position:relative;background:var(--cb-chalk-2)"><img src="' + imgUrl(it.img) + '" alt="' + escHtml(it.name) + '" loading="lazy" style="display:block;width:100%;height:auto"></div>';
+    h += '<div style="padding:11px 12px 13px">';
     h += '<div style="font-family:var(--font-display);font-weight:600;font-size:14px;color:var(--cb-ink);line-height:1.2">' + escHtml(it.name) + '</div>';
     h += '<div style="font-family:var(--font-ui);font-size:11px;color:var(--cb-mute);margin-top:3px;line-height:1.35">' + escHtml(it.note) + '</div>';
+    h += '<div style="font-family:var(--font-mono);font-size:8.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--cb-brass-deep);margin-top:8px">Coming Soon</div>';
     h += '</div></div>';
   });
   h += '</div></div>';

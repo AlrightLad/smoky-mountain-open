@@ -37,6 +37,18 @@ const MERCH = [
   ['merch-flatlay', 'A premium top-down flat-lay product photograph of golf merchandise arranged neatly on a warm cream surface: a folded cream golf polo, a structured cream and forest-green cap, a folded forest-green towel, and a knit driver headcover, with three white golf balls. Editorial catalog styling, warm cream, forest green, brass and claret palette. Soft diffused overhead studio light, subtle shadows, photorealistic, high detail.', '4:3'],
 ];
 
+// MERCH_BLANK — BLANK premium products (NO emblem/logo/text) for clean logo
+// compositing. Founder: "put the parbaugh logo on the items not the clubs logo."
+// Flat, camera-facing surfaces so the real P+rose mark composites cleanly.
+const MERCH_BLANK = [
+  ['blank-cap', 'A premium structured six-panel golf cap, warm cream crown with a forest-green brim, photographed straight-on facing the camera so the front panel is flat and centered, completely blank front panel, no emblem, no logo, no text, no embroidery, fine cotton-twill texture, resting on a smooth warm cream surface.' + STUDIO],
+  ['blank-polo', 'A premium golf polo shirt in warm cream pique fabric with a forest-green ribbed collar, neatly folded and photographed directly from above as a flat-lay so the chest area lies flat, completely plain chest, no emblem, no logo, no text, no embroidery, fine pique knit texture, on a smooth warm cream surface.' + STUDIO],
+  ['blank-quarterzip', 'A premium quarter-zip golf pullover in forest-green brushed knit with a cream zip placket, neatly folded and photographed directly from above as a flat-lay, completely plain chest, no emblem, no logo, no text, no embroidery, soft knit texture, on a smooth warm cream surface.' + STUDIO],
+  ['blank-towel', 'A premium golf towel in warm cream cotton with a woven forest-green and claret-red border stripe and a brass grommet in one corner, neatly folded and photographed directly from above as a flat-lay, completely plain center field, no emblem, no logo, no text, plush terry texture, on a smooth warm cream surface.' + STUDIO],
+  ['blank-headcover', 'A premium knit golf driver headcover in cream and forest-green knit with a claret-red pom on top, standing upright facing the camera, completely plain front, no emblem, no logo, no text, hand-knit texture, on a smooth warm cream surface.' + STUDIO],
+  ['blank-flatlay', 'A premium top-down flat-lay of blank golf merchandise neatly arranged with generous spacing on a smooth warm cream surface: a folded cream polo, a structured cream-and-forest-green cap, a folded forest-green towel, and a knit driver headcover. Every item completely blank — no emblems, no logos, no text, no embroidery on any item. Editorial luxury-catalog styling, warm cream / forest green / brass / claret palette. Soft diffused overhead studio light, subtle shadows, photorealistic, high detail.', '4:3'],
+];
+
 // SHOP — premium product renders of the earnable/buyable cosmetics as real objects.
 const SHOP = [
   ['shop-medallion', 'A minimalist studio macro product photograph of a single struck solid-brass commemorative golf medallion coin, embossed with a golf flag and crossed clubs, gleaming polished gold metal with crisp relief, resting flat on a smooth warm cream surface.' + STUDIO],
@@ -51,7 +63,7 @@ const FILLERS = [
   ['filler-clubhouse', 'A warm inviting photograph of a cozy golf clubhouse interior at golden hour, leather chairs, a wall of brass trophies softly out of focus, warm cream and forest-green and brass tones, no people, editorial interior photography, shallow depth of field, photorealistic.', '16:9'],
 ];
 
-const SETS = { merch: MERCH, shop: SHOP, fillers: FILLERS };
+const SETS = { merch: MERCH, merch2: MERCH_BLANK, shop: SHOP, fillers: FILLERS };
 const which = process.argv[2];
 
 async function gen(name, prompt, ar) {
@@ -68,7 +80,7 @@ async function gen(name, prompt, ar) {
 }
 
 let jobs;
-if (which === 'merch' || which === 'shop' || which === 'fillers') jobs = SETS[which];
+if (SETS[which]) jobs = SETS[which];
 else if (which && process.argv[3]) jobs = [[which, process.argv[3], process.argv[4]]];
 else jobs = [...MERCH, ...SHOP, ...FILLERS];
 
