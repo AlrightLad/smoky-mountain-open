@@ -181,15 +181,18 @@ Router.register("settings", function(params) {
     // lives on the avatar chip (the caddie's color identity); the active ring is
     // brass via the shared .theme-row[aria-checked] rule.
     disp += '<div role="radiogroup" aria-label="Caddie" class="set-caddie-group">';
-    _caddieRoster.forEach(function(cad) {
+    _caddieRoster.forEach(function(cad, idx) {
       var owned = !cad.locked || _ownedCos.indexOf(cad.sku) !== -1;
       var isActive = (cad.id === _curCaddie);
       var initial = escHtml((cad.name || "?").charAt(0));
-      disp += '<button type="button" class="theme-row theme-row--caddie' + (owned ? '' : ' theme-row--locked') + '" role="radio" aria-checked="' + (isActive ? 'true' : 'false') + '" data-caddie-id="' + cad.id + '" data-accent="' + cad.accent + '" data-owned="' + (owned ? '1' : '0') + '" onclick="' + (owned ? 'settingsPickCaddie' : 'settingsCaddieLockedHint') + '(\'' + cad.id + '\')">';
+      // v8.25.133 (#71) — pb-caddy-host lets hovering the whole row "perk up"
+      // the living portrait; a per-caddie negative animation-delay desyncs the
+      // idle breathing so the roster reads as four individuals, not a chorus.
+      disp += '<button type="button" class="theme-row theme-row--caddie pb-caddy-host' + (owned ? '' : ' theme-row--locked') + '" role="radio" aria-checked="' + (isActive ? 'true' : 'false') + '" data-caddie-id="' + cad.id + '" data-accent="' + cad.accent + '" data-owned="' + (owned ? '1' : '0') + '" onclick="' + (owned ? 'settingsPickCaddie' : 'settingsCaddieLockedHint') + '(\'' + cad.id + '\')">';
       // v8.25.130 — rubber-hose character portrait instead of a letter chip.
       var _cadImg = cad.img ? ((typeof window !== "undefined" && window.__PB_BASE__ ? window.__PB_BASE__ : "/") + cad.img) : "";
       if (_cadImg) {
-        disp += '<span class="theme-row__chip theme-row__chip--caddie theme-row__chip--photo" aria-hidden="true" style="background:' + cad.accent + '"><img src="' + _cadImg + '" alt="" onerror="this.style.display=\'none\';this.parentElement.textContent=\'' + initial + '\'"></span>';
+        disp += '<span class="theme-row__chip theme-row__chip--caddie theme-row__chip--photo" aria-hidden="true" style="background:' + cad.accent + '"><img class="pb-caddy-live" style="animation-delay:-' + (idx * 1.07).toFixed(2) + 's" src="' + _cadImg + '" alt="" onerror="this.style.display=\'none\';this.parentElement.textContent=\'' + initial + '\'"></span>';
       } else {
         disp += '<span class="theme-row__chip theme-row__chip--caddie" aria-hidden="true" style="background:' + cad.accent + '">' + initial + '</span>';
       }

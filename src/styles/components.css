@@ -2748,6 +2748,43 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 /* v8.25.130 — caddie chip now holds a rubber-hose character portrait */
 .theme-row__chip--photo { overflow: hidden; padding: 0; }
 .theme-row__chip--photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   LIVING CADDY (#71, v8.25.133) — the rubber-hose caddies now *breathe*.
+   The Founder asked for "animated versions" of each caddie in the Cuphead
+   register. True frame-by-frame cel animation needs real animation tooling
+   (Lottie / AI video) — out of scope for a clean ship today — so this is the
+   honest, tasteful tier: a hand-tuned idle that reads as a living cartoon at
+   rest, with the rubber-hose signature (squash-&-stretch elasticity) and an
+   interactive "perk up" when you point at them. GPU transforms only, anchored
+   bottom-centre so the bust bobs like a bobblehead — ZERO flicker (the exact
+   failure that made the swing animation read tacky). Honours reduced-motion.
+   Applied to the Settings picker chip + Pro Shop caddie card via .pb-caddy-live
+   on the <img>; the hover perk also fires from a .pb-caddy-host ancestor. */
+.pb-caddy-live { transform-origin: 50% 100%; backface-visibility: hidden; }
+@media (prefers-reduced-motion: no-preference) {
+  .pb-caddy-live {
+    animation: pbCaddyBreathe 4.4s ease-in-out infinite;
+    will-change: transform;
+  }
+  /* gentle inhale + rubber-hose squash/stretch + a gentle weight-shift sway */
+  @keyframes pbCaddyBreathe {
+    0%   { transform: translateY(0)      scaleX(1)     scaleY(1)     rotate(0deg); }
+    22%  { transform: translateY(-1.6px) scaleX(0.988) scaleY(1.016) rotate(-0.7deg); }
+    50%  { transform: translateY(0.5px)  scaleX(1.012) scaleY(0.99)  rotate(0deg); }
+    74%  { transform: translateY(-1.1px) scaleX(0.994) scaleY(1.008) rotate(0.7deg); }
+    100% { transform: translateY(0)      scaleX(1)     scaleY(1)     rotate(0deg); }
+  }
+  /* perk up when you point at them — they notice you (bouncy overshoot) */
+  .pb-caddy-live:hover,
+  .pb-caddy-host:hover .pb-caddy-live,
+  .pb-caddy-host:focus-visible .pb-caddy-live {
+    animation: none;
+    transform: translateY(-5px) scaleX(1.05) scaleY(0.97);
+    transition: transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .pb-caddy-live { transition: transform 0.42s cubic-bezier(0.34, 1.56, 0.64, 1); }
+}
 .set-caddie-tag { font-family: var(--font-mono); font-size: 8.5px; font-weight: 700; letter-spacing: .6px; color: var(--cb-mute); text-transform: uppercase; }
 /* Brass coin glyph leading the ParCoin balance pill. */
 .set-coins__ico { color: var(--cb-brass); align-self: center; margin-right: 1px; flex-shrink: 0; }

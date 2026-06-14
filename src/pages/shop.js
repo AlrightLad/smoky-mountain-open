@@ -437,14 +437,16 @@ Router.register("shop", function() {
       if (!caddies.length) return;
       h += '<div class="shop-shelf"><div class="shop-shelf__head"><span class="shop-shelf__title">Caddies</span><span class="shop-shelf__meta">Your voice on the course — choose in Settings</span></div>';
       h += '<div class="shop-shelf__rail">';
-      caddies.forEach(function(cd) {
+      caddies.forEach(function(cd, idx) {
         var skuItem = cd.sku ? PRO_SHOP_CATALOG.filter(function(i) { return i.id === cd.sku; })[0] : null;
-        var c = '<div class="shop-item shop-item--proshop">';
+        // v8.25.133 (#71) — pb-caddy-host: hovering the card "perks up" the
+        // living portrait; staggered animation-delay desyncs the idle breathing.
+        var c = '<div class="shop-item shop-item--proshop pb-caddy-host">';
         c += '<div class="shop-tier-chip shop-tier-chip--proshop">Caddy</div>';
         // v8.25.130 — show the caddie's rubber-hose character portrait (was a
         // generic brass flag for every caddy — indistinguishable).
         var _cdImg = cd.img ? ((typeof window !== 'undefined' && window.__PB_BASE__ ? window.__PB_BASE__ : '/') + cd.img) : '';
-        c += '<div class="shop-surface-stage">' + (_cdImg ? '<img src="' + _cdImg + '" alt="" style="width:88px;height:88px;border-radius:50%;object-fit:cover;border:2px solid ' + (cd.accent || 'var(--cb-brass)') + '" onerror="this.outerHTML=\'' + _shopFlagSvg(34).replace(/'/g, "\\'") + '\'">' : _shopFlagSvg(34)) + '</div>';
+        c += '<div class="shop-surface-stage">' + (_cdImg ? '<img class="pb-caddy-live" src="' + _cdImg + '" alt="" style="width:88px;height:88px;border-radius:50%;object-fit:cover;border:2px solid ' + (cd.accent || 'var(--cb-brass)') + ';animation-delay:-' + (idx * 1.07).toFixed(2) + 's" onerror="this.outerHTML=\'' + _shopFlagSvg(34).replace(/'/g, "\\'") + '\'">' : _shopFlagSvg(34)) + '</div>';
         c += '<div class="shop-item__name">' + escHtml(cd.name) + '</div>';
         c += '<div class="shop-item__desc">' + escHtml(cd.blurb || '') + '</div>';
         if (!cd.locked) c += '<button class="shop-item__equip" onclick="Router.go(\'settings\')">Included · choose in Settings</button>';
