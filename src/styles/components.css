@@ -797,8 +797,14 @@ input.s:disabled,
 .pf-band{height:58px;margin:14px 16px 0;border-radius:var(--radius);box-shadow:inset 0 0 0 1px rgba(var(--cb-brass-rgb),0.18)}
 .pf-masthead{padding-top:18px;padding-bottom:22px;border-bottom:1px solid var(--cb-chalk-3)}
 .pf-portrait{display:flex;align-items:center;gap:20px}
-.pf-av{position:relative;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--cb-chalk-2);font-family:var(--font-display);font-weight:700;color:var(--cb-brass);flex-shrink:0;cursor:pointer}
-.pf-av img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+/* #41 v8.25.148 (Founder: "Simon's profile photo not fitting the circle") — the
+   profile-hero avatar had border-radius:50% but NO overflow:hidden, so with its
+   3px border a real (square) uploaded photo's corners spilled outside the circle.
+   Every other avatar context clips via an overflow:hidden wrapper; this one
+   relied on the img's own radius, which left a sliver between img-circle and
+   border. Clip the container so any photo fits cleanly. */
+.pf-av{position:relative;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--cb-chalk-2);font-family:var(--font-display);font-weight:700;color:var(--cb-brass);flex-shrink:0;cursor:pointer}
+.pf-av img{width:100%;height:100%;object-fit:cover;object-position:center 30%;border-radius:50%;display:block}
 .pf-av__edit{position:absolute;bottom:0;left:0;width:28px;height:28px;background:var(--cb-brass);border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid var(--cb-chalk);color:var(--cb-chalk);z-index:2;cursor:pointer}
 .pf-av__edit::before{content:"";position:absolute;inset:-9px}
 .pf-av__lvl{position:absolute;bottom:-4px;right:-4px;background:var(--cb-ink);color:var(--cb-chalk);font-family:var(--font-mono);font-size:10px;font-weight:700;border-radius:10px;padding:2px 7px;border:2px solid var(--cb-chalk);line-height:1.3;min-width:18px;text-align:center;z-index:3}
