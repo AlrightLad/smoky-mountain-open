@@ -441,7 +441,10 @@ Router.register("shop", function() {
         var skuItem = cd.sku ? PRO_SHOP_CATALOG.filter(function(i) { return i.id === cd.sku; })[0] : null;
         var c = '<div class="shop-item shop-item--proshop">';
         c += '<div class="shop-tier-chip shop-tier-chip--proshop">Caddy</div>';
-        c += '<div class="shop-surface-stage">' + _shopFlagSvg(34) + '</div>';
+        // v8.25.130 — show the caddie's rubber-hose character portrait (was a
+        // generic brass flag for every caddy — indistinguishable).
+        var _cdImg = cd.img ? ((typeof window !== 'undefined' && window.__PB_BASE__ ? window.__PB_BASE__ : '/') + cd.img) : '';
+        c += '<div class="shop-surface-stage">' + (_cdImg ? '<img src="' + _cdImg + '" alt="" style="width:88px;height:88px;border-radius:50%;object-fit:cover;border:2px solid ' + (cd.accent || 'var(--cb-brass)') + '" onerror="this.outerHTML=\'' + _shopFlagSvg(34).replace(/'/g, "\\'") + '\'">' : _shopFlagSvg(34)) + '</div>';
         c += '<div class="shop-item__name">' + escHtml(cd.name) + '</div>';
         c += '<div class="shop-item__desc">' + escHtml(cd.blurb || '') + '</div>';
         if (!cd.locked) c += '<button class="shop-item__equip" onclick="Router.go(\'settings\')">Included · choose in Settings</button>';

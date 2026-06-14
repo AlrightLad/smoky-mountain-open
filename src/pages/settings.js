@@ -186,7 +186,13 @@ Router.register("settings", function(params) {
       var isActive = (cad.id === _curCaddie);
       var initial = escHtml((cad.name || "?").charAt(0));
       disp += '<button type="button" class="theme-row theme-row--caddie' + (owned ? '' : ' theme-row--locked') + '" role="radio" aria-checked="' + (isActive ? 'true' : 'false') + '" data-caddie-id="' + cad.id + '" data-accent="' + cad.accent + '" data-owned="' + (owned ? '1' : '0') + '" onclick="' + (owned ? 'settingsPickCaddie' : 'settingsCaddieLockedHint') + '(\'' + cad.id + '\')">';
-      disp += '<span class="theme-row__chip theme-row__chip--caddie" aria-hidden="true" style="background:' + cad.accent + '">' + initial + '</span>';
+      // v8.25.130 — rubber-hose character portrait instead of a letter chip.
+      var _cadImg = cad.img ? ((typeof window !== "undefined" && window.__PB_BASE__ ? window.__PB_BASE__ : "/") + cad.img) : "";
+      if (_cadImg) {
+        disp += '<span class="theme-row__chip theme-row__chip--caddie theme-row__chip--photo" aria-hidden="true" style="background:' + cad.accent + '"><img src="' + _cadImg + '" alt="" onerror="this.style.display=\'none\';this.parentElement.textContent=\'' + initial + '\'"></span>';
+      } else {
+        disp += '<span class="theme-row__chip theme-row__chip--caddie" aria-hidden="true" style="background:' + cad.accent + '">' + initial + '</span>';
+      }
       disp += '<span class="theme-row__main"><span class="theme-row__name">' + escHtml(cad.name) + (cad.locked ? ' <span class="set-caddie-tag">· PRO SHOP</span>' : '') + '</span><span class="theme-row__desc">' + escHtml(cad.blurb || '') + '</span></span>';
       if (owned) {
         disp += '<span class="theme-row__check pb-caddie-check"' + (isActive ? '' : ' style="visibility:hidden"') + '><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 4"/></svg></span>';

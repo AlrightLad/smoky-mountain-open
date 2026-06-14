@@ -22,15 +22,18 @@
 (function () {
   // Roster. cap/tell = silhouette differentiators (caddy-figure.js); accent =
   // token color for the bust ring. locked → cosmetic unlock (never gates help).
+  // v8.25.130 — each caddie now carries an `img`: a hand-drawn rubber-hose
+  // character portrait (Cuphead register, Founder) rendered in the Settings
+  // picker + Pro Shop card instead of a letter chip. public/img/avatars/caddy-*.jpg.
   var CADDIES = [
-    { id: "caddy",   name: "The Caddy",     cap: "ball",      accent: "var(--cb-brass)",      locked: false, blurb: "Steady and calm. Reads the moment, speaks only when it helps." },
-    { id: "oldtom",  name: "Old Tom",       cap: "flat",      accent: "var(--cb-brass-deep)", locked: false, tell: "pipe", blurb: "An old links hand. Economical with words, long on wisdom." },
+    { id: "caddy",   name: "The Caddy",     cap: "ball",      accent: "var(--cb-brass)",      locked: false, img: "img/avatars/caddy-caddy.jpg",   blurb: "Steady and calm. Reads the moment, speaks only when it helps." },
+    { id: "oldtom",  name: "Old Tom",       cap: "flat",      accent: "var(--cb-brass-deep)", locked: false, tell: "pipe", img: "img/avatars/caddy-oldtom.jpg", blurb: "An old links hand. Economical with words, long on wisdom." },
     // v8.25.6 — fourth voice (Founder: "make 4 caddies, all different
     // personalities"). Birdie is the hype friend: all encouragement, big
     // energy, never mean. Free, so every member has three distinct voices to
     // choose from out of the box (Bag Room Guy stays the shop cosmetic).
-    { id: "birdie",  name: "Birdie",        cap: "visor",     accent: "var(--cb-green)",      locked: false, tell: "ponytail", blurb: "Pure hype. Relentlessly in your corner, every shot of the way." },
-    { id: "bagroom", name: "Bag Room Guy",  cap: "backwards", accent: "var(--cb-copper)",     locked: true, sku: "pc22_bag_room", tell: "towel", blurb: "Tough love and a sharp tongue. He'll tell you when you're wrong." }
+    { id: "birdie",  name: "Birdie",        cap: "visor",     accent: "var(--cb-green)",      locked: false, tell: "ponytail", img: "img/avatars/caddy-birdie.jpg", blurb: "Pure hype. Relentlessly in your corner, every shot of the way." },
+    { id: "bagroom", name: "Bag Room Guy",  cap: "backwards", accent: "var(--cb-copper)",     locked: true, sku: "pc22_bag_room", tell: "towel", img: "img/avatars/caddy-bagroom.jpg", blurb: "Tough love and a sharp tongue. He'll tell you when you're wrong." }
   ];
 
   // Per-beat × per-persona lines. Keyed by beatId. Coachmarks use
