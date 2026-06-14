@@ -36,6 +36,8 @@
 [aggregate-fiq-status] OK status=green declared=26 deployed=26 write=False (skip-idempotent-grace-content-unchanged-2187885s)
 
 --- scripts/aggregate-self-tests.py ---
+[aggregate-self-tests] FAIL (1 aggregators):
+  aggregate-fiq-status: parity-fail: source-detected but status=unknown
 [aggregate-self-tests] starting D40 parity checks across 5 aggregators
   [aggregate-test-health] PASS status=green age=104979s [content-stable 104979s, idempotent skip]
   [aggregate-security-health] PASS status=yellow age=10179s
@@ -97,11 +99,11 @@
 [regen-token-usage] pie_views slices: agent=3 work=2 session_top10=10
 
 --- scripts/consolidate-lighthouse.py ---
-Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
-  performance       : 83
-  accessibility     : 95
-  best-practices    : 93
-  seo               : 92
+Consolidated 0 pages -> .claude/state/aggregates/lighthouse-scores.json
+  performance       : None
+  accessibility     : None
+  best-practices    : None
+  seo               : None
 
 --- scripts/aggregate-app-health.py ---
 [aggregate-app-health] overall=A- (86.3) · 2 attention items · .claude\state\aggregates\app-health.json
@@ -124,7 +126,7 @@ Consolidated 6 pages -> .claude\state\aggregates\lighthouse-scores.json
 [regen-index] ships=1 proposals_pending=0 bubbles=1 halt=none git=222169aa
 
 --- scripts/dashboard-freshness-sentinel.py ---
-[dashboard-freshness] status=green ok=12 repaired=0 unrepairable=0 mismatches=0 duration=0.7s
+[dashboard-freshness] status=green ok=12 repaired=0 unrepairable=0 mismatches=0 duration=0.0s
 
 --- visual-gate ---
   PASS  dashboard.html               30 KPI cells populated (>=20)
