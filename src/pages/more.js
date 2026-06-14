@@ -7,7 +7,9 @@ var liveChat = [];
 // replaced with Clubhouse tokens; groups are single paper cards with
 // --cb-mute-3 hairlines; eyebrows are mono 9px letterspaced brass.
 Router.register("more", function() {
-  var h = '<div class="sh"><h2>More</h2></div>';
+  // #41 v8.25.146 — editorial masthead (was the legacy .sh header) so the hub
+  // carries the same record-book identity as every other page.
+  var h = '<div class="roster-masthead" style="padding-bottom:8px"><div class="roster-eyebrow">Parbaughs · The Clubhouse</div><h1 class="roster-headline">More.</h1></div>';
 
   // One SVG builder so the grammar can never drift per-icon.
   function icn(paths) {
@@ -33,7 +35,7 @@ Router.register("more", function() {
   function section(title, items) {
     var sh = '<div style="padding:0 16px;margin-bottom:13px">';
     sh += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-eyebrow);margin-bottom:6px;padding-left:2px">' + title + '</div>';
-    sh += '<div style="background:var(--cb-paper);border:1px solid var(--cb-mute-3);border-radius:10px;overflow:hidden">';
+    sh += '<div style="background:var(--cb-paper);border:1px solid rgba(20,19,15,.10);border-radius:10px;overflow:hidden;box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 1px 2px rgba(28,24,14,.06), 0 5px 14px -8px rgba(28,24,14,.15)">';
     items.forEach(function(l, i) {
       // Priority rows (revenue/growth) earn a stronger brass wash + a 3px
       // brass left-edge bar so they read as elevated, not just another tinted
