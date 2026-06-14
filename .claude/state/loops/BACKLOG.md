@@ -527,9 +527,7 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
   meta→chalk-3), all AA-verified on felt; avatar keeps its inline equipped-cosmetic
   ring (frames, not covers). V1-confirmed on staging: name pops in serif-chalk on
   felt, no contrast regression. Smoke 33/33.
-- [ ] CARRY-FORWARD b: CHAT deeper Clubhouse migration — felt band shipped, but the page
-  still uses legacy --bg2/--gold/--cream tokens + its capture was an empty skeleton.
-  Migrate tokens + re-score against a SEEDED feed (scripts/_cap-auth.mjs) to fairly clear 9.5.
+- [x] CARRY-FORWARD b: CHAT — DONE v8.25.166 (LIVE+DOM-verified). Root cause was NOT tokens (already aliased to --cb-* in base.css = zero visual gap); it was the feed STUCK on the loading skeleton forever (onSnapshot had no error cb + no timeout). Added error handler + 6s safety net -> feed now resolves to graceful empty-state ("No messages yet"). Verified: skeletonStill false, emptyCard true. Felt band already shipped.
 - [~] Merch lineup polish (#68) — CONFUSION FIX DONE v8.25.164 (LIVE+V1): the mixed
   flat-lay hero (polo+cap+towel+headcover in one frame = the Founder's "multiple items
   under one photo" complaint) replaced with a single flagship-product hero (The
