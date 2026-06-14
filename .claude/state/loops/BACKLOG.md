@@ -551,9 +551,15 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
   Ember; banners Ocean Drive→Coastal Links, Arctic Dawn→Frost Delay, Thunder Storm→
   Weather Horn [recoloured off purple], Crimson Tide→Sunday Charge, Ember Glow→Sunset
   Back-Nine). Id-stable (ownership persists); 3 animated rings' keyframes recoloured
-  neon→golf-prestige. REMAINING cohesion: cards/titles/markers/flair/name shelves
-  sweep for off-brand items; then new items for breadth; then varied unlock methods
-  (season/streak) + tenure showcase badge + award-winning generated ART (Vertex Imagen).
+  neon→golf-prestige. PASS-2 live v8.25.168: 12 more off-brand cards/names → golf
+  (Neon Glow→Fairway Edge, Royal Purple→Claret Edge, Hot Shot→Pin Seeker, Ice Cold→
+  Bluebird Edge, Stealth Mode→Night Nine, Sunset Strip→Twilight Round, Neon Night
+  [#ff00ff]→Magnolia Night, Dark Carbon→Midnight Links; Glowing Green→Fairway Glow,
+  Fire Text→Sunday Glow, Ice Text→Bluebird Glow, Rainbow Gradient→Major Gradient).
+  Titles/markers/flair were already golf-cohesive. WORN-COSMETIC COHESION SWEEP
+  COMPLETE (borders/banners/cards/names, 24 items, id-stable). REMAINING: new items
+  for breadth; varied unlock methods (season/streak) + tenure showcase badge;
+  award-winning generated ART (Vertex Imagen) — fresh creative work.
   DE-RISKED 2026-06-14 (ready-to-execute plan): catalog already has ~134 items
   (border 32, banner 22, card 21, title 20, etc.) so "more items" is secondary to
   the UNLOCK LOOP + quality bar. Render branch VERIFIED SAFE (shop.js ~L405-409:
