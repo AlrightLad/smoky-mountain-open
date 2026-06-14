@@ -3098,11 +3098,14 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 /* Diamond Sparkle (2500): white shimmer rotating around the ring */
 @keyframes ringShimmer{0%{box-shadow:4px 0 12px rgba(185,242,255,.6),0 0 6px rgba(255,255,255,.2)}25%{box-shadow:0 4px 12px rgba(220,240,255,.7),0 0 8px rgba(255,255,255,.3)}50%{box-shadow:-4px 0 14px rgba(185,242,255,.8),0 0 6px rgba(255,255,255,.2)}75%{box-shadow:0 -4px 12px rgba(220,240,255,.6),0 0 10px rgba(255,255,255,.25)}100%{box-shadow:4px 0 12px rgba(185,242,255,.6),0 0 6px rgba(255,255,255,.2)}}
 /* Rainbow Shift (1500): border color cycles through full spectrum */
-@keyframes ringRainbow{0%{border-color:#ff6b6b;box-shadow:0 0 12px rgba(255,107,107,.5)}14%{border-color:#ff9f43;box-shadow:0 0 12px rgba(255,159,67,.5)}28%{border-color:#ffd93d;box-shadow:0 0 12px rgba(255,217,61,.5)}42%{border-color:#6bcb77;box-shadow:0 0 12px rgba(107,203,119,.5)}57%{border-color:#4d96ff;box-shadow:0 0 12px rgba(77,150,255,.5)}71%{border-color:#a78bfa;box-shadow:0 0 12px rgba(167,139,250,.5)}85%{border-color:#ff6b9d;box-shadow:0 0 12px rgba(255,107,157,.5)}100%{border-color:#ff6b6b;box-shadow:0 0 12px rgba(255,107,107,.5)}}
-/* Neon Green (750): electric green pulse */
-@keyframes ringNeonGreen{0%,100%{box-shadow:0 0 8px rgba(57,255,20,.4),0 0 3px rgba(57,255,20,.2)}50%{box-shadow:0 0 18px rgba(57,255,20,.7),0 0 32px rgba(57,255,20,.25),0 0 4px rgba(57,255,20,.4)}}
-/* Crimson Ember (750): red/orange flicker like smoldering coals */
-@keyframes ringEmber{0%{box-shadow:0 0 8px rgba(204,51,0,.4)}20%{box-shadow:0 0 14px rgba(255,100,0,.6),0 0 24px rgba(255,60,0,.15)}40%{box-shadow:0 0 6px rgba(180,40,0,.3)}60%{box-shadow:0 0 16px rgba(255,80,0,.7),0 0 28px rgba(255,50,0,.2)}80%{box-shadow:0 0 10px rgba(220,60,0,.45)}100%{box-shadow:0 0 8px rgba(204,51,0,.4)}}
+/* Major Season (#76 cohesion): cycles the colours of the four majors — Augusta
+   green, Open claret, championship gold, PGA navy, US-Open red — refined prestige,
+   not the old neon rainbow. */
+@keyframes ringRainbow{0%{border-color:#1e7a4a;box-shadow:0 0 12px rgba(30,122,74,.5)}14%{border-color:#2a9d5c;box-shadow:0 0 12px rgba(42,157,92,.5)}28%{border-color:#c9a155;box-shadow:0 0 12px rgba(201,161,85,.5)}42%{border-color:#8a2f3f;box-shadow:0 0 12px rgba(138,47,63,.5)}57%{border-color:#2a4a7a;box-shadow:0 0 12px rgba(42,74,122,.5)}71%{border-color:#b03a3a;box-shadow:0 0 12px rgba(176,58,58,.5)}85%{border-color:#c9a155;box-shadow:0 0 12px rgba(201,161,85,.5)}100%{border-color:#1e7a4a;box-shadow:0 0 12px rgba(30,122,74,.5)}}
+/* Fairway Pulse (#76 cohesion): a refined fairway-green pulse, not neon */
+@keyframes ringNeonGreen{0%,100%{box-shadow:0 0 8px rgba(95,191,82,.4),0 0 3px rgba(95,191,82,.2)}50%{box-shadow:0 0 18px rgba(95,191,82,.7),0 0 32px rgba(95,191,82,.25),0 0 4px rgba(95,191,82,.4)}}
+/* Sunday Ember (#76 cohesion): a smoldering Sunday-red/claret ember, not garish orange */
+@keyframes ringEmber{0%{box-shadow:0 0 8px rgba(168,36,58,.4)}20%{box-shadow:0 0 14px rgba(200,50,72,.6),0 0 24px rgba(176,40,58,.15)}40%{box-shadow:0 0 6px rgba(150,30,48,.3)}60%{box-shadow:0 0 16px rgba(205,48,70,.7),0 0 28px rgba(190,40,58,.2)}80%{box-shadow:0 0 10px rgba(180,40,58,.45)}100%{box-shadow:0 0 8px rgba(168,36,58,.4)}}
 
 /* ── NAME EFFECT ANIMATIONS ── */
 @keyframes nameGoldShimmer{0%{background-position:200% center}100%{background-position:-200% center}}
