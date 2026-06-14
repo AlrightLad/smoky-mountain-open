@@ -81,6 +81,7 @@ function renderOnboardingStep() {
 
   // Felt aside — wordmark + step art + editorial quote
   h += '<aside class="onb-aside" role="complementary">';
+  h += '<img class="onb-logo" alt="" src="' + (new URL("img/logo/themes/app/knockout.png", document.baseURI).href) + '">';
   h += '<div class="onb-wordmark">Parbaughs.</div>';
   h += '<div class="onb-art">' + s.icon + '</div>';
   h += '<div class="onb-quote">' + s.quote + '</div>';
@@ -144,6 +145,7 @@ function renderProfileSetup() {
 
   // Felt aside — wordmark + nameplate engraving + editorial quote
   h += '<aside class="onb-aside" role="complementary">';
+  h += '<img class="onb-logo" alt="" src="' + (new URL("img/logo/themes/app/knockout.png", document.baseURI).href) + '">';
   h += '<div class="onb-wordmark">Parbaughs.</div>';
   h += '<div class="onb-art"><svg viewBox="0 0 64 64" width="86" height="86" fill="none" stroke="var(--cb-brass)" stroke-width="1.5"><rect x="8" y="18" width="48" height="28" rx="2"/><path d="M16 29h22"/><path d="M16 37h32"/><circle cx="46" cy="29" r="3.5"/></svg></div>';
   h += '<div class="onb-quote">The clubhouse engraves your nameplate once.</div>';
