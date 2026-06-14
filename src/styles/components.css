@@ -740,8 +740,12 @@ input.s:disabled,
 .std-section__meta{font-family:var(--font-mono);font-size:10px;letter-spacing:1px;color:var(--cb-mute);text-transform:uppercase}
 
 .std-trophies{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
-.std-trophy{padding:14px;border:1px solid var(--cb-chalk-3);border-radius:10px;cursor:pointer;transition:border-color var(--duration-fast) var(--ease-default),background var(--duration-fast) var(--ease-default)}
-.std-trophy:hover{border-color:var(--cb-brass);background:var(--cb-chalk-2)}
+/* #41 v8.25.145 — Trophy Watch tiles were flat bordered boxes on the canvas;
+   lifted to paper-stock material (top highlight + layered shadow) so the
+   sub-leaderboards read as pressed plates, with a hover lift. */
+.std-trophy{padding:14px;background:var(--cb-paper);border:1px solid rgba(20,19,15,.10);border-radius:10px;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 1px 2px rgba(28,24,14,.06), 0 5px 14px -8px rgba(28,24,14,.16);transition:border-color var(--duration-fast) var(--ease-default),box-shadow var(--duration-fast) var(--ease-default),transform var(--duration-fast) var(--ease-default)}
+.std-trophy:hover{border-color:var(--cb-brass);transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 2px 4px rgba(28,24,14,.08), 0 8px 18px -8px rgba(28,24,14,.2)}
+@media (prefers-reduced-motion:reduce){.std-trophy{transition:none}}
 .std-trophy__label{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:7px}
 .std-trophy__value{font-family:var(--font-display);font-weight:700;font-size:20px;color:var(--cb-ink);margin-bottom:3px;line-height:1}
 .std-trophy__winner{font-family:var(--font-ui);font-size:12px;color:var(--cb-charcoal);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
