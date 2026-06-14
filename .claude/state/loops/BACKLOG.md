@@ -551,16 +551,17 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
   isOwned/Equipped/Equip all precede the `lvl` gate → adding lvl: to more items
   NEVER strips access from members who already own them; lock only affects the
   not-yet-owned PURCHASE state). Only 3 items currently gated (pc04 L8, pc42 L12,
-  pc53 L6 — all by level). CONCRETE NEXT STEP: (a) curate a progression LADDER over
-  the PRESTIGE tier only (leave the 100+ sub-~2000-coin items freely buyable from
-  L1 so low-level members have plenty): e.g. price≥1500→L5, ≥2000→L10, ≥3000→L15,
-  animated/5000 ultra→L20 — hand-tag ~15-20 prestige items with lvl: (NOT a
-  price-derived auto-gate, which would lock half the catalog at once = economy-design
-  shift). (b) Add the non-level unlock methods (achievement via earnedBy already
-  exists; add season/play-streak gates with their own lock copy). (c) Showcase: the
-  worn-render already shows equipped cosmetics on profile + in-play; add a "tenure"
-  read (e.g. highest-tier-unlocked badge). Founder may want a taste-check on the
-  exact ladder thresholds (progression feel). Then elevate cosmetic ART to
+  pc53 L6 — all by level).
+  (a) PROGRESSION LADDER — DONE v8.25.165 (LIVE on prod + DOM-verified on staging:
+  test member L3 sees 11 lock badges across all tiers "Unlocks at Lv 5/6/8/10/12/15").
+  17 prestige cosmetics now level-gated (L5: 5 @1500; L8: 6 @1600-1800; L10 @2000;
+  L12 @3000; L15 @5000; + existing pc53 L6 / pc04 L8 / pc42 L12); the ~117 sub-1500
+  items stay freely buyable from L1. Render-safe (owned/equip precede the lvl gate).
+  Prestige now earned by PLAYING, not just saving. Verifier:
+  .claude/state/_verify-shop-locks.mjs. Founder may taste-tune thresholds.
+  REMAINING: (b) non-level unlock methods (season/play-streak gates w/ own lock copy;
+  achievement-earned via earnedBy already exists); (c) "tenure" showcase read
+  (highest-tier-unlocked badge on profile/in-play); (d) elevate cosmetic ART to
   award-winning/brand/golf via Vertex Imagen (generator-first) — the bigger lift.
 - [ ] Brand cohesiveness review + enhance (#77): unify rubber-hose (Cuphead) with Holderness & Bourne premium aesthetic app-wide; rubber-hose = youthful character layer rendered INSIDE H&B-grade presentation; tour clothing branded with logo + rubber-hose cartoons. Audit, enhance/change what's off. See memory project_brand_rubberhose_x_hb.
 
