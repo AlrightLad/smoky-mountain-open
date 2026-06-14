@@ -43,7 +43,10 @@ Router.register("settings", function(params) {
     // in the group): label in the main column, "Send verification" as the
     // mono set-link action that matches every other inline action on the page.
     if (!currentUser.emailVerified) {
-      acc += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Email verification</div><div class="set-row__desc">Your email is not verified yet.</div></div><button class="set-link" onclick="sendVerificationEmail()">Send verification</button></div>';
+      // #41 v8.25.154 — elevate to a focal attention row (claret tint + left rule
+      // + filled brass CTA): verifying is an action to prompt, not a quiet ledger
+      // line (P10 actionable surfacing).
+      acc += '<div class="set-row set-row--verify"><div class="set-row__main"><div class="set-row__label">Verify your email</div><div class="set-row__desc">Confirm your email to secure your account and keep getting league updates.</div></div><button class="pb-btn-brass" style="font-size:12px;padding:8px 13px;flex:none" onclick="sendVerificationEmail()">Send verification</button></div>';
     }
     acc += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Username</div></div><div class="set-row__value">' + escHtml(currentProfile ? (currentProfile.username || currentProfile.name) : "—") + '</div></div>';
     acc += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Role</div></div><div class="set-row__value">' + escHtml(currentProfile ? (currentProfile.role || "Member") : "—") + '</div></div>';

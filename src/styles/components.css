@@ -2836,6 +2836,10 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 /* Field rows */
 .set-row { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid var(--cb-chalk-3); }
 .set-row:last-child { border-bottom: 0; }
+/* #41 v8.25.154 — unverified-email attention row: claret-tinted inset + left rule
+   so the one account action worth taking reads as focal (P10), not a quiet line. */
+.set-row--verify { padding: 13px 14px; margin: 4px 0 8px; border-bottom: 0; border-radius: 10px; border-left: 3px solid var(--cb-claret); background: linear-gradient(160deg, rgba(142,58,58,.10), rgba(180,137,62,.05)); box-shadow: inset 0 1px 0 rgba(255,255,255,.4); flex-wrap: wrap; }
+.set-row--verify .set-row__desc { line-height: 1.4; }
 .set-row__main { min-width: 0; flex: 1; }
 .set-row__label { font-family: var(--font-ui); font-size: 13.5px; font-weight: 600; color: var(--cb-ink); }
 .set-row__desc { font-family: var(--font-ui); font-size: 11.5px; color: var(--cb-ink-faint); margin-top: 3px; line-height: 1.45; }
