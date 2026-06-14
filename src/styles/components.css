@@ -94,6 +94,20 @@
 .pg-row__xp{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:.5px;color:var(--cb-brass);margin-top:4px}
 .pg-row__chev{flex:none;color:var(--cb-brass)}
 
+/* Bounties page (#41 v8.25.142) — Clubhouse bounty board */
+.bty-balance{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:11px;font-weight:700;color:var(--cb-brass);background:rgba(var(--cb-brass-rgb),.08);border:1px solid rgba(var(--cb-brass-rgb),.28);border-radius:999px;padding:5px 12px}
+.bty-balance strong{font-size:13px}
+.bty-post-ghost{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-ui);font-size:12px;font-weight:600;color:var(--cb-brass);background:transparent;border:1px solid rgba(var(--cb-brass-rgb),.4);border-radius:999px;padding:6px 13px;cursor:pointer;transition:background var(--duration-fast) var(--ease-default)}
+.bty-post-ghost:hover{background:rgba(var(--cb-brass-rgb),.08)}
+.bty-hero{padding:22px 20px;text-align:center}
+.bty-bullseye{display:flex;justify-content:center;margin-bottom:6px;filter:drop-shadow(0 2px 6px rgba(0,0,0,.35))}
+.bty-hero__title{font-family:var(--font-display);font-style:italic;font-weight:700;font-size:21px;color:var(--cb-chalk);line-height:1.15}
+.bty-hero__desc{font-family:var(--font-ui);font-size:13px;line-height:1.5;color:rgba(244,239,228,.84);max-width:330px;margin:8px auto 0}
+.bty-hero__cta{margin-top:16px}
+.bty-hero__ideas-label{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass-3);margin:20px 0 8px}
+.bty-idea{display:flex;align-items:center;gap:9px;padding:9px 13px;margin:0 auto 6px;max-width:300px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);border-radius:8px;font-family:var(--font-ui);font-size:11.5px;color:rgba(244,239,228,.9);text-align:left}
+.bty-idea__dot{width:6px;height:6px;border-radius:50%;background:var(--cb-brass-3);flex:none}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    COMPONENT POLISH — micro-shadows, status pills, transitions, animations
    ═══════════════════════════════════════════════════════════════════════════ */

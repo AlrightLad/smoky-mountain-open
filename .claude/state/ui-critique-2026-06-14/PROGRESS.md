@@ -44,6 +44,15 @@ subagents this tool exists. See [[feedback_gemini_cosmetics_credit_caution]].
   course-photo placeholder** (course-placeholder.jpg, detail banner + monogram chip;
   list keeps monograms; multi-photo carousel already exists, --gold→brass).
 
+## NEW FOUNDER ITEMS (added during marathon)
+- **#75 Level-100 rubber-hose THEME (END of marathon)** — an exclusive reward
+  theme unlocked at level 100, VASTLY different from the existing 6 themes:
+  on-page cartoons + animations, rubber-hose/Cuphead register, far more advanced
+  and animated than any current theme — a real "you made it" exclusive brand
+  moment. Needs extensive critique looping. Use Gemini for cartoon/animation
+  assets as needed. Theme system lives in src/core/theme.js + base.css theme
+  blocks ([data-theme="…"]); unlock gating ties to level (profile level 100).
+
 ## NEXT (in priority order from synthesis)
 - courses (7.2): home/most-played course → editorial hero card; body serif (was
   system-sans); pb-card rows.

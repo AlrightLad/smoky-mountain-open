@@ -7,13 +7,22 @@ Router.register("bounties", function() {
   var uid = currentUser ? currentUser.uid : null;
   var balance = getParCoinBalance(uid);
 
-  var h = '<div class="sh"><h2>Bounty Board</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'home\')">← Back</button><button class="btn-sm green" onclick="showCreateBounty()">+ Post Bounty</button></div></div>';
+  // v8.25.142 (#41): Clubhouse migration — was legacy .sh header + two equally-
+  // weighted "Post" primaries (top + empty-state) + a washed-out bullseye. Now a
+  // serif masthead, a brass balance ledger chip, a single demoted ghost header
+  // CTA (the empty-state hero is the lone filled primary), and a felt focal hero.
+  var h = '<div class="roster-masthead" style="padding-bottom:4px">';
+  h += '<button class="back" onclick="Router.back(\'home\')" style="margin-bottom:12px">← Back</button>';
+  h += '<div class="roster-eyebrow">ParCoin Wagers · The Board</div>';
+  h += '<h1 class="roster-headline">The bounty board.</h1>';
+  h += '</div>';
 
-  // Balance
-  h += '<div style="padding:0 16px 8px;display:flex;align-items:center;gap:8px">';
-  h += '<svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="var(--gold)" stroke-width="1.3"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7"/></svg>';
-  h += '<span style="font-size:14px;font-weight:700;color:var(--gold)">' + balance + '</span>';
-  h += '<span style="font-size:10px;color:var(--muted)">ParCoins</span></div>';
+  // Brass balance ledger chip + quiet (ghost) post entry — never competes with
+  // the empty-state hero CTA.
+  h += '<div style="padding:8px 16px 6px;display:flex;align-items:center;justify-content:space-between;gap:10px">';
+  h += '<span class="bty-balance"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7"/></svg><strong>' + balance + '</strong> ParCoins</span>';
+  h += '<button class="bty-post-ghost" onclick="showCreateBounty()"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>Post</button>';
+  h += '</div>';
 
   h += '<div id="bounty-board"><div class="loading"><div class="spinner"></div>Loading bounties...</div></div>';
   h += '<div id="bounty-create" style="display:none"></div>';
@@ -36,17 +45,16 @@ function _renderBountyBoard(bounties, uid) {
   var el = document.getElementById("bounty-board");
   if (!el) return;
   if (!bounties.length) {
-    var eh = '<div style="padding:24px 16px;text-align:center">';
-    eh += '<div style="margin-bottom:12px"><svg viewBox="0 0 64 64" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5"><circle cx="32" cy="32" r="24"/><circle cx="32" cy="32" r="16"/><circle cx="32" cy="32" r="8"/><circle cx="32" cy="32" r="2" fill="var(--gold)"/></svg></div>';
-    eh += '<div style="font-family:var(--font-display);font-size:18px;color:var(--gold);margin-bottom:6px">No Active Bounties</div>';
-    eh += '<div style="font-size:12px;color:var(--muted);line-height:1.5;max-width:280px;margin:0 auto 16px">Post a bounty and challenge your crew. Bet coins that nobody can break 80 at your home course or birdie the hardest hole.</div>';
-    eh += '<button class="btn full green" onclick="showCreateBounty()" style="max-width:240px;margin:0 auto;font-size:13px;padding:14px">Post a Bounty</button>';
-    // Example bounties
-    eh += '<div style="margin-top:20px;text-align:left">';
-    eh += '<div style="font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;text-align:center">Bounty Ideas</div>';
+    var eh = '<div style="padding:6px 16px 2px"><div class="pb-card pb-card--felt bty-hero">';
+    // Bold brass-rimmed bullseye artifact (was a small washed-out line icon).
+    eh += '<div class="bty-bullseye"><svg viewBox="0 0 120 120" width="118" height="118" fill="none"><circle cx="60" cy="60" r="54" stroke="#caa75c" stroke-width="4"/><circle cx="60" cy="60" r="54" stroke="#8a6526" stroke-width="1.5"/><circle cx="60" cy="60" r="38" stroke="#e8cf94" stroke-width="3"/><circle cx="60" cy="60" r="22" stroke="#caa75c" stroke-width="3"/><circle cx="60" cy="60" r="9" fill="#8E3A3A"/><circle cx="60" cy="60" r="9" stroke="#caa75c" stroke-width="2" fill="none"/></svg></div>';
+    eh += '<div class="bty-hero__title">No bounties on the board.</div>';
+    eh += '<div class="bty-hero__desc">Stake some coins and challenge the crew — bet nobody breaks 80 at your home track, or birdies the hardest hole. Auto-pays when someone delivers.</div>';
+    eh += '<button class="pb-btn-brass bty-hero__cta" onclick="showCreateBounty()">Post a bounty</button>';
+    eh += '<div class="bty-hero__ideas-label">Bounty ideas</div>';
     var examples = ["Break 80 at Heritage Hills · 100 coins", "Birdie Hole 7 at Briarwood · 50 coins", "Beat Mr Parbaugh\'s 98 at Sequoyah · 75 coins"];
     examples.forEach(function(ex) {
-      eh += '<div style="display:flex;align-items:center;gap:9px;padding:11px 13px;margin-bottom:6px;background:var(--cb-paper);border:1px solid var(--border);border-radius:var(--r-2);font-size:12px;color:var(--cb-ink)"><span style="width:6px;height:6px;border-radius:50%;background:var(--gold);flex:none"></span><span>' + ex + '</span></div>';
+      eh += '<div class="bty-idea"><span class="bty-idea__dot"></span><span>' + ex + '</span></div>';
     });
     eh += '</div></div>';
     el.innerHTML = eh;
@@ -72,14 +80,14 @@ function _renderBountyCard(b, uid) {
 
   var h = '<div class="card" style="margin:4px 16px"><div style="padding:14px 16px">';
   h += '<div style="display:flex;justify-content:space-between;align-items:flex-start">';
-  h += '<div style="flex:1"><div style="font-size:9px;font-weight:700;color:var(--gold);letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px">' + typeLabel + '</div>';
-  h += '<div style="font-size:13px;font-weight:600;color:var(--cream)">' + targetDesc + '</div>';
-  h += '<div style="font-size:10px;color:var(--muted);margin-top:4px">Posted by ' + escHtml(b.createdByName || "member") + (expiresStr ? ' · ' + expiresStr : '') + '</div></div>';
-  h += '<div style="text-align:right"><div style="font-size:20px;font-weight:800;color:var(--gold)">' + b.pot + '</div>';
-  h += '<div style="font-size:8px;color:var(--muted);letter-spacing:.5px">COINS</div></div>';
+  h += '<div style="flex:1"><div style="font-size:9px;font-weight:700;color:var(--cb-brass);letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px">' + typeLabel + '</div>';
+  h += '<div style="font-size:13px;font-weight:600;color:var(--cb-ink)">' + targetDesc + '</div>';
+  h += '<div style="font-size:10px;color:var(--cb-mute);margin-top:4px">Posted by ' + escHtml(b.createdByName || "member") + (expiresStr ? ' · ' + expiresStr : '') + '</div></div>';
+  h += '<div style="text-align:right"><div style="font-size:20px;font-weight:800;color:var(--cb-brass)">' + b.pot + '</div>';
+  h += '<div style="font-size:8px;color:var(--cb-mute);letter-spacing:.5px">COINS</div></div>';
   h += '</div>';
   if (isOwner) {
-    h += '<div style="margin-top:8px;font-size:10px;color:var(--muted);font-style:italic">Your bounty, waiting for someone to claim it</div>';
+    h += '<div style="margin-top:8px;font-size:10px;color:var(--cb-mute);font-style:italic">Your bounty, waiting for someone to claim it</div>';
   }
   h += '</div></div>';
   return h;
@@ -91,13 +99,13 @@ function showCreateBounty() {
   var balance = getParCoinBalance(currentUser ? currentUser.uid : null);
 
   var h = '<div class="card" style="margin:8px 16px"><div class="card-body">';
-  h += '<div style="font-size:14px;font-weight:700;color:var(--gold);margin-bottom:12px">Post a Bounty</div>';
+  h += '<div style="font-size:14px;font-weight:700;color:var(--cb-brass);margin-bottom:12px">Post a Bounty</div>';
 
   // Type selector
   h += '<div class="ff"><label class="ff-label">Bounty type</label>';
   h += '<div style="display:flex;gap:6px">';
-  h += '<button class="btn-sm" id="bt-score" onclick="selectBountyType(\'score\')" style="flex:1;background:rgba(var(--gold-rgb),.08);border:1px solid var(--gold);color:var(--gold)">Score Target</button>';
-  h += '<button class="btn-sm" id="bt-birdie" onclick="selectBountyType(\'birdie\')" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--cream)">Birdie Bounty</button>';
+  h += '<button class="btn-sm" id="bt-score" onclick="selectBountyType(\'score\')" style="flex:1;background:rgba(var(--cb-brass-rgb),.08);border:1px solid var(--cb-brass);color:var(--cb-brass)">Score Target</button>';
+  h += '<button class="btn-sm" id="bt-birdie" onclick="selectBountyType(\'birdie\')" style="flex:1;background:transparent;border:1px solid var(--border);color:var(--cb-ink)">Birdie Bounty</button>';
   h += '</div></div>';
   h += '<input type="hidden" id="bounty-type" value="score">';
 
@@ -114,7 +122,7 @@ function showCreateBounty() {
 
   // Pot
   h += '<div class="ff"><label class="ff-label">Bounty amount (' + balance + ' available)</label>';
-  h += '<input type="number" class="ff-input" id="bounty-pot" value="100" min="50" max="' + balance + '" style="text-align:center;font-size:16px;font-weight:700;color:var(--gold)"></div>';
+  h += '<input type="number" class="ff-input" id="bounty-pot" value="100" min="50" max="' + balance + '" style="text-align:center;font-size:16px;font-weight:700;color:var(--cb-brass)"></div>';
 
   // Duration
   h += '<div class="ff"><label class="ff-label">Expires in</label>';
@@ -134,8 +142,8 @@ function selectBountyType(type) {
   if (input) input.value = type;
   var scoreBtn = document.getElementById("bt-score");
   var birdieBtn = document.getElementById("bt-birdie");
-  if (scoreBtn) { scoreBtn.style.background = type === "score" ? "rgba(var(--gold-rgb),.08)" : "transparent"; scoreBtn.style.borderColor = type === "score" ? "var(--gold)" : "var(--border)"; scoreBtn.style.color = type === "score" ? "var(--gold)" : "var(--cream)"; }
-  if (birdieBtn) { birdieBtn.style.background = type === "birdie" ? "rgba(var(--gold-rgb),.08)" : "transparent"; birdieBtn.style.borderColor = type === "birdie" ? "var(--gold)" : "var(--border)"; birdieBtn.style.color = type === "birdie" ? "var(--gold)" : "var(--cream)"; }
+  if (scoreBtn) { scoreBtn.style.background = type === "score" ? "rgba(var(--cb-brass-rgb),.08)" : "transparent"; scoreBtn.style.borderColor = type === "score" ? "var(--cb-brass)" : "var(--border)"; scoreBtn.style.color = type === "score" ? "var(--cb-brass)" : "var(--cb-ink)"; }
+  if (birdieBtn) { birdieBtn.style.background = type === "birdie" ? "rgba(var(--cb-brass-rgb),.08)" : "transparent"; birdieBtn.style.borderColor = type === "birdie" ? "var(--cb-brass)" : "var(--border)"; birdieBtn.style.color = type === "birdie" ? "var(--cb-brass)" : "var(--cb-ink)"; }
   var sec = document.getElementById("bounty-target-section");
   if (sec) {
     if (type === "score") {
