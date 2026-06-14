@@ -530,7 +530,14 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
 - [ ] CARRY-FORWARD b: CHAT deeper Clubhouse migration — felt band shipped, but the page
   still uses legacy --bg2/--gold/--cream tokens + its capture was an empty skeleton.
   Migrate tokens + re-score against a SEEDED feed (scripts/_cap-auth.mjs) to fairly clear 9.5.
-- [ ] Merch lineup polish pass (#68) — review the 9 product shots + Cuphead leisure tee
+- [~] Merch lineup polish (#68) — CONFUSION FIX DONE v8.25.164 (LIVE+V1): the mixed
+  flat-lay hero (polo+cap+towel+headcover in one frame = the Founder's "multiple items
+  under one photo" complaint) replaced with a single flagship-product hero (The
+  Clubhouse Hoodie); flagship dropped from the grid (no dup); every grid item already
+  has its own photo. REMAINING (generator-first, fresh creative budget): regenerate
+  all product photos to Holderness & Bourne caliber via Vertex Imagen (the current
+  shots are basic blanks) + add the Cuphead leisure-tee print + logo/rubber-hose motif
+  per [[project_merch_lineup]] + [[project_brand_rubberhose_x_hb]].
 - [x] Caddy-crew identity (#73) DONE (renamed The Caddies + cohesive crew avatar of real 4): rename bot "The Caddy" -> "The Caddies"/"Caddy Crew" + crew profile photo (composite the 4 caddies)
 - [ ] Swing-animation page rework (#67, DO LAST among features) — Cuphead rubber-hose rebuild
 - [ ] Level-100 exclusive animated rubber-hose THEME (#75, end) — vastly different, on-page cartoons + animations; extensive critique loop
