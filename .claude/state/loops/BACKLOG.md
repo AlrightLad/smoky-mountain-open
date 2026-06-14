@@ -505,7 +505,27 @@ UI 9.5 critique loop (#41) — drain per-page queue, then features. Plan + fix-q
 (.pb-card/.pb-btn-brass), drills, partygames, chat-skeleton, courses, bounties,
 calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
 - [x] 7.4-cluster page lifts DONE (all 17 pages on the material system) + shop IA (balance chip + level-lock) shipped v8.25.137-160
-- [ ] Re-run the 22-page critique workflow; loop until every page clears the 9.5 bar
+- [x] Re-critique punch-list CONVERGENCE — DONE v8.25.162 (LIVE on prod + V1-verified
+  on staging, all 12 changed pages captured + read). 9-agent edit-spec workflow →
+  applied with de-dup/scope/structural corrections → 1 contrast regression caught
+  on staging (wrapped band felt+recessed clash) + fixed before prod. Pages: standings
+  (felt leader band), trips (felt next-event hero + brass-rail season ledger, void
+  killed), wrapped (felt hero + struck-brass medallion + secondary band), records
+  (recessed empty wells + AA brass-deep zero + tappable CTA), teetimes (branded
+  preview well replacing faux SAMPLE rows), scramble (signature team-slot hero +
+  how-it-works + felt band), more (ParCoin = the one felt focal peak, rest pressed
+  paper), shop (compact felt wallet hero + brass-rail ledger), calendar (grid on
+  pb-card stock), chat (felt Trash Talk band), settings (opaque nav + safe-area
+  clearance, ghost-through fixed), profile (handicap "—" → tappable P10). Smoke 33/33
+  (fixed stale S33: 7 themes not 6). AMD-028: agent self-rates ~9.3-9.5; the ≥9.5
+  excellence claim is the Founder's via staging sign-off.
+- [ ] CARRY-FORWARD a: PROFILE felt identity hero — the re-critique spec over-scoped
+  the felt wrap (would have swallowed badges/bio/action-buttons + needed ~15 unspecified
+  text-color overrides). Deferred to a careful dedicated pass: wrap ONLY avatar+name+
+  eyebrow+meta (+ optionally XP/wallet) in felt, author the .pf-hero overrides, V1 each.
+- [ ] CARRY-FORWARD b: CHAT deeper Clubhouse migration — felt band shipped, but the page
+  still uses legacy --bg2/--gold/--cream tokens + its capture was an empty skeleton.
+  Migrate tokens + re-score against a SEEDED feed (scripts/_cap-auth.mjs) to fairly clear 9.5.
 - [ ] Merch lineup polish pass (#68) — review the 9 product shots + Cuphead leisure tee
 - [x] Caddy-crew identity (#73) DONE (renamed The Caddies + cohesive crew avatar of real 4): rename bot "The Caddy" -> "The Caddies"/"Caddy Crew" + crew profile photo (composite the 4 caddies)
 - [ ] Swing-animation page rework (#67, DO LAST among features) — Cuphead rubber-hose rebuild
