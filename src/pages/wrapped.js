@@ -31,7 +31,10 @@ function _renderWrappedPending(year) {
   var yc = 0;
   try { yc = myPid ? PB.getPlayerRounds(myPid).filter(function(r) { return r.date && r.date >= year + "-01-01" && r.date <= year + "-12-31" && r.visibility !== "private"; }).length : 0; } catch (e) {}
   var bg = "var(--cb-felt, #1d3a2a)", fg = "var(--cb-chalk, #f1ead3)", mute = "rgba(241,234,211,.72)";
-  var h = '<div style="position:fixed;inset:0;z-index:900;background:' + bg + ';color:' + fg + ';display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;gap:14px">';
+  // #41 v8.25.155 — anchor content in the upper third (was dead-center with a
+  // ~70% void) + a felt radial vignette glow behind it so the screen reads as a
+  // composed editorial moment, not a lonely centered block.
+  var h = '<div style="position:fixed;inset:0;z-index:900;background:radial-gradient(125% 80% at 50% 26%, rgba(255,247,222,.07), transparent 58%), ' + bg + ';color:' + fg + ';display:flex;flex-direction:column;align-items:center;justify-content:flex-start;text-align:center;padding:28vh 32px 32px;gap:14px">';
   h += '<button onclick="Router.back(\'seasonrecap\')" style="position:absolute;top:calc(14px + env(safe-area-inset-top));left:16px;background:none;border:none;color:' + mute + ';font-size:13px;cursor:pointer">← Back</button>';
   h += '<div style="font-family:var(--font-mono);font-size:11px;letter-spacing:3px;color:var(--gold,#b58a3a);text-transform:uppercase">' + year + ' · In Progress</div>';
   h += '<div style="font-family:var(--font-display);font-style:italic;font-weight:700;font-size:30px;line-height:1.15">Your year is still<br>being written.</div>';
