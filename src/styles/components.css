@@ -108,6 +108,12 @@
 .bty-idea{display:flex;align-items:center;gap:9px;padding:9px 13px;margin:0 auto 6px;max-width:300px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);border-radius:8px;font-family:var(--font-ui);font-size:11.5px;color:rgba(244,239,228,.9);text-align:left}
 .bty-idea__dot{width:6px;height:6px;border-radius:50%;background:var(--cb-brass-3);flex:none}
 
+/* Scramble empty-state faux team-card preview (#41 v8.25.151) */
+.scr-faux{display:flex;align-items:center;justify-content:center;gap:14px}
+.scr-faux__av{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.07);border:2px dashed rgba(244,239,228,.3);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:22px;color:rgba(244,239,228,.45)}
+.scr-faux__amp{font-family:var(--font-display);font-style:italic;font-weight:700;font-size:22px;color:var(--cb-brass-3)}
+.scr-faux__rec{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cb-brass-3);margin-top:10px}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    COMPONENT POLISH — micro-shadows, status pills, transitions, animations
    ═══════════════════════════════════════════════════════════════════════════ */

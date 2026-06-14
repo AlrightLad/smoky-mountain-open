@@ -49,7 +49,9 @@ function renderTeamList() {
   h += '<button class="back" onclick="Router.back(\'home\')" style="margin-bottom:12px">← Back</button>';
   h += '<div class="roster-eyebrow">SCRAMBLE · ' + teams.length + ' TEAM' + (teams.length === 1 ? '' : 'S') + '</div>';
   h += '<h1 class="roster-headline">The team room.</h1>';
-  h += '<div class="scr-mast-actions"><button class="btn-sm green" onclick="Router.go(\'scramble\',{create:true})">+ New team</button>';
+  // #41 v8.25.151 — single primary: header CTA (brass) only when teams exist; on
+  // an empty room the felt faux-team-card hero below carries the lone CTA.
+  h += '<div class="scr-mast-actions">' + (teams.length ? '<button class="pb-btn-brass" style="font-size:13px;padding:9px 16px" onclick="Router.go(\'scramble\',{create:true})">+ New team</button>' : '');
   if (teams.length >= 2) h += '<button class="btn-sm outline" onclick="Router.go(\'scramble\',{match:true})">Log a match</button>';
   h += '</div></div>';
 
@@ -167,14 +169,16 @@ function renderTeamList() {
     }
     h += '</div>';
   } else {
-    h += '<div style="text-align:center;padding:32px 16px">';
-    h += '<div style="margin-bottom:12px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5" opacity=".6"><circle cx="16" cy="16" r="6"/><circle cx="32" cy="16" r="6"/><path d="M8 36c0-4.4 3.6-8 8-8h16c4.4 0 8 3.6 8 8"/></svg></div>';
-    // v8.24.37 — serif/brass empty-state title, matching the Bounty Board
-    // recipe (the heavy sans title was the page's last pre-Clubhouse relic).
-    h += '<div style="font-family:var(--font-display);font-size:18px;color:var(--gold)">No Scramble Teams</div>';
-    h += '<div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-width:280px;margin-left:auto;margin-right:auto">Create a scramble team to track W-L records and team scores. Pick your partner and dominate together.</div>';
-    h += '<button class="btn full green" style="margin-top:16px;max-width:280px;margin-left:auto;margin-right:auto" onclick="Router.go(\'scramble\',{create:true})">Create a Team</button>';
-    h += '</div>';
+    // #41 v8.25.151 — felt focal-peak empty state with a faux "team card" preview
+    // (two avatar wells + & + a 0–0 record line) so it reads as "your team goes
+    // here", not a thin grey two-person glyph on dead cream. Lone brass CTA.
+    h += '<div style="padding:6px 16px 2px"><div class="pb-card pb-card--felt" style="padding:24px 22px;text-align:center">';
+    h += '<div class="scr-faux"><span class="scr-faux__av">?</span><span class="scr-faux__amp">&</span><span class="scr-faux__av">?</span></div>';
+    h += '<div class="scr-faux__rec">0 – 0 · your record awaits</div>';
+    h += '<div style="font-family:var(--font-display);font-style:italic;font-weight:700;font-size:21px;color:var(--cb-chalk);line-height:1.15;margin-top:14px">Pick a partner.</div>';
+    h += '<div style="font-family:var(--font-ui);font-size:13px;color:rgba(244,239,228,.84);margin:8px auto 0;line-height:1.5;max-width:320px">Form a 2-, 3-, or 4-player scramble team, track your W–L record, and chase team low scores together.</div>';
+    h += '<button class="pb-btn-brass" style="margin-top:16px" onclick="Router.go(\'scramble\',{create:true})">Create a team</button>';
+    h += '</div></div>';
   }
 
   document.querySelector('[data-page="scramble"]').innerHTML = h;
