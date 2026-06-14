@@ -597,7 +597,7 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
 - #67 SWING + animation generally: severely behind; Cuphead rubber-hose rebuild; generator-first. Stays DO-LAST among features but is a priority once shop/merch land.
 
 ## FOUNDER DIRECTION (2026-06-14 20:07) — COSMETICS NEED A VISUAL OVERHAUL, not a re-theme
-- [~] COSMETICS FULL OVERHAUL (#76 escalated) — STEP 1 (struck-metal common rings) DONE
+- [~] COSMETICS FULL OVERHAUL (#76 escalated) — STEPS 1-2 + research DONE 2026-06-14: (a) struck-metal common rings v8.25.170; (b) ENAMEL/GEM material on ALL remaining flat rings v8.25.173 (no flat-border ring left); (c) 6-app competitor RESEARCH complete -> RESEARCH-SYNTHESIS.md (3-slot system, raster render model, 2-lane honesty, 12 flagship decorations, shop-collections + banner plan). NEXT (apex, fresh-context per plan): core-render decoration-overlay restructure -> raster avatar decorations (Vertex Imagen, committed img/cosmetics) -> nameplate cross-surface -> banner materialization -> shop Collections reorg -> merch photos. ORIGINAL step-1 note: (struck-metal common rings) DONE
   v8.25.170 (LIVE+DOM-verified): the cheap flat-border rings (Classic/Gold/Silver/Bronze)
   now render as struck-metal border-box gradients (proven pc*-ring technique), static
   (calm in lists), id-stable. Verified the ring-gold-struck class applies on a real
