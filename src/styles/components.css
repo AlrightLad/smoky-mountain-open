@@ -5157,7 +5157,20 @@ img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width:
   background:linear-gradient(0deg,rgba(244,238,214,.18),rgba(252,248,232,.2)),
    repeating-linear-gradient(0deg,transparent 0 8px,rgba(31,81,53,.06) 8px 9px)}
 .feed-row.card-skin-pairing-sheet::before{content:"";position:absolute;left:4px;top:0;bottom:0;width:1px;background:rgba(31,81,53,.4);pointer-events:none}
-.plate-clubhouse-crest{padding:2px 12px;border-radius:3px;color:#3a2818 !important;position:relative;background:linear-gradient(165deg,#8a5a30,#6e4422 55%,#5a3418);text-shadow:0 1px 0 rgba(255,255,255,.15);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),inset 0 -1px 0 rgba(0,0,0,.4),0 1px 2px rgba(0,0,0,.35)}
+/* v8.25.121 — was a flat 1-div brown gradient; lifted to embossed saddle leather
+   (layered grain highlights/shadows) + a green-enamel rose-P crest roundel struck
+   at the left, mirroring the pc54 calfskin gold-standard so it stops looking cheap
+   beside it. */
+.plate-clubhouse-crest{padding:2px 12px 2px 22px;border-radius:3px;color:#f3e6c8 !important;position:relative;
+  background:linear-gradient(160deg,#8a5a30,#6e4422 52%,#4f2e18),
+    radial-gradient(circle at 28% 26%,rgba(255,235,200,.12),transparent 40%),
+    radial-gradient(circle at 76% 84%,rgba(0,0,0,.28),transparent 46%);
+  text-shadow:0 1px 0 rgba(0,0,0,.5);
+  box-shadow:inset 0 1px 0 rgba(255,228,190,.2),inset 0 -2px 3px rgba(0,0,0,.5),inset 0 0 0 1px rgba(0,0,0,.3),0 1px 3px rgba(0,0,0,.4)}
+.plate-clubhouse-crest::after{content:"";position:absolute;left:5px;top:50%;width:11px;height:11px;margin-top:-5.5px;border-radius:50%;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2040%2040%22%3E%3Ctext%20x%3D%2218.5%22%20y%3D%2231%22%20font-family%3D%22Georgia%2Cserif%22%20font-size%3D%2232%22%20font-weight%3D%22700%22%20text-anchor%3D%22middle%22%20fill%3D%22%23f4efe4%22%3EP%3C%2Ftext%3E%3Cellipse%20cx%3D%2226%22%20cy%3D%2213%22%20rx%3D%224.8%22%20ry%3D%225.6%22%20fill%3D%22%23e7c77e%22%2F%3E%3C%2Fsvg%3E") center/80% no-repeat,
+    radial-gradient(circle at 38% 30%,#3a8a5c,#1f5135 60%,#143a26);
+  box-shadow:0 0 0 1.4px #caa75c,inset 0 1px 1px rgba(255,255,255,.3)}
 .plate-chalk-board{padding:2px 10px;border-radius:2px;color:#f0e8d8 !important;background:#2a2a2a;font-family:var(--font-mono);letter-spacing:.8px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.15),0 1px 2px rgba(0,0,0,.6)}
 
 /* v8.25.54 — premium quality-leap materials (Founder 9.5 bar). Enamel = deep
