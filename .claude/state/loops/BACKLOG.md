@@ -528,7 +528,7 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
   ring (frames, not covers). V1-confirmed on staging: name pops in serif-chalk on
   felt, no contrast regression. Smoke 33/33.
 - [x] CARRY-FORWARD b: CHAT — DONE v8.25.166 (LIVE+DOM-verified). Root cause was NOT tokens (already aliased to --cb-* in base.css = zero visual gap); it was the feed STUCK on the loading skeleton forever (onSnapshot had no error cb + no timeout). Added error handler + 6s safety net -> feed now resolves to graceful empty-state ("No messages yet"). Verified: skeletonStill false, emptyCard true. Felt band already shipped.
-- [~] Merch lineup polish (#68) — CONFUSION FIX DONE v8.25.164 (LIVE+V1): the mixed
+- [~] Merch (#68) PHOTOS AUDITED + FIXED v8.25.174: audited all 9 — yardage book/headcovers/ball-marker/leisure-tee/etc. are premium+accurate; 2 defects fixed (balls.png garbled-text -> clean; tees.png wooden-pegs -> proper golf tees), regenerated via Imagen, committed, verified 200 on prod. The "weird multi-item" was the flat-lay hero (replaced by flagship-hoodie v8.25.164). Original: Merch lineup polish (#68) — CONFUSION FIX DONE v8.25.164 (LIVE+V1): the mixed
   flat-lay hero (polo+cap+towel+headcover in one frame = the Founder's "multiple items
   under one photo" complaint) replaced with a single flagship-product hero (The
   Clubhouse Hoodie); flagship dropped from the grid (no dup); every grid item already
