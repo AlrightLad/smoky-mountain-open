@@ -241,6 +241,8 @@ docs/reports/sessions.html
 
 # Local authed UI-review captures (per-page critique, #41)
 .claude/state/cap-*/
+# verify-as-member.mjs capture output (local V1 evidence, PNGs)
+.claude/state/verify-*/
 
 # Lottie download scratch (swing-figure exploration)
 .claude/state/lottie-dl/
