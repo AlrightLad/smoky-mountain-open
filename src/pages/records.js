@@ -15,6 +15,29 @@ Router.register("records", function() {
   if (_mBest) h += '<p style="font-family:var(--font-mono);font-size:12px;color:var(--cb-mute);margin:10px 0 0;letter-spacing:.3px">Best round · <b style="color:var(--cb-ink)">' + _mBest.score + '</b> by ' + escHtml(_mBest.playerName) + (_mBest.course ? ' at ' + escHtml(_mBest.course) : '') + '</p>';
   h += '</div>';
 
+  // v8.25.124 — SIGNATURE RECORDS marquee: the league's greatest-hits numbers as
+  // premium visual cards leading the page (was a row of mostly-empty CTA stat
+  // tiles + a wall of collapsed accordions — read flat/empty per Founder). Real
+  // values lead; empty records show a "be the first" prompt, never a bare dash.
+  var _nineAll = rounds.filter(function(r){ return r.holesPlayed && r.holesPlayed <= 9 && r.format !== "scramble" && r.format !== "scramble4" && r.score; });
+  var _bestNine = _nineAll.length ? _nineAll.reduce(function(a, b){ return a.score < b.score ? a : b; }) : null;
+  var _aceN = (rec.holeInOnes && rec.holeInOnes.length) || 0;
+  function _sigCard(eyebrow, big, detail, route, accent) {
+    var has = big != null && big !== "";
+    var c = '<div class="rec-sig' + (has ? '' : ' rec-sig--empty') + (accent ? ' rec-sig--hero' : '') + '"' + (route ? ' onclick="Router.go(\'' + route + '\')" style="cursor:pointer"' : '') + '>';
+    c += '<div class="rec-sig__eyebrow">' + eyebrow + '</div>';
+    c += '<div class="rec-sig__big">' + (has ? big : '—') + '</div>';
+    c += '<div class="rec-sig__detail">' + (detail || (has ? '' : 'Be the first')) + '</div>';
+    c += '</div>';
+    return c;
+  }
+  h += '<div class="rec-sig-grid">';
+  h += _sigCard("Lowest 18", _mBest ? _mBest.score : "", _mBest ? escHtml(_mBest.playerName) : "Log an 18-hole round", null, true);
+  h += _sigCard("Lowest 9", _bestNine ? _bestNine.score : "", _bestNine ? escHtml(_bestNine.playerName) : "Log a 9-hole round", null, false);
+  h += _sigCard("Longest drive", rec.longestDrive ? (rec.longestDrive.distance + "<span class='rec-sig__unit'>yds</span>") : "", rec.longestDrive ? escHtml(rec.longestDrive.by) : "Tap to log it", rec.longestDrive ? null : null, false);
+  h += _sigCard("Hole-in-ones", _aceN ? _aceN : "", _aceN ? "View the Ace Wall →" : "The wall awaits", "aces", false);
+  h += '</div>';
+
   // Season standings card (prominent at top)
   var year = new Date().getFullYear();
   var month = new Date().getMonth();

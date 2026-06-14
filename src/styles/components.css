@@ -5354,3 +5354,16 @@ img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width:
 .lb-empty-title{font-family:var(--font-display);font-style:italic;font-weight:700;font-size:21px;color:var(--cb-ink)}
 .lb-empty-sub{font-family:var(--font-ui);font-size:13px;color:var(--cb-mute);line-height:1.5;margin:8px auto 0;max-width:340px}
 .lb-empty-cta{margin-top:16px;font-family:var(--font-display);font-weight:700;font-size:14px;padding:10px 22px;border-radius:var(--r-2);border:none;cursor:pointer;background:linear-gradient(180deg,var(--cb-brass),var(--cb-brass-deep));color:var(--cb-chalk);box-shadow:0 6px 16px rgba(var(--cb-brass-rgb),.32)}
+
+/* ═══ RECORDS: signature-records marquee (v8.25.124) ═══
+   Greatest-hits numbers as premium cards leading the record book — real values
+   lead, empties prompt "be the first" (never a bare dash). Tokens → all themes. */
+.rec-sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 16px 4px}
+.rec-sig{background:var(--cb-paper);border:1px solid var(--cb-chalk-3);border-radius:var(--r-3);padding:13px 14px;box-shadow:var(--shadow-sm);min-height:86px;display:flex;flex-direction:column;justify-content:center}
+.rec-sig--hero{background:linear-gradient(160deg,rgba(var(--cb-brass-rgb),.11),var(--cb-paper));border-color:rgba(var(--cb-brass-rgb),.42);border-left:3px solid var(--cb-brass)}
+.rec-sig--empty{background:transparent;border-style:dashed;border-color:rgba(var(--cb-brass-rgb),.25);box-shadow:none}
+.rec-sig__eyebrow{font-family:var(--font-mono);font-size:8.5px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--cb-brass-deep)}
+.rec-sig__big{font-family:var(--font-display);font-weight:800;font-size:30px;line-height:1;color:var(--cb-ink);margin-top:6px}
+.rec-sig--empty .rec-sig__big{color:var(--cb-mute-3);font-weight:700;font-size:22px}
+.rec-sig__unit{font-size:13px;font-weight:600;color:var(--cb-mute);margin-left:3px}
+.rec-sig__detail{font-family:var(--font-ui);font-size:11px;color:var(--cb-mute);margin-top:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
