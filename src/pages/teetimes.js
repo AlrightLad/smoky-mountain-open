@@ -44,22 +44,24 @@ Router.register("teetimes", function() {
   // task sandwiching the Back button. Once tee times exist (no hero), the
   // header "+ Post" becomes the page's primary and stays brass (dark ink label
   // clears AA on the brass fill).
+  // #41 v8.25.153 — editorial masthead is the SINGLE dominant H1 (was a legacy
+  // .sh "Tee Times" h2 that competed with the empty-state "No Tee Times Posted"
+  // title — the dual-H1 the critique flagged). Empty hero headline softened below.
   var _postBtn = upcoming.length
-    ? '<button class="btn-sm green" style="color:var(--cb-ink)" onclick="Router.go(\'tee-create\')">+ Post</button>'
+    ? '<button class="pb-btn-brass" style="font-size:13px;padding:9px 16px" onclick="Router.go(\'tee-create\')">+ Post</button>'
     : '';
-  var h = '<div class="sh"><h2>Tee Times</h2><div style="display:flex;gap:8px;align-items:center"><button class="back" onclick="Router.back(\'home\')">← Back</button>' + _postBtn + '</div></div>';
+  var h = '<div class="roster-masthead" style="padding-bottom:6px"><button class="back" onclick="Router.back(\'home\')" style="margin-bottom:12px">← Back</button><div class="roster-eyebrow">The tee sheet · RSVP</div><h1 class="roster-headline">Tee times.</h1>' + (_postBtn ? '<div style="margin-top:12px">' + _postBtn + '</div>' : '') + '</div>';
 
   if (!upcoming.length) {
-    h += '<div style="text-align:center;padding:32px 16px">';
-    // Clock icon, MED-3: was a faint --gold (~0.6 opacity) on the light canvas
-    // with two diagonal stubs (M38 10.. / M10 10..) that read as a broken/
-    // glitched icon. Restruck on deep-brass --cb-ink-link at full opacity with a
-    // rounded stroke; the loose diagonal stubs are replaced by clean 12/3/6/9
-    // tick marks just inside the rim so it reads unmistakably as a clock face.
-    h += '<div style="margin-bottom:12px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--cb-ink-link)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="18"/><path d="M24 13.5v10.5l6.5 3.5"/><path d="M24 7v3M24 38v3M41 24h-3M10 24H7"/></svg></div>';
-    h += '<div style="font-family:var(--font-display);font-size:18px;color:var(--gold)">No Tee Times Posted</div>';
-    h += '<div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-width:280px;margin-left:auto;margin-right:auto">Post a tee time and your crew can RSVP. Never wonder who\u2019s playing this weekend again.</div>';
-    h += '<button class="btn full green" style="margin-top:16px;max-width:280px;margin-left:auto;margin-right:auto;color:var(--cb-ink)" onclick="Router.go(\'tee-create\')">Post a Tee Time</button>';
+    // Felt focal-peak hero; headline softened ("Rally the crew.") so the masthead
+    // "Tee times." stays the page's single dominant title (dual-H1 fix). Clock on
+    // brass-3, lone brass CTA.
+    h += '<div style="padding:6px 16px 2px"><div class="pb-card pb-card--felt" style="padding:24px 22px;text-align:center">';
+    h += '<div style="margin-bottom:10px;display:flex;justify-content:center"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--cb-brass-3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="18"/><path d="M24 13.5v10.5l6.5 3.5"/><path d="M24 7v3M24 38v3M41 24h-3M10 24H7"/></svg></div>';
+    h += '<div style="font-family:var(--font-display);font-style:italic;font-weight:700;font-size:21px;color:var(--cb-chalk);line-height:1.15">Rally the crew.</div>';
+    h += '<div style="font-family:var(--font-ui);font-size:13px;color:rgba(244,239,228,.84);margin:8px auto 0;line-height:1.5;max-width:320px">Post a tee time and your crew can RSVP \u2014 never wonder who\u2019s playing this weekend again.</div>';
+    h += '<button class="pb-btn-brass" style="margin-top:16px" onclick="Router.go(\'tee-create\')">Post a tee time</button>';
+    h += '</div></div>';
     h += '<div style="margin-top:20px;text-align:left">';
     h += '<div style="font-size:9px;color:var(--cb-mute);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;text-align:center">Example tee times</div>';
     var exTees = [
@@ -79,7 +81,7 @@ Router.register("teetimes", function() {
     exTees.forEach(function(ex) {
       h += '<div style="display:flex;align-items:center;gap:9px;padding:11px 13px;margin-bottom:6px;background:var(--cb-paper);border:1px dashed var(--border);border-radius:var(--r-2);font-size:12px;pointer-events:none;cursor:default" aria-hidden="true"><span style="width:6px;height:6px;border-radius:50%;background:var(--cb-mute-2);flex:none"></span><span style="flex:1;color:var(--cb-mute-2)">' + ex + '</span><span style="flex:none;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--cb-mute-1);background:var(--cb-paper);border:1px solid var(--cb-mute-1);border-radius:var(--r-5);padding:2px 7px">Sample</span></div>';
     });
-    h += '</div></div>';
+    h += '</div>';
   }
   upcoming.forEach(function(t) { h += '<div class="section">' + renderTeeCard(t) + '</div>'; });
 
