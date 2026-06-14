@@ -597,7 +597,15 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
 - #67 SWING + animation generally: severely behind; Cuphead rubber-hose rebuild; generator-first. Stays DO-LAST among features but is a priority once shop/merch land.
 
 ## FOUNDER DIRECTION (2026-06-14 20:07) — COSMETICS NEED A VISUAL OVERHAUL, not a re-theme
-- [ ] COSMETICS FULL OVERHAUL (#76 escalated) — "these rings and cosmetics suck really
+- [~] COSMETICS FULL OVERHAUL (#76 escalated) — STEP 1 (struck-metal common rings) DONE
+  v8.25.170 (LIVE+DOM-verified): the cheap flat-border rings (Classic/Gold/Silver/Bronze)
+  now render as struck-metal border-box gradients (proven pc*-ring technique), static
+  (calm in lists), id-stable. Verified the ring-gold-struck class applies on a real
+  avatar (.claude/state/allpages/profile-struck-ring.png). This is the proof-of-direction.
+  NEXT (the bigger leap, per DESIGN-SPEC): Discord-style avatar DECORATION frames that
+  extend BEYOND the avatar circle (struck-brass laurels, claret pennant, glow halos) via
+  a decoration overlay layer — needs the higher-stakes core-render layer change + Founder
+  taste reaction to step 1 first. Then richer profile banners. Original note: "these rings and cosmetics suck really
   bad, we need a full overhaul. Reference other apps that have profile banners and rings
   like DISCORD." The v8.25.167-168 re-theme was rename+recolour ONLY (still plain CSS
   borders) — Founder rightly says that's "nothing new." REAL ASK: rebuild rings →
