@@ -346,7 +346,12 @@ function playerRingClass(p) {
   // (distinct crest art is a follow-up polish item).
   if (b === 'pc39_wax_seal') return 'ring-wax-seal';
   if (b === 'pc40_hickory_brass') return 'ring-hickory';
-  if (b === 'pc42_founders_crest') return 'ring-claret';
+  // v8.25.116 — pc42 was a byte-identical dupe of ring-claret (two 3000c SKUs
+  // rendered the same); now its own ornate double-bezel + rose-P crest medallion.
+  if (b === 'pc42_founders_crest') return 'ring-founders-crest';
+  // v8.25.116 — pc24 champion ring was ringClass:"" (flat default border). Now
+  // a felt-wool band + brass buttons. (Earned, not bought — renders when equipped.)
+  if (b === 'pc24_green_jacket') return 'ring-green-jacket';
   if (b === 'pc44_iron_blade') return 'ring-iron-blade'; // v8.25.49 Founder-batch
   if (b === 'pc52_crest_pin') return 'ring-crest-pin';   // v8.25.54 premium batch
   if (b === 'pc53_medallion') return 'ring-medallion';
