@@ -90,7 +90,15 @@ Router.register("chat", function() {
   // Start listener
   if (db) {
     if (window._chatFeedUnsub) window._chatFeedUnsub();
+    // v8.25.166 — the loading skeleton (line ~86) used to stick FOREVER whenever
+    // the snapshot listener errored (permission race / cold start) or was slow,
+    // because onSnapshot had NO error callback and there was no timeout fallback.
+    // A perpetually-loading feed reads as broken (this is the #41 chat 7.4). Now:
+    // (1) an error renders the graceful empty-state, (2) a 6s safety net drops the
+    // skeleton if neither success nor error has fired. P10: never a stuck skeleton.
+    var _chatSettled = false;
     window._chatFeedUnsub = leagueQuery("chat").orderBy("createdAt","desc").limit(50).onSnapshot(function(snap) {
+      _chatSettled = true;
       liveChat = [];
       snap.forEach(function(doc){
         var d = doc.data();
@@ -105,7 +113,19 @@ Router.register("chat", function() {
       if (feed && Router.getPage() === "chat") {
         feed.innerHTML = renderChatMessages(liveChat);
       }
+    }, function(err) {
+      _chatSettled = true;
+      if (typeof pbWarn === "function") pbWarn("[chat] feed listener error: " + (err && err.message));
+      var feed = document.getElementById("chatFeed");
+      if (feed && Router.getPage() === "chat") feed.innerHTML = renderChatMessages([]);
     });
+    setTimeout(function() {
+      if (_chatSettled) return;
+      var feed = document.getElementById("chatFeed");
+      if (feed && Router.getPage() === "chat" && feed.querySelector(".skeleton, [class*='skeleton']")) {
+        feed.innerHTML = renderChatMessages(liveChat || []);
+      }
+    }, 6000);
   }
 });
 
