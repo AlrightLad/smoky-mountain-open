@@ -22,33 +22,36 @@ function renderChallengeList() {
   // On an empty board the in-body "Start a Challenge" is the sole primary, so
   // the header CTA is dropped entirely (was a competing brass/outline button —
   // two create affordances on one screen). One screen, one primary.
+  // #41 v8.25.152 — editorial masthead (was legacy .sh); header CTA brass + still
+  // count-gated so the empty-state hero is the sole primary on an empty board.
   var _newBtn = challenges.length
-    ? '<button class="btn-sm green" onclick="Router.go(\'challenges\',{create:true})">+ New</button>'
+    ? '<button class="pb-btn-brass" style="font-size:13px;padding:9px 16px" onclick="Router.go(\'challenges\',{create:true})">+ New</button>'
     : '';
-  var h = '<div class="sh"><h2>Challenges</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'records\')">← Back</button>' + _newBtn + '</div></div>';
+  var h = '<div class="roster-masthead" style="padding-bottom:6px"><button class="back" onclick="Router.back(\'records\')" style="margin-bottom:12px">← Back</button><div class="roster-eyebrow">Head to head · The gauntlet</div><h1 class="roster-headline">Challenges.</h1>' + (_newBtn ? '<div style="margin-top:12px">' + _newBtn + '</div>' : '') + '</div>';
 
   if (challenges.length) {
     challenges.sort(function(a,b){return (b.ts||0)-(a.ts||0)});
     challenges.forEach(function(c) {
       var from = PB.getPlayer(c.from);
       var to = PB.getPlayer(c.to);
-      var statusColor = c.status === "pending" ? "var(--gold)" : c.status === "accepted" ? "var(--birdie)" : c.status === "completed" ? "var(--cream)" : "var(--red)";
+      var statusColor = c.status === "pending" ? "var(--cb-brass)" : c.status === "accepted" ? "var(--cb-green)" : c.status === "completed" ? "var(--cb-ink)" : "var(--cb-claret)";
       h += '<div class="card"><div style="padding:14px 16px">';
       h += '<div style="display:flex;justify-content:space-between;align-items:center">';
       h += '<div><div style="font-size:13px;font-weight:600">' + escHtml(from?(from.username||from.name):"Unknown player") + ' vs ' + escHtml(to?(to.username||to.name):"Unknown player") + '</div>';
-      if (c.course) h += '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + escHtml(c.course) + '</div>';
-      if (c.stakes) h += '<div style="font-size:11px;color:var(--gold2);margin-top:2px;font-style:italic">' + escHtml(c.stakes) + '</div>';
+      if (c.course) h += '<div style="font-size:11px;color:var(--cb-mute);margin-top:2px">' + escHtml(c.course) + '</div>';
+      if (c.stakes) h += '<div style="font-size:11px;color:var(--cb-brass-deep);margin-top:2px;font-style:italic">' + escHtml(c.stakes) + '</div>';
       h += '<div style="font-size:9px;color:var(--cb-mute);margin-top:3px">' + escHtml(c.created || "") + '</div>';
       h += '</div>';
       h += '<div style="font-size:10px;font-weight:600;color:' + statusColor + ';text-transform:uppercase;letter-spacing:.5px">' + c.status + '</div>';
       h += '</div></div></div>';
     });
   } else {
-    h += '<div style="padding:24px 16px;text-align:center">';
-    h += '<div style="margin-bottom:14px"><svg viewBox="0 0 48 48" width="60" height="60" fill="none" stroke="var(--gold)" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M14 34l10-10 10 10"/><path d="M14 24l10-10 10 10"/><circle cx="14" cy="14" r="4"/><circle cx="34" cy="14" r="4"/></svg></div>';
-    h += '<div style="font-family:var(--font-display);font-size:18px;color:var(--gold);margin-bottom:6px">No Active Challenges</div>';
-    h += '<div style="font-size:12px;color:var(--cb-ink-faint);line-height:1.5;max-width:280px;margin:0 auto 16px">Challenge a friend to a head-to-head match. Bet coins on who shoots lower, who hits more fairways, or who survives the back nine.</div>';
-    h += '<button class="btn full green" onclick="Router.go(\'challenges\',{create:true})" style="max-width:240px;margin:0 auto;font-size:13px;padding:14px">Start a Challenge</button>';
+    h += '<div style="padding:6px 16px 2px"><div class="pb-card pb-card--felt" style="padding:24px 22px;text-align:center">';
+    h += '<div style="margin-bottom:10px;display:flex;justify-content:center"><svg viewBox="0 0 48 48" width="54" height="54" fill="none" stroke="var(--cb-brass-3)" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"><path d="M14 34l10-10 10 10"/><path d="M14 24l10-10 10 10"/><circle cx="14" cy="14" r="4"/><circle cx="34" cy="14" r="4"/></svg></div>';
+    h += '<div style="font-family:var(--font-display);font-style:italic;font-weight:700;font-size:21px;color:var(--cb-chalk);line-height:1.15">Throw down a gauntlet.</div>';
+    h += '<div style="font-family:var(--font-ui);font-size:13px;color:rgba(244,239,228,.84);margin:8px auto 0;line-height:1.5;max-width:320px">Challenge a friend head-to-head — bet coins on who shoots lower, hits more fairways, or survives the back nine.</div>';
+    h += '<button class="pb-btn-brass" style="margin-top:16px" onclick="Router.go(\'challenges\',{create:true})">Start a challenge</button>';
+    h += '</div></div>';
     h += '<div style="margin-top:20px;text-align:left">';
     h += '<div style="font-size:9px;color:var(--cb-eyebrow);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;text-align:center">Challenge Ideas \u00b7 tap to start</div>';
     // v8.24.89 \u2014 the idea chips are real actions, not decorative text. Each one
@@ -72,7 +75,7 @@ function renderChallengeList() {
       // Challenge" CTA above (page-critique MED #1: a bright paper fill + filled
       // CTA read as two competing primaries). Transparent ground + hairline border
       // = quiet outline affordance; hover warms to paper so they still feel tappable.
-      h += '<button type="button" class="ch-idea" onclick=\'Router.go("challenges",{create:true,stakes:' + _arg + '})\' style="display:flex;align-items:center;gap:9px;width:100%;text-align:left;padding:13px;margin-bottom:6px;background:transparent;border:1px solid var(--border);border-radius:var(--r-2);font-size:12px;color:var(--cb-ink-faint);min-height:44px;cursor:pointer;font-family:inherit;transition:border-color .15s ease,background .15s ease,color .15s ease" onmouseover="this.style.borderColor=\'var(--gold)\';this.style.background=\'var(--cb-paper)\';this.style.color=\'var(--cb-ink)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.background=\'transparent\';this.style.color=\'var(--cb-ink-faint)\'"><span style="width:6px;height:6px;border-radius:50%;background:var(--gold);flex:none"></span><span style="flex:1">' + escHtml(ex.label) + '</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--cb-mute)" stroke-width="2" style="flex:none"><path d="M9 6l6 6-6 6"/></svg></button>';
+      h += '<button type="button" class="ch-idea" onclick=\'Router.go("challenges",{create:true,stakes:' + _arg + '})\' style="display:flex;align-items:center;gap:9px;width:100%;text-align:left;padding:13px;margin-bottom:6px;background:transparent;border:1px solid var(--border);border-radius:var(--r-2);font-size:12px;color:var(--cb-ink-faint);min-height:44px;cursor:pointer;font-family:inherit;transition:border-color .15s ease,background .15s ease,color .15s ease" onmouseover="this.style.borderColor=\'var(--cb-brass)\';this.style.background=\'var(--cb-paper)\';this.style.color=\'var(--cb-ink)\'" onmouseout="this.style.borderColor=\'var(--border)\';this.style.background=\'transparent\';this.style.color=\'var(--cb-ink-faint)\'"><span style="width:6px;height:6px;border-radius:50%;background:var(--cb-brass);flex:none"></span><span style="flex:1">' + escHtml(ex.label) + '</span><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="var(--cb-mute)" stroke-width="2" style="flex:none"><path d="M9 6l6 6-6 6"/></svg></button>';
     });
     h += '</div></div>';
   }
@@ -114,7 +117,7 @@ function showChallengeCourseSearch(input) {
   if (!results.length) { container.innerHTML = ""; return; }
   var h = '';
   results.forEach(function(c) {
-    h += '<div class="search-item" onclick="document.getElementById(\'ch-course\').value=\'' + escHtml(c.name.replace(/'/g, "\\'")) + '\';document.getElementById(\'search-ch-course\').innerHTML=\'\'">' + escHtml(c.name) + ' <span style="color:var(--muted);font-size:11px">' + escHtml(c.loc||'') + '</span></div>';
+    h += '<div class="search-item" onclick="document.getElementById(\'ch-course\').value=\'' + escHtml(c.name.replace(/'/g, "\\'")) + '\';document.getElementById(\'search-ch-course\').innerHTML=\'\'">' + escHtml(c.name) + ' <span style="color:var(--cb-mute);font-size:11px">' + escHtml(c.loc||'') + '</span></div>';
   });
   container.innerHTML = h;
 }
