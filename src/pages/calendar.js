@@ -42,7 +42,11 @@ Router.register("calendar", function() {
   // Activity counts line — suppressed on an empty month (the subdeck already says
   // "Nothing on the books yet this month"; a "0 · 0 · 0" strip is redundant noise).
   var _mMeta = _calMeta(todayStr);
-  var _mEmpty = (_mMeta.monthScheduled === 0 && _mMeta.roundsThisMonth === 0 && _mMeta.next7 === 0 && _mMeta.upcoming === 0);
+  // #41 v8.25.143 — the meta strip shows ONLY scheduled/next-7/upcoming counts, so
+  // it must hide based on THOSE three (not rounds). Including roundsThisMonth here
+  // let the strip render "0 · 0 · 0" while the subdeck truthfully said "1 round
+  // logged" — a self-contradiction (P9). Rounds are conveyed by the subdeck.
+  var _mEmpty = (_mMeta.monthScheduled === 0 && _mMeta.next7 === 0 && _mMeta.upcoming === 0);
   h += '<div class="cal-meta" id="calMeta"' + (_mEmpty ? ' hidden' : '') + '>' + (_mEmpty ? '' : _calMetaLine(_mMeta)) + '</div>';
 
   // ── Inline create form (hidden by default) ──
@@ -496,8 +500,9 @@ function _updateCalendarInPlace() {
   if (subEl) subEl.innerHTML = _calSubdeck(meta);
   var metaEl = document.getElementById("calMeta");
   if (metaEl) {
-    // Mirror the masthead suppression: hide the "0 · 0 · 0" strip on an empty month.
-    var metaEmpty = (meta.monthScheduled === 0 && meta.roundsThisMonth === 0 && meta.next7 === 0 && meta.upcoming === 0);
+    // Mirror the masthead suppression: hide the strip when its own three counts are
+    // all 0 (NOT keyed on rounds — see _mEmpty note; prevents "0·0·0" vs "1 round").
+    var metaEmpty = (meta.monthScheduled === 0 && meta.next7 === 0 && meta.upcoming === 0);
     metaEl.hidden = metaEmpty;
     metaEl.textContent = metaEmpty ? "" : _calMetaLine(meta);
   }
