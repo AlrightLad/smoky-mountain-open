@@ -33,7 +33,9 @@ Router.register("trips", function(params) {
   var _upc = activeTrips.length;
   var h = '<div class="roster-masthead"><div class="roster-eyebrow">EVENTS · ' + _upc + ' UPCOMING</div>';
   h += '<h1 class="roster-headline">The events board.</h1>';
-  h += '<div style="margin-top:14px"><button class="btn-sm green" onclick="Router.go(\'trips\',{create:true})">+ New Event</button></div></div>';
+  // #41 v8.25.149 — single primary: show the header CTA (brass) only when events
+  // exist; on an empty board the felt empty-state hero below is the lone primary.
+  h += (activeTrips.length ? '<div style="margin-top:14px"><button class="pb-btn-brass" style="font-size:13px;padding:9px 16px" onclick="Router.go(\'trips\',{create:true})">+ New event</button></div>' : '') + '</div>';
 
   // Commissioner-only tournament CTA — revealed async after the league-doc
   // commissioner cache warms (see reveal block after innerHTML below).
@@ -70,12 +72,14 @@ Router.register("trips", function(params) {
   if (activeTrips.length) {
     activeTrips.forEach(function(t) { h += tripCard(t); });
   } else {
-    h += '<div style="text-align:center;padding:32px 16px">';
-    h += '<div style="margin-bottom:12px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--cb-mute)" stroke-width="1.5"><path d="M16 6v36"/><path d="M16 6l18 5.5L16 17"/><ellipse cx="26" cy="42" rx="16" ry="3.5"/></svg></div>';
-    h += '<div style="font-family:var(--font-display);font-size:18px;color:var(--gold)">No Upcoming Events</div>';
-    h += '<div style="font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;max-width:280px;margin-left:auto;margin-right:auto">Plan a golf trip, tournament, or hangout. Set dates, invite the crew, and track scores together.</div>';
-    h += '<button class="btn full green" style="margin-top:16px;max-width:280px;margin-left:auto;margin-right:auto" onclick="Router.go(\'trips\',{create:true})">+ New Event</button>';
-    h += '</div>';
+    // #41 v8.25.149 — felt focal-peak empty state (was flat legacy --gold/--muted
+    // text), the lone primary CTA, fills the board instead of a thin dead zone.
+    h += '<div style="padding:6px 16px 2px"><div class="pb-card pb-card--felt" style="padding:26px 22px;text-align:center">';
+    h += '<div style="margin-bottom:10px;display:flex;justify-content:center"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--cb-brass-3)" stroke-width="1.6"><path d="M16 6v36"/><path d="M16 6l18 5.5L16 17"/><ellipse cx="26" cy="42" rx="16" ry="3.5"/></svg></div>';
+    h += '<div style="font-family:var(--font-display);font-style:italic;font-weight:700;font-size:21px;color:var(--cb-chalk);line-height:1.15">The board is open.</div>';
+    h += '<div style="font-family:var(--font-ui);font-size:13px;color:rgba(244,239,228,.84);margin:8px auto 0;line-height:1.5;max-width:330px">Plan a golf trip, tournament, or hangout — set the dates, invite the crew, and track every round together.</div>';
+    h += '<button class="pb-btn-brass" style="margin-top:16px" onclick="Router.go(\'trips\',{create:true})">+ New event</button>';
+    h += '</div></div>';
   }
 
   // Past events — collapsible, collapsed by default
