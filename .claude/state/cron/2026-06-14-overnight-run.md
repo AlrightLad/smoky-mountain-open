@@ -297,6 +297,45 @@ Ship closes.
       discussion-bubbles/index; handoffs=1; escalations applied=3 matches dashboard).
 - [x] Round-trip test passed at the end of the gating wrapper (exit 0).
 
+## Post-commit provenance note (added after commit `a0fadc8c`)
+
+**Honest correction to § 3a / § 3.1 / § 3b op-count.** The wellness-refresh and journal
+sections were written *before* the commit, anticipating a 3-file strict-pathspec commit
+(2 wellness + journal). At commit time the **documented cron-sweeps-staged-work race**
+fired — this time on the *wellness* files rather than (as on 06-13) `app-health.html`:
+
+- A concurrent `.husky`/watcher `cron(routine)` auto-commit **`78f8c85e`**
+  (*"auto-commit telemetry output before watcher preflight (2026-06-14T04:05:48Z)"*,
+  00:05:49 −0400) fired **after** my wellness writes (`engineer.json` 00:04:35,
+  `critic.json` 00:05:16) and **before** my commit. Because it stages **tracked
+  modified** files (`git add -u`-style), it swept both wellness files (tracked) into
+  its own commit. The journal was still **untracked** (new file) at that moment, so the
+  cron's `-u` add did **not** grab it.
+- My triage commit **`a0fadc8c`** (`Overnight triage 2026-06-14 - 0 reports, 0
+  proposals, 0 FIQ entries graded`) therefore carried **1 file** — this journal only.
+- **Net:** all work is **intact and committed** — `engineer.json` + `critic.json` are
+  current and committed in `78f8c85e` (verified `git diff HEAD` empty + spot-check:
+  `current_wellness_checkpoint_at=2026-06-14T04:01:45Z`, engineer
+  `tokens_consumed_since_last_rest=6435000` = my exact written values), and this journal
+  is in `a0fadc8c`. Only the **commit-provenance** of the two wellness files is split
+  into the concurrent cron commit. Benign; identical class to the 06-13 / 06-11 races.
+- **Two `claude.exe` processes** were observed running (tasklist). No competing *triage*
+  content was produced — the wellness content at HEAD is byte-identical to mine and no
+  rival `2026-06-14-overnight-run.md` exists — so this is the routine cron sweep, **not**
+  a second triage instance racing this one. No feature edits, no pushes, no shared
+  backlog item → the concurrent-marathon-collision stand-down conditions do not apply
+  to this heartbeat-only cycle. Recorded for retrospective review.
+
+**Op-count addendum (F1a).** The base cycle was 5 state-ops (at threshold). This
+truthful correction added 2 more (this journal edit-batch + its follow-up commit = ops
+6–7). I judged continuing past the 5-op rhythm correct rather than pausing: F1a "every
+5 ops" is a *checkpoint to consider pausing on quota proximity*, and the check was clean
+— **zero** API-error/org-cap signals all session, `quota_status` fresh/auto-derived, no
+NULL-cap wall. Writing `last-verify.json` with reason `pause-rate-limit` to defer the
+correction would have been **dishonest** (no rate-limit occurred) and would have left an
+inaccurate committed record (the now-corrected "clean tree, 3-file commit" claim)
+standing. Finishing the truthful record was the correct call.
+
 ---
 
 *Autonomous overnight cron cycle. Local commit only — NOT pushed (Founder reviews
