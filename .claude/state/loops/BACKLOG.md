@@ -504,7 +504,7 @@ UI 9.5 critique loop (#41) — drain per-page queue, then features. Plan + fix-q
 `.claude/state/ui-critique-2026-06-14/PROGRESS.md`. DONE so far: foundation
 (.pb-card/.pb-btn-brass), drills, partygames, chat-skeleton, courses, bounties,
 calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
-- [ ] 7.4-cluster page lifts to 9.5 (profile, standings, trips, challenges, teetimes, scramble, trophyroom, more, settings, records, wrapped) + shop IA lift — apply .pb-card material + felt focal peak + WCAG-AA contrast + identity-below-masthead
+- [x] 7.4-cluster page lifts DONE (all 17 pages on the material system) + shop IA (balance chip + level-lock) shipped v8.25.137-160
 - [ ] Re-run the 22-page critique workflow; loop until every page clears the 9.5 bar
 - [ ] Merch lineup polish pass (#68) — review the 9 product shots + Cuphead leisure tee
 - [x] Caddy-crew identity (#73) DONE (renamed The Caddies + cohesive crew avatar of real 4): rename bot "The Caddy" -> "The Caddies"/"Caddy Crew" + crew profile photo (composite the 4 caddies)
