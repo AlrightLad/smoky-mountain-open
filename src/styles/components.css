@@ -533,6 +533,17 @@ input.s:disabled,
   .roster-search{width:140px}
   .roster-scope{gap:10px}
 }
+/* #72 (v8.25.136) — on the smallest phones (≤400px, e.g. iPhone SE) the
+   standings table's fixed avatar+rank columns + padding floored its width above
+   the viewport with longer names. Drop the secondary Avg column (Pts is the
+   point of standings) and tighten cell padding so the board fits without a
+   sideways scroll. Header + body share the std-col-avg class, so alignment is
+   preserved. */
+@media (max-width:400px){
+  .std-col-avg{display:none}
+  .roster-table thead th,.roster-table .roster-row td{padding-left:6px;padding-right:6px}
+  .roster-cell-av{width:48px}
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    SEASON STANDINGS / LEADERBOARD (3d) — editorial; shares roster (3e) language
