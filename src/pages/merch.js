@@ -39,19 +39,24 @@ Router.register("merch", function () {
   h += '<div style="font-family:var(--font-ui);font-size:14px;color:var(--cb-charcoal);line-height:1.5;margin-top:12px;max-width:440px">A first look at the Parbaughs collection — country-club staples in our colors. <span style="color:var(--cb-brass-deep);font-weight:600">Coming soon.</span></div>';
   h += '</div>';
 
-  // Flat-lay hero
+  // Flagship hero — ONE product, not a mixed flat-lay. The prior flatlay.jpg
+  // showed polo+cap+towel+headcover in one frame, which the Founder flagged as
+  // "multiple items under one photo = customer confusion." The marquee piece
+  // leads; every other item gets its own photo in the grid below (slice(1)).
+  var _hero = LINE[0]; // The Clubhouse Hoodie
   h += '<div style="padding:8px 16px 4px">';
   h += '<div style="position:relative;border-radius:var(--r-4);overflow:hidden;box-shadow:var(--shadow-md);border:1px solid rgba(var(--cb-brass-rgb),.22)">';
-  h += '<img src="' + imgUrl("flatlay.jpg") + '" alt="The Parbaughs collection — polo, cap, towel and headcover" loading="lazy" style="display:block;width:100%;height:auto">';
-  h += '<div style="position:absolute;left:0;bottom:0;right:0;padding:26px 16px 12px;background:linear-gradient(to top,rgba(20,19,15,.62),transparent)">';
-  h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass-3)">The Collection</div>';
-  h += '<div style="font-family:var(--font-display);font-style:italic;font-weight:700;font-size:22px;color:var(--cb-chalk);line-height:1.1;margin-top:3px">Pro-shop staples, Parbaughs colors.</div>';
+  h += '<img src="' + imgUrl(_hero.img) + '" alt="' + escHtml(_hero.name) + ' — the Parbaughs flagship piece" loading="lazy" style="display:block;width:100%;height:auto">';
+  h += '<div style="position:absolute;left:0;bottom:0;right:0;padding:26px 16px 12px;background:linear-gradient(to top,rgba(20,19,15,.66),transparent)">';
+  h += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass-3)">The Flagship</div>';
+  h += '<div style="font-family:var(--font-display);font-style:italic;font-weight:700;font-size:22px;color:var(--cb-chalk);line-height:1.1;margin-top:3px">' + escHtml(_hero.name) + '.</div>';
+  h += '<div style="font-family:var(--font-ui);font-size:12px;color:rgba(244,239,228,.86);margin-top:4px">' + escHtml(_hero.note) + '</div>';
   h += '</div></div></div>';
 
   // Line preview grid (2-up)
   h += '<div style="padding:18px 16px 0"><div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:12px">Preview the line</div>';
   h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">';
-  LINE.forEach(function (it) {
+  LINE.slice(1).forEach(function (it) { // slice(1): flagship is the hero above, not repeated here
     h += '<div style="background:var(--cb-paper);border:1px solid var(--cb-chalk-3);border-radius:var(--r-3);overflow:hidden;box-shadow:var(--shadow-sm)">';
     h += '<div style="position:relative;background:var(--cb-chalk-2)"><img src="' + imgUrl(it.img) + '" alt="' + escHtml(it.name) + '" loading="lazy" style="display:block;width:100%;height:auto"></div>';
     h += '<div style="padding:11px 12px 13px">';
