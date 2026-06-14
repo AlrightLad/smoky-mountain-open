@@ -112,7 +112,7 @@ var PRO_SHOP_CATALOG = [
   {id:"pc01_gallery_rope", cat:"border", tier:"proshop", name:"The Gallery Rope", price:800, ringClass:"ring-gallery-rope", preview:"#b8a87e", desc:"Braided cream rope with brass stanchions at the compass points. You're the one they came to watch."},
   {id:"pc02_fescue",       cat:"border", tier:"locker",  name:"Fescue",          price:1200, ringClass:"ring-fescue", preview:"#b9a04b", desc:"Wispy golden fescue grows around the bottom arc, swaying slow. Links golf, in a circle."},
   {id:"pc03_fried_egg",    cat:"border", tier:"proshop", name:"Fried Egg",       price:600, ringClass:"ring-fried-egg", preview:"#d9c389", desc:"Half-buried in bunker sand, a lip of splash frozen mid-blast. Own your lies."},
-  {id:"pc04_claret",       cat:"border", tier:"cabinet", name:"The Claret",      price:3000, ringClass:"ring-claret", preview:"#cfd2d6", desc:"Engraved trophy silver with a jug-handle flourish; a light sweep crosses the engraving."},
+  {id:"pc04_claret",       cat:"border", tier:"cabinet", lvl:8, name:"The Claret",      price:3000, ringClass:"ring-claret", preview:"#cfd2d6", desc:"Engraved trophy silver with a jug-handle flourish; a light sweep crosses the engraving. Unlocks at Level 8 — you earn the right to spend on it."},
   // B · Nameplates — NEW surface, arriving (renders next ship)
   {id:"pc05_locker_brass", cat:"nameplate", tier:"locker", name:"Locker Brass", price:1000, preview:"#caa75c", desc:"Brushed brass behind your name, engraved serif, two screw heads. Your locker, everywhere."},
   {id:"pc06_yardage_book", cat:"nameplate", tier:"proshop", name:"The Yardage Book", price:700, preview:"#d8d2c0", desc:"Graph paper, a hand-sketched green contour, a penciled carry number fading behind your name."},
@@ -152,7 +152,7 @@ var PRO_SHOP_CATALOG = [
   // A · RINGS (live)
   {id:"pc39_wax_seal",     cat:"border", tier:"locker", name:"The Wax Seal",   price:1800, ringClass:"ring-wax-seal", preview:"#7a2e2e", desc:"A claret wax seal pressed at six o'clock, a ribbon tail beneath. Correspondence from the committee."},
   {id:"pc40_hickory_brass",cat:"border", tier:"locker", name:"Hickory & Brass",price:1400, ringClass:"ring-hickory", preview:"#7a4a28", desc:"Hickory-grain wood ringed in brass ferrule. The shaft they played before steel was legal."},
-  {id:"pc42_founders_crest",cat:"border",tier:"cabinet",name:"The Founders' Crest",price:3000, ringClass:"ring-claret", preview:"#cfd2d6", desc:"The crest in relief inside an engraved-silver bezel, a slow light sweeping across it. The priciest ring money can buy — the Green Jacket it is not."},
+  {id:"pc42_founders_crest",cat:"border",tier:"cabinet",lvl:12,name:"The Founders' Crest",price:3000, ringClass:"ring-claret", preview:"#cfd2d6", desc:"The crest in relief inside an engraved-silver bezel, a slow light sweeping across it. The priciest ring money can buy — unlocks at Level 12. The Green Jacket it is not."},
   // C · SCORECARD SKINS (live)
   {id:"pc28_the_sleeve",   cat:"card", tier:"proshop", retired:true, name:"The Sleeve",      price:600, preview:"#cabd98", css:"border:1px solid #c2b48c;border-left:4px solid #b3a378;background:linear-gradient(160deg,rgba(202,189,152,.16),rgba(232,224,196,.1))", desc:"Kraft three-ball sleeve stock, the flap torn open. Smells like a fresh dozen."},  // v8.25.49 retired — redundant kraft with pc08 Parchment; owned copies still resolve/equip forever
   {id:"pc41_trophy_room",  cat:"card", tier:"locker",  name:"The Trophy Room", price:1800, preview:"#5a4632", css:"border-left:5px solid #5a4632;background:linear-gradient(90deg,rgba(90,70,50,.22),rgba(90,70,50,.05) 55%,transparent)", desc:"Walnut-panel ground with an engraved-brass plaque header. The room where the silver lives."},
@@ -182,7 +182,7 @@ var PRO_SHOP_CATALOG = [
   //   cloisonne/pairing-sheet/sterling). Rings + plate carry worn-render classes
   //   (preview==worn); ball reuses pbMarkerGlyph (56px shop / 12px worn). —
   {id:"pc52_crest_pin",    cat:"border",    tier:"locker",  name:"The Club Pin",     price:1700,  ringClass:"ring-crest-pin", preview:"#1f5135", desc:"Hard-enamel cloisonne: the rose-and-P mark on deep clubhouse green, struck in a polished brass bezel. The lapel pin they hand you when you join."},
-  {id:"pc53_medallion",    cat:"border",    tier:"cabinet", name:"The Medallion",    price:2800, ringClass:"ring-medallion", preview:"#caa75c", desc:"A struck championship medallion, laurel in relief around the rim, a slow gleam crossing the strike. Heavy in the hand."},
+  {id:"pc53_medallion",    cat:"border",    tier:"cabinet", lvl:6, name:"The Medallion",    price:2800, ringClass:"ring-medallion", preview:"#caa75c", desc:"A struck championship medallion, laurel in relief around the rim, a slow gleam crossing the strike. Heavy in the hand — unlocks at Level 6."},
   {id:"pc54_calfskin_tag", cat:"nameplate", tier:"locker",  name:"The Calfskin Tag", price:1400,  preview:"#7a4a28", desc:"Pebbled saddle leather, a hard-enamel green roundel riveted at the left, your name embossed deep. The bag tag the caddymaster knows by sight."},
   {id:"pc55_pairing_sheet",cat:"card",      tier:"proshop", name:"The Pairing Sheet",price:900,  preview:"#f2ecda", css:"border:1px solid #d8cfa8;border-left:4px solid #1f5135;background:linear-gradient(0deg,rgba(244,238,214,.18),rgba(252,248,232,.2)),repeating-linear-gradient(0deg,transparent 0 8px,rgba(31,81,53,.06) 8px 9px)", desc:"Tournament-issue pairing sheet: cream stock, a green committee rule down the spine, tee-time grid faint behind your score."},
   {id:"pc56_sterling",     cat:"ball",      tier:"locker",  name:"The Sterling",     price:1200,  preview:"#dfe2e6", desc:"A hand-hammered sterling silver marker, a single small sapphire-enamel dot at center. Heirloom weight; you'd mark a six-footer to win with this."}
@@ -252,6 +252,10 @@ Router.register("shop", function() {
   var uid = currentUser ? currentUser.uid : null;
   var balance = getParCoinBalance(uid);
   var lifetime = getParCoinLifetime(uid);
+  // #76 v8.25.160 — the member's level gates the prestige pieces (tenure unlock):
+  // some items can't be PURCHASED until you've put in the rounds to reach a level,
+  // so the rarest gear signals dedication, not just a coin balance.
+  var myLevel = (typeof PB !== "undefined" && PB.getPlayerLevel && uid) ? ((PB.getPlayerLevel(uid) || {}).level || 1) : 1;
   var owned = (currentProfile && currentProfile.ownedCosmetics) || [];
 
   // Skip link + editorial masthead (matches roster/HQ pattern)
@@ -398,6 +402,10 @@ Router.register("shop", function() {
       c += '<div class="shop-item__state shop-item__state--equipped">Equipped</div>';
     } else if (isOwned) {
       c += '<button class="shop-item__equip" onclick="equipCosmetic(\'' + item.id + '\',\'' + (item.plate ? 'titleplate' : item.cat) + '\')">Equip</button>';
+    } else if (item.lvl && myLevel < item.lvl) {
+      // #76 — tenure gate: the prestige pieces unlock at a level you reach by
+      // PLAYING (not just saving coins), so they read as earned dedication.
+      c += '<div class="shop-item__state shop-item__state--locked shop-item__state--lvl"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>Unlocks at Lv ' + item.lvl + '</div>';
     } else if (canAfford) {
       c += '<button class="shop-item__buy" onclick="purchaseCosmetic(\'' + item.id + '\')">' + _shopCoinSvg + ' ' + item.price + '</button>';
     } else {

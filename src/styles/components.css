@@ -4614,6 +4614,8 @@ img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width:
 .shop-item__state--reserved { color: var(--cb-mute-2); background: var(--cb-chalk-3); }
 .shop-item__state--equipped { color: var(--cb-brass-deep); background: rgba(var(--cb-brass-rgb), 0.12); }
 .shop-item__state--locked { color: var(--cb-mute-2); }
+/* #76 — tenure (level) lock reads as EARNABLE prestige (brass), not "can't afford" grey */
+.shop-item__state--lvl { color: var(--cb-brass-deep); font-weight: 700; display: inline-flex; align-items: center; }
 /* v8.24.77 — confident minted-brass key (was a 12%-opacity translucent chip
    that read tentative — the actual conversion click). 44pt touch target. */
 .shop-item__buy {
