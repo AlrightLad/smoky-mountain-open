@@ -507,7 +507,7 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
 - [ ] 7.4-cluster page lifts to 9.5 (profile, standings, trips, challenges, teetimes, scramble, trophyroom, more, settings, records, wrapped) + shop IA lift — apply .pb-card material + felt focal peak + WCAG-AA contrast + identity-below-masthead
 - [ ] Re-run the 22-page critique workflow; loop until every page clears the 9.5 bar
 - [ ] Merch lineup polish pass (#68) — review the 9 product shots + Cuphead leisure tee
-- [ ] Caddy-crew identity (#73): rename bot "The Caddy" -> "The Caddies"/"Caddy Crew" + crew profile photo (composite the 4 caddies)
+- [x] Caddy-crew identity (#73) DONE (renamed The Caddies + cohesive crew avatar of real 4): rename bot "The Caddy" -> "The Caddies"/"Caddy Crew" + crew profile photo (composite the 4 caddies)
 - [ ] Swing-animation page rework (#67, DO LAST among features) — Cuphead rubber-hose rebuild
 - [ ] Level-100 exclusive animated rubber-hose THEME (#75, end) — vastly different, on-page cartoons + animations; extensive critique loop
 - [ ] Final QA gauntlet (#74): E2E all pages + data flows -> pen test -> resolve every finding -> health check
