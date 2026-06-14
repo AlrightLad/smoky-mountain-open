@@ -1,0 +1,416 @@
+{
+  "summary": "Fan out an expert design critic per member page, then synthesize a prioritized 9.5-bar fix queue",
+  "agentCount": 23,
+  "logs": [
+    "22/22 page critiques returned"
+  ],
+  "result": {
+    "pageCount": 22,
+    "synth": {
+      "queue": [
+        {
+          "rank": 1,
+          "page": "ALL (cross-page)",
+          "dimension": "Materials & depth",
+          "change": "Build a reusable token-driven .pb-card material class in components.css: paper fill (#FCFAF5) lifted above the chalk page canvas (#F4EFE4), 1px hairline border rgba(20,19,15,0.08-0.12), layered shadow (inset 0 1px 0 rgba(255,255,255,0.5) top-highlight + 0 2px 8px rgba(20,19,15,0.06) drop), and a faint paper-grain overlay via a single inlined SVG-noise data-URI at ~3% opacity. Add modifier classes: .pb-card--felt (felt #0F3D2E ground), .pb-card--rail (3px brass left/top rule), .pb-card--recessed (inset shadow for empty/locked states).",
+          "rationale": "Flatness is named the #1 reason scores sit below 9.5 on essentially every single page (feed, profile, standings, courses, trips, chat, wagers, bounties, challenges, calendar, teetimes, scramble, trophyroom, more, leagues, shop, settings, records, drills, partygames). One shared CSS class fixes the dominant defect everywhere at once instead of 20+ per-page edits. Highest leverage change in the entire queue.",
+          "effort": "M",
+          "impact": "HIGH"
+        },
+        {
+          "rank": 2,
+          "page": "ALL (cross-page)",
+          "dimension": "Materials & depth",
+          "change": "Create a single .pb-btn-brass material treatment: vertical brass gradient (linear-gradient(180deg,#C49A52,#B4893E 55%,#A67C34)), inset 0 1px 0 rgba(255,255,255,0.3) top highlight, 1px darker bottom border (#8E6A28), soft drop shadow 0 2px 6px rgba(20,19,15,0.2), and :active translateY(1px)+shadow-compress. Apply to every primary CTA app-wide.",
+          "rationale": "Every page critiqued calls the brass CTA a 'flat colored rectangle / unstyled div' (settings, teetimes, challenges, scramble, bounties, partygames, trips). One button class makes the single most-tapped affordance read as pressable metal everywhere. Tiny effort, touches the primary action on ~20 pages.",
+          "effort": "S",
+          "impact": "HIGH"
+        },
+        {
+          "rank": 3,
+          "page": "ALL (cross-page)",
+          "dimension": "Color & contrast",
+          "change": "Run a global WCAG-AA pass: darken mono eyebrow labels and metadata toward ink at >=4.5:1 against their ACTUAL background (chalk vs paper card vs felt differ); fix white/brass-on-brass button labels (deepen brass to #8E6A28 or darken gradient bottom stop so white clears 4.5:1); raise placeholder/timestamp/footer ('THE PARBAUGHS EST. 2026') greys; darken inactive bottom-nav labels. Capture each changed color against its real bg before ship per the contrast-verify rule.",
+          "rationale": "Borderline/failing AA contrast is flagged on nearly every page and is both an accessibility/legal (ADA/WCAG) ship-gate and a polish gate. Mostly token/value edits, no structural change. The contrast-verify-each-change memory makes this a known, scoped task.",
+          "effort": "M",
+          "impact": "HIGH"
+        },
+        {
+          "rank": 4,
+          "page": "wagers, scramble, bounties, standings, teetimes",
+          "dimension": "Hierarchy",
+          "change": "Kill duplicate/competing primary CTAs. On empty/early states gate the render on count: suppress the top header '+New' button and let the single centered empty-state CTA be the lone hero; once items exist, invert (compact header button, drop empty-state CTA). Demote any remaining secondary action to ghost/outline brass.",
+          "rationale": "Wagers, scramble, bounties, and standings each ship TWO identically-weighted primary buttons ~370-500px apart that split the eye — explicitly called the biggest hierarchy flaw on those pages. A small per-page render-gate (items.length) fixes a HIGH issue on 4-5 pages with near-identical code.",
+          "effort": "S",
+          "impact": "HIGH"
+        },
+        {
+          "rank": 5,
+          "page": "feed",
+          "dimension": "Materials & depth",
+          "change": "Apply .pb-card (rank 1) + brass top-rule to the hero '125' post and the composer; lift composer to a stronger-bordered pill with avatar at left, raise placeholder to >=4.5:1, enlarge compose to a 44pt brass FAB, and add 8-12px separation from the Caddy's Report band so 'compose' reads as its own zone.",
+          "rationale": "Feed is the highest-traffic landing surface (8.2) with a strong identity already; its two HIGH issues are the flat hero card and a primary CTA that loses to the recap band. Fixing the most-used page's compose action is high-visibility, and the card half is free once rank 1 lands.",
+          "effort": "S",
+          "impact": "HIGH"
+        },
+        {
+          "rank": 6,
+          "page": "ALL empty-state pages (trips, bounties, challenges, scramble, partygames, teetimes, wrapped, more, chat)",
+          "dimension": "Density & spacing",
+          "change": "Add a shared empty-state layout utility that vertically centers the content block in the available viewport (flex column, justify-content:center between top bar and bottom nav) and anchors a closing flourish (hairline brass rule + LIVE dot, or faint felt watermark). Eliminates the 30-50% dead-paper band that makes these pages read as broken/unfinished.",
+          "rationale": "A huge dead lower-third is independently flagged as HIGH/MED on 8+ pages and makes finished pages look abandoned. One layout helper applied to the shared empty-state shell fixes all of them; no per-page bespoke work.",
+          "effort": "M",
+          "impact": "HIGH"
+        },
+        {
+          "rank": 7,
+          "page": "richlist-pattern → standings, trophyroom, courses, leagues, drills, more",
+          "dimension": "One asymmetric focal peak",
+          "change": "Introduce a reusable 'hero promotion' pattern: break uniform grids/lists by promoting ONE item to a full-width/spanning hero card on richer material (felt panel or brass-rail paper plate, larger serif numeral/name, a ribbon like HOME COURSE / MOST RECENT / #1). Use richlist (8.9, the model page) as the reference implementation.",
+          "rationale": "'No focal peak / uniform grid' is the #2 cross-page HIGH theme and richlist proves the fix scores 8.9. A shared hero-card pattern lets one component lift standings, trophyroom, courses, leagues, drills, and more. Medium effort but reused 6+ times.",
+          "effort": "M",
+          "impact": "HIGH"
+        },
+        {
+          "rank": 8,
+          "page": "chat",
+          "dimension": "Hierarchy / Loading state",
+          "change": "Add a shimmer sweep to skeleton blocks (CSS keyframes translating a gradient highlight, ~1.4s loop) with per-row width variation (55-95%) and staggered animation-delay; add a real empty state ('No trash talked yet — be the first' + brass CTA) when the feed is genuinely empty so a static skeleton never reads as broken.",
+          "rationale": "Chat is the 2nd-lowest page (6.4) and its skeleton feed currently looks broken, not loading — a trust/quality killer on a core social surface. Pure CSS animation + one empty-state branch, no data work.",
+          "effort": "S",
+          "impact": "HIGH"
+        },
+        {
+          "rank": 9,
+          "page": "drills",
+          "dimension": "Per-page identity / Focal peak",
+          "change": "Lowest scorer (6.0): add a featured 'Drill of the Day' hero card (felt panel, brass border, Start Drill CTA) above the list; apply .pb-card with a category-colored 3px brass left-rule per card; demote per-row 'Details' to a quiet chevron; standardize metadata into consistent chip tokens (difficulty dot / clock+min / equipment icon); make the filter tabs a horizontally-scrollable single-line strip.",
+          "rationale": "Drills is the single lowest-scoring page (6.0) — a uniform stack of flat low-contrast cards reading as a generic CRUD list. It needs the most work and combines the rank 1/3/7 patterns plus drill-specific structure. Biggest single-page jump available.",
+          "effort": "M",
+          "impact": "HIGH"
+        },
+        {
+          "rank": 10,
+          "page": "shop",
+          "dimension": "Identity / Content",
+          "change": "Restructure THE PRO SHOP to LEAD with spendable goods: compact the 137 balance to a one-line ledger chip with a brass coin glyph near the masthead, make the focal peak a featured merch product card (real photo, price-in-ParCoin, Redeem CTA), and move Recent activity / Ways to earn below the product grid. Add the missing primary 'Browse the Shop / Redeem' brass CTA.",
+          "rationale": "The shop (7.8) currently shows zero merchandise above the fold — it reads as a wallet, not a store, and has no spend CTA at all. This is a content/IA defect that directly undercuts the ParCoin monetization the roadmap depends on. Higher effort (needs product data wiring) but strategically central.",
+          "effort": "L",
+          "impact": "HIGH"
+        },
+        {
+          "rank": 11,
+          "page": "profile",
+          "dimension": "Hierarchy / Identity",
+          "change": "Convert the flat 2x3 stat grid into a record-book ledger: apply .pb-card + brass under-rule to tiles, promote ONE hero stat (HANDICAP or BEST 18) to a span-2 felt tile with a larger numeral, style empty/zero stats distinctly (dim numeral + actionable mono caption like 'POST 3 ROUNDS' instead of a bare em-dash), and treat the XP bar as an engraved brass rule (inset track + 1px highlight) not a videogame bar.",
+          "rationale": "Profile (7.4) abandons its strong masthead identity below the fold into a generic dashboard; the stat grid is its biggest weakness and the em-dash empty states hurt P9/P10 trust. Reuses rank 1 + rank 7 patterns with profile-specific empty-state copy.",
+          "effort": "M",
+          "impact": "MED"
+        },
+        {
+          "rank": 12,
+          "page": "trophyroom",
+          "dimension": "Materials & depth / Identity",
+          "change": "Re-skin trophy cards as struck-metal medallions: radial brass gradient icon disc (#D9B36A→#B4893E→#8A6526) with 1px inner highlight + inset shadow on a felt-textured card with a 2px brass ring; locked/unearned stay flat chalk for contrast; add engraved serif nameplate strips; promote the rarest/most-recent trophy to a full-width hero medallion; thicken+animate the XP bar (solid brass fill on felt track).",
+          "rationale": "A trophy room reading as a generic 'achievements tab' is the cardinal identity miss; this is the page where material richness pays the most emotional dividend. Builds directly on rank 1 + rank 7 but with trophy-specific medallion styling.",
+          "effort": "M",
+          "impact": "MED"
+        },
+        {
+          "rank": 13,
+          "page": "ALL (more, trophyroom, drills, teetimes, partygames, calendar)",
+          "dimension": "Per-page identity",
+          "change": "Replace generic thin-grey line-icons with brass/ink golf-club motifs (flag, crossed clubs, scorecard, pennant, plaque, chip stack) and recolor active/marquee icons in brass on a faint paper/felt tile. Build them as a small shared SVG sprite so every list/nav surface shares the bespoke iconography.",
+          "rationale": "Generic stock iconography is flagged across more, trophyroom, drills, teetimes, partygames and the bottom nav — it makes the chrome feel like any SaaS app. A shared icon sprite is built once and reused everywhere, carrying Clubhouse identity into the frame.",
+          "effort": "M",
+          "impact": "MED"
+        },
+        {
+          "rank": 14,
+          "page": "calendar",
+          "dimension": "Focal peak / Data truthfulness",
+          "change": "Promote the lone logged round from a 6px dot into an inset felt-green record-chip (brass rule, course initials/score) so the one populated cell pops; reduce mobile cell height to ~64-72px so the grid stops dominating; fix the cramped TODAY cell ('1 4' breaking) to a single clear numeral + mono TODAY chip; relabel the '0/0/0' stat line as 'EVENTS — 0 this month' so it stops contradicting '1 round logged' and make counts tappable (P10).",
+          "rationale": "Calendar (7.2) has a near-rendering-bug TODAY cell and a data-truthfulness contradiction (P9/P10) alongside its flat grid. Several concrete, bounded fixes; the TODAY cell looks like an actual bug worth fixing regardless of the design pass.",
+          "effort": "M",
+          "impact": "MED"
+        },
+        {
+          "rank": 15,
+          "page": "leagues",
+          "dimension": "Hierarchy / Identity",
+          "change": "Exclude leagues the user already belongs to from the Discover/Public list (or replace with a purpose-built explore/empty state when it's the only public league) so 'The Parbaughs' doesn't appear twice; promote 'OPEN →' to a full-width pill primary on the active card and demote the Create/Join pair to outline secondary; unify the display voice (both headers italic serif).",
+          "rationale": "Leagues (8.3) shows the user a discovery card for the league they're already in — reads as a template repeating and a near-empty state. A render-filter + CTA reweight; small JS, clear win on a high-scoring page that's close to the bar.",
+          "effort": "S",
+          "impact": "MED"
+        },
+        {
+          "rank": 16,
+          "page": "ALL ledger/idea lists (wagers, bounties, challenges, shop, courses)",
+          "dimension": "Typography",
+          "change": "Add a shared stake/value treatment: set coin amounts and stat figures in mono/tabular brass figures, right-aligned to their own column, with a small ParCoin chip glyph; differentiate primary (challenge/course name, heavier ink) from secondary (stake/meta). Apply to WAGER IDEAS, BOUNTY IDEAS, CHALLENGE IDEAS, shop activity rows, and course F9/B9/18 lines.",
+          "rationale": "Multiple pages flag idea/ledger rows as flat run-on strings where the most action-relevant value (the coin stake) gets no emphasis. One typographic utility (tabular brass figures + right-align) sharpens scannability across 5 surfaces and reinforces the ParCoin currency identity.",
+          "effort": "S",
+          "impact": "MED"
+        },
+        {
+          "rank": 17,
+          "page": "feed",
+          "dimension": "Density & spacing / Typography",
+          "change": "Establish one 8px baseline grid in the upper third: keep a single strong masthead rule, lighten/drop the redundant rules between tabs/composer (use whitespace), give the 'MAY 15' date-separator an inline mono-label + bridging-hairline treatment with at least one preview row beneath it, and resolve the stacked dual type peaks (headline vs '125') by letting the brass numeral be the hero and de-duplicating the 3x repeated username.",
+          "rationale": "Feed's MED issues (mechanical stacked dividers, orphan MAY 15 band, competing type peaks, triple username) are concrete and bounded. High-traffic page, so even MED polish is visible; cheap once the grid token is set.",
+          "effort": "S",
+          "impact": "MED"
+        },
+        {
+          "rank": 18,
+          "page": "wagers",
+          "dimension": "Materials & depth",
+          "change": "Upgrade the YOUR BANKROLL focal card with felt material: 1px brass inset hairline, low-opacity felt-noise overlay, inner top highlight + bottom shadow to emboss like a chip tray, soft brass glow behind '137', optional double-rule ledger frame. Remove the dashed empty-state border (wireframe convention) and replace with a soft solid paper card.",
+          "rationale": "Wagers is a strong page (8.4) held back by a flat money-hero card and a dashed wireframe border on a money surface. Bounded, high-visibility material upgrade on the page's focal peak; the dashed-border removal is trivial.",
+          "effort": "S",
+          "impact": "MED"
+        },
+        {
+          "rank": 19,
+          "page": "records",
+          "dimension": "Focal peak / Hierarchy",
+          "change": "Promote the all-time best round (94) into a full-bleed brass-edged 'record plate' spanning both columns with a 56-72px serif numeral, COURSE RECORD overline, and course+date caption; establish two visual tiers so filled records (gilt plates) dominate and zero/empty states (CHALLENGES/ACES/TEAMS, em-dash placeholders) recede with muted recessed styling + legible empty-state copy.",
+          "rationale": "Records (7.4) buries its crown-jewel stat as a byline then flattens it into an equal tile, and gives zero-states equal weight to real achievements. Reuses the hero-promotion (rank 7) + recessed-empty (rank 1 modifier) patterns with records-specific tiering.",
+          "effort": "M",
+          "impact": "MED"
+        },
+        {
+          "rank": 20,
+          "page": "ALL hype surfaces (feed, standings, wagers, trophyroom, richlist, shop, wrapped)",
+          "dimension": "Motion",
+          "change": "Add a small shared set of GPU-cheap, prefers-reduced-motion-gated micro-interactions: count-up tween on hero numerals (137/125/85/scores) on scroll-into-view, staggered fade/rise on cards/leaderboard rows (40-60ms stagger, <300ms), a heart-burst + increment on KUDOS tap, and a one-time brass shimmer sweep on hero cards. Build as reusable helpers in animate.js (window-exposed to survive tree-shake).",
+          "rationale": "Motion is flagged LOW-but-present across most pages; these are the delight moments that separate 9.0 from 9.5. Lower per-page impact than structural fixes, but a shared animate.js helper set is reusable everywhere and is the explicit 'excitement' design dimension. Watch the CORE tree-shake trap (window-expose).",
+          "effort": "M",
+          "impact": "MED"
+        },
+        {
+          "rank": 21,
+          "page": "settings",
+          "dimension": "Hierarchy / Focal peak",
+          "change": "Elevate the unverified-email row into the focal moment: wrap it in a tinted claret/amber inset card with a 3px left rule, make SEND VERIFICATION the one filled brass button (fixing its failing brass-on-paper contrast), add an 'Unverified' status pill; render the Account block as a stitched membership-card material; normalize value typography (mono for literal values email/username/role, italic serif reserved for editorial labels); tighten the unmotivated inter-section voids to an 8px scale.",
+          "rationale": "Settings (7.4) is utilitarian but its most important state (email not verified) currently has the same weight as inert rows, and SEND VERIFICATION fails AA. Bounded fixes that improve a real actionable state plus consistency; identity upgrade reuses rank 1.",
+          "effort": "M",
+          "impact": "MED"
+        },
+        {
+          "rank": 22,
+          "page": "trips",
+          "dimension": "Focal peak / Identity",
+          "change": "When events.length===1, promote the single event to a full-bleed hero (richer felt/brass panel, oversized serif date block 'APR 8-12', countdown '24 days out', enlarged avatar stack); render events on a vertical season rail (felt line + brass node dots per date) so even one event reads as a board; demote '+New Event' to ghost brass if viewing is primary; wrap footer links in a hairline colophon band.",
+          "rationale": "Trips (7.4) wastes its single-event opportunity on a generic small card and never delivers the 'events board' metaphor. Reuses rank 6 (empty composition) + rank 7 (hero promotion); the season-rail is the trip-specific identity moment.",
+          "effort": "M",
+          "impact": "MED"
+        },
+        {
+          "rank": 23,
+          "page": "courses",
+          "dimension": "Focal peak / Typography",
+          "change": "Promote the home/founding/most-played course to a wider editorial hero card (larger monogram crest, ~22px serif name, embossed HOME COURSE / MOST PLAYED ribbon, faint felt wash); set course names in the serif display family (currently system sans) to echo the masthead; make F9/B9/18 numerals tabular/heavier and treat empty score slots as an explicit legible 'no data' style not a faint dash; quiet the All/Our toggle and give 'Add a course' a real 44pt brass-outline button.",
+          "rationale": "Courses (7.2) front-loads its 'yardage book' identity in the masthead then evaporates into a generic search-list with no peak and body text in the wrong typeface. Combines rank 7 hero + a serif-name typography fix + the rank 4 CTA-weighting pattern.",
+          "effort": "M",
+          "impact": "MED"
+        },
+        {
+          "rank": 24,
+          "page": "chat",
+          "dimension": "Materials & depth / Identity",
+          "change": "Once skeleton (rank 8) is fixed, give loaded message bubbles real material: paper-card outgoing / felt-green inset incoming, faint paper-grain via inline SVG noise, brass-ringed avatars matching the header, and align the avatar column + tee-time strip + 'TRASH TALK' eyebrow to one shared left gutter; add a ⛳/crossed-clubs watermark behind the empty feed.",
+          "rationale": "Chat's conversation surface IS the page and carries none of the Clubhouse identity (lives only in chrome). Higher effort because it requires bubble component work, and it depends on rank 8 landing first; lower in queue but necessary to lift the 2nd-lowest page.",
+          "effort": "M",
+          "impact": "MED"
+        },
+        {
+          "rank": 25,
+          "page": "bounties, challenges, partygames",
+          "dimension": "Focal peak / Identity",
+          "change": "Replace the tiny generic centered glyphs with bold asymmetric brand artifacts: bounty = ~120-160px brass-rimmed bullseye medallion with a claret center pip (offset, not three evenly-spaced centered rows); challenges = enlarged crossed-flags / versus split motif on a felt panel; partygames = oversized brass-on-felt dice bled off the card's top-left as a watermark behind a left-aligned headline. Demote duplicate post CTAs to one hero each.",
+          "rationale": "These three lower-mid pages (7.2/7.4/6.4) share the identical 'centered icon + headline + CTA' generic empty-state skeleton with weak focal anchors. Grouping them lets one asymmetric-peak approach (per rank 7) be applied with page-specific artwork; partygames + bounties are among the lowest scorers.",
+          "effort": "M",
+          "impact": "MED"
+        },
+        {
+          "rank": 26,
+          "page": "teetimes",
+          "dimension": "Typography / Hierarchy",
+          "change": "Resolve the dual-H1 (corner 'Tee Times' title vs 'No Tee Times Posted') by making one clearly dominant (34-36px); add internal hierarchy to SAMPLE rows (course name ~15px ink vs time/status ~13px muted) so they stop reading as one grey run-on; soften the over-loud SAMPLE badges to a quiet annotation; add a starter-sheet/scorecard felt watermark behind the hero for tee-time-specific identity.",
+          "rationale": "Teetimes (7.4) has strong empty-state copy but two competing H1s, ghosted sample rows (also a contrast issue), and over-weighted SAMPLE badges. Bounded typography/weight fixes; material + composition come free from ranks 1/2/6.",
+          "effort": "S",
+          "impact": "MED"
+        },
+        {
+          "rank": 27,
+          "page": "standings",
+          "dimension": "Hierarchy / Data truthfulness",
+          "change": "Add a dignified n=1 early-season state: when only the viewer exists, soften copy ('Season's just teed off.') and replace the lonely single table row with an invitation-to-fill card + invite/post CTA, reserving the leaderboard-table treatment for >=2 golfers; demote the Season Archive (Spring 2026 champion) to a quieter collapsed accordion so a dead-season winner stops outshining the live board.",
+          "rationale": "Standings (7.4) sells an empty league — the confident headline writes a check one self-row can't cash, and the archived champion is more exciting than the live race. A render-branch on member/round count plus an archive demotion; clear P9/P10 alignment.",
+          "effort": "M",
+          "impact": "MED"
+        },
+        {
+          "rank": 28,
+          "page": "wrapped",
+          "dimension": "Materials & depth / Focal peak",
+          "change": "Lift content to the upper-third (anchor ~30-38% vertical, not dead-center) to kill the ~70% void; add a felt radial vignette + 2-4% grain so the headline sits in a pool of light; replace the generic outlined clock with a brass-rimmed countdown dial ('X days until Dec 1' in serif, brass progress ring for year-elapsed, felt-emboss disc); add a primary 'Log a round / View 2026 so far' CTA + progress meter (P10); lift body text toward chalk for AA.",
+          "rationale": "Wrapped (7.4) has gorgeous copy but is the flattest page in the app (single felt fill, ~70% void) and offers no action or progress on the most hype-able surface. Felt-specific material + a countdown component; mostly self-contained, lower in queue as it's a once-yearly surface.",
+          "effort": "M",
+          "impact": "MED"
+        },
+        {
+          "rank": 29,
+          "page": "more",
+          "dimension": "Hierarchy / Identity",
+          "change": "Differentiate the 9 flat rows: apply .pb-card material, make the PARCOIN ECONOMY group's brass left-rail an intentional solid 3px spine with faint felt fill (premium tier), promote 1-2 anchor rows per group with a live data chip (coin balance on Cosmetics Shop, current rank on Standings) to break the uniform ladder, bring serif display into anchor-row titles, standardize eyebrow-to-card spacing to one token, and confirm/fix the ghosted tab-bar overlay artifact.",
+          "rationale": "More (7.4) is a generic settings-list of 9 identical rows with no hierarchy; live data chips + tiered material make the hub scannable. Reuses ranks 1/7/13; the bottom-nav ghost overlay is a possible render bug worth confirming. Lower impact as it's a navigation index, not a destination.",
+          "effort": "M",
+          "impact": "MED"
+        },
+        {
+          "rank": 30,
+          "page": "scramble",
+          "dimension": "Identity / Focal peak",
+          "change": "Replace the generic two-person glyph empty state with a faux 'team card' preview (two avatar circles + & between them, a 0-0 record line, blank partner names) so the user previews exactly what they'll create; center the block vertically (rank 6), add a mono helper ('Scramble = 2-player team play'), darken the body paragraph for AA, and reserve brass for the eyebrow/rule (set 'No Scramble Teams' in ink or deeper brass).",
+          "rationale": "Scramble (7.4) is carried entirely by its masthead; the body is the generic empty-state template with nothing scramble-specific. The team-card preview is the identity moment; composition/CTA/contrast come from ranks 4/6/3. Lower-traffic page, so last among the MED-impact identity lifts.",
+          "effort": "M",
+          "impact": "MED"
+        }
+      ],
+      "crossCuttingThemes": [
+        "FLAT MATERIALS IS THE #1 APP-WIDE DEFECT: nearly every page (22 of 27) names flat paper-on-paper cards / flat brass buttons as the single biggest reason it sits below 9.5. One shared .pb-card material class + one .pb-btn-brass treatment fixes the dominant problem everywhere — these two entries alone touch ~20 pages. Build the material system first; most per-page issues collapse once it lands.",
+        "NO ASYMMETRIC FOCAL PEAK / UNIFORM GRIDS (#2 theme): standings, courses, trips, bounties, challenges, calendar, teetimes, scramble, trophyroom, more, records, drills, partygames all read as even-weighted lists/grids with nowhere for the eye to land. richlist (8.9) already proves the fix — promote ONE item to a richer-material hero that breaks the grid. Reusable hero-card pattern.",
+        "WCAG-AA CONTRAST FAILURES are pervasive and ship-gating (ADA/WCAG legal): mono eyebrows, metadata, placeholders, footer 'EST. 2026' lines, white/brass-on-brass button labels, and inactive nav labels repeatedly flagged. Must verify each change against its ACTUAL background (chalk vs paper card vs felt differ) per the contrast-verify rule.",
+        "DUPLICATE / COMPETING PRIMARY CTAs: wagers, scramble, bounties, standings (and teetimes weighting) each ship two identically-weighted primary buttons that split the eye. Fix once with a count-gated render pattern (empty-state CTA vs header CTA, never both).",
+        "GENERIC EMPTY-STATE TEMPLATE + DEAD LOWER-THIRD: trips, bounties, challenges, scramble, partygames, teetimes, wrapped, chat reuse the same centered icon+headline+CTA shell with 30-70% empty viewport, making finished pages look broken/abandoned. A shared centered empty-state layout + closing flourish + page-specific brand artifact fixes the whole class.",
+        "GENERIC STOCK ICONOGRAPHY undercuts identity in chrome: more, trophyroom, drills, teetimes, partygames, bottom nav use thin grey line-icons that read as any SaaS app. A shared brass/ink golf-club SVG sprite (flag, crossed clubs, scorecard, pennant, plaque) carries Clubhouse identity into the frame.",
+        "IDENTITY EVAPORATES BELOW THE MASTHEAD: a recurring pattern (profile, courses, trips, records, drills, scramble, more) where a strong editorial serif+mono masthead is abandoned for a generic dashboard/list body. Carry the record-book metaphor (ledger rows, serif numerals, hairline rules, engraved nameplates, felt material) down the full page, not just the header.",
+        "LEDGER/STAKE TYPOGRAPHY: idea-lists (WAGER/BOUNTY/CHALLENGE IDEAS) and stat rows render the action-relevant value (coin stake, score) as an undifferentiated run-on string. A shared tabular-brass-figure + right-align + ParCoin-chip treatment sharpens scannability and reinforces currency identity across 5+ surfaces.",
+        "MOTION IS THE 9.0→9.5 GAP: hero-numeral count-ups, staggered card/row reveals, KUDOS heart-burst, brass shimmer — flagged LOW-but-present nearly everywhere as the missing 'delight/excitement' dimension. Build once as prefers-reduced-motion-gated helpers in animate.js (window-expose to survive the CORE tree-shake trap).",
+        "DATA-TRUTHFULNESS / P10 ACTIONABILITY: standings sells an empty league (n=1 headline), calendar contradicts itself (0/0/0 events vs '1 round logged'), profile/records show bare em-dash empty stats, wrapped/shop offer no next action. Empty/zero states must be explicitly classified, dignified, and actionable (caption + destination), never a bare dash or a hollow marquee."
+      ],
+      "lowestScoringPages": [
+        "drills (6.0) — generic-template identity, uniform stack of flat low-contrast cards reading as a CRUD list; needs the most work (hero card + material + chips + scrollable tabs)",
+        "chat (6.4) — broken-looking static skeleton, zero material on the conversation surface that IS the page, identity only in chrome",
+        "partygames (6.4) — generic-template, flat hero card, ~30% dead zone, rigidly symmetric with no focal peak",
+        "courses (7.2) — yardage-book identity evaporates into a generic search-list, no focal peak, body in wrong (system-sans) typeface",
+        "calendar (7.2) — flat grid, no focal peak, near-rendering-bug TODAY cell, 0/0/0-vs-'1 round logged' data contradiction",
+        "bounties (7.2) — flat paper-on-paper, tiny washed-out bullseye, three competing centered elements + duplicate post CTAs, failing contrast"
+      ]
+    },
+    "scores": [
+      {
+        "page": "feed",
+        "score": 8.2,
+        "focalPeak": true
+      },
+      {
+        "page": "profile",
+        "score": 7.4,
+        "focalPeak": true
+      },
+      {
+        "page": "standings",
+        "score": 7.4,
+        "focalPeak": true
+      },
+      {
+        "page": "courses",
+        "score": 7.2,
+        "focalPeak": false
+      },
+      {
+        "page": "trips",
+        "score": 7.4,
+        "focalPeak": false
+      },
+      {
+        "page": "chat",
+        "score": 6.4,
+        "focalPeak": false
+      },
+      {
+        "page": "wagers",
+        "score": 8.4,
+        "focalPeak": true
+      },
+      {
+        "page": "bounties",
+        "score": 7.2,
+        "focalPeak": false
+      },
+      {
+        "page": "challenges",
+        "score": 7.4,
+        "focalPeak": false
+      },
+      {
+        "page": "calendar",
+        "score": 7.2,
+        "focalPeak": false
+      },
+      {
+        "page": "teetimes",
+        "score": 7.4,
+        "focalPeak": false
+      },
+      {
+        "page": "scramble",
+        "score": 7.4,
+        "focalPeak": false
+      },
+      {
+        "page": "trophyroom",
+        "score": 7.4,
+        "focalPeak": false
+      },
+      {
+        "page": "more",
+        "score": 7.4,
+        "focalPeak": true
+      },
+      {
+        "page": "leagues",
+        "score": 8.3,
+        "focalPeak": false
+      },
+      {
+        "page": "shop",
+        "score": 7.8,
+        "focalPeak": true
+      },
+      {
+        "page": "settings",
+        "score": 7.4,
+        "focalPeak": false
+      },
+      {
+        "page": "richlist",
+        "score": 8.9,
+        "focalPeak": true
+      },
+      {
+        "page": "records",
+        "score": 7.4,
+        "focalPeak": false
+      },
+      {
+        "page": "wrapped",
+        "score": 7.4,
+        "focalPeak": false
+      },
+      {
+        "page": "drills",
+        "score": 6,
+        "focalPeak": false
+      },
+      {
+        "page": "partygames",
+        "score": 6.4,
+        "focalPeak": false
+      }
+    ]
+  }
+}
