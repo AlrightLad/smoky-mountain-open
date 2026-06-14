@@ -10,6 +10,70 @@
 .ptr-indicator svg{color:var(--gold)}
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   CLUBHOUSE MATERIAL SYSTEM (#41, v8.25.137) — the page critique named FLAT
+   paper-on-paper cards + flat brass buttons as the #1 reason pages sit below
+   the 9.5 bar. These reusable token-driven classes give any surface real
+   material depth: a top inner highlight (light catching the lifted edge), a
+   hairline ink border, a layered drop shadow, and a faint paper grain — so a
+   card reads as pressed stock above the canvas, not a colored rectangle.
+   Opt-in (no global side effects); applied first to the lowest-scoring pages.
+   ─────────────────────────────────────────────────────────────────────────── */
+.pb-card{position:relative;background:var(--cb-paper);border:1px solid rgba(20,19,15,.10);border-radius:var(--r-3);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.55), 0 1px 2px rgba(28,24,14,.07), 0 6px 18px -8px rgba(28,24,14,.18)}
+/* faint fractal paper grain — one tiling SVG, ~3.5%, multiply so it darkens into the stock */
+.pb-card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:.04;mix-blend-mode:multiply;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='90' height='90' filter='url(%23n)'/%3E%3C/svg%3E")}
+/* felt ground — for hero/featured panels (the focal-peak material) */
+.pb-card--felt{background:linear-gradient(157deg,#15463a,#0F3D2E 58%,#0b3226);color:var(--cb-chalk);border-color:rgba(0,0,0,.34);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09), inset 0 0 22px rgba(0,0,0,.25), 0 8px 22px -10px rgba(0,0,0,.5)}
+.pb-card--felt::after{opacity:.07}
+/* brass left-rail — for grouped/ledger sections (the record-book spine) */
+.pb-card--rail{border-left:3px solid var(--cb-brass)}
+/* recessed — for empty / locked / inset wells */
+.pb-card--recessed{background:var(--cb-chalk-2);border-color:rgba(20,19,15,.07);box-shadow:inset 0 1px 3px rgba(28,24,14,.13)}
+
+/* Brass metal button — the canonical primary CTA. Dark ink label on brass
+   (clears WCAG AA — avoids the white/brass-on-brass contrast failures flagged
+   across the app), top highlight + bottom border + drop shadow read as struck
+   metal, and it physically presses on :active. */
+.pb-btn-brass{display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  font-family:var(--font-ui);font-weight:700;font-size:14px;letter-spacing:.2px;color:#2a1e08;
+  padding:11px 18px;border:1px solid #8a6526;border-radius:var(--r-2);cursor:pointer;white-space:nowrap;
+  background:linear-gradient(180deg,#dcb868,#c9a155 40%,#b4893e 72%,#a67c34);
+  box-shadow:inset 0 1px 0 rgba(255,247,222,.6), 0 2px 6px rgba(20,19,15,.22);
+  text-shadow:0 1px 0 rgba(255,247,222,.45);transition:transform var(--duration-fast) var(--ease-default),box-shadow var(--duration-fast) var(--ease-default)}
+.pb-btn-brass:hover{background:linear-gradient(180deg,#e3c074,#d0a85c 40%,#bc9146 72%,#ad8338)}
+.pb-btn-brass:active{transform:translateY(1px);box-shadow:inset 0 1px 0 rgba(255,247,222,.5), 0 1px 3px rgba(20,19,15,.28)}
+.pb-btn-brass:focus-visible{outline:2px solid var(--cb-brass);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.pb-btn-brass{transition:none}}
+
+/* Drills page (#41 v8.25.137) — Clubhouse drill book */
+.drill-tabs{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:8px 16px 12px;-webkit-overflow-scrolling:touch}
+.drill-tabs::-webkit-scrollbar{display:none}
+.drill-tab{flex:none;font-family:var(--font-mono);font-size:10.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--cb-mute);background:var(--cb-chalk-2);border:1px solid var(--cb-chalk-3);border-radius:999px;padding:7px 14px;cursor:pointer;white-space:nowrap;transition:background var(--duration-fast) var(--ease-default),color var(--duration-fast) var(--ease-default)}
+.drill-tab.is-on{color:#2a1e08;background:linear-gradient(180deg,#dcb868,#b4893e);border-color:#8a6526;box-shadow:inset 0 1px 0 rgba(255,247,222,.5)}
+.drill-feature{padding:16px 18px}
+.drill-feature__eyebrow{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass-3);margin-bottom:6px}
+.drill-feature__name{font-family:var(--font-display);font-style:italic;font-weight:700;font-size:22px;line-height:1.1;color:var(--cb-chalk)}
+.drill-feature__desc{font-family:var(--font-ui);font-size:13px;line-height:1.45;color:rgba(244,239,228,.84);margin-top:6px}
+.drill-feature__cta{margin-top:14px}
+.drill-row{padding:14px 16px;margin-bottom:10px;border-left:3px solid var(--rail,var(--cb-brass))}
+.drill-row__top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.drill-row__main{flex:1;min-width:0}
+.drill-row__cat{font-family:var(--font-mono);font-size:8.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.drill-row__name{font-family:var(--font-display);font-weight:600;font-size:16px;color:var(--cb-ink);line-height:1.2;margin-top:3px}
+.drill-row__desc{font-family:var(--font-ui);font-size:12px;color:var(--cb-charcoal);line-height:1.4;margin-top:3px}
+.drill-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.drill-chip{display:inline-flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:9px;font-weight:600;letter-spacing:.4px;text-transform:capitalize;color:var(--cb-mute);background:var(--cb-chalk-2);border:1px solid var(--cb-chalk-3);border-radius:5px;padding:3px 7px}
+.drill-chip__dot{width:5px;height:5px;border-radius:50%;background:var(--cb-brass)}
+.drill-row__more{flex:none;width:30px;height:30px;border-radius:50%;border:1px solid var(--cb-chalk-3);background:var(--cb-paper);color:var(--cb-mute);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform var(--duration-fast) var(--ease-default)}
+.drill-row__more:hover{color:var(--cb-brass);border-color:var(--cb-brass)}
+.drill-row__detail{margin-top:12px;padding-top:12px;border-top:1px solid var(--cb-chalk-3)}
+.drill-row__howto-label{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:5px}
+.drill-row__howto{font-family:var(--font-ui);font-size:12.5px;color:var(--cb-charcoal);line-height:1.6}
+@media (prefers-reduced-motion:reduce){.drill-tab,.drill-row__more{transition:none}}
+
+/* ═══════════════════════════════════════════════════════════════════════════
    COMPONENT POLISH — micro-shadows, status pills, transitions, animations
    ═══════════════════════════════════════════════════════════════════════════ */
 
