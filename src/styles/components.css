@@ -73,6 +73,27 @@
 .drill-row__howto{font-family:var(--font-ui);font-size:12.5px;color:var(--cb-charcoal);line-height:1.6}
 @media (prefers-reduced-motion:reduce){.drill-tab,.drill-row__more{transition:none}}
 
+/* Party games page (#41 v8.25.137) — Clubhouse side-games */
+.pg-live{display:flex;align-items:center;gap:7px;margin:8px 16px 2px;font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cb-green)}
+.pg-live__dot{width:7px;height:7px;border-radius:50%;background:var(--cb-green);box-shadow:0 0 0 3px rgba(47,74,58,.2)}
+.pg-hero{padding:22px 20px;text-align:center}
+.pg-hero__art{display:flex;justify-content:center;margin-bottom:10px}
+.pg-hero__title{font-family:var(--font-display);font-style:italic;font-weight:700;font-size:21px;line-height:1.15;color:var(--cb-chalk)}
+.pg-hero__desc{font-family:var(--font-ui);font-size:13px;line-height:1.5;color:rgba(244,239,228,.84);max-width:330px;margin:8px auto 0}
+.pg-hero__cta{margin-top:16px}
+.pg-hero__preview-label{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass-3);margin-top:20px}
+.pg-chips{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:10px}
+.pg-chip{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-ui);font-size:10.5px;color:rgba(244,239,228,.92);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:5px 11px}
+.pg-chip svg{color:var(--cb-brass-3)}
+.pg-row{display:flex;align-items:center;gap:12px;padding:13px 15px;margin-bottom:8px}
+.pg-row__art{flex:none;color:var(--cb-brass);display:flex;align-items:center;justify-content:center;width:26px}
+.pg-row__art svg{width:22px;height:22px}
+.pg-row__main{flex:1;min-width:0}
+.pg-row__name{font-family:var(--font-display);font-weight:600;font-size:15px;color:var(--cb-ink)}
+.pg-row__desc{font-family:var(--font-ui);font-size:11.5px;color:var(--cb-charcoal);margin-top:2px}
+.pg-row__xp{font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:.5px;color:var(--cb-brass);margin-top:4px}
+.pg-row__chev{flex:none;color:var(--cb-brass)}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    COMPONENT POLISH — micro-shadows, status pills, transitions, animations
    ═══════════════════════════════════════════════════════════════════════════ */

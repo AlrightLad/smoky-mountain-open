@@ -13,51 +13,54 @@ var PARTY_GAMES = [
 ];
 
 Router.register("partygames", function() {
-  var h = '<div class="sh"><h2>Party Games</h2><button class="back" onclick="Router.back(\'home\')">← Back</button></div>';
-  
+  // v8.25.137 (#41): full Clubhouse migration — was 6.4 (legacy --gold/--cream
+  // tokens, flat dashed empty card with a 30% dead zone). Now a serif masthead,
+  // a felt focal hero that fills the page, and .pb-card material rows.
+  var h = '<div class="roster-masthead" style="padding-bottom:6px">';
+  h += '<button class="back" onclick="Router.back(\'home\')" style="margin-bottom:12px">← Back</button>';
+  h += '<div class="roster-eyebrow">On the course · Side games</div>';
+  h += '<h1 class="roster-headline">Party games.</h1>';
+  h += '</div>';
+
   var inRound = liveState.active;
-  
+
   if (inRound) {
-    h += '<div style="padding:8px 16px;font-size:10px;color:var(--birdie);display:flex;align-items:center;gap:6px"><div style="width:6px;height:6px;border-radius:50%;background:var(--live);animation:pulse-dot 2s infinite"></div>Playing ' + escHtml(liveState.course) + ' · Hole ' + (liveState.currentHole + 1) + '</div>';
+    h += '<div class="pg-live"><span class="pg-live__dot"></span>Playing ' + escHtml(liveState.course) + ' · Hole ' + (liveState.currentHole + 1) + '</div>';
   } else {
-    // v8.22+ (design-pass 2026-05-23): dashed-card empty-state matching the
-    // courses/feed pattern. Adds preview chips of party games members can
-    // unlock on starting a round (teaching aid per peer-anchor empty state).
-    h += '<div style="margin:14px 16px;padding:30px 24px;text-align:center;background:var(--cb-paper);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-sm)">';
-    h += '<div style="margin-bottom:8px"><svg viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--gold)" stroke-width="1.5"><rect x="9" y="9" width="30" height="30" rx="6"/><circle cx="18" cy="18" r="2" fill="var(--gold)" stroke="none"/><circle cx="30" cy="18" r="2" fill="var(--gold)" stroke="none"/><circle cx="24" cy="24" r="2" fill="var(--gold)" stroke="none"/><circle cx="18" cy="30" r="2" fill="var(--gold)" stroke="none"/><circle cx="30" cy="30" r="2" fill="var(--gold)" stroke="none"/></svg></div>';
-    h += '<div style="font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--cream);margin-bottom:6px">Party games unlock mid-round.</div>';
-    h += '<div style="font-size:12px;color:var(--muted);line-height:1.5;max-width:300px;margin:0 auto 14px">Start a round in Play Now and the games light up: bet a hole, run a Wolf line, call a Nassau, claim closest-to-the-pin.</div>';
-    h += '<button class="btn-sm green" style="font-size:11px;padding:9px 22px" onclick="Router.go(\'playnow\')">Play Now</button>';
+    // Felt focal hero — fills the page (kills the dead zone), explains the
+    // mid-round unlock, single brass CTA, then a preview of what's in the bag.
+    h += '<div style="padding:6px 16px 2px"><div class="pb-card pb-card--felt pg-hero">';
+    h += '<div class="pg-hero__art"><svg viewBox="0 0 48 48" width="46" height="46" fill="none" stroke="var(--cb-brass-3)" stroke-width="1.6"><rect x="9" y="9" width="30" height="30" rx="6"/><circle cx="18" cy="18" r="2" fill="var(--cb-brass-3)" stroke="none"/><circle cx="30" cy="18" r="2" fill="var(--cb-brass-3)" stroke="none"/><circle cx="24" cy="24" r="2" fill="var(--cb-brass-3)" stroke="none"/><circle cx="18" cy="30" r="2" fill="var(--cb-brass-3)" stroke="none"/><circle cx="30" cy="30" r="2" fill="var(--cb-brass-3)" stroke="none"/></svg></div>';
+    h += '<div class="pg-hero__title">Side games light up mid-round.</div>';
+    h += '<div class="pg-hero__desc">Start a round in Play Now and the games come alive: bet a hole, run a Wolf line, call a Nassau, claim closest-to-the-pin.</div>';
+    h += '<button class="pb-btn-brass pg-hero__cta" onclick="Router.go(\'playnow\')">Play Now</button>';
     if (typeof PARTY_GAMES !== "undefined" && PARTY_GAMES && PARTY_GAMES.length) {
-      h += '<div style="margin-top:18px;font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase">PREVIEW</div>';
-      h += '<div style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:8px">';
+      h += '<div class="pg-hero__preview-label">In the bag</div>';
+      h += '<div class="pg-chips">';
       PARTY_GAMES.slice(0, 6).forEach(function(g) {
-        h += '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:5px 12px;font-size:10px;color:var(--muted);display:flex;align-items:center;gap:5px">';
-        h += '<span style="font-size:11px">' + g.icon + '</span><span>' + escHtml(g.name) + '</span>';
-        h += '</div>';
+        h += '<span class="pg-chip">' + g.icon + '<span>' + escHtml(g.name) + '</span></span>';
       });
       h += '</div>';
     }
-    h += '</div>';
+    h += '</div></div>';
   }
-  
+
   // Active games from Firestore
   h += '<div id="activeGames"><div class="loading"><div class="spinner"></div>Loading…</div></div>';
-  
+
   // Game catalog — only show if in a round
   if (inRound) {
-    h += '<div class="section"><div class="sec-head"><span class="sec-title">Start a Game</span></div>';
+    h += '<div class="section"><div class="sec-head"><span class="sec-title">Start a game</span></div><div style="padding:0 16px">';
     PARTY_GAMES.forEach(function(g) {
-      h += '<div class="card" style="cursor:pointer" onclick="startPartyGame(\'' + g.id + '\')">';
-      h += '<div class="card-body" style="display:flex;align-items:center;gap:12px">';
-      h += '<div style="font-size:24px;flex-shrink:0">' + g.icon + '</div>';
-      h += '<div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--cream)">' + g.name + '</div>';
-      h += '<div style="font-size:10px;color:var(--muted);margin-top:2px">' + g.desc + '</div>';
-      h += '<div style="font-size:9px;color:var(--gold);margin-top:3px">+' + g.xpWin + ' XP to winner</div></div>';
-      h += '<div style="color:var(--gold);display:flex;align-items:center"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 18l6-6-6-6"/></svg></div>';
-      h += '</div></div>';
+      h += '<div class="pb-card pb-card--rail pg-row" style="--rail:var(--cb-brass);cursor:pointer" onclick="startPartyGame(\'' + g.id + '\')">';
+      h += '<div class="pg-row__art">' + g.icon + '</div>';
+      h += '<div class="pg-row__main"><div class="pg-row__name">' + escHtml(g.name) + '</div>';
+      h += '<div class="pg-row__desc">' + escHtml(g.desc) + '</div>';
+      h += '<div class="pg-row__xp">+' + g.xpWin + ' XP to winner</div></div>';
+      h += '<div class="pg-row__chev"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M9 18l6-6-6-6"/></svg></div>';
+      h += '</div>';
     });
-    h += '</div>';
+    h += '</div></div>';
   }
   
   // Past games
@@ -76,21 +79,21 @@ Router.register("partygames", function() {
       games.sort(function(a,b) { return (b.createdAt||0) - (a.createdAt||0); });
       var el = document.getElementById("activeGames");
       if (!el) return;
-      if (!games.length) { el.innerHTML = '<div style="font-size:11px;color:var(--muted);text-align:center;padding:12px">No active games</div>'; return; }
+      if (!games.length) { el.innerHTML = '<div style="font-size:11px;color:var(--cb-mute);text-align:center;padding:12px">No active games</div>'; return; }
       var gh = '<div class="section"><div class="sec-head"><span class="sec-title">Active Games</span></div>';
       games.forEach(function(g) {
         var game = PARTY_GAMES.find(function(pg) { return pg.id === g.gameType; }) || { icon:"?", name:g.gameType };
         var canDelete = (myUid && g.createdBy === myUid) || isComm;
-        gh += '<div class="card"><div class="card-body">';
+        gh += '<div class="pb-card"><div class="card-body">';
         gh += '<div style="display:flex;justify-content:space-between;align-items:flex-start">';
         gh += '<div><div style="font-size:14px;font-weight:600">' + game.icon + ' ' + game.name + '</div>';
-        gh += '<div style="font-size:10px;color:var(--muted);margin-top:2px">Started by ' + escHtml(g.createdByName || "Unknown") + '</div></div>';
+        gh += '<div style="font-size:10px;color:var(--cb-mute);margin-top:2px">Started by ' + escHtml(g.createdByName || "Unknown") + '</div></div>';
         if (canDelete) {
-          gh += '<div onclick="event.stopPropagation();deletePartyGame(\'' + g._id + '\')" style="cursor:pointer;padding:4px 8px;color:var(--muted2);font-size:16px">×</div>';
+          gh += '<div onclick="event.stopPropagation();deletePartyGame(\'' + g._id + '\')" style="cursor:pointer;padding:4px 8px;color:var(--cb-mute-2);font-size:16px">×</div>';
         }
         gh += '</div>';
         // Declare winner
-        gh += '<div style="margin-top:10px"><div style="font-size:10px;color:var(--gold);margin-bottom:6px">Declare winner:</div>';
+        gh += '<div style="margin-top:10px"><div style="font-size:10px;color:var(--cb-brass);margin-bottom:6px">Declare winner:</div>';
         gh += '<div style="display:flex;gap:6px;flex-wrap:wrap">';
         PB.getPlayers().forEach(function(p) {
           if (isBannedRole(p)) return;
@@ -117,14 +120,14 @@ Router.register("partygames", function() {
           var d = g.completedAt.toDate();
           dateStr = (d.getMonth()+1) + "/" + d.getDate() + "/" + d.getFullYear();
         }
-        ph += '<div class="card" style="margin:0 16px 6px;padding:10px 14px">';
+        ph += '<div class="pb-card" style="margin:0 16px 6px;padding:10px 14px">';
         ph += '<div style="display:flex;justify-content:space-between;align-items:center">';
         ph += '<div style="display:flex;align-items:center;gap:8px">';
         ph += '<div style="font-size:16px">' + game.icon + '</div>';
-        ph += '<div><div style="font-size:12px;font-weight:600;color:var(--cream)">' + game.name + '</div>';
-        ph += '<div style="font-size:10px;color:var(--muted)">Winner: <span style="color:var(--gold)">' + escHtml(g.winnerName || "Unknown") + '</span>' + (dateStr ? ' · ' + dateStr : '') + '</div></div></div>';
+        ph += '<div><div style="font-size:12px;font-weight:600;color:var(--cb-ink)">' + game.name + '</div>';
+        ph += '<div style="font-size:10px;color:var(--cb-mute)">Winner: <span style="color:var(--cb-brass)">' + escHtml(g.winnerName || "Unknown") + '</span>' + (dateStr ? ' · ' + dateStr : '') + '</div></div></div>';
         if (canDelete) {
-          ph += '<div onclick="deletePartyGame(\'' + g._id + '\')" style="cursor:pointer;padding:4px 8px;color:var(--muted2);font-size:14px">×</div>';
+          ph += '<div onclick="deletePartyGame(\'' + g._id + '\')" style="cursor:pointer;padding:4px 8px;color:var(--cb-mute-2);font-size:14px">×</div>';
         }
         ph += '</div></div>';
       });
