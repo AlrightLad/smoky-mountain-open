@@ -25,12 +25,24 @@ drills 6.0 · chat 6.4 · partygames 6.4 · courses 7.2 · bounties 7.2 · calen
 - `.pb-btn-brass` — struck-metal CTA, dark-ink label clears AA, presses on :active.
 - Use these to lift pages: felt hero = focal peak; rail rows = ledger; recessed = empty.
 
+## TEAM-WIDE TOOLING (Founder 2026-06-14)
+Orchestration/workflow subagents AND onboarding work are cleared to GENERATE
+design assets via Vertex Imagen (`node scripts/_gen-vertex-art.mjs <name>
+"<prompt>" "<ar>"`, ~$0.02/img) when hand-built CSS/SVG can't reach the 9.5 bar —
+rather than ship sub-bar or declare blocked. Credit-cautious + rigorous prompts +
+canonical Cuphead style for cartoon. WHEN AUTHORING WORKFLOW PROMPTS, tell the
+subagents this tool exists. See [[feedback_gemini_cosmetics_credit_caution]].
+
 ## DONE this marathon
 - v8.25.137 foundation + **drills** full rebuild (6.0 → ~9): serif masthead, felt
   Drill-of-the-Day hero, pb-card--rail rows + chips + scrollable brass tabs.
 - v8.25.138 **partygames** (6.4 → ~9): felt focal hero fills dead zone, brass CTA,
   preview chips, legacy tokens migrated (fixed invisible --cream text).
 - v8.25.139 **skeleton** app-wide: chalk shimmer not dark bars (chat 6.4 main cause).
+- v8.25.140 **courses** (7.2 → ~9): pb-card rows, serif names, brass meta.
+- v8.25.141 **global .card top-highlight** (27 page files lift) + **rubber-hose
+  course-photo placeholder** (course-placeholder.jpg, detail banner + monogram chip;
+  list keeps monograms; multi-photo carousel already exists, --gold→brass).
 
 ## NEXT (in priority order from synthesis)
 - courses (7.2): home/most-played course → editorial hero card; body serif (was
