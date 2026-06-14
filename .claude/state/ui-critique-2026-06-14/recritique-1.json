@@ -1,0 +1,169 @@
+{
+  "summary": "Re-critique the lifted member pages to confirm they cleared the 9.5 bar; flag anything still short",
+  "agentCount": 19,
+  "logs": [
+    "18/18 re-critiques back; cleared 6"
+  ],
+  "result": {
+    "count": 18,
+    "cleared": 6,
+    "scores": [
+      {
+        "page": "chat",
+        "score": 7.4
+      },
+      {
+        "page": "calendar",
+        "score": 8
+      },
+      {
+        "page": "wrapped",
+        "score": 8.3
+      },
+      {
+        "page": "trips",
+        "score": 8.4
+      },
+      {
+        "page": "shop",
+        "score": 8.5
+      },
+      {
+        "page": "scramble",
+        "score": 8.6
+      },
+      {
+        "page": "records",
+        "score": 8.6
+      },
+      {
+        "page": "profile",
+        "score": 8.7
+      },
+      {
+        "page": "more",
+        "score": 8.7
+      },
+      {
+        "page": "teetimes",
+        "score": 8.7
+      },
+      {
+        "page": "settings",
+        "score": 8.7
+      },
+      {
+        "page": "standings",
+        "score": 8.8
+      },
+      {
+        "page": "courses",
+        "score": 9
+      },
+      {
+        "page": "trophyroom",
+        "score": 9
+      },
+      {
+        "page": "drills",
+        "score": 9.1
+      },
+      {
+        "page": "partygames",
+        "score": 9.1
+      },
+      {
+        "page": "bounties",
+        "score": 9.1
+      },
+      {
+        "page": "challenges",
+        "score": 9.1
+      }
+    ],
+    "synth": {
+      "cleared": [
+        "drills (9.1)",
+        "partygames (9.1)",
+        "courses (9.0)",
+        "bounties (9.1)",
+        "trophyroom (9.0)",
+        "challenges (9.1)"
+      ],
+      "avgScore": 8.76,
+      "stillShort": [
+        {
+          "page": "chat",
+          "score": 7.4,
+          "topFix": "BLOCKER: re-capture with a seeded/authed message feed (scripts/_cap-auth.mjs) — current shot is an empty skeleton so the lift's core material can't be scored; then add a felt focal moment (Trash Talk header band / pinned message) since the page reads flat."
+        },
+        {
+          "page": "calendar",
+          "score": 8,
+          "topFix": "Fix the broken TODAY cell (the '14' is splitting into stacked '1'/'4' glyphs colliding with the rotated TODAY label) — it reads as a rendering bug; keep 14 as one number with a separate mono TODAY badge. Then wrap the grid in .pb-card material."
+        },
+        {
+          "page": "wrapped",
+          "score": 8.3,
+          "topFix": "Material foundation is entirely absent (flat dark navy, no grain/felt/.pb-card). Apply the felt focal-peak hero + grain behind the headline and replace the floating clock with a struck-brass countdown medallion as the focal peak."
+        },
+        {
+          "page": "trips",
+          "score": 8.4,
+          "topFix": "Kill the ~50% dead beige void below the single event card: add a felt focal-peak hero for the next event OR a secondary band (past events / season ledger). The empty state must be a designed surface, not blank paper."
+        },
+        {
+          "page": "shop",
+          "score": 8.5,
+          "topFix": "Promote the ParCoin balance into a felt/struck-brass focal-peak hero (currently a thin outlined pill = no focal peak) and wrap the Recent-activity ledger in .pb-card stock so the material system actually shows on the page meant to showcase it."
+        },
+        {
+          "page": "records",
+          "score": 8.6,
+          "topFix": "Raise the empty-state cards (ACES 0, CHALLENGES 0, 'Tap to log it') from pale tan-on-tan to AA-passing ink/brass and make the 'Tap to…' lines clearly tappable — currently reads as broken, not inviting (P10 + WCAG-AA violation)."
+        },
+        {
+          "page": "scramble",
+          "score": 8.6,
+          "topFix": "Fill the unstructured lower ~45% void with scramble-specific content (How-it-works strip / recent-teams preview / felt footer band) and elevate the partner-slot discs into a real signature focal device; break the dead-center symmetry."
+        },
+        {
+          "page": "profile",
+          "score": 8.7,
+          "topFix": "Promote the identity block (avatar + serif name + level/XP/ParCoins) into a single asymmetric felt hero with struck-brass avatar ring + ParCoin chip — the felt focal-peak hero (foundation's strongest dimension) is absent and is the main thing under 9.5."
+        },
+        {
+          "page": "teetimes",
+          "score": 8.7,
+          "topFix": "Replace the three faux 'SAMPLE / EXAMPLE TEE SHEET' rows with either real tee times or one intentional branded empty state (P10) — demo rows read as unfinished scaffolding; also lift the taupe-on-taupe muted labels to AA."
+        },
+        {
+          "page": "more",
+          "score": 8.7,
+          "topFix": "Give the page one signature move and make group treatment intentional: the PARCOIN group has a brass-accent card while COMPETITION/THE SEASON are plain hairline rows, so it reads as incomplete styling rather than deliberate emphasis."
+        },
+        {
+          "page": "settings",
+          "score": 8.7,
+          "topFix": "Fix the bottom-nav collision: the 'Notifications' header ghosts UP through the translucent footer nav (z-index + missing bottom safe-area padding) — add padding-bottom = nav height and make the nav opaque so content never scrolls under it."
+        },
+        {
+          "page": "standings",
+          "score": 8.8,
+          "topFix": "Promote the rank-1/leader row into a felt focal-peak band (felt #0F3D2E + brass rank numeral + paper name plate) and add .pb-card material to the leaderboard container — the signature 'board' surface is the flattest, thinnest one on the page."
+        }
+      ],
+      "nextActions": [
+        "P0 chat (7.4): re-capture with a seeded/authed feed FIRST — its score is artificially low on an empty skeleton and may clear once real message-card material is visible; this is the single highest-leverage action.",
+        "P0 calendar (8.0): fix the broken TODAY-cell glyph split (reads as a rendering bug) before any styling work.",
+        "P1 settings (8.7): fix the footer-nav z-index/overlap bug (content ghosting through translucent nav) — another 'looks broken' defect that hard-caps the page.",
+        "Batch-fix the shared felt-focal-peak gap (the dominant blocker): profile, standings, trips, scramble, shop, wrapped, records all lack one asymmetric felt/struck-brass hero — apply the same focal-peak treatment per page rather than one-off.",
+        "Batch-fix WCAG-AA contrast on muted labels app-wide (records empty-states, teetimes/trips/scramble footer lines, profile tan-on-tan, shop EARNED pills, standings chips) — verify each capture against its ACTUAL bg per the contrast-verify-each-change rule to avoid over-correction regressions.",
+        "Fix P10 empty-state violations: records ('Tap to log it' illegible), teetimes (faux SAMPLE rows), profile ('—' handicap, no WHAT/ACTION) — classify each state and add an actionable directive.",
+        "Fill dead-space voids with designed secondary surfaces: trips (~50%), scramble (~45%), wrapped (~55%) — no blank paper/void below the hero.",
+        "Push material depth onto the pages still flat (calendar grid, standings leaderboard, shop ledger, wrapped, more groups) — wrap in .pb-card stock with top highlight + layered shadow + grain.",
+        "Re-score still-short pages after fixes; cap agent self-rating at 9.4 and route any >=9.5 excellence claim to Founder visual sign-off per AMD-028."
+      ]
+    }
+  }
+}

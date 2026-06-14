@@ -250,7 +250,11 @@ function _calGridHTML(todayStr) {
       var label = CAL_DAYS_FULL[new Date(cell.ds + "T12:00:00").getDay()] + " " + CAL_MON3[calMonth] + " " + cell.n + (evs.length ? ", " + evs.length + (evs.length === 1 ? " event" : " events") : ", no events");
       s += '<td role="gridcell" class="cal-cell' + (isToday ? " cal-cell--today" : "") + (isSel ? " cal-cell--sel" : "") + '">';
       s += '<button type="button" class="cal-cellbtn" aria-label="' + escHtml(label) + '" aria-pressed="' + isSel + '" onclick="selectCalDay(\'' + cell.ds + '\')">';
-      s += '<span class="cal-cell-top"><span class="cal-datenum">' + cell.n + '</span>' + (isToday ? '<span class="cal-today-eyebrow">TODAY</span>' : '') + '</span>';
+      // #41 v8.25.161 — the inline "TODAY" word didn't fit a 7-col mobile day cell
+      // and (with the #72 global overflow-wrap:anywhere) shoved the 2-digit date
+      // into a broken stacked "1"/"4". Date number now nowraps; today is marked by
+      // a compact brass dot + the cell's brass top-rule (no colliding word).
+      s += '<span class="cal-cell-top"><span class="cal-datenum">' + cell.n + '</span>' + (isToday ? '<span class="cal-today-dot" aria-label="Today"></span>' : '') + '</span>';
       if (evs.length) {
         s += '<span class="cal-chips">';
         evs.slice(0, 3).forEach(function(ev) { s += _calChipHTML(ev); });
