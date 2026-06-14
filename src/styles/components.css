@@ -5595,8 +5595,13 @@ img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width:
    Greatest-hits numbers as premium cards leading the record book — real values
    lead, empties prompt "be the first" (never a bare dash). Tokens → all themes. */
 .rec-sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 16px 4px}
-.rec-sig{background:var(--cb-paper);border:1px solid var(--cb-chalk-3);border-radius:var(--r-3);padding:13px 14px;box-shadow:var(--shadow-sm);min-height:86px;display:flex;flex-direction:column;justify-content:center}
-.rec-sig--hero{background:linear-gradient(160deg,rgba(var(--cb-brass-rgb),.11),var(--cb-paper));border-color:rgba(var(--cb-brass-rgb),.42);border-left:3px solid var(--cb-brass)}
+/* #41 v8.25.150 — records signature cards lifted to paper-stock plates; the
+   Lowest-18 HERO spans both columns as a full-width brass "record plate" with an
+   oversized serif numeral (the focal peak). */
+.rec-sig{background:var(--cb-paper);border:1px solid rgba(20,19,15,.10);border-radius:var(--r-3);padding:13px 14px;box-shadow:inset 0 1px 0 rgba(255,255,255,.5), var(--shadow-sm);min-height:86px;display:flex;flex-direction:column;justify-content:center}
+.rec-sig--hero{grid-column:1 / -1;background:linear-gradient(150deg,rgba(var(--cb-brass-rgb),.17),var(--cb-paper) 70%);border-color:rgba(var(--cb-brass-rgb),.5);border-left:4px solid var(--cb-brass);box-shadow:inset 0 1px 0 rgba(255,255,255,.55), 0 2px 4px rgba(28,24,14,.07), 0 9px 20px -9px rgba(28,24,14,.22)}
+.rec-sig--hero .rec-sig__big{font-size:46px}
+.rec-sig--hero .rec-sig__eyebrow{color:var(--cb-brass-deep);font-size:9.5px}
 .rec-sig--empty{background:transparent;border-style:dashed;border-color:rgba(var(--cb-brass-rgb),.25);box-shadow:none}
 .rec-sig__eyebrow{font-family:var(--font-mono);font-size:8.5px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;color:var(--cb-brass-deep)}
 .rec-sig__big{font-family:var(--font-display);font-weight:800;font-size:30px;line-height:1;color:var(--cb-ink);margin-top:6px}
