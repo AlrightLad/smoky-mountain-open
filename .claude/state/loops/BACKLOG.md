@@ -515,3 +515,8 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
 ## NEW FOUNDER ITEMS (2026-06-14 16:03)
 - [ ] Shop as the retention ENGINE (#76): expand to PLENTY of items; some level-locked before purchase; varied unlock methods (level / achievement / season / play); unlocked items showcase on profile + in-play to signal tenure & golf dedication. The come-back-and-unlock loop.
 - [ ] Brand cohesiveness review + enhance (#77): unify rubber-hose (Cuphead) with Holderness & Bourne premium aesthetic app-wide; rubber-hose = youthful character layer rendered INSIDE H&B-grade presentation; tour clothing branded with logo + rubber-hose cartoons. Audit, enhance/change what's off. See memory project_brand_rubberhose_x_hb.
+
+## FOUNDER REFINEMENTS (2026-06-14 17:34) — fold into existing items
+- #76 SHOP (severely behind): NOT ENOUGH items + current items not cohesive / not on-brand / not golf-aesthetic. Expand the catalog AND elevate every cosmetic to AWARD-WINNING using ALL tools (generator-first: Imagen for art/textures, then composite) + memory. Level-lock + showcase already started; this adds breadth + a brand/golf-aesthetic quality bar.
+- #68 MERCH: multiple items under ONE photo = customer confusion. Give EACH item its own professional product photo; polish to Holderness & Bourne caliber (logo + rubber-hose motif per brand recipe).
+- #67 SWING + animation generally: severely behind; Cuphead rubber-hose rebuild; generator-first. Stays DO-LAST among features but is a priority once shop/merch land.
