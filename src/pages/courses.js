@@ -161,7 +161,7 @@ Router.register("courses", function(params) {
       var lBest = leagueCourseBest[c.name];
       var lBestBy = leagueCourseBestPlayer[c.name];
       h += '<div class="c-meta">' + lPlays + ' league round' + (lPlays !== 1 ? 's' : '');
-      if (lBest) h += ' · Best: <span style="color:var(--gold);font-weight:600">' + lBest + '</span> (' + escHtml(lBestBy || '') + ')';
+      if (lBest) h += ' · Best: <span style="color:var(--cb-brass);font-weight:600">' + lBest + '</span> (' + escHtml(lBestBy || '') + ')';
       h += '</div>';
     } else {
       h += '<div class="c-meta">' + (stars ? '' + stars + '/5 · ' : '') + roundsHere.length + ' round' + (roundsHere.length !== 1 ? 's' : '') + '</div>';
@@ -228,7 +228,7 @@ Router.register("courses", function(params) {
     // it, so the empty card is now purely a teaching panel — one primary search
     // path, one secondary add path, no duplicate CTA.
     h += '<div style="margin:24px 16px;padding:28px 24px;text-align:center;background:var(--cb-paper);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-sm)">';
-    h += '<div style="margin-bottom:10px"><svg viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M18 6v30"/><path d="M18 6l13 4-13 4"/><ellipse cx="22" cy="38" rx="14" ry="3.5"/></svg></div>';
+    h += '<div style="margin-bottom:10px"><svg viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="var(--cb-brass)" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round"><path d="M18 6v30"/><path d="M18 6l13 4-13 4"/><ellipse cx="22" cy="38" rx="14" ry="3.5"/></svg></div>';
     h += '<div style="font-family:var(--font-display);font-size:18px;font-weight:600;color:var(--cream);margin-bottom:4px">';
     h += showOurs ? "No league courses yet." : "Your directory is quiet.";
     h += '</div>';
@@ -272,7 +272,7 @@ function filterCourseDirectory(val) {
     var exactMatch = PB.getCourseByName(val.trim());
     if (!exactMatch) {
       manualEl.style.display = "block";
-      manualEl.innerHTML = '<div style="padding:0 16px 8px"><div class="card" style="cursor:pointer" onclick="quickAddCourseFromDir(\'' + escHtml(val.trim()).replace(/'/g, "\\'") + '\')"><div class="card-body" style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:12px;color:var(--cream)">' + escHtml(val.trim()) + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">Not in directory, tap to add manually</div></div><div style="font-size:10px;color:var(--gold);font-weight:600">+ Add</div></div></div></div>';
+      manualEl.innerHTML = '<div style="padding:0 16px 8px"><div class="card" style="cursor:pointer" onclick="quickAddCourseFromDir(\'' + escHtml(val.trim()).replace(/'/g, "\\'") + '\')"><div class="card-body" style="display:flex;justify-content:space-between;align-items:center"><div><div style="font-size:12px;color:var(--cream)">' + escHtml(val.trim()) + '</div><div style="font-size:10px;color:var(--muted);margin-top:2px">Not in directory, tap to add manually</div></div><div style="font-size:10px;color:var(--cb-brass);font-weight:600">+ Add</div></div></div></div>';
     } else {
       manualEl.style.display = "none";
     }
@@ -324,7 +324,7 @@ function _renderDirApiResults(courses, el, query) {
     return !PB.getCourseByName(name);
   });
   if (!filtered.length) { el.innerHTML = ""; return; }
-  var h = '<div style="padding:4px 16px 2px;font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:.5px;font-weight:700">Online Results</div>';
+  var h = '<div style="padding:4px 16px 2px;font-size:9px;color:var(--cb-brass);text-transform:uppercase;letter-spacing:.5px;font-weight:700">Online Results</div>';
   filtered.forEach(function(c, idx) {
     var name = c.course_name || c.club_name || c.name || c.courseName || "Unknown";
     var city = (c.location && typeof c.location === "object" ? c.location.city : c.city) || "";
@@ -473,7 +473,7 @@ function courseSearchWithApi(val, containerId, onSelect, onQuickAdd) {
   // Quick add at bottom
   if (!exactMatch) {
     h += '<div class="sr-item" onclick="' + onQuickAdd(val) + ';pbDismissKeyboard()">';
-    h += '<div><div class="sr-name" style="color:var(--gold)">+ Add "' + escHtml(val) + '"</div><div class="sr-meta">Not in results? Add manually</div></div>';
+    h += '<div><div class="sr-name" style="color:var(--cb-brass)">+ Add "' + escHtml(val) + '"</div><div class="sr-meta">Not in results? Add manually</div></div>';
     h += '<span class="sr-badge add">+ Add</span></div>';
   }
   container.innerHTML = h;
@@ -710,13 +710,13 @@ function showTeeScorecard(courseId, teeIdx) {
   var area = document.getElementById("courseScorecardArea");
   if (!area) return;
 
-  var h = '<div style="padding:0 16px 4px;font-size:12px;font-weight:600;color:var(--gold)">' + escHtml(tee.name) + ' <span style="font-size:10px;color:var(--muted);font-weight:400">' + (tee.yards ? tee.yards.toLocaleString() + ' yds · ' : '') + 'Rating ' + (tee.rating||'—') + ' · Slope ' + (tee.slope||'—') + '</span></div>';
+  var h = '<div style="padding:0 16px 4px;font-size:12px;font-weight:600;color:var(--cb-brass)">' + escHtml(tee.name) + ' <span style="font-size:10px;color:var(--muted);font-weight:400">' + (tee.yards ? tee.yards.toLocaleString() + ' yds · ' : '') + 'Rating ' + (tee.rating||'—') + ' · Slope ' + (tee.slope||'—') + '</span></div>';
 
   if (holes.length === 18) {
     h += '<div style="overflow-x:auto;padding:0 16px 12px">';
     // Front 9
     h += '<table style="width:100%;border-collapse:collapse;font-size:10px;margin-bottom:8px">';
-    h += '<tr style="color:var(--gold);font-weight:700"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg3)">Hole</td>';
+    h += '<tr style="color:var(--cb-brass);font-weight:700"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg3)">Hole</td>';
     for (var i=1;i<=9;i++) h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg3);text-align:center">' + i + '</td>';
     h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg3);text-align:center;font-weight:700">Out</td></tr>';
     h += '<tr style="color:var(--cream)"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);font-weight:600">Par</td>';
@@ -735,7 +735,7 @@ function showTeeScorecard(courseId, teeIdx) {
     h += '</table>';
     // Back 9
     h += '<table style="width:100%;border-collapse:collapse;font-size:10px">';
-    h += '<tr style="color:var(--gold);font-weight:700"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg3)">Hole</td>';
+    h += '<tr style="color:var(--cb-brass);font-weight:700"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg3)">Hole</td>';
     for (var i=10;i<=18;i++) h += '<td style="padding:4px 4px;border:1px solid var(--border);background:var(--bg3);text-align:center">' + i + '</td>';
     h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg3);text-align:center;font-weight:700">In</td></tr>';
     h += '<tr style="color:var(--cream)"><td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2);font-weight:600">Par</td>';
@@ -752,7 +752,7 @@ function showTeeScorecard(courseId, teeIdx) {
       h += '<td style="padding:4px 6px;border:1px solid var(--border);background:var(--bg2)"></td></tr>';
     }
     h += '</table>';
-    h += '<div style="text-align:center;margin-top:6px;font-size:11px;color:var(--gold);font-weight:600">Total: Par ' + (fp+bp);
+    h += '<div style="text-align:center;margin-top:6px;font-size:11px;color:var(--cb-brass);font-weight:600">Total: Par ' + (fp+bp);
     if (holes[0].yardage) h += ' · ' + (fy+by).toLocaleString() + ' yards';
     h += '</div></div>';
   } else {
@@ -767,7 +767,7 @@ function togglePlayNowFirGir(wrapper, hole, type) {
   var val = liveState[type][hole];
   var el = wrapper.querySelector("div");
   if (!el) return;
-  var color = type === "fir" ? "var(--birdie)" : "var(--gold)";
+  var color = type === "fir" ? "var(--birdie)" : "var(--cb-brass)";
   var bgOn = type === "fir" ? "rgba(var(--birdie-rgb),.12)" : "rgba(var(--gold-rgb),.12)";
   if (val) {
     el.style.borderColor = color;
@@ -789,7 +789,7 @@ function toggleFirGirBtn(el, tripId, courseKey, playerId, hole, newVal, type) {
     PB.setGir(tripId, courseKey, playerId, hole, newVal);
   }
   // Toggle visual state in-place
-  var color = type === "fir" ? "var(--birdie)" : "var(--gold)";
+  var color = type === "fir" ? "var(--birdie)" : "var(--cb-brass)";
   var bgOn = type === "fir" ? "rgba(var(--birdie-rgb),.15)" : "rgba(var(--gold-rgb),.15)";
   if (newVal) {
     el.style.borderColor = color;
@@ -902,7 +902,7 @@ function voteReviewHelpful(courseId, reviewIdx) {
 function setReviewStars(n) {
   document.getElementById("rev-rating").value = n;
   var stars = document.querySelectorAll("#rev-stars span");
-  stars.forEach(function(s) { s.style.color = parseInt(s.dataset.star) <= n ? "var(--gold)" : "var(--bg3)"; });
+  stars.forEach(function(s) { s.style.color = parseInt(s.dataset.star) <= n ? "var(--cb-brass)" : "var(--bg3)"; });
 }
 
 // ═══ COMMUNITY SCORECARD SYSTEM ═══
@@ -934,7 +934,7 @@ function showScorecardEditor(courseId) {
   h += '</div>';
 
   // Hole-by-hole par entry
-  h += '<div style="font-size:11px;font-weight:600;color:var(--gold);margin-bottom:8px">Hole Pars</div>';
+  h += '<div style="font-size:11px;font-weight:600;color:var(--cb-brass);margin-bottom:8px">Hole Pars</div>';
   h += '<div style="display:grid;grid-template-columns:repeat(9,1fr);gap:4px;margin-bottom:8px">';
   for (var hi = 0; hi < 9; hi++) {
     var val = existingPars[hi] || 4;

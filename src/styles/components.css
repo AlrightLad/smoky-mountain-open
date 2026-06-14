@@ -924,8 +924,8 @@ textarea.ff-input{min-height:60px;resize:vertical}
    COURSES
    ═══════════════════════════════════════════════════════════════════════════ */
 .course-row{display:flex;gap:var(--sp-3);padding:var(--sp-3) var(--sp-4);cursor:pointer;align-items:center;transition:background var(--duration-fast) var(--ease-default)}
-.course-row:hover{background:var(--bg3)}
-.c-thumb{width:60px;height:42px;border-radius:var(--r-2);background:var(--bg3);overflow:hidden;flex-shrink:0}
+.course-row:hover{background:rgba(180,137,62,.06)}
+.c-thumb{width:60px;height:42px;border-radius:var(--r-2);background:var(--cb-chalk-3);overflow:hidden;flex-shrink:0}
 .c-thumb img{width:100%;height:100%;object-fit:cover}
 /* Branded per-course monogram placeholder (v8.23.53). Courses with no uploaded
    photo render a Clubhouse duotone tile + initials instead of one shared dark
@@ -940,10 +940,16 @@ textarea.ff-input{min-height:60px;resize:vertical}
 .c-thumb-ph--4{background:linear-gradient(135deg,var(--cb-moss),var(--cb-green-2))}
 .c-thumb-ph--5{background:linear-gradient(135deg,var(--cb-copper),var(--cb-brass-2))}
 .course-hero-mono{font-family:var(--font-display);font-style:italic;font-weight:700;font-size:46px;letter-spacing:-.03em;color:var(--cb-chalk);text-transform:uppercase;text-shadow:0 2px 8px rgba(20,19,15,.4)}
-.c-info{flex:1}
-.c-name{font-size:var(--text-base);font-weight:600}
-.c-loc{font-size:var(--text-sm);color:var(--muted);margin-top:1px}
-.c-meta{font-size:var(--text-sm);color:var(--gold);margin-top:3px}
+.c-info{flex:1;min-width:0}
+/* #41 v8.25.140 — courses read as a generic search list once below the serif
+   masthead (critic: "yardage-book identity evaporates", body in system-sans).
+   Carry the record-book voice into the rows: serif course name, brass meta,
+   and .pb-card material on each row (was flat legacy .card). */
+.c-name{font-family:var(--font-display);font-size:16px;font-weight:600;color:var(--cb-ink);line-height:1.2}
+.c-loc{font-size:var(--text-sm);color:var(--cb-mute);margin-top:1px}
+.c-meta{font-family:var(--font-mono);font-size:11px;color:var(--cb-brass);margin-top:3px}
+.course-dir-item{background:var(--cb-paper)!important;border:1px solid rgba(20,19,15,.10)!important;border-radius:var(--r-3)!important;margin:0 16px 8px!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.5), 0 1px 2px rgba(28,24,14,.06), 0 5px 14px -8px rgba(28,24,14,.16)!important;overflow:hidden}
 .course-banner{height:160px;overflow:hidden;margin:0 16px;border-radius:var(--radius)}
 .course-banner img{width:100%;height:100%;object-fit:cover}
 .c-detail-info{font-size:var(--text-base);color:var(--muted);margin-bottom:8px}
