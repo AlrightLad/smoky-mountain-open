@@ -350,6 +350,15 @@ function playerRingClass(p) {
   if (b === 'border_bronze') return 'ring-bronze-struck';
   if (b === 'border_silver') return 'ring-silver-struck';
   if (b === 'border_gold' || b === 'border_default_gold') return 'ring-gold-struck';
+  // #76 — remaining flat colored rings → glossy-enamel / gem material (no flat borders).
+  if (b === 'border_birdie') return 'ring-birdie-enamel';
+  if (b === 'border_rose') return 'ring-rose-enamel';
+  if (b === 'border_emerald') return 'ring-emerald-enamel';
+  if (b === 'border_champ_red') return 'ring-champ-enamel';
+  if (b === 'border_ice') return 'ring-bluebird-enamel'; // re-themed "Bluebird"
+  if (b === 'border_diamond') return 'ring-diamond-gem';
+  if (b === 'border_platinum') return 'ring-platinum-struck';
+  if (b === 'border_obsidian') return 'ring-obsidian-struck';
   // v8.24.50 — Pro Shop ornamental rings (class-drawn, not border colors)
   if (b === 'pc01_gallery_rope') return 'ring-gallery-rope';
   if (b === 'pc02_fescue') return 'ring-fescue';
