@@ -345,6 +345,11 @@ function playerRingClass(p) {
   if (b === 'border_rainbow_shift') return 'ring-rainbow-shift';
   if (b === 'border_neon_green') return 'ring-neon-green';
   if (b === 'border_crimson_ember') return 'ring-crimson-ember';
+  // #76 cosmetics overhaul (v8.25.170) — the common metal rings were flat colored
+  // borders; promote to struck-metal border-box gradient decorations (static).
+  if (b === 'border_bronze') return 'ring-bronze-struck';
+  if (b === 'border_silver') return 'ring-silver-struck';
+  if (b === 'border_gold' || b === 'border_default_gold') return 'ring-gold-struck';
   // v8.24.50 — Pro Shop ornamental rings (class-drawn, not border colors)
   if (b === 'pc01_gallery_rope') return 'ring-gallery-rope';
   if (b === 'pc02_fescue') return 'ring-fescue';

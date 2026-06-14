@@ -5346,6 +5346,18 @@ img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width:
 .ring-claret::after{content:"";position:absolute;top:9%;right:-8px;width:10px;height:14px;border:3px solid #c4c9d0;border-left:none;border-radius:0 9px 9px 0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.3));box-shadow:1px 0 2px rgba(0,0,0,.3);pointer-events:none}
 @keyframes claretSweep{to{transform:rotate(360deg)}}
 
+/* #76 cosmetics overhaul — STRUCK-METAL common rings (Founder 2026-06-14: "rings
+   suck"). The cheap metal rings were flat `Npx solid #color` borders; promote them
+   to the same struck-metal border-box gradient the premium pc* rings use (light/dark
+   stops simulate a brushed-metal sheen) + an inset bezel + soft drop shadow. STATIC
+   (no animation) so they stay calm in feed/leaderboard lists — premium without noise.
+   id-stable: same owned border ids, richer render. Frames the photo, never covers it. */
+.ring-bronze-struck,.ring-silver-struck,.ring-gold-struck{border:3px solid transparent!important;position:relative;
+  box-shadow:0 0 0 1px rgba(20,19,15,.18),inset 0 0 5px rgba(20,19,15,.28),0 2px 8px -4px rgba(20,19,15,.5)}
+.ring-bronze-struck{background:linear-gradient(122deg,#5e3a1f 2%,#d79a5e 16%,#a9682f 36%,#7c4a22 54%,#e0a86a 76%,#5e3a1f 96%) border-box}
+.ring-silver-struck{background:linear-gradient(122deg,#7e858d 2%,#fcfdff 15%,#c4c9d0 33%,#9aa0a8 50%,#eef1f4 70%,#aab0b8 86%,#7e858d 98%) border-box}
+.ring-gold-struck{background:linear-gradient(118deg,#8c6a2e 4%,#f0dca6 16%,#caa75c 38%,#b4893e 56%,#f0dca6 78%,#8c6a2e 96%) border-box}
+
 /* Title plate (PC-14) — equipped title as engraved brass under the name */
 .title-engraved{display:inline-block;position:relative;overflow:hidden;color:#2a1e08!important;font-style:normal!important;font-weight:700;font-size:9px!important;letter-spacing:1.4px;text-transform:uppercase;padding:3px 10px;border-radius:3px;background:linear-gradient(118deg,#8c6a2e 4%,#e8d39a 14%,#caa75c 30%,#b4893e 50%,#caa75c 66%,#f0dca6 80%,#8c6a2e 96%);text-shadow:0 1px 0 rgba(255,247,222,.55);box-shadow:inset 0 1px 0 rgba(255,247,222,.7),inset 0 -1px 0 rgba(0,0,0,.45),0 1px 2px rgba(0,0,0,.4)}
 .title-engraved::after{content:"";position:absolute;inset:0;background:linear-gradient(118deg,transparent 38%,rgba(255,255,255,.5) 49%,rgba(255,255,255,.5) 52%,transparent 62%);pointer-events:none}
