@@ -5122,9 +5122,16 @@ img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width:
 .plate-stimp::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(92deg,rgba(255,255,255,0) 0 2px,rgba(255,255,255,.05) 2px 3px);pointer-events:none}
 
 /* ── Next-wave ornamental rings (v8.24.57) ── */
-.ring-wax-seal{border:3px solid var(--cb-mute-3,#c9c5bd)!important;position:relative}
-.ring-wax-seal::after{content:"";position:absolute;bottom:-5px;left:50%;width:13px;height:13px;margin-left:-6.5px;border-radius:50%;background:radial-gradient(circle at 38% 32%,#a83c3c,#6e1f1f);box-shadow:0 1px 2px rgba(0,0,0,.4),inset 0 0 3px rgba(0,0,0,.4);pointer-events:none}
-.ring-hickory{border:4px solid #7a4a28!important;box-shadow:0 0 0 1.5px #caa75c,inset 0 0 0 1.5px #5a3418;background-image:repeating-linear-gradient(115deg,rgba(90,52,24,.0) 0 3px,rgba(120,74,40,.35) 3px 4px)}
+/* v8.25.126 — warm parchment ring (was characterless grey) so the claret seal
+   pops, + the MISSING ribbon tails (copy promised them) + an irregular pressed
+   wax edge (was a perfect circle). */
+.ring-wax-seal{border:3px solid #d8cbb0!important;position:relative;box-shadow:inset 0 0 0 1px rgba(180,137,62,.22)}
+.ring-wax-seal::before{content:"";position:absolute;bottom:-2px;left:50%;width:20px;height:10px;margin-left:-10px;pointer-events:none;background:linear-gradient(108deg,transparent 38%,#8a2e2e 41% 47%,transparent 50%),linear-gradient(72deg,transparent 50%,#8a2e2e 53% 59%,transparent 62%)}
+.ring-wax-seal::after{content:"";position:absolute;bottom:-6px;left:50%;width:15px;height:15px;margin-left:-7.5px;border-radius:48% 52% 51% 49%/53% 47% 53% 47%;background:radial-gradient(circle at 38% 30%,#b84c4c,#7a2222 72%);box-shadow:0 1px 3px rgba(0,0,0,.45),inset 0 0 4px rgba(0,0,0,.42),inset 0 1px 1px rgba(255,255,255,.18);pointer-events:none}
+/* v8.25.126 — promoted the brass ferrule from a box-shadow hairline to a real
+   banded brass border, + layered wood grain with a shaft sheen. */
+.ring-hickory{border:4px solid transparent!important;position:relative;background:linear-gradient(100deg,#6e4422,#8a5a30 42%,#5a3418 72%,#7a4a28) padding-box,linear-gradient(118deg,#8c6a2e,#e8d39a 18%,#caa75c 40%,#b4893e 60%,#8c6a2e) border-box;box-shadow:inset 0 0 0 1px rgba(90,52,24,.55),inset 0 0 6px rgba(0,0,0,.32)}
+.ring-hickory::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;background:repeating-linear-gradient(112deg,rgba(60,36,16,0) 0 2px,rgba(60,36,16,.38) 2px 3px),radial-gradient(circle at 36% 30%,rgba(255,235,200,.18),transparent 52%)}
 
 /* v8.24.76 — Pro Shop scorecard skins on the feed row (worn render). These
    were no-ops: the css lived only in PRO_SHOP_CATALOG, which getPlayerCardCss
