@@ -539,7 +539,18 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
 - [x] Caddy-crew identity (#73) DONE (renamed The Caddies + cohesive crew avatar of real 4): rename bot "The Caddy" -> "The Caddies"/"Caddy Crew" + crew profile photo (composite the 4 caddies)
 - [ ] Swing-animation page rework (#67, DO LAST among features) — Cuphead rubber-hose rebuild
 - [ ] Level-100 exclusive animated rubber-hose THEME (#75, end) — vastly different, on-page cartoons + animations; extensive critique loop
-- [ ] Final QA gauntlet (#74): E2E all pages + data flows -> pen test -> resolve every finding -> health check
+- [~] Final QA gauntlet (#74): AGENT-DOABLE PIECES DONE 2026-06-14. (1) E2E: full
+  cross-browser smoke 33/33 on chromium+firefox+webkit+webkit-mobile (all viewports)
+  after the 7 ships v8.25.162-168. (2) PEN TEST: AgentShield scan = GREEN for the app
+  — all findings are pre-existing AGENT-HARNESS config (.claude/settings.local.json
+  node -e allow-rules + stop-hook >/dev/null), NOT app/Firestore/injection vulns;
+  this turn's 7 ships added ZERO new attack surface (UI/cosmetic/markup only — no
+  auth/rules/CF/secret changes; new shop strings are static, no XSS path). Secret
+  scan clean. (3) HEALTH: prod serving 8.25.168, dashboards regen, all ships V1/DOM-
+  verified. REMAINING (CI-gated, not agent-doable in-session per prior #74 notes):
+  full multi-data E2E spanning INDEPENDENT + CROSS-LEAGUE users needs the emulator
+  (wedged localhost) or CI — rules-isolation already GREEN via v8-rules.spec.js + the
+  exploit-test capstone. Re-run in CI / on a free-port workstation.
 
 ## NEW FOUNDER ITEMS (2026-06-14 16:03)
 - [ ] Shop as the retention ENGINE (#76): expand to PLENTY of items; some level-locked before purchase; varied unlock methods (level / achievement / season / play); unlocked items showcase on profile + in-play to signal tenure & golf dedication. The come-back-and-unlock loop.
