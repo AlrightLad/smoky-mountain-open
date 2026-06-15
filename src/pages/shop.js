@@ -531,7 +531,15 @@ Router.register("shop", function() {
       var _mg = (typeof pbMarkerGlyph === 'function') ? pbMarkerGlyph(item.id, 66) : '';
       c += '<div class="shop-surface-stage shop-surface-stage--marker">' + (_mg ? '<span class="shop-marker-obj">' + _mg + '</span>' : '<span style="width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 35% 30%,' + item.preview + ',rgba(0,0,0,.35));box-shadow:0 3px 4px -2px rgba(0,0,0,.5)"></span>') + '</div>';
     } else if (item.cat === 'voice') {
-      c += '<div style="height:34px;margin-bottom:8px;display:flex;align-items:center;justify-content:center">' + _shopFlagSvg(20) + '</div>';
+      // v8.25.230 — voice packs are CHARACTER cosmetics: preview the caddie's real
+      // rubber-hose portrait (the same art Settings + the feed bot use) so the pack
+      // reads as WHO you're buying, not a generic flag. Real paths from pbCaddies
+      // (img/avatars/caddy-*.jpg); onerror falls back to the flag.
+      var _vimg = { pc21_old_tom: 'caddy-oldtom', pc22_bag_room: 'caddy-bagroom' }[item.id];
+      var _vbase = (typeof window !== 'undefined' && window.__PB_BASE__) ? window.__PB_BASE__ : '/';
+      c += '<div style="height:60px;margin-bottom:8px;display:flex;align-items:center;justify-content:center">' + (_vimg
+        ? '<span style="width:56px;height:56px;border-radius:50%;overflow:hidden;border:2px solid var(--cb-brass);display:inline-flex;box-shadow:0 2px 6px rgba(0,0,0,.18)"><img src="' + _vbase + 'img/avatars/' + _vimg + '.jpg" alt="" style="width:100%;height:100%;object-fit:cover" onerror="this.parentNode.parentNode.innerHTML=\'\'"></span>'
+        : _shopFlagSvg(20)) + '</div>';
     } else if (item.cat === 'title') {
       // v8.24.76 — pc36 previews as its leather bag tag (was the same brass
       // plate as pc14, so the two priciest title plates looked identical).
