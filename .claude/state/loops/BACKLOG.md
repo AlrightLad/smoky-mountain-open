@@ -553,7 +553,7 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
   exploit-test capstone. Re-run in CI / on a free-port workstation.
 
 ## NEW FOUNDER ITEMS (2026-06-14 16:03)
-- [ ] Shop as the retention ENGINE (#76): expand to PLENTY of items; some level-locked before purchase; varied unlock methods (level / achievement / season / play); unlocked items showcase on profile + in-play to signal tenure & golf dedication. The come-back-and-unlock loop.
+- [x] Shop as the retention ENGINE (#76) — DONE v8.25.178-183 (LIVE prod+staging, smoke 33/33): 8 award-winning rubber-hose raster avatar DECORATIONS (Caddy Companion/Hole-in-One/Champion/Masters Azalea/Frost Delay/Eagle/Bramble Rose/Autumn Nine) via the new parbaughs-image-gen skill + finishing pipeline; featured "Decorations" shelf leads the shop; VARIED unlock methods (level Lv3-6 / achievement-earned eagle+hole-in-one / season-champion / seasonal drops) each with clear P10 unlock paths; decorations render app-wide (renderAvatar overlay + profile hero + shop preview/try-it-on); "The Locker" profile showcase (unlocked count + equipped deco, tap→shop = come-back loop). Caddy 3-arm defect fixed + anatomy-count vetting rule added.
   PROGRESS this turn: (1) LEVEL-LOCK LADDER live v8.25.165 (17 prestige items L5-L15,
   DOM-verified). (2) COHESION RE-THEME pass-1 live v8.25.167 (Founder chose
   cohesion-first): 12 off-brand/gamer cosmetics → golf/Parbaughs (Neon Green→Fairway
