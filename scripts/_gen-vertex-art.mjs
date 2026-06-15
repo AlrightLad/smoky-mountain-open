@@ -127,7 +127,15 @@ const FILLERS = [
   ['filler-clubhouse', 'A serene wide cinematic photograph of a cozy golf clubhouse interior at golden hour, leather chairs and a wall of brass trophies softly out of focus, warm directional window light,' + SCENE, '16:9'],
 ];
 
-const SETS = { merch: MERCH, shop: SHOP, fillers: FILLERS, lifestyle: LIFESTYLE, cosmetic: COSMETIC, deco: DECO };
+// LEISURE — the rubber-hose casual line (Malbon-energy, our cartoons NOT a golf-
+// ball mascot). A ghost-mannequin tee with a bold hand-inked golf CREST printed
+// large (no text, no human character → no anatomy/canon risk). Keyed + finished
+// like the tour apparel.
+const LEISURE = [
+  ['leisure-tee', 'A ghost-mannequin invisible-mannequin studio product photograph of a vintage washed-black heavyweight cotton t-shirt shown as a hollow shape worn by no one with natural shoulder and chest volume and soft folds and a few natural wrinkles at the fold lines, a single bold 1930s rubber-hose cartoon golf CREST printed large and centered on the chest made of two crossed hickory golf clubs over a small claret-red pennant flag framed by a cream laurel wreath with one star at the top, bold confident black ink outlines with warm-cream and forest-green and claret-red flat cel-shaded fills, playful and characterful and fun, absolutely no text and no letters and no words anywhere. The garment lit by soft directional light from the upper left revealing the cotton jersey texture, a three-quarter hero angle rotated 30 degrees with a slight downward tilt, the garment centered occupying about 70 percent of frame height. Sharp commercial e-commerce product photography, photorealistic, fine jersey texture. Shot on an 85mm lens at f/8. Isolated on a background that is one perfectly flat fully-saturated shadowless solid bright chroma-blue color filling the entire frame edge to edge, the background stays one uniform flat blue color with no gradient.', '3:4'],
+];
+
+const SETS = { merch: MERCH, shop: SHOP, fillers: FILLERS, lifestyle: LIFESTYLE, cosmetic: COSMETIC, deco: DECO, leisure: LEISURE };
 const which = process.argv[2];
 
 async function gen(name, prompt, ar) {
