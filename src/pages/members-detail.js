@@ -117,7 +117,14 @@ function renderMemberDetailWithData(p) {
   h += '<div class="pf-portrait pb-card pb-card--felt pf-hero">';
   // v8.25.172 (Founder 2026-06-14) — photo editing now lives ONLY in Edit profile
   // (single edit surface); the profile avatar is display-only (no floating pencil).
-  h += '<div class="pf-av pf-hero-av" style="width:104px;height:104px;font-size:40px;border:3px solid ' + _profColor + ';box-shadow:' + _profShadowCombined + _profAnimCss + '">' + Router.getAvatar(p);
+  // v8.25.18x — equipped raster DECORATION shows on the profile too (the pf-av
+  // uses getAvatar directly, so it needs its own overlay). When present it IS the
+  // frame: drop the color border + let it extend (overflow visible); the photo
+  // stays circular via its own border-radius.
+  var _pfDeco = (typeof playerDecoSrc === 'function') ? playerDecoSrc(p) : '';
+  var _pfFrame = _pfDeco ? 'border:none;overflow:visible' : ('border:3px solid ' + _profColor + ';box-shadow:' + _profShadowCombined + _profAnimCss);
+  h += '<div class="pf-av pf-hero-av" style="width:104px;height:104px;font-size:40px;' + _pfFrame + '">' + Router.getAvatar(p);
+  if (_pfDeco) h += '<img alt="" aria-hidden="true" src="' + _pfDeco + '" style="position:absolute;top:50%;left:50%;width:142%;height:142%;transform:translate(-50%,-50%);pointer-events:none;z-index:3">';
   h += '<div class="pf-av__lvl">' + lvl.level + '</div>';
   h += '</div>';
   h += '<div class="pf-id">';
