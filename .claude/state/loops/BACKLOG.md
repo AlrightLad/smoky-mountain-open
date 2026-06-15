@@ -74,10 +74,13 @@ Bigger phases (research/gen/taste — tracked in the directive doc):
     *.jpg; merch page now a real H&B-grade storefront (was the "AI slop" grievance).
   • HQ HERO v8.25.220 — Recraft warm rubber-hose country-club scene → showcase hero (was CSS
     placeholder); the awwwards-direction, full-bleed, text legible over a felt scrim.
-  REMAINING art slices (agent-actionable, generate→finish→wire→V1→Founder ≥9.5): merch ACCESSORIES
-  realism (head covers by club type, vertical yardage book, branded balls/tees) + KIDS+ADULT lines +
-  the LEISURE rubber-hose graphic line; RINGS/cosmetics raster (the shop pieces, via Vertex hardgoods
-  + Recraft illustrated); the other HQ showcase bands' art (art-showcase/merch-band packshots).
+  • MERCH ACCESSORIES v8.25.221 — Vertex (cream-bg, no-key): 3 leather headcovers BY CLUB TYPE,
+    a slim VERTICAL green-linen yardage book (hole maps), branded balls + sleeve → public/img/merch/.
+    V1-confirmed in-layout — the merch page is now a complete premium storefront.
+  REMAINING art slices (agent-actionable, generate→finish→wire→V1→Founder ≥9.5): the LEISURE
+  rubber-hose graphic line (new merch section, Recraft) + KIDS+ADULT lines; RINGS/cosmetics raster
+  (the shop pieces — HIGH taste-risk, previously rejected "atrocious", needs his close ≥9.5 iteration);
+  the other HQ showcase bands' art (art-showcase / merch-band packshots).
 - [~] HQ DESKTOP showcase — P1 SHIPPED (v8.25.216 LIVE+V1, additive/unlinked); P2-P5 + home-wiring
   pending Founder review. Spec+phases: .claude/state/loops/HQ-DESKTOP-SHOWCASE-BUILD-SPEC.md. P1 = the
   6-band full-bleed scaffold (hero/caddies/merch/changelog/community/CTA) diverging from the app via
