@@ -66,13 +66,18 @@ Remaining FOUNDATIONAL bugs (next, visual-verified):
   count) preserving sub-version structure inside. Render-time grouping over the existing archive
   (no data migration). V1: probe = 23 Y-sections (v8.23→v8.0) + 3 X-tabs; both render clean staging.
 Bigger phases (research/gen/taste — tracked in the directive doc):
-- [ ] BRAND lock + MERCH overhaul + RINGS/cosmetics ≥9.5 — UNBLOCKED 2026-06-15: the art gate is
-  OPEN via Vertex Imagen 4 (`scripts/_gen-vertex-art.mjs`, staging SA, ~$0.02/img — VERIFIED with a
-  real render; only the AI-Studio key 429s). See [[reference_vertex_imagen_art_gate_open]]. Now
-  agent-actionable: brief the brand → generate via Vertex (image-gen skill doctrine + brand-gate) →
-  finish (`_finish-art.py`) → wire → Founder ≥9.5 sign-off (AMD-028). Covers MERCH (head covers by
-  club, vertical yardage book, branded balls/tees/clothing, kids+adult, realistic photos, P+rose
-  rubber-hose restyle) + RINGS/cosmetics + the HQ-showcase P5 hero/merch art.
+- [ ] BRAND/MERCH/cosmetics ≥9.5 — art gate OPEN + PROVEN; 2 slices shipped, more to go.
+  Both tools verified ([[reference_vertex_imagen_art_gate_open]]): Vertex Imagen (photoreal) + Recraft
+  (illustrated). SHIPPED this cycle (LIVE+V1, awaiting Founder ≥9.5 sign-off per AMD-028):
+  • MERCH tour packshots v8.25.219 — Vertex ghost-mannequin white polo / navy quarter-zip / black
+    hoodie / heather tee, finished (_finish-art.py: key→P+rose crest→grade→shadow) → public/img/merch/
+    *.jpg; merch page now a real H&B-grade storefront (was the "AI slop" grievance).
+  • HQ HERO v8.25.220 — Recraft warm rubber-hose country-club scene → showcase hero (was CSS
+    placeholder); the awwwards-direction, full-bleed, text legible over a felt scrim.
+  REMAINING art slices (agent-actionable, generate→finish→wire→V1→Founder ≥9.5): merch ACCESSORIES
+  realism (head covers by club type, vertical yardage book, branded balls/tees) + KIDS+ADULT lines +
+  the LEISURE rubber-hose graphic line; RINGS/cosmetics raster (the shop pieces, via Vertex hardgoods
+  + Recraft illustrated); the other HQ showcase bands' art (art-showcase/merch-band packshots).
 - [~] HQ DESKTOP showcase — P1 SHIPPED (v8.25.216 LIVE+V1, additive/unlinked); P2-P5 + home-wiring
   pending Founder review. Spec+phases: .claude/state/loops/HQ-DESKTOP-SHOWCASE-BUILD-SPEC.md. P1 = the
   6-band full-bleed scaffold (hero/caddies/merch/changelog/community/CTA) diverging from the app via
