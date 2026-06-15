@@ -550,7 +550,16 @@ Router.register("shop", function() {
         // v8.25.130 — show the caddie's rubber-hose character portrait (was a
         // generic brass flag for every caddy — indistinguishable).
         var _cdImg = cd.img ? ((typeof window !== 'undefined' && window.__PB_BASE__ ? window.__PB_BASE__ : '/') + cd.img) : '';
-        c += '<div class="shop-surface-stage">' + (_cdImg ? '<img class="pb-caddy-live" src="' + _cdImg + '" alt="" style="width:88px;height:88px;border-radius:50%;object-fit:cover;border:2px solid ' + (cd.accent || 'var(--cb-brass)') + ';animation-delay:-' + (idx * 1.07).toFixed(2) + 's" onerror="this.outerHTML=\'' + _shopFlagSvg(34).replace(/'/g, "\\'") + '\'">' : _shopFlagSvg(34)) + '</div>';
+        // PL6 — the breathing portrait now bobs INSIDE a STATIC ring (the border +
+        // overflow:hidden + clip-path live on the wrapper, not on the moving img), so
+        // the ring no longer floats with the breathing animation. Mirrors the Settings
+        // caddie chip (.theme-row__chip--photo) — the will-change compositor layer is
+        // contained by clip-path+isolation. onerror falls back to the caddie initial
+        // (clean), not the brass flag (the Founder's "weird symbols").
+        var _cdInit = escHtml((cd.name || '?').trim().charAt(0).toUpperCase());
+        c += '<div class="shop-surface-stage"><span class="shop-caddie-ring" style="border-color:' + (cd.accent || 'var(--cb-brass)') + '">' +
+          (_cdImg ? '<img class="pb-caddy-live" src="' + _cdImg + '" alt="" style="animation-delay:-' + (idx * 1.07).toFixed(2) + 's" onerror="this.style.display=\'none\';this.parentElement.textContent=\'' + _cdInit + '\'">' : _cdInit) +
+          '</span></div>';
         c += '<div class="shop-item__name">' + escHtml(cd.name) + '</div>';
         c += '<div class="shop-item__desc">' + escHtml(cd.blurb || '') + '</div>';
         if (!cd.locked) c += '<button class="shop-item__equip" onclick="Router.go(\'settings\')">Included · choose in Settings</button>';

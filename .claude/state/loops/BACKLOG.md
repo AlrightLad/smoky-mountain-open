@@ -544,7 +544,20 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
 - [ ] PL4 — TITLES: add more + enhance them
 - [ ] PL5 — BALL MARKERS + TEE MARKERS redesigned (currently lazy)
 - [ ] PL6 — STORE-page caddies float outside the ring + weird symbols. DISTINCT from PL12 (that fixed the Settings .theme-row__chip--photo). The store caddie is shop.js:499 — a pb-caddy-live <img> (border-radius:50% + 2px border + breathing anim) directly in .shop-surface-stage with NO clip wrapper. Needs: visual diagnosis of the "symbols" (likely the Caddy tier-chip or the flag onerror-fallback) + contain the breathing layer (clip wrapper / cap the translate). Visual-iterate next window.
-- [ ] PL7 — UNLOCK METHOD broken. ROOT CAUSE FOUND (shop.js:434-435): earnedBy items (pc24 Green Jacket "Season champion", pc25 Ace Marker "Hole-in-one", pc43 CTP, border_deco_holeinone/champion/eagle) render ONLY as "<earnedBy>. Not for sale." — there is NO fulfillment logic anywhere that detects a member HAS earned the condition and grants/equips it (grep: no ownedCosmetics-grant for earned). So a qualifying member (e.g. Founder = season champion / has an eagle) can NEVER access them. ALSO: lvl-gated path (shop.js:442 `myLevel < item.lvl`, myLevel from PB.getPlayerLevel) works only if the member's level is high enough — verify Founder's level vs the lvl3-8 gates. FIX PLAN: add earnCheck(item, profile, rounds) per condition — eagle/ace = scan rounds hole scores (2-under / 1 on par3); champion = standings #1 at a sealed season / a championship record; CTP = season CTP leader — and when met, render "Equip" (treat as owned / add to ownedCosmetics) instead of "Not for sale". Then E2E-verify on the Founder's account.
+- [x] PL7 — UNLOCK METHOD — DONE v8.25.191 (LIVE on prod + V1-proven). Root cause: earnedBy
+  items rendered "<earnedBy>. Not for sale." with NO fulfillment logic, so a qualifying member
+  could never wear what they earned. FIX (shop.js): EARN_BY_ACHIEVEMENT maps each honor → the
+  achievement id that proves it (pc24/border_deco_champion→champion, pc25/border_deco_holeinone→ace,
+  border_deco_eagle→eagle_eye); reuse PB.getAchievements (the Trophy Room/profile engine) to detect
+  what THIS member earned; when met render a brass "✓ You earned this" cue + one-tap Equip + try-it-on
+  (instead of "Not for sale"). equipCosmetic + all worn-renders already existed (pc24→ring-green-jacket,
+  pc25/pc43→pbMarkerGlyph, 3 decos→PNGs). CTP (pc43) has no tracked season-leader signal yet → stays
+  honestly earn-on-the-course (never a FALSE unlock). EVIDENCE: (1) PROD read (scripts/.secrets/
+  verify-pl7-earned.mjs, SA read-only) — Mr Parbaugh (commissioner, event champion) NOW unlocks the
+  Green Jacket + Champion frame = exactly the reported case. (2) V1 staging capture (.claude/state/
+  cap-pl7/): BEFORE real-member 9 "Not for sale" / 0 earned; AFTER stubbed champion/ace/eagle → 5
+  "You earned this" + 8 Equip buttons, CTP+reserved correctly stay "Not for sale". Cosmetic-only, no
+  economy/gambling-leg impact. Caddy Note added.
 - [~] PL8 — RE-PRICE DONE v8.25.190: active PRO_SHOP_CATALOG raised ~1.5x rounded to 50 (one post-def pass, applies to card + purchase; free/earned stay 0) — cosmetics no longer too cheap. REMAINING: MORE items (design-heavy generation pass).
 - [x] PL9 — DONE v8.25.186: no-photo courses now default to the rubber-hose course-placeholder.jpg (hand-drawn brand art) instead of the flat CSS colour-gradient lanes (the AI tell); initials gradient kept only as final onerror fallback.
 - [x] PL10 — DONE v8.25.185: settings text "Six...three ready" -> "Seven...four ready" (7 themes = 4 default + 3 unlock).
