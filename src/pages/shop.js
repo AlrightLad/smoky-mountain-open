@@ -186,7 +186,17 @@ var PRO_SHOP_CATALOG = [
   {id:"pc53_medallion",    cat:"border",    tier:"cabinet", lvl:6, name:"The Medallion",    price:2800, ringClass:"ring-medallion", preview:"#caa75c", desc:"A struck championship medallion, laurel in relief around the rim, a slow gleam crossing the strike. Heavy in the hand — unlocks at Level 6."},
   {id:"pc54_calfskin_tag", cat:"nameplate", tier:"locker",  name:"The Calfskin Tag", price:1400,  preview:"#7a4a28", desc:"Pebbled saddle leather, a hard-enamel green roundel riveted at the left, your name embossed deep. The bag tag the caddymaster knows by sight."},
   {id:"pc55_pairing_sheet",cat:"card",      tier:"proshop", name:"The Pairing Sheet",price:900,  preview:"#f2ecda", css:"border:1px solid #d8cfa8;border-left:4px solid #1f5135;background:linear-gradient(0deg,rgba(244,238,214,.18),rgba(252,248,232,.2)),repeating-linear-gradient(0deg,transparent 0 8px,rgba(31,81,53,.06) 8px 9px)", desc:"Tournament-issue pairing sheet: cream stock, a green committee rule down the spine, tee-time grid faint behind your score."},
-  {id:"pc56_sterling",     cat:"ball",      tier:"locker",  name:"The Sterling",     price:1200,  preview:"#dfe2e6", desc:"A hand-hammered sterling silver marker, a single small sapphire-enamel dot at center. Heirloom weight; you'd mark a six-footer to win with this."}
+  {id:"pc56_sterling",     cat:"ball",      tier:"locker",  name:"The Sterling",     price:1200,  preview:"#dfe2e6", desc:"A hand-hammered sterling silver marker, a single small sapphire-enamel dot at center. Heirloom weight; you'd mark a six-footer to win with this."},
+  // v8.25.18x (Founder 2026-06-14) — AWARD-WINNING raster avatar DECORATIONS, the
+  // Discord-decoration tier: full-colour rubber-hose illustrated frames that wrap
+  // the avatar (deco:true → render via playerDecoSrc raster overlay, NOT a CSS ring).
+  // Earned tier (Champion / Hole-in-One) are price 0 + earnedBy; the rest are
+  // level-gated purchases. Art in public/img/cosmetics/deco-*.png.
+  {id:"border_deco_caddy",     deco:true, lvl:3, cat:"border", tier:"proshop", name:"Caddy Companion",  price:1800, preview:"#1e4d3b", desc:"Your own rubber-hose caddy crests the rim and waves you onto the first tee. A complete laurel ring frames your photo; he just came along for the round."},
+  {id:"border_deco_holeinone", deco:true, cat:"border", tier:"commem", name:"Hole-in-One",     price:0, earnedBy:"Record a hole-in-one", preview:"#7b2d3a", desc:"Confetti, a dropped ball, and the cup at six o'clock — the frame they only hand out once you've actually done the deed. Earned, never sold."},
+  {id:"border_deco_champion",  deco:true, cat:"border", tier:"commem", name:"Champion",        price:0, earnedBy:"Season champion only", preview:"#caa75c", desc:"The claret jug crowns the rim over a green-jacket lapel and laurels. The most earned frame in the club — season champions only."},
+  {id:"border_deco_azalea",    deco:true, lvl:5, cat:"border", tier:"locker", name:"Masters Azalea",   price:2200, preview:"#e88aa6", desc:"A spring burst of azalea blossoms garlands the rim — our nod to major season. A seasonal drop; here while the dogwoods bloom."},
+  {id:"border_deco_frost",     deco:true, lvl:5, cat:"border", tier:"locker", name:"Frost Delay",      price:2200, preview:"#bcd6e6", desc:"Snow caps, icicles and crossed frosted hickories — for the diehards who tee off in the cold. A seasonal winter drop."}
 ];
 // Legacy items kept ON SALE in the Paint Locker (the best ~15); every other
 // legacy item is retired from sale. Owned items are grandfathered forever —
@@ -358,11 +368,18 @@ Router.register("shop", function() {
     if (_pcNum && +_pcNum >= 26 && !item.earnedBy) c += '<div class="shop-item__new">NEW</div>';
     // preview
     if (item.cat === 'border') {
-      var ringCss = item.ringClass ? '' : 'border:' + (item.css || '3px solid ' + item.preview);
-      // v8.25.42 — showcase the ring as a real object: 104px (was a cramped 56px
-      // that hid the rope studs / fescue / claret sweep) on a clean brass-tinted
-      // ground, the SAME worn .ring-* class so the preview matches what you equip.
-      c += '<div class="shop-ring-stage"><div class="' + (item.ringClass || '') + '" style="width:104px;height:104px;border-radius:50%;' + ringCss + ';display:flex;align-items:center;justify-content:center;position:relative">' + (_myAvatar ? '<div style="width:82px;height:82px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center">' + _myAvatar + '</div>' : '<div class="shop-ring-core"></div>') + '</div></div>';
+      // v8.25.18x — raster DECORATION preview: overlay the transparent PNG (via the
+      // shared playerDecoSrc mapping = preview matches worn) around the avatar.
+      var _decoUrl = (typeof playerDecoSrc === 'function') ? playerDecoSrc({ equippedCosmetics: { border: item.id } }) : '';
+      if (_decoUrl) {
+        c += '<div class="shop-ring-stage"><div style="width:104px;height:104px;border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center">' + (_myAvatar ? '<div style="width:72px;height:72px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center">' + _myAvatar + '</div>' : '<div class="shop-ring-core"></div>') + '<img alt="" aria-hidden="true" src="' + _decoUrl + '" style="position:absolute;top:50%;left:50%;width:138%;height:138%;transform:translate(-50%,-50%);pointer-events:none"></div></div>';
+      } else {
+        var ringCss = item.ringClass ? '' : 'border:' + (item.css || '3px solid ' + item.preview);
+        // v8.25.42 — showcase the ring as a real object: 104px (was a cramped 56px
+        // that hid the rope studs / fescue / claret sweep) on a clean brass-tinted
+        // ground, the SAME worn .ring-* class so the preview matches what you equip.
+        c += '<div class="shop-ring-stage"><div class="' + (item.ringClass || '') + '" style="width:104px;height:104px;border-radius:50%;' + ringCss + ';display:flex;align-items:center;justify-content:center;position:relative">' + (_myAvatar ? '<div style="width:82px;height:82px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center">' + _myAvatar + '</div>' : '<div class="shop-ring-core"></div>') + '</div></div>';
+      }
     } else if (item.cat === 'nameplate') {
       // v8.25.43 — reuse the WORN .plate-* class (preview == worn), centered on a
       // clean surface stage, instead of a hardcoded inline approximation.
@@ -711,8 +728,14 @@ function shopPreviewCosmetic(itemId) {
   // Full-size stage, per category — applied to the member's own identity.
   var stage = '';
   if (item.cat === 'border') {
-    var ring = item.css || ('3px solid ' + (item.preview || 'var(--cb-brass)'));
-    stage = '<div class="' + (item.ringClass || '') + '" style="width:118px;height:118px;border-radius:50%;border:' + ring + ';margin:0 auto;display:flex;align-items:center;justify-content:center;background:var(--bg3,var(--cb-canvas))">' + myAvatar + '</div>';
+    var _decoTry = (typeof playerDecoSrc === 'function') ? playerDecoSrc({ equippedCosmetics: { border: item.id } }) : '';
+    if (_decoTry) {
+      // raster decoration try-it-on: photo in a clean circle + the deco overlaid
+      stage = '<div style="width:132px;height:132px;border-radius:50%;position:relative;margin:0 auto;display:flex;align-items:center;justify-content:center"><div style="width:92px;height:92px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--bg3,var(--cb-canvas))">' + myAvatar + '</div><img alt="" aria-hidden="true" src="' + _decoTry + '" style="position:absolute;top:50%;left:50%;width:138%;height:138%;transform:translate(-50%,-50%);pointer-events:none"></div>';
+    } else {
+      var ring = item.css || ('3px solid ' + (item.preview || 'var(--cb-brass)'));
+      stage = '<div class="' + (item.ringClass || '') + '" style="width:118px;height:118px;border-radius:50%;border:' + ring + ';margin:0 auto;display:flex;align-items:center;justify-content:center;background:var(--bg3,var(--cb-canvas))">' + myAvatar + '</div>';
+    }
   } else if (item.cat === 'banner') {
     stage = '<div style="border-radius:14px;overflow:hidden;border:1px solid var(--cb-mute-3)">'
       + '<div style="height:92px;background:' + (item.css || 'var(--gold)') + '"></div>'

@@ -380,6 +380,28 @@ function playerRingClass(p) {
   if (b === 'pc53_medallion') return 'ring-medallion';
   return '';
 }
+// v8.25.18x (Founder 2026-06-14) — AWARD-WINNING raster avatar DECORATIONS.
+// Unlike the CSS .ring-* art, these are full-colour rubber-hose illustrated
+// frames (Discord-decoration pattern) generated via the parbaughs-image-gen
+// skill + finishing pipeline, committed under public/img/cosmetics/. When a
+// member equips one, renderAvatar overlays the transparent PNG (~1.3x, centred,
+// pointer-events:none) AROUND the photo — the hollow centre frames the face,
+// never covers it ([[feedback_rings_frame_not_cover_photo]]). Returns '' for
+// every non-deco border so the existing CSS-ring path is untouched (no-op-safe).
+function playerDecoSrc(p) {
+  if (!p || !p.equippedCosmetics || !p.equippedCosmetics.border) return '';
+  var map = {
+    'border_deco_caddy': 'deco-caddy-companion.png',
+    'border_deco_holeinone': 'deco-hole-in-one.png',
+    'border_deco_champion': 'deco-champion.png',
+    'border_deco_azalea': 'deco-masters-azalea.png',
+    'border_deco_frost': 'deco-frost-delay.png'
+  };
+  var f = map[p.equippedCosmetics.border];
+  if (!f) return '';
+  var base = (typeof window !== "undefined" && window.__PB_BASE__) ? window.__PB_BASE__ : "/";
+  return base + 'img/cosmetics/' + f;
+}
 // ── Cosmetic helpers ──
 function getPlayerNameClass(p) {
   if (!p || !p.equippedCosmetics || !p.equippedCosmetics.name) return '';
@@ -447,13 +469,24 @@ function renderAvatar(p, size, clickToProfile) {
   // claret sweep, wax seal, hickory ferrule) actually renders when worn. The
   // art is absolutely-positioned, so the outer div needs position:relative.
   var ringCls = p ? playerRingClass(p) : '';
+  // v8.25.18x — a raster decoration, when equipped, IS the frame: it suppresses
+  // the CSS ring (border + class) and overlays the transparent PNG around the
+  // photo. Gated at size>=40 so tiny inline avatars skip it (no clipping in
+  // dense rows); profile/cards/feed/roster (>=40px) all show it.
+  var decoSrc = p ? playerDecoSrc(p) : '';
+  var useDeco = !!decoSrc && size >= 40;
+  if (useDeco) { ringCls = ''; ringStyle = ''; }
   var avatarInner = p ? Router.getAvatar(p) : '<div style="width:100%;height:100%;background:var(--bg3);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:700;font-size:' + Math.round(size * 0.4) + 'px">?</div>';
   var pid = p ? (p.id || '') : '';
   var click = clickToProfile && pid ? ' onclick="event.stopPropagation();Router.go(\'members\',{id:\'' + pid + '\'})"' : '';
   var cursor = clickToProfile && pid ? 'cursor:pointer;' : '';
-  // Outer div: border + shadow + animation + ring class (NO overflow:hidden so glow/art renders)
+  // The decoration overlay: centred, ~1.32x so its hollow opening frames the
+  // photo edge and the ornament extends just beyond; pointer-events:none so it
+  // never eats taps; aria-hidden (decorative).
+  var decoOverlay = useDeco ? '<img alt="" aria-hidden="true" src="' + decoSrc + '" style="position:absolute;top:50%;left:50%;width:132%;height:132%;transform:translate(-50%,-50%);pointer-events:none;z-index:2">' : '';
+  // Outer div: border + shadow + animation + ring class (NO overflow:hidden so glow/art/deco renders)
   // Inner div: overflow:hidden clips the image/fallback content to the circle
-  return '<div' + (ringCls ? ' class="' + ringCls + '"' : '') + ' style="width:' + size + 'px;height:' + size + 'px;min-width:' + size + 'px;border-radius:50%;position:relative;' + ringStyle + ';' + cursor + 'flex-shrink:0"' + click + '><div style="width:100%;height:100%;border-radius:50%;overflow:hidden">' + avatarInner + '</div></div>';
+  return '<div' + (ringCls ? ' class="' + ringCls + '"' : '') + ' style="width:' + size + 'px;height:' + size + 'px;min-width:' + size + 'px;border-radius:50%;position:relative;' + ringStyle + (ringStyle ? ';' : '') + cursor + 'flex-shrink:0"' + click + '><div style="width:100%;height:100%;border-radius:50%;overflow:hidden">' + avatarInner + '</div>' + decoOverlay + '</div>';
 }
 
 // renderUsername(player, extraStyle) → HTML string
