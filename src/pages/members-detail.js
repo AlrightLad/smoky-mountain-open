@@ -208,6 +208,24 @@ function renderMemberDetailWithData(p) {
   h += '<div class="pf-xp__track"><div style="height:100%;width:' + pct + '%;background:linear-gradient(90deg,var(--gold2),var(--gold3));border-radius:var(--radius-sm);transition:width .4s"></div></div>';
   h += '</div>';
 
+  // ── THE LOCKER — cosmetics showcase (v8.25.18x, #76): unlocked count + equipped
+  //    decoration signal this member's tenure/dedication; tap drives to the Pro
+  //    Shop (the come-back-and-unlock loop). Shows only when they own cosmetics
+  //    or have a decoration equipped (no empty noise for brand-new members).
+  var _ownedCount = (p.ownedCosmetics || []).length;
+  var _lockerDeco = (typeof playerDecoSrc === 'function') ? playerDecoSrc(p) : '';
+  if (_ownedCount > 0 || _lockerDeco) {
+    h += '<div class="pf-reveal pb-card tappable" onclick="Router.go(\'shop\')" style="cursor:pointer;display:flex;align-items:center;gap:13px;padding:13px 15px;margin-top:12px">';
+    if (_lockerDeco) {
+      h += '<div style="width:52px;height:52px;position:relative;flex-shrink:0"><div style="position:absolute;inset:15%;border-radius:50%;overflow:hidden;background:var(--cb-chalk-2)">' + Router.getAvatar(p) + '</div><img src="' + _lockerDeco + '" alt="" aria-hidden="true" style="position:absolute;top:50%;left:50%;width:118%;height:118%;transform:translate(-50%,-50%);pointer-events:none"></div>';
+    } else {
+      h += '<div style="width:46px;height:46px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:var(--cb-chalk-2);color:var(--cb-brass)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/></svg></div>';
+    }
+    h += '<div style="flex:1;min-width:0"><div class="pf-sec__eyebrow" style="margin:0">THE LOCKER</div><div style="font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--cb-ink);line-height:1.15;margin-top:1px">' + _ownedCount + ' cosmetic' + (_ownedCount === 1 ? '' : 's') + ' unlocked</div><div style="font-size:11.5px;color:var(--cb-mute);margin-top:1px">' + (_lockerDeco ? 'Decoration equipped · ' : '') + 'browse the Pro Shop</div></div>';
+    h += '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--cb-mute)" stroke-width="2" style="flex-shrink:0"><path d="M9 18l6-6-6-6"/></svg>';
+    h += '</div>';
+  }
+
   // ── PARCOIN WALLET ──
   var coinBalance = getParCoinBalance(pid);
   var coinLifetime = getParCoinLifetime(pid);
