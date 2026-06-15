@@ -147,6 +147,12 @@ function _rosterModel(p) {
     if (t >= weekAgo) weekCount++;
   });
   var online = !!(typeof onlineMembers !== "undefined" && onlineMembers && onlineMembers[p.id]);
+  // Cross-league surfacing (Founder: "viewing friends, e.g. if they are from other
+  // leagues"). Uses data already on the member doc (p.leagues) + the viewer's own
+  // leagues — no new collection, no rules change.
+  var myLeagues = (typeof currentProfile !== "undefined" && currentProfile && currentProfile.leagues) ? currentProfile.leagues : [];
+  var theirLeagues = Array.isArray(p.leagues) ? p.leagues : [];
+  var sharedLeagues = theirLeagues.filter(function(l){ return myLeagues.indexOf(l) !== -1; }).length;
   return {
     p: p,
     name: p.username || p.name || "Member",
@@ -155,7 +161,9 @@ function _rosterModel(p) {
     rounds: rounds.length,
     lastTs: lastTs,
     weekCount: weekCount,
-    online: online
+    online: online,
+    leagueCount: theirLeagues.length,
+    sharedLeagues: sharedLeagues
   };
 }
 
@@ -251,7 +259,8 @@ function _rosterRows(models) {
     var go = "Router.go('members',{id:'" + p.id + "'})";
     h += '<tr class="roster-row" tabindex="0" aria-label="' + escHtml(aria) + '" data-name="' + escHtml(m.name.toLowerCase()) + '" onclick="' + go + '" onkeydown="if(event.key===\'Enter\'){' + go + '}">';
     h += '<td class="roster-cell-av">' + renderAvatar(p, 40, false) + '</td>';
-    h += '<td><div class="roster-name">' + _rosterNameHtml(m.name) + (m.isFounder ? star : '') + '</div>' + (sub ? '<div class="roster-handle">' + sub + '</div>' : '') + '</td>';
+    var crossChip = (m.leagueCount > 1) ? '<span class="roster-leagues-chip" title="Also plays in other leagues">' + m.leagueCount + ' leagues' + (m.sharedLeagues > 1 ? ' · ' + m.sharedLeagues + ' shared' : '') + '</span>' : '';
+    h += '<td><div class="roster-name">' + _rosterNameHtml(m.name) + (m.isFounder ? star : '') + crossChip + '</div>' + (sub ? '<div class="roster-handle">' + sub + '</div>' : '') + '</td>';
     h += '<td class="roster-num">' + hcapCell + '</td>';
     h += '<td class="roster-num roster-col-rounds"><span class="roster-rounds">' + m.rounds + '</span></td>';
     h += '<td class="roster-col-activity"><span class="roster-activity">' + lastAct + '</span></td>';

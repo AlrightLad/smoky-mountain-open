@@ -95,7 +95,7 @@ Router.register("more", function() {
   h += section("Community", [
     {icon:icn('<path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6"/><path d="M22 11h-6"/>'), label:"Invite a Friend", sub:"Bring someone into the club", page:"invite", accent:true},
     {icon:icn('<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/>'), label:"My Leagues", sub:_myLeagueCount + " league" + (_myLeagueCount !== 1 ? "s" : "") + " · Create or join", page:"leagues", accent:true},
-    {icon:icn('<circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>'), label:"Find Players", sub:"Search by name, handicap, location", page:"findplayers"},
+    {icon:icn('<circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>'), label:"Find Players", sub:"Golfers across every league · add friends", page:"findplayers"},
     {icon:icn('<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>'), label:"Members", sub:PB.getPlayers().length + " Parbaughs", page:"members"},
     {icon:icn('<circle cx="9" cy="9" r="4"/><circle cx="15" cy="9" r="4"/><path d="M4 20c0-2.8 2.2-5 5-5h6c2.8 0 5 2.2 5 5"/>'), label:"Scramble Teams", sub:"2v2, 3v3, 4v4 W-L records", page:"scramble"},
     {icon:icn('<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>'), label:"Tee Times", sub:"Post and RSVP", page:"teetimes"},

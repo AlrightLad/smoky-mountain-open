@@ -633,14 +633,16 @@ input.s:disabled,
 .roster-table thead th{font-family:var(--font-mono);font-size:9.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute);text-align:left;padding:10px;border-bottom:1px solid var(--cb-chalk-3);white-space:nowrap}
 .roster-table th.roster-num,.roster-table td.roster-num{text-align:right}
 .roster-table th.roster-ctr,.roster-table td.roster-ctr{text-align:center}
-.roster-row{height:64px;cursor:pointer;border-bottom:1px solid var(--cb-chalk-3);transition:background var(--duration-fast) var(--ease-default)}
-.roster-row:hover{background:var(--cb-chalk-2)}
+.roster-row{height:64px;cursor:pointer;border-bottom:1px solid var(--cb-chalk-3);position:relative;transition:background var(--duration-fast) var(--ease-default),box-shadow var(--duration-fast) var(--ease-default)}
+.roster-row:hover{background:var(--cb-chalk-2);box-shadow:inset 3px 0 0 0 var(--cb-brass)}
+.roster-row:hover .roster-name{color:var(--cb-felt)}
 .roster-row:focus-visible{outline:2px solid var(--cb-brass);outline-offset:-2px}
 .roster-row td{padding:8px 10px;vertical-align:middle}
 .roster-cell-av{width:56px}
 .roster-name{font-family:var(--font-display);font-style:italic;font-weight:500;font-size:16px;color:var(--cb-ink);line-height:1.15;display:flex;align-items:center;gap:5px}
 .roster-handle{font-family:var(--font-mono);font-size:11px;color:var(--cb-mute);letter-spacing:0.3px;margin-top:3px}
-.roster-hcap{font-family:var(--font-display);font-weight:600;font-size:18px;color:var(--cb-ink);font-variant-numeric:tabular-nums}
+.roster-leagues-chip{display:inline-flex;align-items:center;font-family:var(--font-mono);font-size:8.5px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;color:var(--cb-brass);background:rgba(var(--cb-brass-rgb),0.10);border:1px solid rgba(var(--cb-brass-rgb),0.22);padding:2px 7px;border-radius:999px;margin-left:8px;line-height:1.4;white-space:nowrap}
+.roster-hcap{font-family:var(--font-display);font-weight:700;font-size:19px;color:var(--cb-felt);font-variant-numeric:tabular-nums}
 .roster-hcap--none{color:var(--cb-mute-2);font-size:15px}
 .roster-rounds{font-family:var(--font-mono);font-size:13px;color:var(--cb-charcoal);font-variant-numeric:tabular-nums}
 .roster-activity{font-family:var(--font-mono);font-size:11px;color:var(--cb-mute);letter-spacing:0.3px}
