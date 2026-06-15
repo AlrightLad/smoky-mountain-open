@@ -565,14 +565,15 @@ the SAME gold plate — diversify within the brass/H&B language or consolidate.)
   (grid of past drops w/ name + season + year + "first dropped" provenance). Owned ones still
   equip forever (grandfathered). Ties to the existing 8 rubber-hose decos (they become the
   first archive entries).
-- [ ] EARNED-FREE cosmetics (Founder: "titles for achievements + leveling, free" + "other
-  cosmetics like that even"): members EARN titles (and other types) FREE from achievements +
-  level milestones — equippable on earn, exactly like PL7 cabinet cosmetics + PL7b themes.
-  Many achievements already carry a `title:` field (data.js getAchievements: eagle_eye→"Eagle
-  Eye", parbaugh_veteran→"The Glue Guy", profile_complete→"The Complete Package") + reserved
-  titles (The Ace / Original Four / Commissioner) — WIRE these as free earned/equippable titles
-  in the shop earned tier (derive from achievements, exploit-proof model as PL7/PL7b). Add
-  level-milestone titles (Lv5/10/25/50/75/100). Ties to PL7c.
+- [~] EARNED-FREE cosmetics — TITLES DONE v8.25.198 (LIVE+V1): new "Earned Titles" shelf in
+  the Pro Shop renders the member's earned achievement titles (69 achievements carry `title:`)
+  as free struck-brass trophy plates, each equippable. DERIVED from PB.getAchievements
+  (exploit-proof — V1-proven: forged equip of an un-held title "Living Legend" REJECTED; held
+  Eagle Eye/Birdie King/etc. equip fine; special chars & , handled). equipEarnedTitle sets
+  equippedTitle + clears any buyable-title cosmetic. REMAINING: (a) explicit level-milestone
+  titles (Lv5/10/25/50/75/100, distinct from achievement titles); (b) extend earned-FREE to
+  other cosmetic TYPES (a marker/ring for select achievements) per "other cosmetics like that
+  even." Ties to PL7c.
 - [ ] NEW COSMETIC TYPES — Founder approved BOTH Club Crest + Bag Tag, with the hard
   constraint: "thoroughly thought out + properly implemented + NO COLLISION with other
   customizations." PREREQUISITE: author a CUSTOMIZATION SLOT MAP (every display surface +

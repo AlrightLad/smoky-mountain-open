@@ -338,6 +338,39 @@ function shopTitleSpanClass(item) {
   return "title-" + mat;
 }
 
+// Earned-FREE titles (Founder 2026-06-15: "there should still be titles for
+// achievements that they get for free and from leveling up"). The achievement
+// engine (data.js getAchievements) already carries a `title` on ~69 achievements;
+// a member's held achievements ARE their free titles. DERIVED (exploit-proof, same
+// model as PL7/PL7b) — a member can't claim a title without holding the achievement.
+function shopEarnedTitles() {
+  try {
+    var uid = (typeof currentUser !== "undefined" && currentUser) ? currentUser.uid : null;
+    if (!uid || typeof PB === "undefined" || !PB.getAchievements) return [];
+    var seen = {};
+    return (PB.getAchievements(uid) || []).filter(function (a) {
+      if (!a || !a.title || seen[a.title]) return false; seen[a.title] = 1; return true;
+    }).map(function (a) { return a.title; });
+  } catch (e) { return []; }
+}
+// Equip a free earned title (sets equippedTitle; clears any equipped buyable title
+// cosmetic so they never both show). Re-verifies earned server-of-truth (achievement)
+// before writing — a forged call can't equip an un-earned title.
+function equipEarnedTitle(name) {
+  if (!currentUser || !db) { Router.toast("Sign in required"); return; }
+  if (shopEarnedTitles().indexOf(name) === -1) { Router.toast("Earn it on the course first."); return; }
+  var cur = (currentProfile && currentProfile.equippedTitle) || "";
+  var next = (cur === name) ? "" : name;
+  var updates = { equippedTitle: next };
+  var eq = (currentProfile && currentProfile.equippedCosmetics) || {};
+  if (next && eq.title) { eq = Object.assign({}, eq, { title: null }); updates.equippedCosmetics = eq; }
+  db.collection("members").doc(currentUser.uid).set(updates, { merge: true }).catch(function () {});
+  if (currentProfile) { currentProfile.equippedTitle = next; if (updates.equippedCosmetics) currentProfile.equippedCosmetics = eq; }
+  Router.toast(next ? "Title equipped!" : "Title removed");
+  if (typeof updateProfileBar === "function") updateProfileBar();
+  Router.go("shop", {}, true);
+}
+
 Router.register("shop", function() {
   var uid = currentUser ? currentUser.uid : null;
   var balance = getParCoinBalance(uid);
@@ -629,6 +662,33 @@ Router.register("shop", function() {
     }
     h += '</div></div>';
   });
+
+  // ── Earned Titles — FREE, from achievements + leveling (Founder 2026-06-15:
+  //    "there should still be titles for achievements that they get for free and
+  //    from leveling up"). DERIVED from the member's held achievements (exploit-
+  //    proof, same model as PL7/PL7b) — each renders as an engraved trophy plate.
+  var _earnedTitles = (typeof shopEarnedTitles === 'function') ? shopEarnedTitles() : [];
+  var _eqTitle = (currentProfile && currentProfile.equippedTitle) || "";
+  h += '<div class="shop-shelf"><div class="shop-shelf__head"><span class="shop-shelf__title">Earned Titles</span><span class="shop-shelf__meta">Free — won on the course, never bought</span></div>';
+  h += '<div class="shop-shelf__rail">';
+  if (_earnedTitles.length) {
+    _earnedTitles.forEach(function(t) {
+      var eqd = _eqTitle === t;
+      var jt = String(t).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+      var c = '<div class="shop-item shop-item--commem' + (eqd ? ' shop-item--equipped' : '') + '">';
+      c += '<div class="shop-tier-chip shop-tier-chip--commem">Earned</div>';
+      c += '<div class="shop-surface-stage"><span class="title-engraved">' + escHtml(t) + '</span></div>';
+      c += '<div class="shop-item__name">' + escHtml(t) + '</div>';
+      c += '<div class="shop-item__desc">A title you earned on the course. Wears under your name.</div>';
+      if (eqd) c += '<div class="shop-item__state shop-item__state--equipped">Equipped</div>';
+      else c += '<button class="shop-item__equip" onclick="equipEarnedTitle(\'' + jt + '\')">Equip</button>';
+      c += '</div>';
+      h += c;
+    });
+  } else {
+    h += '<div class="shop-item shop-item--commem"><div class="shop-tier-chip shop-tier-chip--commem">Earned</div><div class="shop-item__desc" style="padding:14px 4px">No titles earned yet — log rounds, break scoring barriers, win events and your titles unlock as you play.</div><button class="shop-item__equip" onclick="Router.go(\'trophyroom\')">See achievements</button></div>';
+  }
+  h += '</div></div>';
 
   // ── The Trophy Cabinet — earned-only, glass front, the earn condition is
   //    the whole point (P10: every item states exactly how it's earned).
