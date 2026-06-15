@@ -208,7 +208,9 @@
 .bottom-nav button.a svg{stroke:var(--gold)}
 .bottom-nav button:hover{color:var(--cb-brass)}
 .bottom-nav button:hover svg{stroke:var(--cb-brass)}
-.bottom-nav button svg{width:22px;height:22px;stroke:var(--muted);fill:none;stroke-width:1.5;transition:stroke var(--duration-fast) var(--ease-default)}
+.bottom-nav button svg{width:23px;height:23px;stroke:var(--muted);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;transition:stroke var(--duration-fast) var(--ease-default)}
+/* active tab: slightly heavier stroke so the lit icon reads bolder, not just gold */
+.bottom-nav button.a svg{stroke-width:1.9}
 #mainApp{padding-bottom:calc(80px + max(env(safe-area-inset-bottom,20px),20px))}
 
 /* ═══════════════════════════════════════════════════════════════════════════
