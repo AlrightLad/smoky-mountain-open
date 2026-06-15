@@ -1343,10 +1343,19 @@ var PB = (function() {
     if (totalH2Hwins >= 10) achievements.push({id:"nemesis",name:"Nemesis",desc:"Win 10 H2H matchups",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l4 4-4 10-4-10 4-4z' fill='none' stroke='currentColor' stroke-width='1.2'/><circle cx='8' cy='7' r='1.5' fill='currentColor'/></svg>",xp:200,cat:"compete"});
     if (totalH2Hwins >= 25) achievements.push({id:"dominator",name:"Dominator",desc:"Win 25 H2H matchups",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"compete"});
 
-    // Event champion — check wins field OR trip champion IDs
-    var achEventWins = (player && player.wins >= 1) || getTrips().some(function(t){ return t.champion && (t.champion === pid || (player && player.claimedFrom && t.champion === player.claimedFrom)); });
-    if (achEventWins) achievements.push({id:"champion",name:"Champion",desc:"Win an event",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"compete"});
-    if (player && player.wins >= 3) achievements.push({id:"dynasty",name:"Dynasty",desc:"Win 3 events",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5' opacity='.3'/><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:1000,cat:"compete"});
+    // Event champion — v8.25.204 (PL7c RED-1 fix): derive ONLY from the
+    // SERVER-PROTECTED trip.champion (leadership-only write, firestore.rules),
+    // NOT the client-writable members.wins field. A member could self-write
+    // {wins:3} to forge the flagship Champion unlock (Green Jacket + Champion
+    // Sunday theme + a coin payout) — the unlock guards faithfully re-derived
+    // a forged "earned" because the INPUT was forgeable. Prod-verified safe:
+    // 0 members have wins>=1 (the legit increment silent-fails when closer!=
+    // winner), and the real champion is covered by trip.champion — so wins was
+    // purely the forge vector. trip.champion is both trustworthy AND the actual
+    // source. Count champion trips for champion(>=1) + dynasty(>=3).
+    var _eventWins = getTrips().filter(function(t){ return t.champion && (t.champion === pid || (player && player.claimedFrom && t.champion === player.claimedFrom)); }).length;
+    if (_eventWins >= 1) achievements.push({id:"champion",name:"Champion",desc:"Win an event",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:500,cat:"compete"});
+    if (_eventWins >= 3) achievements.push({id:"dynasty",name:"Dynasty",desc:"Win 3 events",icon:"<svg viewBox='0 0 16 16' width='14' height='14'><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='currentColor' stroke='currentColor' stroke-width='.5' opacity='.3'/><path d='M8 1l2.2 4.5 4.8.7-3.5 3.4.8 4.9L8 12l-4.3 2.5.8-4.9L1 6.2l4.8-.7L8 1z' fill='none' stroke='currentColor' stroke-width='1'/></svg>",xp:1000,cat:"compete"});
 
     // --- IMPROVEMENT --- (exclude scramble — team scores would skew averages)
     var indivRounds = rounds.filter(function(r){return r.format !== "scramble" && r.format !== "scramble4";});
