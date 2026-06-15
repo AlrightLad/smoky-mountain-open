@@ -203,6 +203,13 @@ var PRO_SHOP_CATALOG = [
   {id:"border_deco_bramble",   deco:true, lvl:4, cat:"border", tier:"locker", name:"Bramble Rose",     price:2000, preview:"#7b2d3a", desc:"Claret and cream roses wound through forest-green thorns — the Parbaughs rose-and-bramble in full bloom. Our signature frame."},
   {id:"border_deco_autumn",    deco:true, lvl:6, cat:"border", tier:"locker", name:"Autumn Nine",      price:2400, preview:"#c2622a", desc:"Maple and oak leaves in burnt-orange and rust garland the rim, an acorn at six o'clock. A seasonal drop for the fall golf stretch."}
 ];
+// v8.25.18x (Founder PL8): cosmetics were "still too cheap for the economy" after
+// the prior re-price. Raise the active catalog ~1.5x, rounded to the nearest 50
+// (free + earnedBy items stay 0). ONE post-def pass so both the shop card AND
+// purchaseCosmetic use the new price. Makes the prestige pieces feel earned and
+// gives the ParCoin sink real weight (cosmetic-only, no cash — no gambling-leg
+// impact). Tune the multiplier here if the Founder wants it higher/lower.
+PRO_SHOP_CATALOG.forEach(function(i){ if (i.price > 0) i.price = Math.round(i.price * 1.5 / 50) * 50; });
 // Legacy items kept ON SALE in the Paint Locker (the best ~15); every other
 // legacy item is retired from sale. Owned items are grandfathered forever —
 // ownership and equip are untouched by retirement.
