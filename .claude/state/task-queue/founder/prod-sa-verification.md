@@ -33,7 +33,7 @@ That's it. Tell the agent "prod SA is in place" (or it will detect the file).
 ### CLI alternative (if you prefer a command)
 ```
 gcloud iam service-accounts keys create scripts/.secrets/prod-service-account.json ^
-  --iam-account="firebase-adminsdk-fbsvc@parbaughs.iam.gserviceaccount.com" ^
+  --iam-account="<PROD_SA_EMAIL>" ^
   --project=parbaughs
 ```
 (If that exact service-account email errors, run `gcloud iam service-accounts list --project=parbaughs`
