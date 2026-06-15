@@ -543,7 +543,13 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
 - [ ] PL3 — FEED FLAIR enhanced + redesigned (the flair cat)
 - [ ] PL4 — TITLES: add more + enhance them
 - [ ] PL5 — BALL MARKERS + TEE MARKERS redesigned (currently lazy)
-- [ ] PL6 — STORE-page caddies float outside the ring + weird symbols. DISTINCT from PL12 (that fixed the Settings .theme-row__chip--photo). The store caddie is shop.js:499 — a pb-caddy-live <img> (border-radius:50% + 2px border + breathing anim) directly in .shop-surface-stage with NO clip wrapper. Needs: visual diagnosis of the "symbols" (likely the Caddy tier-chip or the flag onerror-fallback) + contain the breathing layer (clip wrapper / cap the translate). Visual-iterate next window.
+- [x] PL6 — DONE v8.25.192 (LIVE+V1). The store Caddies shelf put the border (the "ring")
+  directly on the breathing .pb-caddy-live <img> with NO clip wrapper, so the will-change
+  compositor layer wobbled the whole bordered circle (the "float"); its onerror swapped the
+  portrait for a brass flag SVG (the "weird symbols"). FIX: mirror the accepted Settings chip —
+  a STATIC .shop-caddie-ring wrapper holds border + overflow:hidden + clip-path:circle +
+  isolation, photo breathes WITHIN; onerror → clean caddie initial (not the flag). V1-verified
+  on staging (.claude/state/cap-pl6/): 4 portraits in fixed rings, 0 flag fallbacks.
 - [x] PL7 — UNLOCK METHOD — DONE v8.25.191 (LIVE on prod + V1-proven). Root cause: earnedBy
   items rendered "<earnedBy>. Not for sale." with NO fulfillment logic, so a qualifying member
   could never wear what they earned. FIX (shop.js): EARN_BY_ACHIEVEMENT maps each honor → the
@@ -566,6 +572,27 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
 - [~] PL13 — PARTIAL v8.25.187: removed the redundant "Cosmetics shop" button (dup of More + profile wallet); balance glance kept. Further shorten/dedup pass pending.
 - [x] PL14/PL15 — DONE v8.25.188 (LIVE, evidence cap-pg-twilight). ROOT CAUSE: .pb-card--felt (the felt focal-hero material used app-wide: home/partygames/bounties/profile/shop/standings/trips/wrapped) + the standings leader band used a HARDCODED green gradient, ignoring the per-theme --cb-felt token — so every felt hero stayed forest-green on EVERY theme (the Twilight clash). FIX: both now derive from var(--cb-felt) via color-mix. Re-captured Twilight partygames: hero now NAVY (was green); brass CTA already per-theme. Fixes ALL felt heroes x all 7 themes in one change. NOTE: theme-sweep (125 caps, .claude/state/theme-sweep/) is the PL16 theme evidence — still to review the rest for any other clash.
 - [~] PL15 — COLOR-CLASH DONE v8.25.188 (felt fix): the green clash was the hardcoded felt hero, now per-theme; the CTA buttons already use var(--gold)=--cb-brass (per-theme, verified brass on twilight partygames). REMAINING: the Wagers-behind-Bounty IA reorg + any rubber-hose rebrand of the action buttons (design/taste, defer).
+- [x] PL7b — ACTIVITY-LOCKED THEME UNLOCKS auto-fire + notify + exploit-proof — DONE v8.25.193
+  (LIVE+V1). Root cause: theme.js grantThemeUnlock was a STUB ("wired in Ship 0d-ii") — the
+  unlock path was NEVER built, so champion_sunday/bourbon_room/course_record stayed locked
+  forever (Mr Parbaugh won an event, theme still locked). FIX (theme.js): THEME_UNLOCK_ACHIEVEMENT
+  maps each unlock theme → the achievement that proves it (champion_sunday←champion,
+  course_record←sub80, bourbon_room←veteran); getUnlockedThemeIds DERIVES the unlocked set from
+  PB.getAchievements (returns null when not yet computable so a stale/forged cache never overrides
+  a real empty); reconcileThemeUnlocks auto-detects newly-earned themes vs members/{uid}.
+  themesNotified and fires a TOAST + confetti + a notification-panel doc (announce-once);
+  scheduleThemeUnlockCheck runs it on login (retries cover async data load); settings picker +
+  saveThemeChoice both read the DERIVED set. EXPLOIT-PROOF: unlock is derived from achievements
+  (rules-protected — champion comes from commissioner-set trip data, not a self-writable flag),
+  NOT from the client-writable unlockedThemes cache; saveThemeChoice REJECTS applying a locked
+  unlock-tier theme (V1-proven: forged apply of course_record w/ no achievement → rejected, theme
+  stayed clubhouse). NOTE (Founder asked "shouldn't unlocks be server-side"): for COSMETICS the
+  client paints its own DOM regardless of any server, so server-enforcing the *visual* is
+  impossible/theater — what matters is the DATA the unlock reads, which IS server-protected for the
+  meaningful case (champion). True server-authoritative enforcement is reserved for VALUE (the
+  Stage-2 cash economy), which is designed that way. V1: .claude/state/cap-pl7b/ (champion stub →
+  champion_sunday unlocks; real member shows course_record unlocked from a real sub-80; exploit
+  guard rejects). Caddy Note added. Sibling of PL7.
 - [ ] PL16 — FULL E2E of EVERY function (play a round, change profile pic, every single function) with extensive SCREENSHOTS + confirmed-working EVIDENCE (not lint/code-check); resolve every error found as you go
 - [ ] Swing-animation page rework (#67, DO LAST among features) — Cuphead rubber-hose rebuild
 - [ ] Level-100 exclusive animated rubber-hose THEME (#75, end) — vastly different, on-page cartoons + animations; extensive critique loop

@@ -199,6 +199,14 @@ function reconcileThemeFromProfile(profile) {
    completes (or immediately if no auth / no db). */
 function saveThemeChoice(themeId) {
   if (!THEMES[themeId]) return Promise.reject(new Error("Invalid theme: " + themeId));
+  // PL7b — never APPLY a locked unlock-tier theme. The picker already hides locked
+  // picks; this guards a direct API call (defense-in-depth against malicious
+  // "unlock"). Unlock status is DERIVED from achievements (isThemeUnlocked), never
+  // from a client-writable flag — so a member can't self-grant by editing their doc.
+  if (THEMES[themeId].availability === "unlock" && !isThemeUnlocked(themeId)) {
+    _logWarn("[Theme] Blocked apply of locked theme: " + themeId);
+    return Promise.reject(new Error("Theme locked: " + themeId));
+  }
   applyTheme(themeId);
   if (typeof db !== "undefined" && typeof currentUser !== "undefined" && currentUser) {
     return db.collection("members").doc(currentUser.uid).update({ theme: themeId });
@@ -206,14 +214,139 @@ function saveThemeChoice(themeId) {
   return Promise.resolve();
 }
 
-/* grantThemeUnlock — placeholder for Ship 0d-ii. Theme unlocks will live
-   in a members/{uid}.unlockedThemes array (or subcollection) whose schema
-   is defined by the unlock-flow work in 0d-ii. For now, log and stub. */
+/* ───────────────────────────────────────────────────────────────────────────
+   ACTIVITY-LOCKED THEME UNLOCKS (PL7b, v8.25.x)
+
+   The three unlock-tier themes were never wired — grantThemeUnlock was a stub, so
+   they stayed locked forever even after a member earned them (the Founder: "won an
+   event but Champion Sunday is still locked"). They now unlock the moment the
+   qualifying activity is recorded, AUTO + with a notification, and are EXPLOIT-PROOF.
+
+   How: each unlock-tier theme is gated on a real ACHIEVEMENT id (PB.getAchievements,
+   the Trophy-Room engine — derived from rounds/standings/trip data). Deriving the
+   unlock from achievements rather than a client-writable flag is the anti-exploit
+   guarantee: the picker (settings.js) and the apply-guard (saveThemeChoice) both
+   read the DERIVED truth, so a member can't self-grant by writing a field. champion
+   comes from the commissioner-set trip champion (not self-declarable); the score /
+   tenure gates ride the app's existing self-reported-rounds trust model
+   (cosmetic-only, no economy impact).
+   ─────────────────────────────────────────────────────────────────────────── */
+var THEME_UNLOCK_ACHIEVEMENT = {
+  champion_sunday: "champion",  // win an event / season (worn after a win)
+  course_record:   "sub80",     // card a sub-80 (18) — rarest, scoring-based ledger
+  bourbon_room:    "veteran"    // 50 rounds logged — tenure / time put in
+};
+
+// The achievement ids the signed-in member currently holds (live, derived).
+// Returns null if not computable yet (no auth / data not loaded) — callers treat
+// null as "unknown, try later" and never as "nothing earned" (so a cold-load
+// never falsely shows a theme as locked-then-unlocked).
+function _memberAchievementIds() {
+  try {
+    var uid = (typeof currentUser !== "undefined" && currentUser) ? currentUser.uid : null;
+    if (!uid || typeof PB === "undefined" || !PB.getAchievements) return null;
+    return (PB.getAchievements(uid) || []).map(function (a) { return a && a.id; });
+  } catch (e) { return null; }
+}
+
+// Derived set of unlock-tier theme ids this member has EARNED. Pass achievement
+// ids to reuse a computed list, or omit to read live. Returns null (NOT []) when
+// achievements aren't computable yet (no auth / data still loading) so callers can
+// distinguish "earned nothing" (authoritative []) from "don't know yet" (null →
+// fall back to the cache placeholder). This prevents a stale/forged unlockedThemes
+// cache from ever overriding a real, computed "you've earned nothing".
+function getUnlockedThemeIds(achievementIds) {
+  var ids = achievementIds || _memberAchievementIds();
+  if (!ids) return null;
+  var unlocked = [];
+  Object.keys(THEME_UNLOCK_ACHIEVEMENT).forEach(function (themeId) {
+    if (ids.indexOf(THEME_UNLOCK_ACHIEVEMENT[themeId]) !== -1) unlocked.push(themeId);
+  });
+  return unlocked;
+}
+
+// Is a single theme available to this member? Default themes always; unlock-tier
+// only when its achievement is held (derived). Unknown-yet derives as locked.
+function isThemeUnlocked(themeId, achievementIds) {
+  if (!THEMES[themeId]) return false;
+  if (THEMES[themeId].availability === "default") return true;
+  return (getUnlockedThemeIds(achievementIds) || []).indexOf(themeId) !== -1;
+}
+
+/* reconcileThemeUnlocks — the AUTO-UNLOCK + NOTIFY pass. Detects unlock-tier
+   themes that are newly EARNED (derived) vs already-announced
+   (members/{uid}.themesNotified) and, for each new one, fires a toast +
+   confetti + a notification-panel entry, then records it so it never re-fires.
+   Idempotent + safe to call repeatedly. ADDS only, never revokes — so a transient
+   pre-data-load state just delays the announce. Tampering with themesNotified only
+   suppresses the toast; it never grants a theme (access is derived). */
+function reconcileThemeUnlocks() {
+  try {
+    if (typeof currentUser === "undefined" || !currentUser) return;
+    if (typeof currentProfile === "undefined" || !currentProfile) return;
+    var achIds = _memberAchievementIds();
+    if (!achIds) return; // not computable yet — a later scheduled pass will catch it
+    var earned = getUnlockedThemeIds(achIds);
+    if (!earned.length) return;
+    var notified = Array.isArray(currentProfile.themesNotified) ? currentProfile.themesNotified.slice() : [];
+    var fresh = earned.filter(function (id) { return notified.indexOf(id) === -1; });
+    if (!fresh.length) return;
+
+    var merged = notified.concat(fresh);
+    currentProfile.themesNotified = merged;
+    // unlockedThemes is kept as a cache (back-compat + offline read); the picker's
+    // authority is still the derived set, so this write grants nothing on its own.
+    var cache = Array.isArray(currentProfile.unlockedThemes) ? currentProfile.unlockedThemes.slice() : [];
+    earned.forEach(function (id) { if (cache.indexOf(id) === -1) cache.push(id); });
+    currentProfile.unlockedThemes = cache;
+    try {
+      if (typeof db !== "undefined") {
+        db.collection("members").doc(currentUser.uid).set({ themesNotified: merged, unlockedThemes: cache }, { merge: true }).catch(function () {});
+      }
+    } catch (e) {}
+
+    fresh.forEach(function (id, i) {
+      var name = (THEMES[id] && THEMES[id].name) || id;
+      setTimeout(function () {
+        try { if (typeof Router !== "undefined" && Router.toast) Router.toast("New theme unlocked: " + name + " — Settings → Display"); } catch (e) {}
+        try { if (typeof window !== "undefined" && window.pbCelebrate) window.pbCelebrate({ key: "theme_unlock_" + id, once: true }); } catch (e) {}
+        // Persistent notification-panel entry (self-write: fromUserId==self per rules).
+        try {
+          if (typeof db !== "undefined" && typeof fsTimestamp === "function") {
+            db.collection("notifications").add({
+              toUserId: currentUser.uid, fromUserId: currentUser.uid, type: "theme_unlock",
+              title: "New theme unlocked", dest: "settings",
+              message: "You unlocked the " + name + " theme — wear it in Settings → Display.",
+              read: false, createdAt: fsTimestamp()
+            }).catch(function () {});
+          }
+        } catch (e) {}
+      }, 700 + i * 1700);
+    });
+  } catch (e) { _logWarn("[Theme] reconcileThemeUnlocks: " + (e && e.message)); }
+}
+
+/* scheduleThemeUnlockCheck — run the reconcile a few times after app entry, since
+   the achievement engine needs rounds/trips/standings loaded (which arrives async
+   after sign-in). Idempotent + announce-once, so the repeats are harmless and just
+   guarantee the check fires once everything (incl. trip-champion data) has landed. */
+function scheduleThemeUnlockCheck() {
+  [3500, 9000, 18000].forEach(function (ms) {
+    setTimeout(function () { reconcileThemeUnlocks(); }, ms);
+  });
+}
+
+/* grantThemeUnlock — retained for any future explicit-grant flow; writes the
+   unlockedThemes cache. Access remains DERIVED from achievements, so this is a
+   convenience cache, not an authority. */
 function grantThemeUnlock(userId, themeId) {
   if (!THEMES[themeId]) return Promise.reject(new Error("Invalid theme: " + themeId));
-  _logWarn("[Theme] grantThemeUnlock stub: " + userId + " → " + themeId + " (wired in Ship 0d-ii)");
-  // TODO(0d-ii): persist unlock once unlock storage schema is defined.
-  return Promise.resolve();
+  if (typeof db === "undefined" || !userId) return Promise.resolve();
+  try {
+    return db.collection("members").doc(userId).set(
+      { unlockedThemes: firebase.firestore.FieldValue.arrayUnion(themeId) }, { merge: true }
+    );
+  } catch (e) { return Promise.resolve(); }
 }
 
 // ── Expose globals (matches bottomsheet/transitions/haptics/loading pattern) ──
@@ -229,6 +362,12 @@ if (typeof window !== "undefined") {
   window.reconcileThemeFromProfile = reconcileThemeFromProfile;
   window.saveThemeChoice = saveThemeChoice;
   window.grantThemeUnlock = grantThemeUnlock;
+  // PL7b — activity-locked theme unlocks (derived, auto-notify, exploit-proof).
+  window.THEME_UNLOCK_ACHIEVEMENT = THEME_UNLOCK_ACHIEVEMENT;
+  window.getUnlockedThemeIds = getUnlockedThemeIds;
+  window.isThemeUnlocked = isThemeUnlocked;
+  window.reconcileThemeUnlocks = reconcileThemeUnlocks;
+  window.scheduleThemeUnlockCheck = scheduleThemeUnlockCheck;
 }
 
 // Run initTheme as early as possible — belt + suspenders with the no-flash

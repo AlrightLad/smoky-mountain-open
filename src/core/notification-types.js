@@ -83,6 +83,8 @@ window.NOTIFICATION_META = {
   reinstatement:    { cluster: "admin",  page: "settings" },
   report:           { cluster: "admin",  page: "admin" },
   feature_request:  { cluster: "misc",   page: "admin" },
+  // PL7b — activity-locked theme unlock (Champion Sunday, etc.) → Settings → Display.
+  theme_unlock:     { cluster: "round",  page: "settings" },
   welcome:          { cluster: "misc",   page: "home" }
 };
 

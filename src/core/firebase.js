@@ -671,6 +671,10 @@ if (firebaseAvailable && auth) {
         }
         // Apply theme preference from Firestore profile (migrates legacy .appearance if present)
         if (typeof reconcileThemeFromProfile === "function") reconcileThemeFromProfile(currentProfile);
+        // PL7b — once league data lands (async), auto-unlock + notify any earned
+        // unlock-tier themes (Champion Sunday after a win, etc.). Self-scheduled
+        // retries cover the data-load delay; announce-once via themesNotified.
+        if (typeof scheduleThemeUnlockCheck === "function") scheduleThemeUnlockCheck();
         enterApp();
         // Start real-time profile listener — keeps currentProfile in sync across devices/sessions
         if (window._memberProfileUnsub) window._memberProfileUnsub();

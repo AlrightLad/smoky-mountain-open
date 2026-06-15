@@ -130,7 +130,21 @@ Router.register("settings", function(params) {
   // literal preview of each theme's palette, permitted like Visual Reference
   // hole-dots. MUST stay in sync with the base.css [data-theme] blocks.
   var _activeThemeId = (typeof getCurrentTheme === "function") ? getCurrentTheme() : "clubhouse";
-  var _unlockedThemes = (typeof currentProfile !== "undefined" && currentProfile && Array.isArray(currentProfile.unlockedThemes)) ? currentProfile.unlockedThemes : [];
+  // PL7b — the unlocked set is DERIVED from achievements (exploit-proof: a member
+  // can't self-grant by writing a flag), not read from the client-writable
+  // unlockedThemes array. Falls back to the cached array only if the derive isn't
+  // computable yet (pre-data-load). Also runs the auto-unlock+notify reconcile here
+  // so opening Display catches a just-earned theme immediately.
+  if (typeof reconcileThemeUnlocks === "function") { try { reconcileThemeUnlocks(); } catch (e) {} }
+  // Derived (authoritative) unlock set. getUnlockedThemeIds returns null ONLY when
+  // achievements aren't computable yet — then (and only then) we use the cached
+  // unlockedThemes as a brief loading placeholder. A computed [] (earned nothing) is
+  // authoritative and ignores the cache, so a stale/forged cache can't show unlocks.
+  var _derivedUnlocks = (typeof getUnlockedThemeIds === "function") ? getUnlockedThemeIds() : null;
+  var _unlockedThemes = _derivedUnlocks;
+  if (_unlockedThemes == null) {
+    _unlockedThemes = (typeof currentProfile !== "undefined" && currentProfile && Array.isArray(currentProfile.unlockedThemes)) ? currentProfile.unlockedThemes : [];
+  }
   var _themes = (typeof getAvailableThemes === "function") ? getAvailableThemes(_unlockedThemes) : [];
   disp += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Theme</div><div class="set-row__desc">Seven editorial themes. Four ready today, three to earn. Your pick follows you to any device you sign into.</div></div></div>';
   disp += '<div class="theme-picker" role="radiogroup" aria-label="Theme">';
