@@ -34,17 +34,23 @@ presentation.** The two are complementary, never competing:
 - **BRAND COHESIVENESS IS PARAMOUNT** — every asset must read as one of these two
   lanes, in the palette below, never a third generic style.
 
-## Palette (use THESE, not generic luxury gold)
-- **Felt green** — the signature (deep tournament-felt / forest green). `--cb-felt`.
-- **Claret / burgundy red** — the accent (Sunday-red, the rose). Our red is claret,
-  not fire-engine.
-- **Brass / antique gold** — hardware + metal, RESTRAINED (not "super old school"
-  blasted gold; a little catches the light). `--cb-brass`.
-- **Cream / warm paper** — the ground/canvas. `--cb-canvas`.
-- **Ink** — near-black text.
-- Tour-lane neutrals: tournament white, tour navy, charcoal/grey.
-- AVOID: bright/neon anything, generic yellow-gold "medal" gradients, Olympic/Roman
-  laurel-gold, cold pure greys as a primary.
+## Palette — EXACT hex values (from src/styles/base.css :root, Clubhouse default —
+## verified current 2026-06-15; use these literal values in prompts so gen art MATCHES the app)
+- **Felt green `#0F3D2E`** (`--cb-felt`) — the signature deep billiard/tournament-felt green
+  (dark hero surfaces, the brand's anchor). Mid-green `#2F4A3A` (`--cb-green`), moss `#5A7D4E`.
+- **Claret / burgundy `#8E3A3A`** (`--cb-claret`) — the red accent (Sunday-red + the rose).
+  Ours is muted claret, NOT fire-engine red.
+- **Antique brass `#B4893E`** (`--cb-brass`) — hardware + metal, RESTRAINED (a little catches
+  the light; NOT bright yellow gold, NOT blasted "old-school" gold, NOT a shiny medal).
+- **Cream canvas `#E7E0CD`** (`--cb-canvas`) — the warm page ground. Brightest paper `#FCFAF5`
+  (`--cb-paper`). Sand `#C9B68A` (`--cb-sand`).
+- **Ink `#14130F`** (`--cb-ink`) — near-black text. Slate `#5A6B78` (`--cb-slate`).
+- Tour-lane neutrals (the H&B competing-kit colorway): tournament white, tour navy, charcoal.
+- NOTE: the 6 OTHER themes recolor these tokens (e.g. Bluebird → navy/tour-blue brass, Azalea →
+  rose). For brand-IDENTITY art generate in the DEFAULT Clubhouse palette above; the app
+  re-tints per theme via the tokens.
+- AVOID: bright/neon anything, yellow-gold "medal" gradients, Olympic/Roman laurel-gold,
+  cold pure greys as a primary, fire-engine red.
 
 ## The mark + motifs
 - **P+rose mark:** a serif capital **P** with a white **rose** climbing through it.
