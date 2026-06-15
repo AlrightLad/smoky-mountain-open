@@ -25,7 +25,10 @@ directive (visual-verified): v8.25.207 deco flush-fit (per-deco overlay %) + no-
 overscroll-contain; v8.25.208 caddie breathing-bob float fix. Loop order: foundational
 bugs → brand/merch/cosmetic art → HQ desktop → UX/IA → features → full E2E.
 Remaining FOUNDATIONAL bugs (next, visual-verified):
-- [ ] Messages thread: input bar + Send button cut off at the bottom (safe-area/nav).
+- [x] Messages thread: input bar + Send cut off — FIXED v8.25.209 (LIVE+V1): hid the tab
+  bar on dm-thread/chat (full-screen thread w/ Back) + dropped the under-sized 66px nav-
+  reserve + interactive-widget=resizes-content for the keyboard. V1: composer flush at the
+  bottom (728→805 of 844), nav gone, Send in bounds, no clip.
 - [ ] Calendar: scheduled-rounds + range dots overflow off the page edge.
 - [ ] SVG nav icons (Home/Play/Courses/Events/More) → 9.5.
 - [ ] Scorecard (shareable): colorway + cosmetics shine; hole-by-hole 9-over-9 (not sideways
