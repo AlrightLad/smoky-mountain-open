@@ -96,6 +96,16 @@ var COSMETICS_CATALOG = [
   {id:"title_hot_streak",    cat:"title", name:"Hot Streak",          price:800, desc:"On fire lately, rounds keep getting better",     css:"", preview:"#ef4444"},
   {id:"title_sandbagger",    cat:"title", name:"Sandbagger",          price:1000, desc:"Handicap says 25, plays like a 15. We see you.", css:"", preview:"var(--gold)"},
   {id:"title_course_legend", cat:"title", name:"Course Legend",       price:1000, desc:"Owns a course, everyone knows your name there", css:"", preview:"var(--gold)"},
+  // PL4 — more on-brand titles (matched voice + price scale). Distinct accent
+  // colours give the shelf variety; each renders as the engraved .title-plain chip.
+  {id:"title_the_closer",    cat:"title", name:"The Closer",          price:800, desc:"Never met a clutch putt they didn't drain",        css:"", preview:"var(--gold)"},
+  {id:"title_fairway_finder",cat:"title", name:"Fairway Finder",      price:600, desc:"Splits every fairway, allergic to the rough",      css:"", preview:"#3f7d4f"},
+  {id:"title_wind_cheater",  cat:"title", name:"Wind Cheater",        price:700, desc:"Flights it low when the flags are snapping",       css:"", preview:"#5b7c99"},
+  {id:"title_birdie_hunter", cat:"title", name:"Birdie Hunter",       price:800, desc:"Pin-seeking missile, always firing at the flag",    css:"", preview:"#c0392b"},
+  {id:"title_comeback_kid",  cat:"title", name:"Comeback Kid",        price:700, desc:"Down after nine, dangerous on the back",           css:"", preview:"#b4893e"},
+  {id:"title_mr_consistent", cat:"title", name:"Mr. Consistent",      price:600, desc:"Same number on the card, every single time",       css:"", preview:"#6b7280"},
+  {id:"title_dew_sweeper",   cat:"title", name:"Dew Sweeper",         price:500, desc:"First group off, dew still on the grass",          css:"", preview:"#7da08a"},
+  {id:"title_the_diplomat",  cat:"title", name:"The Diplomat",        price:500, desc:"Keeps the group chat civil. Mostly.",              css:"", preview:"#818cf8"},
   {id:"title_big_spender",lvl:5,    cat:"title", name:"Big Spender",         price:1500, desc:"ParCoins flow like water from your wallet",       css:"", preview:"var(--gold)"},
   {id:"title_the_ace",       cat:"title", name:"The Ace",             price:0,   desc:"Reserved, awarded for a hole-in-one",            css:"", preview:"#FFD700", reserved:true},
   {id:"title_founding_four", cat:"title", name:"The Original Four",   price:0,   desc:"Reserved, founding members only",                css:"", preview:"var(--gold)", reserved:true},
@@ -220,7 +230,11 @@ PRO_SHOP_CATALOG.forEach(function(i){ if (i.price > 0) i.price = Math.round(i.pr
 // .ring-* classes + playerRingClass mappings remain so they still equip/render).
 // Kept + re-skinned to MATERIAL: pulse_gold → brushed brass + slow gleam;
 // shimmer (ice-diamond) stays (on-brand cool sparkle, not neon).
-var PAINT_LOCKER_KEEP = ["border_pulse_gold","border_shimmer","banner_classic","banner_camo_pair","banner_masters_pair","banner_azalea_pair","banner_usga_pair","banner_dark_pair","banner_light_pair","banner_champ_pair","card_gold_foil","card_vintage"];
+var PAINT_LOCKER_KEEP = ["border_pulse_gold","border_shimmer","banner_classic","banner_camo_pair","banner_masters_pair","banner_azalea_pair","banner_usga_pair","banner_dark_pair","banner_light_pair","banner_champ_pair","card_gold_foil","card_vintage",
+  // PL4 — the 8 new titles live in COSMETICS_CATALOG; keep them OFF the retirement
+  // pass (line ~266) so they render on the Titles shelf (line ~621) with the new
+  // premium materials. The pre-existing legacy titles stay retired (superseded).
+  "title_the_closer","title_fairway_finder","title_wind_cheater","title_birdie_hunter","title_comeback_kid","title_mr_consistent","title_dew_sweeper","title_the_diplomat"];
 var PRO_SHOP_TIERS = {
   range:   {label:"Range Bucket"},
   proshop: {label:"Pro Shop"},
@@ -300,6 +314,25 @@ function shopHasEarned(itemId) {
     if (!u || typeof PB === "undefined" || !PB.getAchievements) return false;
     return (PB.getAchievements(u) || []).some(function(a) { return a && a.id === need; });
   } catch (e) { return false; }
+}
+
+// PL4 (v8.25.x) — title MATERIAL in the brass × Holderness&Bourne house style.
+// Every title wears a real collectible material — struck-brass plate / hard-enamel
+// pin / embossed leather / foil-blocked cardstock — instead of the old flat pill,
+// so the Titles shelf reads as a crafted, brand-cohesive collection. Assigned by
+// character; price-tier default. Returns the full <span> class (special pc15/37/38
+// keep their character treatments; pc14/36 keep their dedicated plate/leather-tag).
+var TITLE_MATERIAL = {
+  title_early_bird: "enamel", title_night_owl: "enamel", title_hot_streak: "enamel", title_birdie_hunter: "enamel", pc16_postman: "enamel",
+  title_grinder: "engraved", title_sharpshooter: "engraved", title_course_legend: "engraved", title_big_spender: "engraved", title_the_closer: "engraved", title_sandbagger: "engraved",
+  title_road_warrior: "leather", title_iron_will: "leather", title_fairway_finder: "leather", title_comeback_kid: "leather", title_wind_cheater: "leather",
+  title_mr_consistent: "foil", title_the_diplomat: "foil", title_dew_sweeper: "foil"
+};
+function shopTitleSpanClass(item) {
+  var special = { pc15_cart_path: "title-plain title-plain--road", pc37_sandbagger: "title-plain title-plain--wax", pc38_mulligan: "title-plain title-plain--coin" }[item.id];
+  if (special) return special;
+  var mat = TITLE_MATERIAL[item.id] || (item.price >= 900 ? "engraved" : item.price >= 600 ? "enamel" : "leather");
+  return "title-" + mat;
 }
 
 Router.register("shop", function() {
@@ -465,12 +498,11 @@ Router.register("shop", function() {
       // plate as pc14, so the two priciest title plates looked identical).
       var _plateCls = item.id === 'pc36_member_tag' ? 'title-tag-leather' : 'title-engraved';
       var _plateText = item.id === 'pc36_member_tag' ? 'Member No. 7' : 'Grinder';
-      // v8.24.77 — plain titles now render as a struck engraved chip (was flat
-      // italic text — identical for every title). pc15/37/38 get a glyph.
-      var _tMod = item.id === 'pc15_cart_path' ? ' title-plain--road' : item.id === 'pc37_sandbagger' ? ' title-plain--wax' : item.id === 'pc38_mulligan' ? ' title-plain--coin' : '';
+      // PL4 — premium material per title (brass × H&B house style: brass plate /
+      // enamel pin / embossed leather / foil card), replacing the flat pill.
       var _titleEl = item.plate
         ? '<span class="' + _plateCls + '">' + _plateText + '</span>'
-        : '<span class="title-plain' + _tMod + '" style="--ti:' + item.preview + '">' + escHtml(item.name) + '</span>';
+        : '<span class="' + shopTitleSpanClass(item) + '" style="--ti:' + item.preview + '">' + escHtml(item.name) + '</span>';
       c += '<div style="padding:4px 0 8px;display:flex;flex-direction:column;align-items:center;gap:5px"><div style="font-size:12px;font-weight:700;color:var(--cream)">' + escHtml(_myName) + '</div>' + _titleEl + '</div>';
     }
     c += '<div class="shop-item__name">' + item.name + '</div>';
@@ -840,7 +872,7 @@ function shopPreviewCosmetic(itemId) {
   } else if (item.cat === 'title' || item.cat === 'nameplate') {
     var titleEl = item.plate
       ? '<span class="' + (item.id === 'pc36_member_tag' ? 'title-tag-leather' : 'title-engraved') + '">' + escHtml(item.id === 'pc36_member_tag' ? 'Member No. 7' : 'Grinder') + '</span>'
-      : '<span class="title-plain" style="--ti:' + (item.preview || 'var(--cb-brass)') + '">' + escHtml(item.name) + '</span>';
+      : '<span class="' + (typeof shopTitleSpanClass === 'function' ? shopTitleSpanClass(item) : 'title-plain') + '" style="--ti:' + (item.preview || 'var(--cb-brass)') + '">' + escHtml(item.name) + '</span>';
     stage = '<div style="text-align:center;display:flex;flex-direction:column;align-items:center;gap:9px"><div style="font-size:16px;font-weight:700;color:var(--cb-ink)">' + escHtml(myName) + '</div>' + titleEl + '</div>';
   } else {
     var glyph = (typeof pbMarkerGlyph === 'function') ? pbMarkerGlyph(item.id, 72) : '';

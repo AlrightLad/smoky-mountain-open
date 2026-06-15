@@ -541,7 +541,14 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
 - [ ] PL1 — RINGS revamped/redone (the CSS .ring-* cosmetics still not good enough)
 - [x] PL2 — DONE v8.25.189: decoration overlay standardized to 140% (was 132 renderAvatar / 142 profile / 138 shop) across ALL surfaces — a thick-ring deco at 132% cut off the photo; 140% sizes the hollow opening to ~the photo so it frames cleanly + consistently everywhere. Composite-verified caddy/bramble/eagle fit (.claude/state/fittest).
 - [ ] PL3 — FEED FLAIR enhanced + redesigned (the flair cat)
-- [ ] PL4 — TITLES: add more + enhance them
+- [~] PL4 — TITLES: add more (DONE: +8 on-brand titles v8.25.195) + ENHANCE to ~9.5 (Founder
+  clarified 2026-06-15: "severely lacking in design and creativeness" — the flat brass-pill
+  .title-plain chip is the problem, NOT the count). REDESIGN: give titles real, VARIED premium
+  MATERIALS (struck-brass engraved nameplate / hard-enamel pin in a metal bezel / embroidered
+  chenille varsity patch / foil-stamp), assigned by character+tier, replacing the one identical
+  pill — so the Titles shelf reads as a crafted collection. Same lift the rings (struck-metal/
+  enamel) + markers (felt presentation) got. Self-cap 9.4 (AMD-028); Founder signs ≥9.5 on
+  staging. IN PROGRESS.
 - [~] PL5 — BALL/TEE MARKERS presentation lift — DONE v8.25.194 (LIVE+V1). Diagnosis: all 12
   markers already have detailed SVG glyphs (no dead/missing art) — the "lazy" read was the flat
   PALE shared surface-stage. FIX: new .shop-surface-stage--marker presents each marker as a
@@ -601,6 +608,17 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
   Stage-2 cash economy), which is designed that way. V1: .claude/state/cap-pl7b/ (champion stub →
   champion_sunday unlocks; real member shows course_record unlocked from a real sub-80; exploit
   guard rejects). Caddy Note added. Sibling of PL7.
+- [ ] PL7c — ACHIEVEMENT-SYSTEM INTEGRITY AUDIT (Founder 2026-06-15). Now that achievements
+  drive cosmetic unlocks (PL7) AND theme unlocks (PL7b), audit ALL ~130 achievements (data.js
+  getAchievements) for: (a) every one is properly WIRED (detects the real condition, no dead/
+  never-fires, no false-positives), and (b) NOT exploitable / not easily falsely claimed (which
+  derive from server-protected data — champion/standings/trips/records — vs self-reported rounds
+  which a member can write; classify each by trust level + flag any that gate VALUE). E2E-test
+  with FULL EVIDENCE: simulate earning each class → confirm it fires; attempt to falsely claim
+  (forge the input client-side) → confirm it's rejected or is cosmetic-only/no-value. Document a
+  per-achievement trust matrix. Sibling of PL7/PL7b. NOTE: self-reported-scores is the app's
+  existing trust model (trusted-20, cosmetic-only) — the audit confirms NO achievement gates
+  real value on a forgeable input (real value = Stage-2 cash economy, server-authoritative).
 - [ ] PL16 — FULL E2E of EVERY function (play a round, change profile pic, every single function) with extensive SCREENSHOTS + confirmed-working EVIDENCE (not lint/code-check); resolve every error found as you go
 - [ ] Swing-animation page rework (#67, DO LAST among features) — Cuphead rubber-hose rebuild
 - [ ] Level-100 exclusive animated rubber-hose THEME (#75, end) — vastly different, on-page cartoons + animations; extensive critique loop
