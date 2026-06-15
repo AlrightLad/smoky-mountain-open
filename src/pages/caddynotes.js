@@ -17,8 +17,35 @@ Router.register("caddynotes", function() {
       '<span>' + r.item + '</span></div>';
   }
 
-  // Current Release
-  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + APP_VERSION + '</span></div>';
+  // ── X.Y.Z changelog scheme (Founder 2026-06-15) ────────────────────────────
+  //   X = major version  (massive lifts / new feature waves)
+  //   Y = feature + minor-UI bumps  → each gets its own dated section
+  //   Z = daily fixes / tailoring   → rolls UP under its Y section
+  // Current-major releases render as Y-version sections (Z entries merged into
+  // their Y); once a major is superseded it collapses into a single "Version N"
+  // history tab with a date range. archiveNotes stays the source of truth (mixed
+  // .Y/.Z granularity) — the grouping is done at render, so adding a future
+  // release entry needs no data migration.
+  function verParts(v) {
+    var m = /v?(\d+)\.(\d+)/.exec(v || "");
+    return m ? { major: parseInt(m[1], 10), minor: parseInt(m[2], 10) } : { major: 0, minor: 0 };
+  }
+  function verPatch(v) {
+    var m = /v?\d+\.\d+\.(\d+)/.exec(v || "");
+    return m ? parseInt(m[1], 10) : 0;
+  }
+  function dateRange(dates) {
+    if (!dates || !dates.length) return "";
+    var uniq = dates.filter(function (d, i) { return d && dates.indexOf(d) === i; });
+    if (uniq.length <= 1) return uniq[0] || "";
+    return uniq[uniq.length - 1] + " – " + uniq[0]; // archive is newest-first ⇒ oldest – newest
+  }
+  var CURRENT_MAJOR = verParts(APP_VERSION).major;
+  var CURRENT_Y = verParts(APP_VERSION).major + "." + verParts(APP_VERSION).minor;
+
+  // Current Release — labelled with the current Y version (full patch lives in
+  // the hero badge + footer).
+  h += '<div class="section"><div class="sec-head"><span class="sec-title" style="color:var(--birdie)">What\'s New · v' + CURRENT_Y + '</span></div>';
   h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">June 2026 · The polish pass</div>';
   h += '<div class="card"><div class="card-body" style="font-size:12px;color:var(--cream);line-height:1.8">';
   var currentNotes = [
@@ -46,32 +73,83 @@ Router.register("caddynotes", function() {
   currentNotes.forEach(function(r) { h += renderEntry(r); });
   h += '</div></div></div>';
 
-  // Past Releases (newest first; each block collapses by default)
+  // Past Releases — grouped by the X.Y.Z scheme above.
   // archiveNotes data lives in caddynotes-archive.js per W1.A5 (AMD-027).
   // The archive file declares `var caddynotesArchive` at module scope.
   var archiveNotes = caddynotesArchive;
 
-  // W1.I3 restructure: limit "Recent updates" to last 3 releases for clarity.
-  // Older releases are still in archiveNotes (so version history is preserved)
-  // but only the 3 most recent are surfaced in the UI. Members who want deep
-  // history can ask The Caddy. Universal content per locked CTO_INTERFACE.md.
+  // Group archive blocks: current-major releases collapse by minor (Y),
+  // older majors collapse into one tab each (X).
+  var ySections = [];   // current-major Y groups, newest-first
+  var ySeen = {};
+  var xTabs = {};       // older-major rollups, keyed by major
+  archiveNotes.forEach(function (block) {
+    var p = verParts(block.version);
+    if (p.major === CURRENT_MAJOR) {
+      var key = p.major + "." + p.minor;
+      var sec = ySeen[key];
+      if (!sec) {
+        sec = ySeen[key] = { label: "v" + key, items: [], dates: [], summary: block.headline, _featPatch: verPatch(block.version) };
+        ySections.push(sec);
+      }
+      block.items.forEach(function (it) { sec.items.push(it); });
+      if (block.date) sec.dates.push(block.date);
+      // The lowest-patch block in the group is the feature intro (X.Y.0) —
+      // its headline best summarises what the whole Y release was about.
+      if (verPatch(block.version) < sec._featPatch) { sec._featPatch = verPatch(block.version); sec.summary = block.headline; }
+    } else {
+      var t = xTabs[p.major] || (xTabs[p.major] = { major: p.major, blocks: [], dates: [] });
+      t.blocks.push(block);
+      if (block.date) t.dates.push(block.date);
+    }
+  });
+
+  // Reusable collapsible row (matches the prior accordion behaviour).
+  function collapsible(titleHtml, metaHtml, bodyBuilder) {
+    var s = '<div class="card" style="margin-bottom:8px;overflow:hidden">';
+    s += '<div onclick="var e=this.nextElementSibling;var c=this.querySelector(\'svg\');var open=e.style.display===\'block\';e.style.display=open?\'none\':\'block\';c.style.transform=open?\'rotate(0deg)\':\'rotate(90deg)\';" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding:12px 14px;gap:8px;min-height:48px">';
+    s += '<div style="flex:1;min-width:0">';
+    s += '<div style="font-size:12px;color:var(--gold);font-weight:600">' + titleHtml + '</div>';
+    s += '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + metaHtml + '</div>';
+    s += '</div>';
+    s += '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted);flex-shrink:0;transition:transform .15s ease"><path d="M6 4l4 4-4 4"/></svg>';
+    s += '</div>';
+    s += '<div style="display:none;padding:0 14px 14px;font-size:12px;color:var(--cream);line-height:1.8;border-top:1px solid var(--border)">';
+    s += bodyBuilder();
+    s += '</div></div>';
+    return s;
+  }
+
+  // Recent Updates — every v{CURRENT_MAJOR} release as its own dated Y section.
   h += '<div class="section"><div class="sec-head"><span class="sec-title">Recent Updates</span></div>';
-  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">The last three ships, in plain language.</div>';
-  archiveNotes.slice(0, 3).forEach(function(block) {
-    h += '<div class="card" style="margin-bottom:8px;overflow:hidden">';
-    h += '<div onclick="var e=this.nextElementSibling;var c=this.querySelector(\'svg\');var open=e.style.display===\'block\';e.style.display=open?\'none\':\'block\';c.style.transform=open?\'rotate(0deg)\':\'rotate(90deg)\';" style="display:flex;justify-content:space-between;align-items:center;cursor:pointer;padding:12px 14px;gap:8px;min-height:48px">';
-    h += '<div style="flex:1;min-width:0">';
-    h += '<div style="font-size:12px;color:var(--gold);font-weight:600">' + block.version + ' · ' + block.date + '</div>';
-    h += '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + block.headline + '</div>';
-    h += '</div>';
-    h += '<svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted);flex-shrink:0;transition:transform .15s ease"><path d="M6 4l4 4-4 4"/></svg>';
-    h += '</div>';
-    h += '<div style="display:none;padding:0 14px 14px;font-size:12px;color:var(--cream);line-height:1.8;border-top:1px solid var(--border)">';
-    block.items.forEach(function(r) { h += renderEntry(r); });
-    h += '</div>';
-    h += '</div>';
+  h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">Every v' + CURRENT_MAJOR + ' release, newest first. Tap a version to see what changed.</div>';
+  ySections.forEach(function (sec) {
+    h += collapsible(sec.label + ' · ' + dateRange(sec.dates), sec.summary, function () {
+      var b = ''; sec.items.forEach(function (r) { b += renderEntry(r); }); return b;
+    });
   });
   h += '</div>';
+
+  // Version History — each superseded major as one lifecycle tab.
+  var pastMajors = Object.keys(xTabs).map(Number).sort(function (a, b) { return b - a; });
+  if (pastMajors.length) {
+    h += '<div class="section"><div class="sec-head"><span class="sec-title">Version History</span></div>';
+    h += '<div style="font-size:10px;color:var(--muted);padding:0 16px 8px">The full lifecycle of every past major version.</div>';
+    pastMajors.forEach(function (maj) {
+      var t = xTabs[maj];
+      var meta = dateRange(t.dates) + ' · ' + t.blocks.length + ' release' + (t.blocks.length === 1 ? '' : 's');
+      h += collapsible('Version ' + maj, meta, function () {
+        var b = '';
+        t.blocks.forEach(function (block) {
+          b += '<div style="font-size:11px;color:var(--gold);font-weight:600;margin:10px 0 2px">' + block.version + ' · ' + block.date + '</div>';
+          b += '<div style="font-size:10px;color:var(--muted);margin-bottom:4px">' + block.headline + '</div>';
+          block.items.forEach(function (r) { b += renderEntry(r); });
+        });
+        return b;
+      });
+    });
+    h += '</div>';
+  }
 
   // What's in the Bag — full feature list
   h += '<div class="section"><div class="sec-head"><span class="sec-title">What\'s in the Bag</span></div>';

@@ -36,7 +36,8 @@ Remaining FOUNDATIONAL bugs (next, visual-verified):
 - [ ] Scorecard (shareable): colorway + cosmetics shine; hole-by-hole 9-over-9 (not sideways
   scroll); consolidate "by the numbers" (dup of strokes/birdies/putts row).
 - [ ] Resend wiring: bug-report + feature-request → email (Resend live on Cloudflare).
-- [ ] Store copy: "Mr Parbaugh will sound the horn" (not "the commissioner") on merch + cosmetics.
+- [x] Store copy: "Mr Parbaugh will sound the horn" — FIXED v8.25.211 (merch.js; the only
+  "sound the horn" instance; shop.js "The Commissioner" is a legit per-league title cosmetic).
 - [ ] Whats-New → X.Y.Z changelog scheme (X major / Y feature+UI / Z daily; dated Y sections).
 Bigger phases (research/gen/taste — tracked in the directive doc):
 - [ ] BRAND lock (research rubber-hose golf → brandify gen) + MERCH overhaul (head covers by
