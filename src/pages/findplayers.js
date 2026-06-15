@@ -12,6 +12,7 @@ Router.register("findplayers", function() {
   // Filters
   h += '<div style="padding:4px 16px 8px;display:flex;gap:6px;flex-wrap:wrap">';
   h += '<button class="btn-sm outline fp-filter active" data-filter="all" onclick="setPlayerFilter(\'all\',this)">All</button>';
+  h += '<button class="btn-sm outline fp-filter" data-filter="friends" onclick="setPlayerFilter(\'friends\',this)">★ Friends</button>';
   h += '<button class="btn-sm outline fp-filter" data-filter="beginner" onclick="setPlayerFilter(\'beginner\',this)">Beginner (25+)</button>';
   h += '<button class="btn-sm outline fp-filter" data-filter="intermediate" onclick="setPlayerFilter(\'intermediate\',this)">Intermediate (15-25)</button>';
   h += '<button class="btn-sm outline fp-filter" data-filter="advanced" onclick="setPlayerFilter(\'advanced\',this)">Advanced (&lt;15)</button>';
@@ -42,6 +43,37 @@ Router.register("findplayers", function() {
   }
 });
 
+// ── Friends graph v1 (Founder 2026-06-15: "no friends list / viewing friends") ──
+// One-directional follow stored as friendIds[] on the viewer's OWN member doc — a
+// self-write the rules already allow (friendIds is not in the immutable field list,
+// so no rules/Cloud-Function change). Mirrors the public-discovery model: you follow
+// who you want, no mutual-consent handshake for v1.
+function pbFriendIds() { return (typeof currentProfile !== "undefined" && currentProfile && Array.isArray(currentProfile.friendIds)) ? currentProfile.friendIds : []; }
+function pbIsFriend(uid) { return pbFriendIds().indexOf(uid) !== -1; }
+function pbToggleFriend(uid, btn, ev) {
+  if (ev && ev.stopPropagation) ev.stopPropagation();
+  if (!currentUser || !currentProfile) { Router.toast("Sign in first"); return; }
+  if (uid === currentUser.uid) { Router.toast("That's you!"); return; }
+  var ids = pbFriendIds().slice();
+  var adding = ids.indexOf(uid) === -1;
+  currentProfile.friendIds = adding ? ids.concat([uid]) : ids.filter(function(x){ return x !== uid; });
+  if (db) {
+    db.collection("members").doc(currentUser.uid).update({
+      friendIds: adding ? firebase.firestore.FieldValue.arrayUnion(uid) : firebase.firestore.FieldValue.arrayRemove(uid)
+    }).catch(function(e){ if (typeof pbWarn === "function") pbWarn("[friends] write failed:", e && e.message); });
+  }
+  Router.toast(adding ? "Added to your friends" : "Removed from friends");
+  if (_fpFilter === "friends") { filterPlayers(); }
+  else if (btn) { btn.outerHTML = _fpFriendBtn(uid); }
+}
+// star toggle button (filled brass = friend) with a 44pt tap target; stops the card nav.
+function _fpFriendBtn(uid) {
+  if (currentUser && uid === currentUser.uid) return '';
+  var on = pbIsFriend(uid);
+  return '<button type="button" aria-label="' + (on ? 'Remove friend' : 'Add friend') + '" onclick="pbToggleFriend(\'' + uid + '\',this,event)" style="background:none;border:none;cursor:pointer;padding:0 4px;min-width:44px;min-height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent">' +
+    '<svg viewBox="0 0 24 24" width="19" height="19" fill="' + (on ? 'var(--cb-brass)' : 'none') + '" stroke="' + (on ? 'var(--cb-brass)' : 'var(--cb-mute-2)') + '" stroke-width="1.7" stroke-linejoin="round"><path d="M12 3.2l2.6 5.3 5.8.85-4.2 4.1.99 5.8L12 16.6 6.8 19.3l.99-5.8-4.2-4.1 5.8-.85z"/></svg></button>';
+}
+
 var _fpFilter = "all";
 function setPlayerFilter(filter, btn) {
   _fpFilter = filter;
@@ -61,6 +93,8 @@ function filterPlayers() {
   var players = (window._fpAllPlayers || []).filter(function(p) {
     // Search filter
     if (q && (p.name || "").toLowerCase().indexOf(q) === -1 && (p.username || "").toLowerCase().indexOf(q) === -1) return false;
+    // Friends filter — only the people you've added
+    if (_fpFilter === "friends" && !pbIsFriend(p._id || p.id)) return false;
     // Handicap filter
     var hcap = p.computedHandicap || p.handicap || null;
     if (_fpFilter === "beginner" && hcap !== null && hcap < 25) return false;
@@ -73,6 +107,7 @@ function filterPlayers() {
     // v8.22+ (design-pass 2026-05-22): dashed-card empty state matching
     // the courses/feed pattern. Per filter, distinct copy.
     var noMatchLabel = q ? "No players match \"" + escHtml(query) + "\"" : (
+      _fpFilter === "friends" ? "No friends added yet — tap the ★ on anyone to add them" :
       _fpFilter === "beginner" ? "No beginners in the directory yet" :
       _fpFilter === "intermediate" ? "No intermediates yet" :
       _fpFilter === "advanced" ? "No advanced players yet" :
@@ -134,6 +169,8 @@ function filterPlayers() {
     h += meta.join(" \u00b7 ") || "Member";
     h += '</div></div>';
     if (isPublic) h += '<div style="font-size:8px;color:var(--birdie);font-weight:600;letter-spacing:.5px;margin-right:6px">PUBLIC</div>';
+    // ★ add/remove friend — stops the card nav (pbToggleFriend calls stopPropagation).
+    h += _fpFriendBtn(pid);
     // v8.24.60 — affordance: a chevron so the card reads as tappable (was a silent nav).
     h += '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="var(--cb-mute-3)" stroke-width="2" style="flex-shrink:0"><path d="M9 18l6-6-6-6"/></svg>';
     h += '</div></div>';
