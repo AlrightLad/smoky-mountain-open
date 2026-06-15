@@ -2973,6 +2973,13 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
    Applied to the Settings picker chip + Pro Shop caddie card via .pb-caddy-live
    on the <img>; the hover perk also fires from a .pb-caddy-host ancestor. */
 .pb-caddy-live { transform-origin: 50% 100%; backface-visibility: hidden; }
+/* v8.25.208 (Founder: caddies still "floating" on Settings + Store) — the clip was
+   already robust (clip-path), but the breathing bob (translateY -1.6px + scaleY 0.99
+   on a 100%-sized object-fit:cover img) lifted the portrait off the ring bottom at the
+   peak of each breath, revealing a sliver of wrapper background = the float. OVERFILL
+   the breathing img to 110% so every breath phase (bob ≤1.6px, scale 0.99–1.016) stays
+   inside the clip with no gap. object-fit:cover keeps it centered; the extra is clipped. */
+.theme-row__chip--photo img.pb-caddy-live, .shop-caddie-ring img.pb-caddy-live { width: 110%; height: 110%; }
 @media (prefers-reduced-motion: no-preference) {
   .pb-caddy-live {
     animation: pbCaddyBreathe 4.4s ease-in-out infinite;
