@@ -619,11 +619,26 @@ setTimeout(_loadCalendarEvents, 2000);
 // ── Scheduling chat ──
 function _calLoadChat() {
   if (!db) return;
+  // v8.25.201 — the scheduling-chat load had NO .catch: on the cold-start rules
+  // race the get() rejected UNHANDLED → an uncaught FirebaseError PAGEERROR
+  // (caught by the convergence E2E sweep on the calendar route) AND left the feed
+  // stuck on "Loading…". Resolve to the graceful empty state on error + route the
+  // permission-denied through pbWarn (kept out of the errors collection by design),
+  // plus a 6s safety net so a hung get() never strands "Loading…" (DM-fix pattern).
+  var _calChatEmpty = '<div class="cal-chat__empty"><div class="cal-chat__empty-h">No messages yet.</div><div class="cal-chat__empty-b">Use the box below to coordinate tee times, swap thoughts on next week’s round, or call your shot.</div></div>';
+  var _calChatSettled = false;
+  function _settleCalChatEmpty() {
+    if (_calChatSettled) return;
+    var feed = document.getElementById("calChatFeed");
+    if (feed && /cal-chat__loading/.test(feed.innerHTML)) feed.innerHTML = _calChatEmpty;
+  }
+  setTimeout(_settleCalChatEmpty, 6000);
   leagueQuery("scheduling_chat").orderBy("createdAt","desc").limit(20).get().then(function(snap) {
+    _calChatSettled = true;
     var feed = document.getElementById("calChatFeed");
     if (!feed) return;
     if (snap.empty) {
-      feed.innerHTML = '<div class="cal-chat__empty"><div class="cal-chat__empty-h">No messages yet.</div><div class="cal-chat__empty-b">Use the box below to coordinate tee times, swap thoughts on next week’s round, or call your shot.</div></div>';
+      feed.innerHTML = _calChatEmpty;
       return;
     }
     var ch = '';
@@ -635,6 +650,11 @@ function _calLoadChat() {
       ch += '<div class="cal-chat__text">' + escHtml(msg.text || "") + '</div></div>';
     });
     feed.innerHTML = ch;
+  }).catch(function(e) {
+    _calChatSettled = true;
+    var feed = document.getElementById("calChatFeed");
+    if (feed) feed.innerHTML = _calChatEmpty;
+    if (typeof pbWarn === "function") pbWarn("[calendar] scheduling chat load: " + (e && e.message));
   });
 }
 
