@@ -29,10 +29,12 @@ Router.register("showcase", function () {
 
   var h = '<div class="sc-wrap" style="overflow-x:hidden">';
 
-  // ── BAND 1 — full-bleed HERO (CSS placeholder; premium art lands P5) ──────────
+  // ── BAND 1 — full-bleed HERO (P5: real rubber-hose country-club art via Recraft) ──
   h += '<section class="sc-hero" style="position:relative;width:100vw;margin-left:calc(50% - 50vw);min-height:88vh;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;' +
-    'background:radial-gradient(120% 90% at 50% 8%, var(--cb-green-2) 0%, var(--cb-felt) 46%, #0e2a20 100%)">' +
-    '<div aria-hidden="true" style="position:absolute;inset:0;background:radial-gradient(60% 40% at 50% 18%, rgba(var(--cb-brass-rgb),.22), transparent 70%);pointer-events:none"></div>' +
+    'background:url(' + asset('img/showcase/hero.jpg') + ') center/cover no-repeat, var(--cb-felt)">' +
+    // Felt-tinted scrim so the white headline + CTAs stay legible over the warm art
+    // (darker toward the center where the text block sits), brand mood preserved.
+    '<div aria-hidden="true" style="position:absolute;inset:0;background:radial-gradient(75% 60% at 50% 52%, rgba(14,30,24,.62), rgba(14,30,24,.30) 80%, rgba(14,30,24,.12));pointer-events:none"></div>' +
     '<div class="sc-hero__content" style="position:relative;max-width:760px;padding:0 28px">' +
     '<div style="font-family:var(--font-mono);font-size:12px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--cb-brass-3)">The Parbaughs · Est. 2026 · York, PA</div>' +
     '<h1 style="font-family:var(--font-display);font-style:italic;font-weight:700;font-size:clamp(44px,6vw,84px);line-height:.98;letter-spacing:-2px;color:var(--cb-chalk);margin:14px 0 0">Where the round never really ends.</h1>' +
@@ -41,7 +43,7 @@ Router.register("showcase", function () {
     '<button class="btn" style="background:var(--cb-brass);color:#231a07;border:none;font-weight:700;font-size:15px;padding:15px 28px;border-radius:var(--r-3, 10px);cursor:pointer" onclick="Router.go(\'home\')">Enter the clubhouse</button>' +
     '<button class="btn" style="background:transparent;color:var(--cb-chalk);border:1px solid rgba(244,239,228,.45);font-weight:600;font-size:15px;padding:15px 28px;border-radius:var(--r-3, 10px);cursor:pointer" onclick="Router.go(\'invite\')">Get an invite</button>' +
     '</div>' +
-    '<div style="font-family:var(--font-mono);font-size:10px;letter-spacing:2px;color:rgba(244,239,228,.5);text-transform:uppercase;margin-top:28px">▾ P1 scaffold · premium hero art lands at P5</div>' +
+    '<div style="font-family:var(--font-mono);font-size:10px;letter-spacing:2px;color:rgba(244,239,228,.5);text-transform:uppercase;margin-top:28px">▾ Welcome to the clubhouse</div>' +
     '</div></section>';
 
   // ── BAND 2 — ART SHOWCASE (the brand world; real caddie portraits) ────────────
