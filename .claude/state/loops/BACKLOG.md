@@ -35,7 +35,14 @@ Remaining FOUNDATIONAL bugs (next, visual-verified):
 - [ ] SVG nav icons (Home/Play/Courses/Events/More) → 9.5.
 - [ ] Scorecard (shareable): colorway + cosmetics shine; hole-by-hole 9-over-9 (not sideways
   scroll); consolidate "by the numbers" (dup of strokes/birdies/putts row).
-- [ ] Resend wiring: bug-report + feature-request → email (Resend live on Cloudflare).
+- [x] Resend wiring — AGENT-SIDE COMPLETE; BLOCKED ON FOUNDER (2 steps, ~3 min). The code is
+  built + shipped + deploy-clean: functions/lib/feedback-email.js (Resend REST, per-submitter 12/hr
+  throttle, dual writer-shape normalize) wired at functions/index.js:1293; both writers confirmed →
+  feature_requests (bugreport.js:116 + faq.js:82); graceful no-op until configured (verified
+  functions/.env has only GOLFCOURSE_API_KEY today → inert, no errors). Remaining is Founder-only:
+  AMD-018 gate 6 (3 Resend secrets in functions/.env — I don't have the key) + gate 1 (CF deploy,
+  classifier-walled). Self-contained walkthrough: task-queue/founder/resend-feedback-email-activation.md
+  (the 3 .env lines + scoped `firebase deploy --only functions:onFeedbackEmail` + a 30-sec test).
 - [x] Store copy: "Mr Parbaugh will sound the horn" — FIXED v8.25.211 (merch.js; the only
   "sound the horn" instance; shop.js "The Commissioner" is a legit per-league title cosmetic).
 - [x] Whats-New → X.Y.Z changelog scheme — DONE v8.25.212 (LIVE+V1): lead "What's New" now
