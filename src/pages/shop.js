@@ -217,6 +217,10 @@ var PRO_SHOP_TIERS = {
   commem:  {label:"Commemorative"}
 };
 var PRO_SHOP_SHELVES = [
+  // v8.25.18x (Founder 2026-06-14) — FEATURED at the top: the award-winning raster
+  // avatar decorations lead the revamped store (deco:true items; earned ones live
+  // in the Trophy Cabinet). Excluded from the Rings shelf below so they never dup.
+  {cat:"border", deco:true, title:"Decorations", meta:"Award-winning frames that wrap your avatar — the headliners"},
   {cat:"border",    title:"Rings",          meta:"Worn on your avatar, everywhere"},
   {cat:"nameplate", title:"Nameplates",     meta:"Behind your name, everywhere it appears"},
   {cat:"card",      title:"Scorecard Skins",meta:"Real materials on your round cards"},
@@ -491,7 +495,12 @@ Router.register("shop", function() {
       h += '</div></div>';
       return;
     }
-    var items = PRO_SHOP_CATALOG.filter(function(i) { return i.cat === shelf.cat && !i.earnedBy && !i.retired; });
+    // deco shelf = the buyable raster decorations; every other border shelf
+    // (Rings) excludes deco items so they live only in their featured shelf.
+    var items = PRO_SHOP_CATALOG.filter(function(i) {
+      if (shelf.deco) return i.deco && !i.earnedBy && !i.retired;
+      return i.cat === shelf.cat && !i.earnedBy && !i.retired && !i.deco;
+    });
     if (!items.length) return;
     // v8.25.45 — sort each shelf LOWEST→HIGHEST rarity (Founder: the tiers ARE the
     // rarity ladder — show the progression). range < proshop < locker < cabinet;
