@@ -96,7 +96,13 @@ var Router = (function() {
     // every tap (a stray tap navigates out of the round). Re-evaluated on every
     // navigation, so it restores when the round ends or the user steps away.
     var inLiveRound = typeof liveState !== "undefined" && liveState && liveState.active && current.page === "playnow";
-    nav.style.display = inLiveRound ? "none" : "";
+    // v8.25.209 (Founder: DM composer "slightly cut off") — also hide the global
+    // tab bar on the sticky-composer pages so the message bar + Send own the bottom
+    // edge (the fixed nav was overlapping/squeezing it, worst with a home-indicator
+    // safe-area). A body class zeroes #mainApp's nav-padding on these pages too.
+    var stickyComposer = current.page === "dm-thread" || current.page === "chat";
+    nav.style.display = (inLiveRound || stickyComposer) ? "none" : "";
+    if (typeof document !== "undefined" && document.body) document.body.classList.toggle("on-sticky-composer", stickyComposer);
     var tabs = [
       { match: ["home","round","standings","seasonrecap","awards","feed"] },
       { match: ["activity","rounds","playnow","range","scramble-live","syncround"] },
