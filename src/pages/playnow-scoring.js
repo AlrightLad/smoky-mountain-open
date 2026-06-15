@@ -147,7 +147,12 @@ function _renderLiveScoringInner() {
   // Hole context strip
   h += '<div class="ls-hole">';
   h += '<div class="ls-hole__lead">';
-  h += '<div class="ls-hole__eyebrow">Hole ' + (hole+1) + '</div>';
+  // Cosmetics-in-play (Founder 2026-06-15, Lane C): the equipped tee-marker rides
+  // the hole eyebrow — the hole header IS the tee box. Safe no-op when nothing is
+  // equipped (pbTeeMarkerHtml returns ''). The ball-marker belongs on the Lane-A
+  // hole map (see task-queue/founder/course-map-cosmetics-in-play-proposal.md).
+  var _teeMk = (typeof pbTeeMarkerHtml === 'function' && typeof currentProfile !== 'undefined') ? pbTeeMarkerHtml(currentProfile) : '';
+  h += '<div class="ls-hole__eyebrow">Hole ' + (hole+1) + _teeMk + '</div>';
   var hbits = ['Par ' + par];
   if (yardage) hbits.push(yardage + ' yds');
   if (holeHdcp) hbits.push('Hdcp ' + holeHdcp);
