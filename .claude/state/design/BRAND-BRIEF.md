@@ -13,6 +13,32 @@ in York, PA). The vibe: **country club meets group chat meets fantasy sports.**
 light league layer, earn ParCoin (cosmetic-only), and collect cosmetics. Premium but
 warm and personable — never corporate, never generic.
 
+## 🎯 THEME REFINEMENT (Founder 2026-06-15, ref: a Shutterstock "Humorous Retro 1930s Rubber Hose" illustration)
+The north-star theme is AUTHENTIC 1930s rubber-hose (Cuphead-era) WITH a TOUR feel layered on
+— rubber-hose is the dominant identity, tour/H&B is the premium FINISH on top, not a separate
+competing lane. 1930s rubber-hose hallmarks to hit: bouncy "noodle" hose limbs, pie-cut eyes,
+white four-finger gloves, bold confident black ink outlines, rounded jaunty forms, warm limited
+palette on off-white/cream "aged paper" with subtle halftone/grain, humorous springy mood.
+**BIG: the P+rose MARK itself may be re-styled RUBBER-HOSE** (it's currently a clean serif P with
+a rose). Direction = the mark + the character are ONE rubber-hose family, finished tour-grade —
+like Malbon reads unmistakably playful AND premium (not two registers). Tour feel keeps it
+high-class / country-club-on-par, not full Saturday-morning. (Couldn't fetch the exact
+Shutterstock image — bot-blocked; view via the Founder's browser for an exact match if needed.)
+
+## ⚖️ BALANCE CORRECTION (Founder 2026-06-15) — rubber-hose is the SOUL; don't over-index brass
+Do NOT let "cosmetic items standardize on brass/H&B" drain rubber-hose from the app. The
+rubber-hose (cartoon-esque but RESTRAINED — country-club-on-par, not full-blown Saturday-
+morning) is the brand's CHARACTER + differentiator + what's ownable. The dual-brand is a
+STRENGTH, not a risk — it's the **Malbon playbook** (premium golf + a playful character;
+H&B = the pure-premium reference). The two only conflict if they fight as competing LOOKS;
+LAYERED they reinforce: **rubber-hose = the CHARACTER, brass/H&B-grade craft = the PRESENTATION
+it's wrapped in.** P+rose vs rubber-hose = two REGISTERS of ONE brand (P+rose = the formal mark/
+club crest; rubber-hose = the voice/character), like Malbon's clean logo + cartoon mascot.
+RULE: rubber-hose LEADS as character (caddies, decorations, illustrations, onboarding, playful
+moments); brass/H&B is the premium FRAME around it; EVERYTHING gets craft-quality (clean ink +
+confident color + real depth — the "CSS brass foil" technique is about QUALITY, apply it to
+rubber-hose art too, not brass-over-character).
+
 ## The core brand recipe (NON-NEGOTIABLE)
 **Rubber-hose CHARACTER layer rendered INSIDE Holderness & Bourne-grade premium
 presentation.** The two are complementary, never competing:
