@@ -85,6 +85,24 @@ const LIFESTYLE = [
   ['life-clubhouse', 'A cinematic editorial golf-lifestyle photograph of a male golfer from behind walking out from a stone clubhouse toward the first tee at golden hour, wearing a heavyweight black quarter-zip and tailored grey trousers, carrying a tan leather golf bag, warm low sunlight, manicured fairway and flagstick ahead in soft focus, relaxed confident posture, face away from camera.' + LIFE + ' Shot on a 50mm lens at f/2.8, shallow depth of field.', '3:4'],
 ];
 
+// COSMETIC — apex avatar-ring DECORATIONS (Founder: "go full Discord extending-
+// frame decorations, ALL frames award-winning"). Rendered NEUTRAL GRAY (tinted to
+// exact brand hex in post so a set shares one palette), a circular frame ONLY with
+// a HOLLOW OPEN CENTER (the ring FRAMES the user photo, never covers the face —
+// [[feedback_rings_frame_not_cover_photo]]), on a chroma-green keyable bg. Matte
+// out + tint in scripts/_finish-art.py. 1:1.
+function ring(motif, finish) {
+  return 'A single ornamental avatar ring decoration, a circular frame only with a large hollow open center, ' + motif +
+    ' worked into the rim in the 1930s rubber-hose cartoon flourish style with bold confident clean ink outlines, ' + finish +
+    ', rendered in flat neutral medium gray, perfectly centered and radially symmetrical, viewed head-on and flat. Isolated on a background that is one perfectly flat, even, fully-saturated, shadowless solid bright chroma-green #00B140 color filling the frame uniformly edge to edge, even flat shadowless studio lighting, crisp clean anti-aliased outer and inner edges, high detail. Shot on a 100mm macro lens at f/8. The ring is the only object in frame; the center is a large open empty circle with nothing inside it (no face, no photo, no disc); the background stays one uniform flat green color.';
+}
+const COSMETIC = [
+  ['ring-laurel', ring('two symmetric laurel branches of small leaves meeting at the top and bottom', 'a die-struck brass relief finish with polished high points and antiqued recesses')],
+  ['ring-rope',   ring('a twisted nautical rope braided evenly all the way around', 'a brushed-satin brass finish with a fine directional grain')],
+  ['ring-clubs',  ring('two pairs of crossed golf clubs at the four diagonal points joined by a thin beaded band', 'a die-struck brass relief finish with crisp raised edges')],
+  ['ring-wreath', ring('a continuous wreath of small rose buds and leaves in the Parbaughs flourish', 'a hard-enamel inlaid finish polished flush and glossy within crisp metal borders')],
+];
+
 // FILLERS — atmospheric page art (the ONE place to open the aperture).
 const SCENE = ' soft atmospheric haze, warm muted brand-palette tones, no people present, editorial photography, shallow depth of field with soft background bokeh, photorealistic, fine detail. Shot on a 35mm lens at f/2.8.' + PALETTE;
 const FILLERS = [
@@ -92,7 +110,7 @@ const FILLERS = [
   ['filler-clubhouse', 'A serene wide cinematic photograph of a cozy golf clubhouse interior at golden hour, leather chairs and a wall of brass trophies softly out of focus, warm directional window light,' + SCENE, '16:9'],
 ];
 
-const SETS = { merch: MERCH, shop: SHOP, fillers: FILLERS, lifestyle: LIFESTYLE };
+const SETS = { merch: MERCH, shop: SHOP, fillers: FILLERS, lifestyle: LIFESTYLE, cosmetic: COSMETIC };
 const which = process.argv[2];
 
 async function gen(name, prompt, ar) {

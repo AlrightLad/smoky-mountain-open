@@ -37,21 +37,40 @@ output. Consistency across a set comes from a **byte-identical anchor block
 
 ---
 
-## 0. Two brand lanes — pick the lane BEFORE the recipe (Founder 2026-06-14)
+## 0. Research the real reference FIRST (Founder 2026-06-14 — mandatory)
 
-PARBAUGHS apparel/imagery splits into two distinct visual lanes. Decide which
-lane an asset belongs to first; it sets the colorway, branding weight, and genre.
+> Founder: *"you need to do web research on these items and compare other brands
+> and how they list them on their website, and web-search items you are unsure
+> how they look, so you can better craft image prompts. These should be done on
+> ALL images and designs so you can adequately provide the prompt to yield the
+> highest-score, most accurate design."*
 
-| Lane | Mark | Genre | Colorway | Branding |
-|---|---|---|---|---|
-| **TOUR / golf** | **P+rose** | Realistic — on-course campaign photography (model in the line on a dramatic links course, Bandon-Dunes feel) + premium ghost-mannequin packshots | **What the pros compete in: tournament white, tour navy, black, heather grey, charcoal.** NOT beige+green. Brand accents (forest green / brass / claret) only as subtle tonal tipping, never the field. | **Holderness-&-Bourne minimal** — premium fabric does the talking; one small, quiet P+rose crest. No loud graphics. |
-| **LEISURE / casual** | **rubber-hose (Cuphead)** | 1930s rubber-hose cartoon — bold ink outlines, pie-cut eyes, expressive | Playful; the cartoon carries it | Graphic-forward — the cartoon IS the statement |
+**Before writing ANY product prompt, web-research what the real object looks
+like** — its true form, size, materials, and how premium brands photograph/list
+it. Translate the reference into the named-material + form clause; never guess.
+Skipping this produces *plausible-but-wrong* objects (e.g. a golf **yardage book**
+is a SLIM pocket-size staple/spiral-bound course-guide booklet ~3.5×5.5" with a
+hand-drawn hole-map per page — NOT a fat leather journal with a ribbon; the first
+attempt got this wrong because it wasn't researched). WebSearch the item +
+"<brand> <item>" for 1-2 real reference points, confirm the form, THEN prompt.
 
-Rules: the tour line is sold the way real golf-apparel brands sell it — lead a
-merch surface with an **on-course lifestyle hero** (the golf appeal), then show
-clean tour-colorway packshots. Faces turned away (rear / 3-quarter-rear / mid-
-swing) on lifestyle shots to dodge the AI-face tell. Keep the two lanes visibly
-distinct; never mix rubber-hose cartoon onto a tour packshot or vice-versa.
+## 0.5 Two brand lanes + North Stars — pick the lane BEFORE the recipe
+
+PARBAUGHS apparel/imagery splits into two distinct visual lanes with named
+brand North Stars. Decide which lane an asset belongs to first; it sets the
+colorway, branding weight, genre, and the reference brand to study.
+
+| Lane | Mark | **North Star** | Genre | Colorway | Branding |
+|---|---|---|---|---|---|
+| **TOUR / golf** | **P+rose** | **Holderness & Bourne** | Realistic — on-course campaign photography (model in the line on a dramatic links course, Bandon-Dunes feel) + premium ghost-mannequin packshots | **What the pros compete in: tournament white, tour navy, black, heather grey, charcoal.** NOT beige+green. Brand accents (forest green / brass / claret) only as subtle tonal tipping, never the field. | **H&B minimal** — premium fabric does the talking; one small, quiet P+rose crest. No loud graphics. |
+| **LEISURE / casual** | **rubber-hose caddies + cartoons** | **Malbon Golf** | Streetwear × golf — bold playful graphic prints, relaxed fits, hoodies/tees/sweater-vests, younger and style-conscious | Bolder, more playful than tour | Graphic-forward — **but where Malbon uses its "Buckets" golf-ball mascot, we use our rubber-hose caddies / cartoons (with alterations)**, never a copy |
+
+Rules: study the North Star brand's site for the lane before prompting. The tour
+line is sold like a real golf brand — lead a merch surface with an **on-course
+lifestyle hero**, then clean tour-colorway packshots; faces turned away on
+lifestyle shots. The leisure line takes Malbon's streetwear-golf energy but
+substitutes our rubber-hose caddies for Malbon's mascot. Keep the two lanes
+visibly distinct; never mix the cartoon onto a tour packshot or vice-versa.
 
 ## 1. The prompt formula — SUBJECT → CONTEXT → STYLE → TECHNICAL
 

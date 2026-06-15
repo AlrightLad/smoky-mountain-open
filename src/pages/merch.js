@@ -30,7 +30,7 @@ Router.register("merch", function () {
   // THE PRO SHOP — accessories carry the brand accents (forest green / brass).
   var ACCESSORIES = [
     { img: "headcovers.jpg",  name: "The Leather Headcovers", note: "Tooled leather · driver, woods, mallet & blade" },
-    { img: "yardagebook.jpg", name: "The Yardage Book",       note: "Forest-green leather · brass ribbon" },
+    { img: "yardagebook.jpg", name: "The Yardage Book",       note: "Pocket course guide · hand-drawn hole maps" },
     { img: "balls.png",       name: "Parbaughs Golf Balls",   note: "Tour white · sleeve of three" },
     { img: "ballmarker.jpg",  name: "The Ball Marker",        note: "Struck antique brass" },
     { img: "tees.png",        name: "The Tees",               note: "Hardwood · club-colour bands" }

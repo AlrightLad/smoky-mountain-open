@@ -25,7 +25,7 @@ CREDIT DISCIPLINE: this script costs NOTHING (no API). Generate once with
 _gen-vertex-art.mjs (~$0.02), then finish here as many times as needed.
 """
 import sys, os
-from PIL import Image, ImageDraw, ImageChops, ImageFilter
+from PIL import Image, ImageDraw, ImageChops, ImageFilter, ImageOps
 
 GEN = "public/img/gen"
 LOGO_FULL = "public/img/logo/parbaughs-logo.png"      # full-colour P+rose (cream rose, green P)
@@ -298,8 +298,53 @@ LIFESTYLE = {
 }
 
 
+# COSMETIC RING finishing — chroma-keying the green removes BOTH the outer bg AND
+# the hollow center (both green) -> a transparent ring. The gray relief is then
+# tinted through a metal/enamel gradient (shadows->dark, highlights->light) so the
+# whole set shares one exact palette. NO grounding (it's a transparent overlay that
+# frames the user photo). Output to public/img/cosmetics/ (committed).
+RING_RAMPS = {
+    "brass":  ((58, 44, 12), (246, 214, 120)),
+    "silver": ((70, 72, 78), (238, 240, 245)),
+    "gold":   ((92, 66, 8),  (255, 226, 138)),
+    "claret": ((46, 14, 20), (188, 92, 110)),
+    "felt":   ((10, 32, 24), (86, 150, 120)),
+    "bronze": ((50, 32, 14), (198, 138, 78)),
+}
+
+def finish_ring(in_path, out_path, tint="brass", canvas=(512, 512)):
+    img = Image.open(in_path).convert("RGB")
+    alpha = key_flat_bg(img, margin=10)          # removes outer green AND center hole
+    alpha = decontaminate(alpha)
+    gray = ImageOps.autocontrast(img.convert("L"), cutoff=1)
+    lo, hi = RING_RAMPS[tint]
+    colored = ImageOps.colorize(gray, lo, hi).convert("RGBA")
+    colored.putalpha(alpha)
+    out = crop_pad(colored, canvas=canvas, border_frac=0.015)
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    out.save(out_path, "PNG", optimize=True)
+    print(f"  [RING]   {os.path.basename(in_path)} ({tint}) -> {out_path}")
+
+# raw -> (committed out, tint). Brass for bought/common; gold+claret for apex tiers.
+COSMETIC_RINGS = {
+    "laurel": ("ring-laurel", "public/img/cosmetics/ring-laurel.png", "gold"),
+    "rope":   ("ring-rope",   "public/img/cosmetics/ring-rope.png",   "brass"),
+    "clubs":  ("ring-clubs",  "public/img/cosmetics/ring-clubs.png",  "brass"),
+    "wreath": ("ring-wreath", "public/img/cosmetics/ring-wreath.png", "claret"),
+}
+
+
 def main():
     mode = sys.argv[1] if len(sys.argv) > 1 else "merch"
+    if mode == "cosmetic":
+        print("FINISH cosmetic ring decorations:")
+        for name, (raw, out, tint) in COSMETIC_RINGS.items():
+            rp = f"{GEN}/{raw}.png"
+            if os.path.exists(rp):
+                finish_ring(rp, out, tint=tint)
+            else:
+                print(f"  [SKIP] {name}: no raw at {rp}")
+        return
     if mode == "lifestyle":
         print("FINISH lifestyle scenes:")
         for name, (raw, out) in LIFESTYLE.items():
