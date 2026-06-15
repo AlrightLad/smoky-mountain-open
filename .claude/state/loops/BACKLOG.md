@@ -71,7 +71,16 @@ Bigger phases (research/gen/taste — tracked in the directive doc):
   P+rose rubber-hose restyle) + RINGS/cosmetics redesign ≥9.5 (through brand-gate).
 - [ ] HQ DESKTOP immersive showcase (brand-immersion-first) · ONBOARDING rebuild · Settings
   consolidate + More declutter + page animation + standings tournament feel.
-- [ ] GPS/location-on-signin + animated course-map + cosmetics-in-play (research+plan+build).
+- [~] GPS/course-map + cosmetics-in-play — RESEARCH+PROPOSAL DONE; Lane-C cosmetics shipped;
+  MAP BUILD blocked on Founder lane-pick. (a) Research complete (P1): only free hole-geometry =
+  OpenStreetMap golf tags via Overpass (ODbL, volunteer-coverage); satellite imagery = paid+off-brand;
+  **green slope/green-roll has NO free source** (GolfIntelligence/iGolf/GolfLogix all paid). Proposal
+  w/ 3 lanes + rec: task-queue/founder/course-map-cosmetics-in-play-proposal.md (rec: Lane-A stylized
+  illustrated OSM hole map, free+on-brand; ball-marker on the map; skip slope). (b) Lane-C shipped
+  v8.25.215 (LIVE+V1): equipped tee-marker rides the live-play hole eyebrow (the tee box) — verified
+  'HOLE 3 [P-disc]' clean. (c) REMAINING (Founder picks lane → fresh-context build): the Lane-A
+  illustrated OSM hole map + the live player dot + ball-marker on it. GPS distance-to-pin already live
+  (v8.25.55 distance.js). Location-on-signin = covered by the opt-in geolocation already in distance.js.
 - [ ] FULL SERIES E2E (test + real user, every function/button/dropdown/game, screenshots).
 
 ## ★★ CONVERGENCE MARATHON — Founder 2026-06-15 night (4 stacked directives; UNATTENDED)
