@@ -381,7 +381,7 @@ Router.register("shop", function() {
       // shared playerDecoSrc mapping = preview matches worn) around the avatar.
       var _decoUrl = (typeof playerDecoSrc === 'function') ? playerDecoSrc({ equippedCosmetics: { border: item.id } }) : '';
       if (_decoUrl) {
-        c += '<div class="shop-ring-stage"><div style="width:104px;height:104px;border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center">' + (_myAvatar ? '<div style="width:72px;height:72px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center">' + _myAvatar + '</div>' : '<div class="shop-ring-core"></div>') + '<img alt="" aria-hidden="true" src="' + _decoUrl + '" style="position:absolute;top:50%;left:50%;width:138%;height:138%;transform:translate(-50%,-50%);pointer-events:none"></div></div>';
+        c += '<div class="shop-ring-stage"><div style="width:104px;height:104px;border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center">' + (_myAvatar ? '<div style="width:72px;height:72px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center">' + _myAvatar + '</div>' : '<div class="shop-ring-core"></div>') + '<img alt="" aria-hidden="true" src="' + _decoUrl + '" style="position:absolute;top:50%;left:50%;width:140%;height:140%;transform:translate(-50%,-50%);pointer-events:none"></div></div>';
       } else {
         var ringCss = item.ringClass ? '' : 'border:' + (item.css || '3px solid ' + item.preview);
         // v8.25.42 — showcase the ring as a real object: 104px (was a cramped 56px
@@ -745,7 +745,7 @@ function shopPreviewCosmetic(itemId) {
     var _decoTry = (typeof playerDecoSrc === 'function') ? playerDecoSrc({ equippedCosmetics: { border: item.id } }) : '';
     if (_decoTry) {
       // raster decoration try-it-on: photo in a clean circle + the deco overlaid
-      stage = '<div style="width:132px;height:132px;border-radius:50%;position:relative;margin:0 auto;display:flex;align-items:center;justify-content:center"><div style="width:92px;height:92px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--bg3,var(--cb-canvas))">' + myAvatar + '</div><img alt="" aria-hidden="true" src="' + _decoTry + '" style="position:absolute;top:50%;left:50%;width:138%;height:138%;transform:translate(-50%,-50%);pointer-events:none"></div>';
+      stage = '<div style="width:132px;height:132px;border-radius:50%;position:relative;margin:0 auto;display:flex;align-items:center;justify-content:center"><div style="width:92px;height:92px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:var(--bg3,var(--cb-canvas))">' + myAvatar + '</div><img alt="" aria-hidden="true" src="' + _decoTry + '" style="position:absolute;top:50%;left:50%;width:140%;height:140%;transform:translate(-50%,-50%);pointer-events:none"></div>';
     } else {
       var ring = item.css || ('3px solid ' + (item.preview || 'var(--cb-brass)'));
       stage = '<div class="' + (item.ringClass || '') + '" style="width:118px;height:118px;border-radius:50%;border:' + ring + ';margin:0 auto;display:flex;align-items:center;justify-content:center;background:var(--bg3,var(--cb-canvas))">' + myAvatar + '</div>';

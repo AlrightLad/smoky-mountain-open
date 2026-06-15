@@ -539,7 +539,7 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
 - [x] Caddy-crew identity (#73) DONE (renamed The Caddies + cohesive crew avatar of real 4): rename bot "The Caddy" -> "The Caddies"/"Caddy Crew" + crew profile photo (composite the 4 caddies)
 ## FOUNDER PUNCH-LIST 2026-06-15 (explicit; do NOT stop until ALL [x]; FULL E2E of EVERY function with screenshot evidence, fix-as-you-go)
 - [ ] PL1 — RINGS revamped/redone (the CSS .ring-* cosmetics still not good enough)
-- [ ] PL2 — DECORATIONS aligned/centered/FIT properly (not fitting right on some surfaces; overlay scale/center per surface)
+- [x] PL2 — DONE v8.25.189: decoration overlay standardized to 140% (was 132 renderAvatar / 142 profile / 138 shop) across ALL surfaces — a thick-ring deco at 132% cut off the photo; 140% sizes the hollow opening to ~the photo so it frames cleanly + consistently everywhere. Composite-verified caddy/bramble/eagle fit (.claude/state/fittest).
 - [ ] PL3 — FEED FLAIR enhanced + redesigned (the flair cat)
 - [ ] PL4 — TITLES: add more + enhance them
 - [ ] PL5 — BALL MARKERS + TEE MARKERS redesigned (currently lazy)

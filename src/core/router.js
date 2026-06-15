@@ -486,7 +486,12 @@ function renderAvatar(p, size, clickToProfile) {
   // The decoration overlay: centred, ~1.32x so its hollow opening frames the
   // photo edge and the ornament extends just beyond; pointer-events:none so it
   // never eats taps; aria-hidden (decorative).
-  var decoOverlay = useDeco ? '<img alt="" aria-hidden="true" src="' + decoSrc + '" style="position:absolute;top:50%;left:50%;width:132%;height:132%;transform:translate(-50%,-50%);pointer-events:none;z-index:2">' : '';
+  // v8.25.18x (Founder PL2): 140% (was 132%) — a thicker-ring decoration's hollow
+  // opening at 132% sat smaller than the photo and CUT IT OFF; 140% sizes the
+  // opening to ~the photo so it frames cleanly, not crops. Standardised across
+  // every surface (renderAvatar + profile + shop preview + try-it-on) so the fit
+  // is consistent everywhere.
+  var decoOverlay = useDeco ? '<img alt="" aria-hidden="true" src="' + decoSrc + '" style="position:absolute;top:50%;left:50%;width:140%;height:140%;transform:translate(-50%,-50%);pointer-events:none;z-index:2">' : '';
   // Outer div: border + shadow + animation + ring class (NO overflow:hidden so glow/art/deco renders)
   // Inner div: overflow:hidden clips the image/fallback content to the circle
   return '<div' + (ringCls ? ' class="' + ringCls + '"' : '') + ' style="width:' + size + 'px;height:' + size + 'px;min-width:' + size + 'px;border-radius:50%;position:relative;' + ringStyle + (ringStyle ? ';' : '') + cursor + 'flex-shrink:0"' + click + '><div style="width:100%;height:100%;border-radius:50%;overflow:hidden">' + avatarInner + '</div>' + decoOverlay + '</div>';
