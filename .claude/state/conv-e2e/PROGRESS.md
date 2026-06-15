@@ -38,6 +38,23 @@ to genuinely nothing left. Close with the full multi-user data E2E.
   script (waitForFunction on the active #mainApp [data-page] container, cap 5s).
 - calendar: PAGEERROR permissions (same cold-start race class; page renders, ctrls=42).
 
+### v8.25.200 — DM INBOX stuck-skeleton (REAL BUG, found by sweep) — SHIPPED + V1-VERIFIED
+- Messages inbox showed 3 loading-skeleton rows forever (cold-start members.get()/
+  preview get() hang → never resolve/reject → .catch never fires). Same class as
+  chat (v8.25.166). Fix: dual settle-once + timeout safety nets (6s members, 5s
+  previews) → inbox always resolves. V1 post-deploy: STILL-SKELETON-AFTER-7s=false;
+  resolves to the full 12-member list (Lieph/Luke/Mr Parbaugh/Nick/… each "Start a
+  conversation"). `.claude/state/conv-e2e/dms-after.png`.
+- Sweep tool hardened (measures active #mainApp [data-page]:not(.hidden)) → redirect/
+  async routes (profile→members, tournament) no longer false-FAIL. Mobile now 40/41
+  OK (the 1 "fail" was this real DM bug, now fixed → 41/41).
+
+### CALENDAR uncaught PAGEERROR (FOLLOW-UP, low priority — page renders fine)
+- calendar shows an UNCAUGHT FirebaseError "insufficient permissions" (cold-start race
+  via a shared liveTeeTimes-class listener; calendar.js's own gets are all .catch'd).
+  Page renders (ctrls=42). Not a broken page — console noise. Find the shared listener
+  lacking an error cb + route through pbWarn for consistency. NOT chased yet.
+
 ### KNOWN benign class (do NOT chase as a render bug)
 - chat feed listener / wagers / calendar "Missing or insufficient permissions" on a
   FRESH custom-token sign-in = the cold-start rules-context race (listeners attach
