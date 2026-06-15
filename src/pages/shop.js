@@ -730,7 +730,7 @@ Router.register("shop", function() {
   //    + WHEN it came from. Read-only reference (owned decos still equip via the
   //    Decorations shelf + Your Locker) — this is the museum, not the till. Seeds
   //    from the 8 shipped decos; seasonal drops + retired frames accrue here over time.
-  var _archDecos = COSMETICS_CATALOG.filter(function(c) { return c.deco; });
+  var _archDecos = PRO_SHOP_CATALOG.filter(function(c) { return c.deco; });
   if (_archDecos.length) {
     var _decoArt = { border_deco_caddy: 'deco-caddy-companion.png', border_deco_holeinone: 'deco-hole-in-one.png', border_deco_champion: 'deco-champion.png', border_deco_azalea: 'deco-masters-azalea.png', border_deco_frost: 'deco-frost-delay.png', border_deco_eagle: 'deco-eagle.png', border_deco_bramble: 'deco-bramble-rose.png', border_deco_autumn: 'deco-autumn.png' };
     var _decoSeason = { border_deco_azalea: 'Seasonal · Spring drop', border_deco_frost: 'Seasonal · Winter drop', border_deco_autumn: 'Seasonal · Fall drop' };
