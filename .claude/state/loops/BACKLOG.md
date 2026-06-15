@@ -556,9 +556,16 @@ the SAME gold plate — diversify within the brass/H&B language or consolidate.)
   have hit their ceiling — they don't fit/align AND don't hit the brass/H&B bar. TOOL =
   Vertex Imagen (the proven pipeline that made the decorations the Founder approves;
   scripts/_gen-vertex-art.mjs + _finish-art.py, ~$0.02/img, billing-works; Gemini backup).
-  PLAN: (1) RESEARCH real H&B / premium-club ring references (enamel ball-marker bezels,
-  struck-brass laurel rims, rope-and-stanchion) — heavily VET + self-rate prompts BEFORE
-  generating (credit-caution, [[feedback_gemini_cosmetics_credit_caution]]); (2) generate a
+  ⚠ FIRST ATTEMPT MISSED (2026-06-15): a struck-brass laurel ring generated clean but read
+  as a generic GOLD MEDAL, not PARBAUGHS (Founder: "didn't fit the branding/direction …
+  explain the app and our direction BEFORE having these made"). ROOT FIX shipped:
+  `.claude/state/design/BRAND-BRIEF.md` — hand it to the tool BEFORE every generation
+  ([[feedback_brief_the_brand_before_generating]]). Every ring prompt MUST carry: the lane
+  (brass/H&B), our palette (felt-green/claret/antique-brass/cream — NOT yellow-gold), a
+  PARBAUGHS motif (rose / crossed hickories / claret pennant — NOT Roman laurel), restrained
+  brass. Consider OpenRouter Fusion / a Workflow critic-panel to judge brand-fit pre-Founder.
+  PLAN: (1) RESEARCH real H&B / premium-club ring references + GROUND in the BRAND-BRIEF —
+  heavily VET + self-rate prompts BEFORE generating (credit-caution, [[feedback_gemini_cosmetics_credit_caution]]); (2) generate a
   cohesive set of transparent-PNG ring FRAMES in the brass/H&B house style; (3) finish via
   _finish-art.py (carve hollow center to the avatar opening — fixes the FIT: concentric +
   opening==photo); (4) render rings as raster overlays exactly like decorations (playerDecoSrc-
