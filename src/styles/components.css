@@ -5381,7 +5381,7 @@ img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width:
 .shop-shelf__head{display:flex;align-items:baseline;justify-content:space-between;margin:18px 0 10px}
 .shop-shelf__title{font-family:var(--font-display);font-size:17px;color:var(--cb-ink)}
 .shop-shelf__meta{font-size:10px;color:var(--cb-mute);letter-spacing:.5px}
-.shop-shelf__rail{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(150px,180px);gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:2px 2px 8px}
+.shop-shelf__rail{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(150px,180px);gap:10px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:2px 2px 8px;min-width:0;max-width:100%}
 
 /* Trophy Cabinet — glass front, never a buy button */
 .shop-cabinet{border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:16px;margin:18px 0;background:linear-gradient(170deg,#0f1511,#141b16);box-shadow:inset 0 0 40px rgba(0,0,0,.5)}
@@ -5394,7 +5394,7 @@ img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width:
 /* The Archive (v8.25.205) — provenance museum for avatar decorations. Sits on the
    dark .shop-cabinet ground, so each item is a subtle light-on-dark card (the shop's
    default .shop-item is dark-on-light). Horizontal rail like the other shelves. */
-.shop-archive .shop-shelf__rail{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 8px;-webkit-overflow-scrolling:touch}
+.shop-archive .shop-shelf__rail{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 8px;-webkit-overflow-scrolling:touch;min-width:0;max-width:100%}
 .shop-archive__item{flex:0 0 154px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:12px 12px 14px;text-align:center}
 .shop-archive__stage{display:flex;align-items:center;justify-content:center;min-height:88px;margin-bottom:6px}
 .shop-archive__art{width:78px;height:78px;object-fit:contain;filter:drop-shadow(0 2px 5px rgba(0,0,0,.45))}
