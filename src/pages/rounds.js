@@ -554,17 +554,17 @@ function renderRoundDetail(roundId, prefetched) {
   h += '<div class="rd-dateline">' + dateBits.filter(Boolean).join(' · ') + '</div>';
   h += '</div>';
 
-  // Notice strip — agate summary
+  // Notice strip — the scoring BREAKDOWN only (Founder 2026-06-15: strokes /
+  // to-par / putts moved out — they live in "By the numbers" below and the
+  // masthead deck, so this strip no longer duplicates them; it now shows the
+  // shape of the round, which nothing else does).
   if (nEagle + nBird + nPar + nBog + nDouble > 0) {
     var noteBits = [];
-    noteBits.push('<b>' + round.score + '</b> strokes');
-    if (diffStr) noteBits.push('<b>' + diffStr + '</b> to par');
-    if (nEagle) noteBits.push(nEagle + ' eagle' + (nEagle === 1 ? '' : 's'));
-    noteBits.push(nBird + ' birdie' + (nBird === 1 ? '' : 's'));
-    noteBits.push(nPar + ' par' + (nPar === 1 ? '' : 's'));
-    noteBits.push(nBog + ' bogey' + (nBog === 1 ? '' : 's'));
-    if (nDouble) noteBits.push(nDouble + ' double+');
-    if (puttAvg !== null) noteBits.push(puttAvg.toFixed(1) + ' putts/hole');
+    if (nEagle) noteBits.push('<b>' + nEagle + '</b> eagle' + (nEagle === 1 ? '' : 's'));
+    noteBits.push('<b>' + nBird + '</b> birdie' + (nBird === 1 ? '' : 's'));
+    noteBits.push('<b>' + nPar + '</b> par' + (nPar === 1 ? '' : 's'));
+    noteBits.push('<b>' + nBog + '</b> bogey' + (nBog === 1 ? '' : 's'));
+    if (nDouble) noteBits.push('<b>' + nDouble + '</b> double+');
     h += '<div class="rd-notice">' + noteBits.join(' &nbsp;·&nbsp; ') + '</div>';
   }
 
@@ -580,42 +580,40 @@ function renderRoundDetail(roundId, prefetched) {
     };
     var _sum = function(arr, a, b) { var t = 0; for (var k = a; k < b; k++) { var v = parseInt(arr[k]); if (!isNaN(v)) t += v; } return t; };
 
+    // 9-over-9 (Founder 2026-06-15): an 18-hole card stacks Front nine over Back
+    // nine so the whole scorecard fits the phone width — no sideways scroll. Each
+    // block is a self-contained table; `trailing` columns are the segment + grand
+    // totals (Out for the front, In + Tot for the back, Tot for a single nine).
+    var _block = function (from, to, labelBase, trailing) {
+      var s = '<table class="rd-card"><thead><tr><th>Hole</th>';
+      for (var k = from; k < to; k++) s += '<th>' + (labelBase + (k - from)) + '</th>';
+      trailing.forEach(function (t) { s += '<th>' + t.label + '</th>'; });
+      s += '</tr></thead><tbody>';
+      s += '<tr class="rd-card__row-par"><th>Par</th>';
+      for (var pp = from; pp < to; pp++) s += '<td>' + (hp[pp] != null ? parseInt(hp[pp]) : '—') + '</td>';
+      trailing.forEach(function (t) { s += '<td class="' + t.cls + '">' + t.par + '</td>'; });
+      s += '</tr>';
+      s += '<tr class="rd-card__row-score"><th>' + escHtml(firstName) + '</th>';
+      for (var ss = from; ss < to; ss++) s += _scCell(ss);
+      trailing.forEach(function (t) { s += '<td class="' + t.cls + '">' + t.score + '</td>'; });
+      s += '</tr></tbody></table>';
+      return s;
+    };
+
     h += '<div class="rd-section">';
     h += '<div class="rd-section__eyebrow">Hole by hole</div>';
     h += '<h2 class="rd-section__title">The card</h2>';
-    h += '<div class="rd-card-scroll"><table class="rd-card"><thead><tr><th>Hole</th>';
+    h += '<div class="rd-card-stack">';
     if (is18) {
-      for (var c1 = 0; c1 < 9; c1++) h += '<th>' + (c1 + 1) + '</th>';
-      h += '<th>Out</th>';
-      for (var c2 = 9; c2 < 18; c2++) h += '<th>' + (c2 + 1) + '</th>';
-      h += '<th>In</th><th>Tot</th>';
+      h += _block(0, 9, 1, [{ label: 'Out', par: _sum(hp, 0, 9), score: _sum(hs, 0, 9), cls: 'rd-card__seg' }]);
+      h += _block(9, 18, 10, [
+        { label: 'In', par: _sum(hp, 9, 18), score: _sum(hs, 9, 18), cls: 'rd-card__seg' },
+        { label: 'Tot', par: _sum(hp, 0, 18), score: (round.score || _sum(hs, 0, 18)), cls: 'rd-card__tot' }
+      ]);
     } else {
-      for (var c3 = 0; c3 < nCols; c3++) h += '<th>' + (startHole + c3) + '</th>';
-      h += '<th>Tot</th>';
+      h += _block(0, nCols, startHole, [{ label: 'Tot', par: _sum(hp, 0, nCols), score: (round.score || _sum(hs, 0, nCols)), cls: 'rd-card__tot' }]);
     }
-    h += '</tr></thead><tbody>';
-    h += '<tr class="rd-card__row-par"><th>Par</th>';
-    if (is18) {
-      for (var p1 = 0; p1 < 9; p1++) h += '<td>' + (hp[p1] != null ? parseInt(hp[p1]) : '—') + '</td>';
-      h += '<td class="rd-card__seg">' + _sum(hp, 0, 9) + '</td>';
-      for (var p2 = 9; p2 < 18; p2++) h += '<td>' + (hp[p2] != null ? parseInt(hp[p2]) : '—') + '</td>';
-      h += '<td class="rd-card__seg">' + _sum(hp, 9, 18) + '</td><td class="rd-card__tot">' + _sum(hp, 0, 18) + '</td>';
-    } else {
-      for (var p3 = 0; p3 < nCols; p3++) h += '<td>' + (hp[p3] != null ? parseInt(hp[p3]) : '—') + '</td>';
-      h += '<td class="rd-card__tot">' + _sum(hp, 0, nCols) + '</td>';
-    }
-    h += '</tr>';
-    h += '<tr class="rd-card__row-score"><th>' + escHtml(firstName) + '</th>';
-    if (is18) {
-      for (var s1 = 0; s1 < 9; s1++) h += _scCell(s1);
-      h += '<td class="rd-card__seg">' + _sum(hs, 0, 9) + '</td>';
-      for (var s2 = 9; s2 < 18; s2++) h += _scCell(s2);
-      h += '<td class="rd-card__seg">' + _sum(hs, 9, 18) + '</td><td class="rd-card__tot">' + (round.score || _sum(hs, 0, 18)) + '</td>';
-    } else {
-      for (var s3 = 0; s3 < nCols; s3++) h += _scCell(s3);
-      h += '<td class="rd-card__tot">' + (round.score || _sum(hs, 0, nCols)) + '</td>';
-    }
-    h += '</tr></tbody></table></div>';
+    h += '</div>';
     h += '<div class="rd-legend">';
     h += '<span class="rd-legend__item"><span class="rd-legend__dot" style="background:rgba(var(--cb-brass-rgb),.55)"></span>Eagle+</span>';
     h += '<span class="rd-legend__item"><span class="rd-legend__dot" style="background:rgba(var(--cb-moss-rgb),.55)"></span>Birdie</span>';

@@ -4864,6 +4864,14 @@ img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width:
 
 /* Section A — hole-by-hole card table (the centerpiece) */
 .rd-card-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -16px; padding: 0 16px; }
+/* 9-over-9 stack: Front nine over Back nine so 18 holes fit the phone width with
+   no sideways scroll. Cells tighten to ~equal columns; the row label is capped
+   with an ellipsis so a long name can never push the table past the viewport. */
+.rd-card-stack { display: flex; flex-direction: column; gap: 14px; }
+.rd-card-stack .rd-card { table-layout: fixed; }
+.rd-card-stack .rd-card th, .rd-card-stack .rd-card td { padding: 8px 2px; font-size: 12.5px; }
+.rd-card-stack .rd-card thead th:first-child, .rd-card-stack .rd-card tbody th { width: 13%; max-width: 13%; overflow: hidden; text-overflow: ellipsis; }
+.rd-card-stack .rd-card__row-score td { font-size: 13px; }
 .rd-card { width: 100%; border-collapse: collapse; font-variant-numeric: lining-nums tabular-nums; }
 .rd-card th, .rd-card td { padding: 9px 5px; text-align: center; font-size: 13px; }
 .rd-card col.rd-card__hcol { width: auto; }
