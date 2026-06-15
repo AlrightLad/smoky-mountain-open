@@ -395,7 +395,10 @@ function playerDecoSrc(p) {
     'border_deco_holeinone': 'deco-hole-in-one.png',
     'border_deco_champion': 'deco-champion.png',
     'border_deco_azalea': 'deco-masters-azalea.png',
-    'border_deco_frost': 'deco-frost-delay.png'
+    'border_deco_frost': 'deco-frost-delay.png',
+    'border_deco_eagle': 'deco-eagle.png',
+    'border_deco_bramble': 'deco-bramble-rose.png',
+    'border_deco_autumn': 'deco-autumn.png'
   };
   var f = map[p.equippedCosmetics.border];
   if (!f) return '';

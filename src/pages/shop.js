@@ -196,7 +196,12 @@ var PRO_SHOP_CATALOG = [
   {id:"border_deco_holeinone", deco:true, cat:"border", tier:"commem", name:"Hole-in-One",     price:0, earnedBy:"Record a hole-in-one", preview:"#7b2d3a", desc:"Confetti, a dropped ball, and the cup at six o'clock — the frame they only hand out once you've actually done the deed. Earned, never sold."},
   {id:"border_deco_champion",  deco:true, cat:"border", tier:"commem", name:"Champion",        price:0, earnedBy:"Season champion only", preview:"#caa75c", desc:"The claret jug crowns the rim over a green-jacket lapel and laurels. The most earned frame in the club — season champions only."},
   {id:"border_deco_azalea",    deco:true, lvl:5, cat:"border", tier:"locker", name:"Masters Azalea",   price:2200, preview:"#e88aa6", desc:"A spring burst of azalea blossoms garlands the rim — our nod to major season. A seasonal drop; here while the dogwoods bloom."},
-  {id:"border_deco_frost",     deco:true, lvl:5, cat:"border", tier:"locker", name:"Frost Delay",      price:2200, preview:"#bcd6e6", desc:"Snow caps, icicles and crossed frosted hickories — for the diehards who tee off in the cold. A seasonal winter drop."}
+  {id:"border_deco_frost",     deco:true, lvl:5, cat:"border", tier:"locker", name:"Frost Delay",      price:2200, preview:"#bcd6e6", desc:"Snow caps, icicles and crossed frosted hickories — for the diehards who tee off in the cold. A seasonal winter drop."},
+  // round 2 — varied unlock methods: eagle = ACHIEVEMENT (earned), bramble = LEVEL,
+  // autumn = SEASONAL purchase. Fills the Decorations shelf with chase variety.
+  {id:"border_deco_eagle",     deco:true, cat:"border", tier:"commem", name:"Eagle",            price:0, earnedBy:"Card an eagle (2-under on a hole)", preview:"#caa75c", desc:"Spread eagle wings sweep the rim under a laurel-and-star crown. You don't buy this one — you fly it down the fairway and watch it drop."},
+  {id:"border_deco_bramble",   deco:true, lvl:4, cat:"border", tier:"locker", name:"Bramble Rose",     price:2000, preview:"#7b2d3a", desc:"Claret and cream roses wound through forest-green thorns — the Parbaughs rose-and-bramble in full bloom. Our signature frame."},
+  {id:"border_deco_autumn",    deco:true, lvl:6, cat:"border", tier:"locker", name:"Autumn Nine",      price:2400, preview:"#c2622a", desc:"Maple and oak leaves in burnt-orange and rust garland the rim, an acorn at six o'clock. A seasonal drop for the fall golf stretch."}
 ];
 // Legacy items kept ON SALE in the Paint Locker (the best ~15); every other
 // legacy item is retired from sale. Owned items are grandfathered forever —
