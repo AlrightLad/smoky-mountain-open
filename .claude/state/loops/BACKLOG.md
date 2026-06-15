@@ -545,7 +545,10 @@ STANDARDIZING on brass + H&B and AWAY from rubber-hose styling FOR THE COSMETIC 
 (rubber-hose stays the CADDIE + brand-character layer, NOT the shop items). **BRAND
 COHESIVENESS IS PARAMOUNT** — review every surface against the one house style; create
 brand-first. Every item must hit ~9.5 (agent self-caps 9.4 per AMD-028; Founder signs ≥9.5
-on staging). Sub-items:
+on staging). **EVERY ITEM MUST BE UNIQUE** (Founder 2026-06-15): if any cosmetics
+look too much alike, CONSOLIDATE the design + REMOVE the duplicates — no two items
+should read the same. (Immediate hit: the 6 `.title-engraved` titles all render as
+the SAME gold plate — diversify within the brass/H&B language or consolidate.) Sub-items:
 - [~] TITLES — DONE-pass-1 v8.25.196 (4 brass/H&B materials + 8 new). Next: apply the same
   material bar to the rest (the 6 engraved gold plates read samey — diversify within H&B).
 - [ ] ALL OTHER COSMETIC TYPES to the brass/H&B 9.5 bar: rings (struck-metal done; push to
