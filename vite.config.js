@@ -61,7 +61,11 @@ var DEFERRED_PAGES = [
   // crisis-banner.js was here briefly — moved to src/core/ since it must
   // load on every page (Firestore listener + overlay rendering).
   'syncround.js', 'scramblelive.js', 'seasonrecap.js', 'wrapped.js', 'awards.js',
-  'round.js', 'spectator.js', 'spectator-stream.js', 'shop.js', 'wagers.js', 'social.js', 'bounties.js', 'richlist.js', 'roundhistory.js', 'leagues.js', 'findplayers.js', 'drills.js'
+  'round.js', 'spectator.js', 'spectator-stream.js', 'shop.js', 'wagers.js', 'social.js', 'bounties.js', 'richlist.js', 'roundhistory.js', 'leagues.js', 'findplayers.js', 'drills.js',
+  // HQ desktop immersive showcase (Founder 2026-06-15). Additive standalone route
+  // for now; wires into the desktop home branch after Founder review (build spec:
+  // .claude/state/loops/HQ-DESKTOP-SHOWCASE-BUILD-SPEC.md).
+  'home-showcase.js'
 ];
 
 var PAGE_FILES = IMMEDIATE_PAGES.concat(DEFERRED_PAGES);

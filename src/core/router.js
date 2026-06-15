@@ -103,6 +103,10 @@ var Router = (function() {
     var stickyComposer = current.page === "dm-thread" || current.page === "chat";
     nav.style.display = (inLiveRound || stickyComposer) ? "none" : "";
     if (typeof document !== "undefined" && document.body) document.body.classList.toggle("on-sticky-composer", stickyComposer);
+    // v8.25.216 — the desktop immersive showcase DIVERGES from the app: hide the
+    // Reading Room sidebar + drop #mainApp's left reservation so the bands go
+    // full-bleed (CSS under body.on-showcase). The mobile PWA never routes here.
+    if (typeof document !== "undefined" && document.body) document.body.classList.toggle("on-showcase", current.page === "showcase");
     var tabs = [
       { match: ["home","round","standings","seasonrecap","awards","feed"] },
       { match: ["activity","rounds","playnow","range","scramble-live","syncround"] },
