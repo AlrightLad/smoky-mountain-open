@@ -5451,10 +5451,13 @@ img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width:
 /* Foil-blocked cream cardstock (H&B membership-card stationery) — brass-foil
    debossed text on a cream card with a blind-deboss double edge. Robust (no
    background-clip:text fragility), understated luxury. */
-.title-foil{display:inline-block;position:relative;font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.7px;padding:3px 12px;border-radius:2px;
+.title-foil{display:inline-block;position:relative;font-family:var(--font-display);font-size:11px;font-weight:700;letter-spacing:.7px;padding:3px 12px 5px;border-radius:2px;
   color:#9a7434!important;background:linear-gradient(180deg,#fbf6ea,#f1e8d3);
   text-shadow:0 1px 0 rgba(255,255,255,.75),0 -0.5px 0 rgba(120,92,40,.35);
   box-shadow:inset 0 0 0 1px rgba(140,118,70,.4),inset 0 0 0 2.5px rgba(255,255,255,.55),0 1px 2px rgba(0,0,0,.26)}
+/* accent ink rule under the foil text (uses --ti) so each foil card is distinct
+   (Founder: each item unique) while staying brass-foil-on-cream stationery. */
+.title-foil::after{content:"";position:absolute;left:8px;right:8px;bottom:2.5px;height:1.5px;border-radius:1px;background:var(--ti,#9a7434);opacity:.8}
 /* v8.24.76 — pc36 Member No.: a leather bag tag with a brass rivet (distinct from pc14's brass engraving) */
 .title-tag-leather{display:inline-block;position:relative;background:linear-gradient(165deg,#8a5a30,#6e4422 55%,#5a3418);color:#f0e2c4!important;font-style:normal!important;font-weight:700;font-size:9px!important;letter-spacing:1.4px;text-transform:uppercase;padding:3px 10px 3px 16px;border-radius:3px;box-shadow:inset 0 1px 0 rgba(255,255,255,.18),inset 0 0 0 1px rgba(0,0,0,.25),0 1px 2px rgba(0,0,0,.4)}
 .title-tag-leather::before{content:"";position:absolute;left:5px;top:50%;width:5px;height:5px;margin-top:-2.5px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f4e3b2,#8a6a2e);box-shadow:0 0 1px rgba(0,0,0,.5)}

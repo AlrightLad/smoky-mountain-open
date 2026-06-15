@@ -98,7 +98,7 @@ var COSMETICS_CATALOG = [
   {id:"title_course_legend", cat:"title", name:"Course Legend",       price:1000, desc:"Owns a course, everyone knows your name there", css:"", preview:"var(--gold)"},
   // PL4 — more on-brand titles (matched voice + price scale). Distinct accent
   // colours give the shelf variety; each renders as the engraved .title-plain chip.
-  {id:"title_the_closer",    cat:"title", name:"The Closer",          price:800, desc:"Never met a clutch putt they didn't drain",        css:"", preview:"var(--gold)"},
+  {id:"title_the_closer",    cat:"title", name:"The Closer",          price:800, desc:"Never met a clutch putt they didn't drain",        css:"", preview:"#23405e"},
   {id:"title_fairway_finder",cat:"title", name:"Fairway Finder",      price:600, desc:"Splits every fairway, allergic to the rough",      css:"", preview:"#3f7d4f"},
   {id:"title_wind_cheater",  cat:"title", name:"Wind Cheater",        price:700, desc:"Flights it low when the flags are snapping",       css:"", preview:"#5b7c99"},
   {id:"title_birdie_hunter", cat:"title", name:"Birdie Hunter",       price:800, desc:"Pin-seeking missile, always firing at the flag",    css:"", preview:"#c0392b"},
@@ -324,7 +324,10 @@ function shopHasEarned(itemId) {
 // keep their character treatments; pc14/36 keep their dedicated plate/leather-tag).
 var TITLE_MATERIAL = {
   title_early_bird: "enamel", title_night_owl: "enamel", title_hot_streak: "enamel", title_birdie_hunter: "enamel", pc16_postman: "enamel",
-  title_grinder: "engraved", title_sharpshooter: "engraved", title_course_legend: "engraved", title_big_spender: "engraved", title_the_closer: "engraved", title_sandbagger: "engraved",
+  // Only ONE engraved gold plate (pc14 owns it) — the others spread across
+  // accent-bearing materials so no two titles read alike (Founder: each unique).
+  title_course_legend: "engraved",
+  title_grinder: "leather", title_sharpshooter: "enamel", title_big_spender: "foil", title_the_closer: "enamel", title_sandbagger: "foil",
   title_road_warrior: "leather", title_iron_will: "leather", title_fairway_finder: "leather", title_comeback_kid: "leather", title_wind_cheater: "leather",
   title_mr_consistent: "foil", title_the_diplomat: "foil", title_dew_sweeper: "foil"
 };
