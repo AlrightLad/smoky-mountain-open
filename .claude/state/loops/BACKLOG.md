@@ -73,11 +73,15 @@ Bigger phases (research/gen/taste — tracked in the directive doc):
   photos flush (the #1 "rings haven't changed" complaint RESOLVED) + shop overflow bounded; v8.25.225
   premium buy CTAs (struck-brass medallion bar + price token + try-it-on pill — the "cheap buttons"
   complaint); v8.25.226 More page Shop felt-focal restored (the "shop bland on More" regression).
-  REMAINING (5-agent diagnosis in the workflow output, exact fixes captured): (a) pc56_sterling marker
-  gradient-id collision (router.js ~632 — real bug); (b) MEMBER LIST bland + FRIENDS/cross-league
-  viewing (members.js — needs the friends feature, plan in surface 5); (c) caddie voice-packs + feed
-  FLAIR need real raster art (CSS can't draw them); (d) avatar-cutoff robust structural fix (inset
-  photo into the frame hole — decos frame OK now so lower priority).
+  MEMBER LIST elevated + cross-league surfaced — DONE v8.25.227 (LIVE+V1): brass "N leagues · M
+  shared" chip on multi-league members (existing p.leagues data, zero new collections), hover brass
+  left-bar + felt name, handicap promoted to felt-green focal; Find Players reframed as the
+  cross-league/add-friends on-ramp. REMAINING (workflow fixes captured): (a) pc56_sterling marker
+  gradient-id collision (router.js ~632 — minor render glitch, edge case); (b) TRUE FRIENDS graph
+  (friendIds[] + addFriend/removeFriend in data.js + follow button + Friends tab on Find Players —
+  surface-5 plan; a real feature, build fresh); (c) caddie voice-packs + feed FLAIR raster art (gen
+  via tools + wire); (d) avatar-cutoff robust structural fix (inset photo into the hole — decos
+  frame OK now, lower priority).
 - [~] (was) RINGS taste-block — SUPERSEDED: rings now shipped as the 8 real decorations above. MERCH OVERHAUL COMPLETE: apparel + accessories + leisure
   teaser + showcase all real premium art. Proposed ring options surfaced (rubber-hose caddy-peek
   frame vs. clean enamel-on-cream ring) — await his pick, then execute via the proven pipeline.
