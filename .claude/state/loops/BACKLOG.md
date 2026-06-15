@@ -600,6 +600,28 @@ the SAME gold plate — diversify within the brass/H&B language or consolidate.)
   [[project_market_strategy_2026_06]]); build Crest FIRST. (b) **Bag Tag** — hanging
   brass+leather tag on the profile card, second. Both ≥9.5 brass/H&B; Founder signs off.
 
+## MARATHON — UI + ONBOARDING (Founder 2026-06-15: "we will need UI and onboarding completed at some point as well in the marathon")
+- [ ] UI COMPLETION pass — the per-page 9.5 convergence across the whole app (folds in #41
+  convergence + the brass/H&B cohesion standard). After the cosmetic-system overhaul lands.
+- [ ] ONBOARDING completion — finish the onboarding rebuild ([[project_onboarding_rebuild_2026_06_12]]
+  Ship 2: cartoon swing + caddies) + the Figma-referenced flow redesign (#57). Generator-first
+  for the graphics (Imagen / Figma Make per the tooling rec below).
+
+## DESIGN TOOLING (Founder asked 2026-06-15: "maybe I need figma or a design app/AI to review
+## these and help be your taste") — agent recommendation captured; Founder picks what to set up:
+- ASSETS (rings/frames/decorations/merch/onboarding art): GENERATOR-FIRST = Vertex Imagen
+  (proven, billing-works) / Gemini (cleared). This is what fixes "atrocious" CSS cosmetics —
+  generation, not review, produces the asset. NO new tool needed; already have it.
+- TASTE/REVIEW: a vision-anchored AI design-critique loop (capture → score vs curated H&B +
+  Linear/Stripe/Mobbin reference shots → iterate BEFORE Founder sees it). The agent can run
+  this now; sharper than Figma for an autonomous workflow. Optional: Mobbin acct (taste-ref
+  library, ~paid) to feed references.
+- FIGMA specifically: best for HUMAN-in-the-loop mockups; **Figma Make (AI-to-design)** is
+  genuinely useful for ONBOARDING + UI-flow direction mockups the Founder can react to — worth
+  trying for #57. For per-item cosmetics, Imagen+critique beats Figma.
+- RECOMMENDATION: (1) keep generating cosmetics via Imagen + run the AI-critique loop; (2) use
+  Figma Make for onboarding/UI flows; (3) Founder decides on a Mobbin acct for taste refs.
+
 ## FOUNDER PUNCH-LIST 2026-06-15 (explicit; do NOT stop until ALL [x]; FULL E2E of EVERY function with screenshot evidence, fix-as-you-go)
 - [ ] PL1 — RINGS revamped/redone (the CSS .ring-* cosmetics still not good enough)
 - [x] PL2 — DONE v8.25.189: decoration overlay standardized to 140% (was 132 renderAvatar / 142 profile / 138 shop) across ALL surfaces — a thick-ring deco at 132% cut off the photo; 140% sizes the hollow opening to ~the photo so it frames cleanly + consistently everywhere. Composite-verified caddy/bramble/eagle fit (.claude/state/fittest).
