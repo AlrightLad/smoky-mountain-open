@@ -630,13 +630,17 @@ function pbMarkerGlyph(id, px) {
         + '<path d="M12.5 3.6l5.2 1.7-5.2 1.7z" fill="#c0392b"/>';
       break;
     case 'pc56_sterling': // v8.25.54 — hammered sterling marker, sapphire-enamel pip
-      // first gradient-based glyph here; suffix the def id with px so a 56px shop
-      // stage + a 12px worn instance on the same page never share a document id.
-      s = '<circle cx="12" cy="12" r="9.5" fill="url(#stg' + px + ')" stroke="#9aa0a8" stroke-width="1"/>'
+      // NO <defs>: the function renders many markers per page (shelf + Front Table)
+      // and a url(#id) gradient binds to the FIRST matching def in document order, so
+      // two 66px instances collided. Fake the radial gleam with stacked solid discs
+      // (light core -> mid -> shade rim), exactly like every other glyph here.
+      s = '<circle cx="12" cy="12" r="9.5" fill="#a9aeb5" stroke="#9aa0a8" stroke-width="1"/>'
+        + '<circle cx="12" cy="12" r="8.4" fill="#dfe2e6"/>'
+        + '<circle cx="10.4" cy="9.6" r="5.2" fill="#eef1f4"/>'
+        + '<circle cx="9.4" cy="8.6" r="2.6" fill="#f8fafc"/>'
         + '<circle cx="12" cy="12" r="7" fill="none" stroke="#b8bdc4" stroke-width=".8" opacity=".7"/>'
         + '<path d="M8 8.5l1.5 1M15 9l-1.3 1.2M9 15l1.2-1M15.5 14.5l-1.4-1" stroke="#8a9099" stroke-width=".7" opacity=".6"/>'
-        + '<circle cx="12" cy="12" r="2" fill="#1f5fa0"/><circle cx="11.3" cy="11.3" r=".7" fill="#bcd6f2"/>'
-        + '<defs><radialGradient id="stg' + px + '" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#f4f6f8"/><stop offset="55%" stop-color="#dfe2e6"/><stop offset="100%" stop-color="#a9aeb5"/></radialGradient></defs>';
+        + '<circle cx="12" cy="12" r="2" fill="#1f5fa0"/><circle cx="11.3" cy="11.3" r=".7" fill="#bcd6f2"/>';
       break;
     // v8.25.114 — pc47 + pc49 were sold LIVE but had NO glyph case, so they fell
     // to default:'' and rendered NOTHING when worn (dead purchase, P9 no-op —
