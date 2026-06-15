@@ -32,7 +32,12 @@ Remaining FOUNDATIONAL bugs (next, visual-verified):
 - [x] Calendar: dots overflow — FIXED v8.25.210 (LIVE+V1): overflow:hidden on .cal-cell/
   .cal-cellbtn/.cal-chips clips a busy day's wrapping dot-row within the cell. V1: injected
   18 dots across cells incl. the edge column → spillBeyondCell=0, dots wrap+clip cleanly.
-- [ ] SVG nav icons (Home/Play/Courses/Events/More) → 9.5.
+- [x] SVG nav icons → 9.5 — DONE v8.25.214 (LIVE+V1): redrew all 5 tab icons on one 24-grid +
+  stroke-linecap/linejoin:round (1.6px, active 1.9px) so they read as one premium line family
+  (was mixed Feather glyphs, butt caps, no joins). Fixed the real collision — Play AND Courses
+  were both flags; Courses is now a map-pin → 5 distinct metaphors (house / flagstick-in-green /
+  map-pin / trophy / menu). V1: isolated harness + real staging home both clean+cohesive; active
+  state intact. (Founder owns the final ≥9.5 taste nod per AMD-028; this is the agent ≤9.4 lift.)
 - [x] Scorecard (shareable) — DONE v8.25.213 (LIVE+V1). Structural asks both shipped on the
   round-detail page (= the shareable scorecard): (1) hole-by-hole now stacks Front-9 over Back-9
   (.rd-card-stack, table-layout:fixed + ellipsis-capped label) → fits the phone, NO sideways scroll
