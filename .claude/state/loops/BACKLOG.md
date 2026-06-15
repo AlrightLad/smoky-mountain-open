@@ -83,8 +83,20 @@ Bigger phases (research/gen/taste — tracked in the directive doc):
   (#57, his idea) + cartoon art. Settings/More: the conservative wins shipped (nav-icons v8.25.214, More
   'Play & Compete' merge v8.25.217); the DEEPER IA restructure (which sections to merge/promote/hide,
   what "convoluted" means to him) needs his priority direction to avoid churning a surface he'll re-judge.
-- [~] GPS/course-map + cosmetics-in-play — RESEARCH+PROPOSAL DONE; Lane-C cosmetics shipped;
-  MAP BUILD blocked on Founder lane-pick. (a) Research complete (P1): only free hole-geometry =
+- [~] GPS/course-map + cosmetics-in-play — Founder PICKED LANE A (2026-06-15); slope cost-doc
+  DONE; Lane-A DATA PATH VERIFIED; the map RENDER+INTEGRATE build is next (fresh context).
+  • SLOPE/ROLL: cost-options doc written (task-queue/founder/green-slope-roll-cost-options.md) — 5-agent
+    research → REC: defer pro data (no free source; ~$4.8-5k/yr quote-only B2B, wrong "pro rangefinder"
+    posture for a casual league); if ever wanted, build a FREE crowdsourced illustrated "feel the break".
+  • LANE-A DATA PATH (verified 2026-06-15): OSM golf geometry via Overpass works (needs User-Agent
+    header; rate-limited — cache per course). Coverage is course-dependent: DESTINATION/trip courses are
+    well-mapped (Pebble Beach 178 elements; Sequoyah National — a league trip course — 234 elements, all
+    18 holes + 21 greens, full fairway/green/tee/bunker polygons via `out geom`). Local York munis
+    uncertain (Nominatim geocode rate-limited; per-course check at build + graceful fallback to the
+    distance strip, as the proposal specified). So Lane A is viable WITH the mapped/unmapped fallback.
+  • REMAINING BUILD: Overpass fetch + cache to courses/{id}.geo → illustrated vector hole renderer
+    (fairway/green/tee/bunkers in brand tokens) → live player GPS dot + ball-marker on it → live-play
+    integration → V1. Tee-marker cosmetic-in-play already shipped (v8.25.215). (a) Research complete (P1): only free hole-geometry =
   OpenStreetMap golf tags via Overpass (ODbL, volunteer-coverage); satellite imagery = paid+off-brand;
   **green slope/green-roll has NO free source** (GolfIntelligence/iGolf/GolfLogix all paid). Proposal
   w/ 3 lanes + rec: task-queue/founder/course-map-cosmetics-in-play-proposal.md (rec: Lane-A stylized
