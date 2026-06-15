@@ -24,7 +24,11 @@ const ROUTES = [
   'home', 'playnow', 'rounds', 'standings', 'members', 'feed', 'chat', 'shop',
   'merch', 'settings', 'richlist', 'courses', 'wagers', 'bounties', 'challenges',
   'trips', 'scramble', 'records', 'seasonrecap', 'trophyroom', 'drills', 'teetimes',
-  'aces', 'awards', 'social', 'leagues'
+  'aces', 'awards', 'social', 'leagues',
+  // v8.25.199 convergence-marathon: extend to the remaining safe top-level routes
+  // (param-routes like round/scorecard/dm-thread/scramble-live need context, skipped here).
+  'activity', 'caddynotes', 'calendar', 'dms', 'faq', 'findplayers', 'partygames',
+  'profile', 'profile-edit', 'range', 'rules', 'roundhistory', 'wrapped', 'tournament', 'bugreport'
 ];
 
 const admin = (await import('firebase-admin')).default;
@@ -32,8 +36,11 @@ const sa = JSON.parse((await import('fs')).readFileSync(SA, 'utf8'));
 if (!admin.apps.length) admin.initializeApp({ credential: admin.credential.cert(sa), projectId: sa.project_id || 'parbaughs' });
 const token = await admin.auth().createCustomToken(UID);
 
+// VIEWPORT env: 'desktop' (HQ, 1440x900) or default mobile (430x932) — directive #4
+// (HQ gets the same critique + E2E as mobile).
+const VP = process.env.VIEWPORT === 'desktop' ? { width: 1440, height: 900 } : { width: 430, height: 932 };
 const b = await chromium.launch();
-const ctx = await b.newContext({ viewport: { width: 430, height: 932 }, serviceWorkers: 'block', deviceScaleFactor: 2 });
+const ctx = await b.newContext({ viewport: VP, serviceWorkers: 'block', deviceScaleFactor: 2 });
 const page = await ctx.newPage();
 let errors = [];
 page.on('console', m => { if (m.type() === 'error') errors.push(m.text().slice(0, 200)); });
@@ -54,9 +61,22 @@ for (const r of ROUTES) {
   let info = { route: r, ok: false };
   try {
     await page.evaluate((rt) => { if (window.Router && window.Router.go) window.Router.go(rt); }, r);
-    await page.waitForTimeout(1600);
+    // Wait for the ACTIVE page container to settle (async data-loading pages —
+    // profile/tournament/etc. — populate after nav; a fixed 1600ms snapshot caught
+    // them empty = false FAIL while the screenshot caught them full). Poll the real
+    // router container (#mainApp [data-page=rt]) until it has content, cap 5s.
+    await page.waitForFunction(() => {
+      // Measure the ACTIVE (un-hidden) router container — NOT [data-page=rt],
+      // because several routes REDIRECT (profile→members{id}, etc.) so the named
+      // container stays empty while content renders into the real active one.
+      var el = document.querySelector('#mainApp [data-page]:not(.hidden)');
+      return el && (el.innerText || '').trim().length > 60;
+    }, null, { timeout: 5000 }).catch(() => {});
+    await page.waitForTimeout(500);
     info = await page.evaluate((rt) => {
-      var el = document.querySelector('[data-page="' + rt + '"]') || document.querySelector('.page.active') || document.getElementById('mainApp');
+      // The visible active container (handles redirect-routes); fall back to the
+      // named container, then the shell.
+      var el = document.querySelector('#mainApp [data-page]:not(.hidden)') || document.querySelector('#mainApp [data-page="' + rt + '"]') || document.getElementById('mainApp');
       var txt = el ? (el.textContent || '').trim() : '';
       var html = el ? el.innerHTML : '';
       var isSpinner = /class="loading"|class="spinner"/.test(html) && txt.length < 40;

@@ -51,7 +51,12 @@ Router.register("dms", function() {
     var previewData = {};
     var loaded = 0;
     var total = filtered.length;
-    
+    // v8.25.200 — settle-once guard + safety net: a single preview get() hanging
+    // (cold-start rules race) used to leave `loaded < total` forever, stranding the
+    // inbox on the loading skeleton. Render with whatever previews arrived after 5s.
+    var _previewsSettled = false;
+    function _renderDmPreviews() { if (_previewsSettled) return; _previewsSettled = true; renderSortedDms(filtered, previewData); }
+
     filtered.forEach(function(m) {
       var cid = getDmConvoId(myUid, m.id);
       db.collection("dms").doc(cid).collection("messages").orderBy("createdAt","desc").limit(1).get().then(function(snap) {
@@ -61,12 +66,13 @@ Router.register("dms", function() {
           previewData[m.id] = { text: msg.text || "", time: ts, senderId: msg.authorId || msg.senderId || msg.uid || "" };
         }
         loaded++;
-        if (loaded >= total) renderSortedDms(filtered, previewData);
+        if (loaded >= total) _renderDmPreviews();
       }).catch(function() {
         loaded++;
-        if (loaded >= total) renderSortedDms(filtered, previewData);
+        if (loaded >= total) _renderDmPreviews();
       });
     });
+    setTimeout(_renderDmPreviews, 5000);
   };
   
   function renderSortedDms(members, previews) {
@@ -109,15 +115,23 @@ Router.register("dms", function() {
     if (el) el.innerHTML = dh;
   }
   
-  // Load members from Firestore
+  // Load members from Firestore — with a safety net so the inbox NEVER sticks on
+  // the loading skeleton (v8.25.200; mirrors the chat onSnapshot timeout fix
+  // v8.25.166). The cold-start rules-context race or an offline-cache stall can
+  // leave members.get() PENDING forever (neither resolve nor reject → .catch
+  // never fires) — which left FatalBert's Messages inbox on 3 skeleton rows
+  // indefinitely (caught by the convergence E2E sweep 2026-06-15).
+  var _dmInboxSettled = false;
+  function _settleDmInbox(members) { if (_dmInboxSettled) return; _dmInboxSettled = true; renderDmList(members); }
   if (db) {
     db.collection("members").get().then(function(snap) {
       var members = [];
       snap.forEach(function(doc) { members.push(doc.data()); });
-      renderDmList(members);
-    }).catch(function() { renderDmList(PB.getPlayers()); });
+      _settleDmInbox(members);
+    }).catch(function() { _settleDmInbox(PB.getPlayers()); });
+    setTimeout(function() { _settleDmInbox(PB.getPlayers()); }, 6000);
   } else {
-    renderDmList(PB.getPlayers());
+    _settleDmInbox(PB.getPlayers());
   }
 });
 
