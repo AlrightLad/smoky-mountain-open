@@ -47,8 +47,21 @@ copy/count/spelling spot-checked, bugs fixed. Track per-route status in .claude/
 
 - [x] HARNESS: parbaughs-brand-gate skill + brand-gate.mjs (unskippable brand spec + size/
   purpose/usage on every gen + 5-pt QC RED-gate) — committed e9f9097f, LIVE. Directive #1 met.
-- [ ] CONVERGENCE E2E — exhaustive per-route capture+critique (mobile+HQ) → fix bugs/copy/
-  counts → re-verify → narrow. Drives directives #2/#3/#4. Track in .claude/state/conv-e2e/.
+- [~] CONVERGENCE E2E — exhaustive per-route capture+critique (mobile+HQ) → fix → narrow.
+  CYCLE 1 DONE (2026-06-15): all 41 routes captured mobile+desktop (FatalBert/staging);
+  41-route visual critique via parallel Workflow → triaged in conv-e2e/CRITIQUE-FINDINGS.md.
+  SHIPPED to prod this cycle: v8.25.199 ring-flush · .200 DM-inbox-skeleton (V1) · .201
+  calendar uncaught-error · .202 Ace Wall casing · .203 drills dedup. App functionally CLEAN
+  (41/41 render; the only render bugs were the 2 cold-start hangs DM+calendar, fixed).
+  Triage discipline (VLM misreads kerned text + fullPage misrepresents fixed-nav): 4 "copy
+  bugs" were misreads (source correct), 3 "layout bugs" were fixed-nav capture artifacts —
+  only 2 copy/layout were real (Ace Wall, drills), both fixed. The critique's #1 "desktop
+  mobile-stretched" = the INTENTIONAL 680px centered-column design (v8.23) → Founder taste
+  call surfaced (task-queue/founder/desktop-width-direction-2026-06-15.md), NOT autonomously
+  flipped. REMAINING cycles (fresh context): contrast pass (per-flag V1, over-correction-prone);
+  verify shop clipped-card-bodies; Messages two-pane + profile-edit (gated on the Founder
+  desktop direction); then PL3/PL7c/PL16/cosmetics below. Re-run the critique workflow after
+  each fix batch (scores should rise, flags shrink = the narrowing).
 
 ## ONLY list agent-actionable items as `- [ ]`
 Founder-gated items (need a secret / his taste / a classifier-walled deploy) go
