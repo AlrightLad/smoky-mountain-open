@@ -69,20 +69,20 @@ Router.register("showcase", function () {
 
   // ── BAND 3 — MERCH storefront (Tour Collection teaser) ────────────────────────
   var tour = [
-    { name: "The Tour Pro Shirt", note: "Tournament-white performance piqué" },
-    { name: "The Fairway Quarter-Zip", note: "Tour-navy brushed knit · brass pull" },
-    { name: "The Clubhouse Hoodie", note: "Heavyweight black brushed fleece" },
-    { name: "The Leather Headcovers", note: "Tooled leather · by club type" }
+    { img: "polo.jpg",       name: "The Tour Pro Shirt", note: "Tournament-white performance piqué" },
+    { img: "quarterzip.jpg", name: "The Fairway Quarter-Zip", note: "Tour-navy brushed knit · brass pull" },
+    { img: "hoodie.jpg",     name: "The Clubhouse Hoodie", note: "Heavyweight black brushed fleece" },
+    { img: "headcovers.jpg", name: "The Leather Headcovers", note: "Tooled leather · by club type" }
   ];
   var merchInner = '<div style="font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--cb-brass-3);text-align:center">The Pro Shop</div>' +
     '<h2 style="font-family:var(--font-display);font-style:italic;font-weight:700;font-size:clamp(30px,3.4vw,46px);color:var(--cb-chalk);text-align:center;margin:8px 0 6px">The Tour Collection.</h2>' +
     '<p style="font-family:var(--font-ui);font-size:15px;color:rgba(244,239,228,.78);text-align:center;max-width:560px;margin:0 auto 30px">Tournament-grade pieces in the colors the pros compete in. <span style="color:var(--cb-brass-3);font-weight:600">Coming soon.</span></p>' +
     '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px">';
   tour.forEach(function (t) {
-    merchInner += '<div style="background:var(--cb-green-2);border:1px solid rgba(var(--cb-brass-rgb),.25);border-radius:14px;overflow:hidden">' +
-      '<div style="aspect-ratio:1/1;background:linear-gradient(160deg,var(--cb-green-2),var(--cb-felt));display:flex;align-items:center;justify-content:center"><span style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:rgba(244,239,228,.4);text-transform:uppercase">Packshot · P5</span></div>' +
-      '<div style="padding:14px 14px 16px"><div style="font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--cb-chalk)">' + escHtml(t.name) + '</div>' +
-      '<div style="font-family:var(--font-ui);font-size:12px;color:rgba(244,239,228,.62);margin-top:3px">' + escHtml(t.note) + '</div></div></div>';
+    merchInner += '<div style="background:var(--cb-paper);border:1px solid rgba(var(--cb-brass-rgb),.25);border-radius:14px;overflow:hidden">' +
+      '<div style="aspect-ratio:1/1;background:var(--cb-chalk-2);overflow:hidden"><img src="' + asset('img/merch/' + t.img) + '" alt="' + escHtml(t.name) + '" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block"></div>' +
+      '<div style="padding:14px 14px 16px"><div style="font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--cb-ink)">' + escHtml(t.name) + '</div>' +
+      '<div style="font-family:var(--font-ui);font-size:12px;color:var(--cb-mute);margin-top:3px">' + escHtml(t.note) + '</div></div></div>';
   });
   merchInner += '</div>';
   h += band(merchInner, 'background:var(--cb-felt);padding:72px 0');
