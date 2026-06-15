@@ -247,7 +247,10 @@ Router.register("settings", function(params) {
   var shopBalance = getParCoinBalance(currentUser ? currentUser.uid : null);
   coins += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Balance</div><div class="set-row__desc">Spend on cosmetics, rings, and name effects in the shop.</div></div>';
   coins += '<div class="set-coins"><svg class="set-coins__ico" viewBox="0 0 20 20" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7"/></svg><span class="set-coins__num" data-count="' + shopBalance + '">' + shopBalance + '</span><span class="set-coins__lbl">coins</span></div></div>';
-  coins += '<div style="margin-top:14px"><button class="set-btn set-btn--brass" onclick="Router.go(\'shop\')"><svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7 7.5h4.5a2 2 0 010 4H7"/></svg> Cosmetics shop</button></div>';
+  // v8.25.18x (Founder PL13): removed the redundant "Cosmetics shop" button — the
+  // shop is one tap away from the More menu (Cosmetics Shop tile) + the profile
+  // wallet; a duplicate nav button here just lengthened Settings. Balance stays
+  // as a quick glance.
   secs.push({ key: "parcoins", label: "ParCoins", html: coins });
 
   // ──────────────────────────────────────────────────────────────────────────

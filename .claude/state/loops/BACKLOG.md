@@ -550,7 +550,7 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
 - [x] PL10 — DONE v8.25.185: settings text "Six...three ready" -> "Seven...four ready" (7 themes = 4 default + 3 unlock).
 - [x] PL11 — DONE v8.25.185: azalea swatch was MISSING (fell back to clubhouse = the bug); linen_draft/Bluebird swatch green -> blue; all 7 verified vs base.css. Settings capture confirms distinct per-theme chips.
 - [x] PL12 — DONE v8.25.185: caddie chip clip-path:circle()+isolation so the breathing portrait bobs WITHIN the ring (will-change layer was escaping overflow+radius). Also covers PL6 store chip (same CSS).
-- [ ] PL13 — Settings page cleanup + shorten: remove redundant buttons (e.g. ParCoins that's accessible elsewhere)
+- [~] PL13 — PARTIAL v8.25.187: removed the redundant "Cosmetics shop" button (dup of More + profile wallet); balance glance kept. Further shorten/dedup pass pending.
 - [ ] PL14 — Cosmetic-shop / Rich List / Power-ups button colors don't match the user's selected THEME — make theme-aware
 - [ ] PL15 — Colored action buttons (Wagers/Bounty/Challenges, Party Games) should be theme-aware (not a clashing fixed green) + match the rubber-hose brand, not random; fix the Wagers-behind-Bounty IA + rebrand the buttons
 - [ ] PL16 — FULL E2E of EVERY function (play a round, change profile pic, every single function) with extensive SCREENSHOTS + confirmed-working EVIDENCE (not lint/code-check); resolve every error found as you go
