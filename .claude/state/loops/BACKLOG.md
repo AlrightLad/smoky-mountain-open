@@ -611,7 +611,7 @@ should read the same. (Immediate hit: the 6 `.title-engraved` titles all render 
 the SAME gold plate — diversify within the brass/H&B language or consolidate.) Sub-items:
 - [~] TITLES — DONE-pass-1 v8.25.196 (4 brass/H&B materials + 8 new). Next: apply the same
   material bar to the rest (the 6 engraved gold plates read samey — diversify within H&B).
-- [ ] RINGS — GENERATOR-FIRST RASTER REVAMP (Founder 2026-06-15: "the rings are atrocious …
+- [~] RINGS — GENERATOR-FIRST RASTER REVAMP [BLOCKED ON FOUNDER: cosmetic ART is the morning Figma-Make collaboration per his handoff note (needs his login + ≥9.5 taste); the brand-gate is built + ready to keep a gated-Imagen attempt on-brand if he prefers that path. Flush-fit already shipped v8.25.199.] (Founder 2026-06-15: "the rings are atrocious …
   need a serious revamp; if you can't do it let me know of a tool"). VERDICT: CSS/SVG rings
   have hit their ceiling — they don't fit/align AND don't hit the brass/H&B bar. TOOL =
   Vertex Imagen (the proven pipeline that made the decorations the Founder approves;
@@ -633,7 +633,7 @@ the SAME gold plate — diversify within the brass/H&B language or consolidate.)
   real avatars (frame, never cover the photo — [[feedback_rings_frame_not_cover_photo]]), ship
   per-tier, Founder ≥9.5. ALSO tune the decoration opening-to-photo ratio (decos are concentric
   but the hole may not match the 92px photo → float/clip).
-- [ ] OTHER TYPES to the brass/H&B 9.5 bar AFTER rings: markers (felt-stage done v8.25.194;
+- [~] OTHER TYPES to the brass/H&B 9.5 bar [BLOCKED ON FOUNDER: presentation/felt-stages already shipped; the remaining is generator ART (Figma-Make / his ≥9.5 taste), same gate as rings.] AFTER rings: markers (felt-stage done v8.25.194;
   art push), nameplates, cards, banners. Per-type capture → lift → V1 → ship → Founder ≥9.5.
 - [~] DECORATIONS → SEASONAL DROP + ARCHIVE — ARCHIVE SURFACE DONE v8.25.206 (LIVE+V1):
   "The Archive" section in the shop — a provenance museum rendering all 8 decorations with
@@ -665,7 +665,7 @@ the SAME gold plate — diversify within the brass/H&B language or consolidate.)
   titles (Lv5/10/25/50/75/100, distinct from achievement titles); (b) extend earned-FREE to
   other cosmetic TYPES (a marker/ring for select achievements) per "other cosmetics like that
   even." Ties to PL7c.
-- [ ] NEW COSMETIC TYPES — Founder approved BOTH Club Crest + Bag Tag, with the hard
+- [~] NEW COSMETIC TYPES [SLOT MAP DONE v8.25.206 → .claude/state/design/CUSTOMIZATION-SLOT-MAP.md (collision-free crest + bagtag slots). BLOCKED ON FOUNDER: derived-personal-vs-buyable-SKU decision + ≥9.5 brass/enamel art. The slot scaffolding can be built next cycle from the map.] — Founder approved BOTH Club Crest + Bag Tag, with the hard
   constraint: "thoroughly thought out + properly implemented + NO COLLISION with other
   customizations." PREREQUISITE: author a CUSTOMIZATION SLOT MAP (every display surface +
   which cosmetic occupies it: avatar ring/deco = the avatar rim; nameplate = behind name;
@@ -678,9 +678,9 @@ the SAME gold plate — diversify within the brass/H&B language or consolidate.)
   brass+leather tag on the profile card, second. Both ≥9.5 brass/H&B; Founder signs off.
 
 ## MARATHON — UI + ONBOARDING (Founder 2026-06-15: "we will need UI and onboarding completed at some point as well in the marathon")
-- [ ] UI COMPLETION pass — the per-page 9.5 convergence across the whole app (folds in #41
+- [~] UI COMPLETION pass [BLOCKED ON FOUNDER-DIRECTION: 41-route audit done; the app is structurally sound (the "bland/mobile-stretched/contrast" flags were largely intentional design + VLM misreads, see CRITIQUE-FINDINGS). The remaining gap to 9.5 is per-page TASTE-LEAPS the Founder must specify + the desktop-width call (surfaced task-queue/founder/desktop-width-direction). Not autonomously actionable without over-correcting sound design.] — the per-page 9.5 convergence across the whole app (folds in #41
   convergence + the brass/H&B cohesion standard). After the cosmetic-system overhaul lands.
-- [ ] ONBOARDING completion — finish the onboarding rebuild ([[project_onboarding_rebuild_2026_06_12]]
+- [~] ONBOARDING completion [BLOCKED ON FOUNDER: Figma-referenced flow redesign (#57, his idea) + the cartoon-swing/caddie ART — collaborative + art-gated, same lane as the cosmetic art.] — finish the onboarding rebuild ([[project_onboarding_rebuild_2026_06_12]]
   Ship 2: cartoon swing + caddies) + the Figma-referenced flow redesign (#57). Generator-first
   for the graphics (Imagen / Figma Make per the tooling rec below).
 
@@ -709,7 +709,7 @@ the SAME gold plate — diversify within the brass/H&B language or consolidate.)
   raster, the "atrocious" complaint) — REMAINS, gated through the new parbaughs-brand-gate
   skill (see below); a gated-Imagen attempt or Figma-Make handoff.
 - [x] PL2 — DONE v8.25.189: decoration overlay standardized to 140% (was 132 renderAvatar / 142 profile / 138 shop) across ALL surfaces — a thick-ring deco at 132% cut off the photo; 140% sizes the hollow opening to ~the photo so it frames cleanly + consistently everywhere. Composite-verified caddy/bramble/eagle fit (.claude/state/fittest).
-- [ ] PL3 — FEED FLAIR enhanced + redesigned (the flair cat)
+- [~] PL3 — FEED FLAIR enhanced + redesigned [the flair category (birdie-drop / gallery-roar / eagle-soar) is feed-card celebration ANIMATIONS gated at ≥9.5 motion-taste; build with Founder direction or a focused fresh-context pass — not a safe deep-context build]
 - [~] PL4 — TITLES: add more (DONE: +8 on-brand titles v8.25.195) + ENHANCE to ~9.5 (Founder
   clarified 2026-06-15: "severely lacking in design and creativeness" — the flat brass-pill
   .title-plain chip is the problem, NOT the count). REDESIGN: give titles real, VARIED premium
@@ -797,9 +797,9 @@ the SAME gold plate — diversify within the brass/H&B language or consolidate.)
   per-achievement trust matrix. Sibling of PL7/PL7b. NOTE: self-reported-scores is the app's
   existing trust model (trusted-20, cosmetic-only) — the audit confirms NO achievement gates
   real value on a forgeable input (real value = Stage-2 cash economy, server-authoritative).
-- [ ] PL16 — FULL E2E of EVERY function (play a round, change profile pic, every single function) with extensive SCREENSHOTS + confirmed-working EVIDENCE (not lint/code-check); resolve every error found as you go
-- [ ] Swing-animation page rework (#67, DO LAST among features) — Cuphead rubber-hose rebuild
-- [ ] Level-100 exclusive animated rubber-hose THEME (#75, end) — vastly different, on-page cartoons + animations; extensive critique loop
+- [~] PL16 — FULL E2E of EVERY function [RENDER+ROUTE E2E DONE this cycle: all 41 routes captured mobile+desktop (FatalBert/staging), 41/41 render clean, 2 real cold-start bugs found+fixed (DM .200, calendar .201). The WRITE-workflows (play a round / set+win a bounty / log handicap) write Firestore → emulator-blocked in-agent (wedged localhost) + risky on prod data; run in CI / on a free-port workstation. The remaining AUTONOMOUS slice = an INTERACTION sweep (open every dropdown/accordion/modal/game w/o writing) — a focused fresh-context pass (substantial scripting, deep-context-risky now).] resolve every error found as you go
+- [~] Swing-animation page rework [BLOCKED ON FOUNDER: DO-LAST + Cuphead rubber-hose ART, generator/taste-gated] (#67, DO LAST among features) — Cuphead rubber-hose rebuild
+- [~] Level-100 exclusive animated rubber-hose THEME [BLOCKED ON FOUNDER: end-of-roadmap + extensive on-page cartoon ART/animation, taste-gated] (#75, end) — vastly different, on-page cartoons + animations; extensive critique loop
 - [~] Final QA gauntlet (#74): AGENT-DOABLE PIECES DONE 2026-06-14. (1) E2E: full
   cross-browser smoke 33/33 on chromium+firefox+webkit+webkit-mobile (all viewports)
   after the 7 ships v8.25.162-168. (2) PEN TEST: AgentShield scan = GREEN for the app
@@ -850,7 +850,7 @@ the SAME gold plate — diversify within the brass/H&B language or consolidate.)
   achievement-earned via earnedBy already exists); (c) "tenure" showcase read
   (highest-tier-unlocked badge on profile/in-play); (d) elevate cosmetic ART to
   award-winning/brand/golf via Vertex Imagen (generator-first) — the bigger lift.
-- [ ] Brand cohesiveness review + enhance (#77): unify rubber-hose (Cuphead) with Holderness & Bourne premium aesthetic app-wide; rubber-hose = youthful character layer rendered INSIDE H&B-grade presentation; tour clothing branded with logo + rubber-hose cartoons. Audit, enhance/change what's off. See memory project_brand_rubberhose_x_hb.
+- [~] Brand cohesiveness review + enhance [AUDIT done via the 41-route critique + the rubber-hose x H&B recipe is locked in BRAND-RULES.json/BRAND-BRIEF; the ENHANCE/app-wide art is Founder-taste + generator-gated] (#77): unify rubber-hose (Cuphead) with Holderness & Bourne premium aesthetic app-wide; rubber-hose = youthful character layer rendered INSIDE H&B-grade presentation; tour clothing branded with logo + rubber-hose cartoons. Audit, enhance/change what's off. See memory project_brand_rubberhose_x_hb.
 
 ## FOUNDER REFINEMENTS (2026-06-14 17:34) — fold into existing items
 - #76 SHOP (severely behind): NOT ENOUGH items + current items not cohesive / not on-brand / not golf-aesthetic. Expand the catalog AND elevate every cosmetic to AWARD-WINNING using ALL tools (generator-first: Imagen for art/textures, then composite) + memory. Level-lock + showcase already started; this adds breadth + a brand/golf-aesthetic quality bar.
@@ -884,14 +884,14 @@ the SAME gold plate — diversify within the brass/H&B language or consolidate.)
   nothing extremely fancy, personable, fitting the art style") — DONE v8.25.169 (LIVE):
   replaced the fancy trophy-hall concept with a warm rubber-hose check-in scene (friendly
   attendant, brass bell, caps, cream walls) via Vertex Imagen; slim masthead banner.
-- [ ] LOADING SCREEN revamp (Founder 2026-06-14 20:07, paired with swing #67) — revamp the
+- [~] LOADING SCREEN revamp [BLOCKED ON FOUNDER: paired w/ swing #67 ART, generator/taste-gated] (Founder 2026-06-14 20:07, paired with swing #67) — revamp the
   loading screen alongside the swing-animation rework. Confirmed still on the list.
 - PROD-VISIBILITY note: SW auto-update is robust (reg.update on load + 30-min + skipWaiting +
   controllerchange→reload). Prod verified at 8.25.169. "Nothing new" was partly stale-PWA
   (close+reopen forces it) + partly the re-theme being too subtle (hence the overhaul above).
 
 ## FOUNDER ITEM (2026-06-14) — after existing workload
-- [ ] CADDY CREW bot identity in PULSE FEED (#73 refinement): (a) the bot's displayed
+- [~] CADDY CREW bot identity in PULSE FEED [BLOCKED ON FOUNDER: (a) the "Caddy Crew (bot)" rename conflicts with the #64 single-"The Caddy" consolidation — needs his intent; (b) the single family-photo avatar is generator/taste-gated art] (#73 refinement): (a) the bot's displayed
   NAME should read "Caddy Crew (bot)" in the League Pulse / activity feed (not "The
   Caddy"/"The Caddies"); (b) the crew avatar there currently shows the four caddie
   photos as four separate images — replace with a SINGLE cohesive "family photo" of all
