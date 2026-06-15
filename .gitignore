@@ -258,3 +258,6 @@ docs/reports/app-health.html
 public/img/gen/
 .claude/state/gen/
 .claude/state/theme-sweep/
+
+# overnight E2E evidence screenshots (local review only)
+.claude/state/e2e-overnight/

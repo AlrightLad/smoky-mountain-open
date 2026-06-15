@@ -1,0 +1,24 @@
+PAUSED 2026-06-15 by Founder explicit instruction — design-tooling decision pending.
+
+Founder (going to bed) said: "Let's stop the other work until we figure this out
+because when this is running we can let you loose to continue." → build marathon is
+PAUSED, NOT done. This is continuation-discipline condition G (Founder explicit
+direction to stop), which overrides the marathon Stop hook.
+
+WHAT WE'RE WAITING ON (the ONE unblock):
+  • Founder logs into GOOGLE STITCH (stitch.withgoogle.com — FREE, his Google account).
+    Stitch is the UI generator I adapt into our vanilla-JS pages. That alone lets me
+    "run loose" on the UI elevation. (Mobbin dropped — low value, yearly billing;
+    free reference via Dribbble/Behance/live-apps/orchestration instead.)
+  • OPTIONAL: a Recraft API key (gitignored) for brand-vector cosmetics, only if
+    Imagen-Ultra disappoints once tested.
+  • Cosmetic raster gen → Imagen-Ultra (already have it, autonomous).
+  Full rationale: .claude/state/design/TOOLING-RECOMMENDATION.md + BRAND-BRIEF.md.
+
+TO RESUME (Founder, in the morning): `rm .claude/state/loops/STOP`  (CONTINUE marker is
+intact). Then I run loose: Stitch-generate → adapt into our pages → V1 → ship page by
+page, plus drain the cosmetic/backlog items.
+
+STATE AT PAUSE: prod healthy v8.25.198 (7 ships this session, all verified); tree clean;
+overnight E2E ran 26/26 routes clean for BOTH a test user AND the real Founder account
+(evidence: .claude/state/e2e-overnight/, local). Single-driver confirmed.
