@@ -767,7 +767,16 @@ the SAME gold plate — diversify within the brass/H&B language or consolidate.)
   Stage-2 cash economy), which is designed that way. V1: .claude/state/cap-pl7b/ (champion stub →
   champion_sunday unlocks; real member shows course_record unlocked from a real sub-80; exploit
   guard rejects). Caddy Note added. Sibling of PL7.
-- [ ] PL7c — ACHIEVEMENT-SYSTEM INTEGRITY AUDIT (Founder 2026-06-15). Now that achievements
+- [~] PL7c — ACHIEVEMENT-SYSTEM INTEGRITY AUDIT — DONE + RED-1 FIXED v8.25.204 (full
+  trust matrix + evidence: conv-e2e/PL7c-achievement-audit.md). Audited all ~130
+  achievements (background agent) + prod-verified. Found ONE real exploit: champion was
+  self-grantable via the forgeable members.wins field (not in the rules immutable list) →
+  forged the flagship Green Jacket + Champion Sunday theme. FIXED: champion/dynasty now
+  derive only from server-protected trip.champion (prod-verified 0 members have wins>=1, so
+  no regression). Unlock guards confirmed sound (re-derive from getAchievements). FOLLOW-UPS
+  (need a rules deploy, next cycle): RED-2 ace self-binding (YELLOW, cosmetic); defense-in-
+  depth wins-immutable rule (needs the legit increment moved to a CF first). Original ask:
+- [s] PL7c (original text) — ACHIEVEMENT-SYSTEM INTEGRITY AUDIT (Founder 2026-06-15). Now that achievements
   drive cosmetic unlocks (PL7) AND theme unlocks (PL7b), audit ALL ~130 achievements (data.js
   getAchievements) for: (a) every one is properly WIRED (detects the real condition, no dead/
   never-fires, no false-positives), and (b) NOT exploitable / not easily falsely claimed (which
