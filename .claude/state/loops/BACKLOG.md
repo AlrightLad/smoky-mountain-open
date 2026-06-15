@@ -537,6 +537,23 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
   shots are basic blanks) + add the Cuphead leisure-tee print + logo/rubber-hose motif
   per [[project_merch_lineup]] + [[project_brand_rubberhose_x_hb]].
 - [x] Caddy-crew identity (#73) DONE (renamed The Caddies + cohesive crew avatar of real 4): rename bot "The Caddy" -> "The Caddies"/"Caddy Crew" + crew profile photo (composite the 4 caddies)
+## FOUNDER PUNCH-LIST 2026-06-15 (explicit; do NOT stop until ALL [x]; FULL E2E of EVERY function with screenshot evidence, fix-as-you-go)
+- [ ] PL1 — RINGS revamped/redone (the CSS .ring-* cosmetics still not good enough)
+- [ ] PL2 — DECORATIONS aligned/centered/FIT properly (not fitting right on some surfaces; overlay scale/center per surface)
+- [ ] PL3 — FEED FLAIR enhanced + redesigned (the flair cat)
+- [ ] PL4 — TITLES: add more + enhance them
+- [ ] PL5 — BALL MARKERS + TEE MARKERS redesigned (currently lazy)
+- [ ] PL6 — Caddies on STORE page: weird symbols next to them + they float OUTSIDE the ring instead of with it
+- [ ] PL7 — UNLOCK METHOD broken: Mr Parbaugh (Founder) meets some locked-item requirements but has no access; verify+fix the unlock/grant/equip flow, test afterward
+- [ ] PL8 — MORE shop items + re-price (still too cheap for the economy)
+- [ ] PL9 — COURSE photos are gradient AI colors, NOT the rubber-hose default requested — replace with rubber-hose default course art
+- [x] PL10 — DONE v8.25.185: settings text "Six...three ready" -> "Seven...four ready" (7 themes = 4 default + 3 unlock).
+- [x] PL11 — DONE v8.25.185: azalea swatch was MISSING (fell back to clubhouse = the bug); linen_draft/Bluebird swatch green -> blue; all 7 verified vs base.css. Settings capture confirms distinct per-theme chips.
+- [x] PL12 — DONE v8.25.185: caddie chip clip-path:circle()+isolation so the breathing portrait bobs WITHIN the ring (will-change layer was escaping overflow+radius). Also covers PL6 store chip (same CSS).
+- [ ] PL13 — Settings page cleanup + shorten: remove redundant buttons (e.g. ParCoins that's accessible elsewhere)
+- [ ] PL14 — Cosmetic-shop / Rich List / Power-ups button colors don't match the user's selected THEME — make theme-aware
+- [ ] PL15 — Colored action buttons (Wagers/Bounty/Challenges, Party Games) should be theme-aware (not a clashing fixed green) + match the rubber-hose brand, not random; fix the Wagers-behind-Bounty IA + rebrand the buttons
+- [ ] PL16 — FULL E2E of EVERY function (play a round, change profile pic, every single function) with extensive SCREENSHOTS + confirmed-working EVIDENCE (not lint/code-check); resolve every error found as you go
 - [ ] Swing-animation page rework (#67, DO LAST among features) — Cuphead rubber-hose rebuild
 - [ ] Level-100 exclusive animated rubber-hose THEME (#75, end) — vastly different, on-page cartoons + animations; extensive critique loop
 - [~] Final QA gauntlet (#74): AGENT-DOABLE PIECES DONE 2026-06-14. (1) E2E: full
