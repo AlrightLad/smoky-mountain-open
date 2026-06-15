@@ -546,7 +546,7 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
 - [ ] PL6 — Caddies on STORE page: weird symbols next to them + they float OUTSIDE the ring instead of with it
 - [ ] PL7 — UNLOCK METHOD broken: Mr Parbaugh (Founder) meets some locked-item requirements but has no access; verify+fix the unlock/grant/equip flow, test afterward
 - [ ] PL8 — MORE shop items + re-price (still too cheap for the economy)
-- [ ] PL9 — COURSE photos are gradient AI colors, NOT the rubber-hose default requested — replace with rubber-hose default course art
+- [x] PL9 — DONE v8.25.186: no-photo courses now default to the rubber-hose course-placeholder.jpg (hand-drawn brand art) instead of the flat CSS colour-gradient lanes (the AI tell); initials gradient kept only as final onerror fallback.
 - [x] PL10 — DONE v8.25.185: settings text "Six...three ready" -> "Seven...four ready" (7 themes = 4 default + 3 unlock).
 - [x] PL11 — DONE v8.25.185: azalea swatch was MISSING (fell back to clubhouse = the bug); linen_draft/Bluebird swatch green -> blue; all 7 verified vs base.css. Settings capture confirms distinct per-theme chips.
 - [x] PL12 — DONE v8.25.185: caddie chip clip-path:circle()+isolation so the breathing portrait bobs WITHIN the ring (will-change layer was escaping overflow+radius). Also covers PL6 store chip (same CSS).

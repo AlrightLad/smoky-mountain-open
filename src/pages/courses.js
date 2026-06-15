@@ -21,11 +21,15 @@ function courseThumbInitials(name) {
   return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
 }
 function courseThumbHTML(c, thumbSrc) {
-  var ph = '<div class="c-thumb-placeholder c-thumb-ph--' + courseThumbLane(c.name) + '"' + (thumbSrc ? ' style="display:none"' : '') + '>' + escHtml(courseThumbInitials(c.name)) + '</div>';
-  if (thumbSrc) {
-    return '<img alt="" src="' + thumbSrc + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' + ph;
-  }
-  return ph;
+  // v8.25.18x (Founder PL9): courses without an uploaded photo now default to the
+  // RUBBER-HOSE course illustration (public/img/course-placeholder.jpg) — the
+  // hand-drawn brand art — NOT the flat CSS colour-gradient lanes (which read as
+  // a generic AI tell). The initials gradient is kept only as a final onerror
+  // fallback if even the illustration fails to load.
+  var _b = (typeof window !== "undefined" && window.__PB_BASE__) ? window.__PB_BASE__ : "/";
+  var src = thumbSrc || (_b + "img/course-placeholder.jpg");
+  var ph = '<div class="c-thumb-placeholder c-thumb-ph--' + courseThumbLane(c.name) + '" style="display:none">' + escHtml(courseThumbInitials(c.name)) + '</div>';
+  return '<img alt="" src="' + src + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' + ph;
 }
 
 Router.register("courses", function(params) {
