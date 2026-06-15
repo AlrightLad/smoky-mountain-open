@@ -537,6 +537,20 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
   shots are basic blanks) + add the Cuphead leisure-tee print + logo/rubber-hose motif
   per [[project_merch_lineup]] + [[project_brand_rubberhose_x_hb]].
 - [x] Caddy-crew identity (#73) DONE (renamed The Caddies + cohesive crew avatar of real 4): rename bot "The Caddy" -> "The Caddies"/"Caddy Crew" + crew profile photo (composite the 4 caddies)
+## ⛔ COSMETIC ART → FIGMA MAKE HANDOFF (Founder 2026-06-15 05:27 UTC)
+Founder verdict on the Imagen ring attempts: "these are not parbaugh related at all …
+give this to another AI like Figma Make … then use their output to craft and transfer
+to our project." → Imagen is NOT producing brand-fit cosmetic art. The cosmetic-ART
+generation (rings, frames, future decorations) is HANDED OFF to **Figma Make** (or a
+stronger design AI / OpenRouter Fusion), fed `.claude/state/design/BRAND-BRIEF.md` +
+the per-item spec, then I transfer their output (export → finish → wire). BLOCKER for
+autonomous overnight: Figma Make + Fusion need the Founder's LOGIN/API key — can't drive
+his accounts while he sleeps. So: (a) PREP a paste-ready Figma Make brief (done: the
+BRAND-BRIEF + per-item asks); (b) this is a MORNING collaborative step with the Founder;
+(c) DO NOT wire any off-brand Imagen art — CSS rings stay as-is (no regression). The
+Imagen pipeline stands for NON-cosmetic-identity art (course placeholder, scene fillers)
+where it's worked. Worked-around overnight by pivoting to the E2E exploit/function test.
+
 ## ★ GOVERNING COSMETIC DIRECTION (Founder 2026-06-15) — applies to ALL cosmetic work
 THE NORTH STAR for every cosmetic (rings, decorations, markers, nameplates, titles,
 cards, banners, + any new type): ONE premium standard = **brass + Holderness & Bourne
