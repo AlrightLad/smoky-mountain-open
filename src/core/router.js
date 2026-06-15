@@ -427,6 +427,16 @@ function playerDecoPctById(borderId) {
   return m[borderId] || 110;
 }
 function playerDecoPct(p) { return playerDecoPctById(p && p.equippedCosmetics && p.equippedCosmetics.border); }
+// v8.25.231 — DECO COMPOSITING FIX. The deco PNGs are full-frame ornaments whose
+// transparent HOLE is the centre ~68% of the image. The frame must overlay the FULL
+// box (inset:0 / 100%) and the PHOTO must be INSET into that hole, not fill the box —
+// otherwise the opaque frame rim crops the photo edge (Founder recurring "cut off").
+// One shared inset so feed/profile/shop/try-it-on are identical (the proven LOCKER
+// pattern, members-detail.js). Tuned per-deco for the few denser frames.
+function playerDecoPhotoInsetById(borderId) {
+  var m = { border_deco_caddy: 18, border_deco_holeinone: 15, border_deco_champion: 17, border_deco_azalea: 16, border_deco_frost: 18, border_deco_eagle: 17, border_deco_bramble: 18, border_deco_autumn: 20 };
+  return m[borderId] != null ? m[borderId] : 16;
+}
 // ── Cosmetic helpers ──
 function getPlayerNameClass(p) {
   if (!p || !p.equippedCosmetics || !p.equippedCosmetics.name) return '';
@@ -513,11 +523,15 @@ function renderAvatar(p, size, clickToProfile) {
   // opening to ~the photo so it frames cleanly, not crops. Standardised across
   // every surface (renderAvatar + profile + shop preview + try-it-on) so the fit
   // is consistent everywhere.
-  var _dpct = useDeco ? playerDecoPct(p) : 110;
-  var decoOverlay = useDeco ? '<img alt="" aria-hidden="true" src="' + decoSrc + '" style="position:absolute;top:50%;left:50%;width:' + _dpct + '%;height:' + _dpct + '%;transform:translate(-50%,-50%);pointer-events:none;z-index:2">' : '';
+  // v8.25.231 — deco frames the photo: photo INSET into the hole, frame overlays the
+  // FULL box (inset:0). Was: photo at 100% + frame at ~110% on top = cropped photo edge.
+  var _dInset = useDeco ? playerDecoPhotoInsetById(p && p.equippedCosmetics && p.equippedCosmetics.border) : 0;
+  var decoOverlay = useDeco ? '<img alt="" aria-hidden="true" src="' + decoSrc + '" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2">' : '';
   // Outer div: border + shadow + animation + ring class (NO overflow:hidden so glow/art/deco renders)
-  // Inner div: overflow:hidden clips the image/fallback content to the circle
-  return '<div' + (ringCls ? ' class="' + ringCls + '"' : '') + ' style="width:' + size + 'px;height:' + size + 'px;min-width:' + size + 'px;border-radius:50%;position:relative;' + ringStyle + (ringStyle ? ';' : '') + cursor + 'flex-shrink:0"' + click + '><div style="width:100%;height:100%;border-radius:50%;overflow:hidden">' + avatarInner + '</div>' + decoOverlay + '</div>';
+  // Inner div: overflow:hidden clips the image/fallback to the circle; when a deco is worn it
+  // is INSET (absolute) into the frame's hollow centre so the full photo shows inside the opening.
+  var _innerStyle = useDeco ? 'position:absolute;inset:' + _dInset + '%;border-radius:50%;overflow:hidden' : 'width:100%;height:100%;border-radius:50%;overflow:hidden';
+  return '<div' + (ringCls ? ' class="' + ringCls + '"' : '') + ' style="width:' + size + 'px;height:' + size + 'px;min-width:' + size + 'px;border-radius:50%;position:relative;' + ringStyle + (ringStyle ? ';' : '') + cursor + 'flex-shrink:0"' + click + '><div style="' + _innerStyle + '">' + avatarInner + '</div>' + decoOverlay + '</div>';
 }
 
 // renderUsername(player, extraStyle) → HTML string

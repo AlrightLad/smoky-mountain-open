@@ -4,7 +4,7 @@
    ================================================ */
 
 // ── App version — single source of truth ──
-var APP_VERSION = "8.25.230";
+var APP_VERSION = "8.25.231";
 
 // ── Onboarding walkthrough (FTUE) — foundation constants/helpers ──
 // WALKTHROUGH_MAJOR is decoupled from APP_VERSION so a patch bump never

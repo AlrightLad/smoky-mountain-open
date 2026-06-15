@@ -122,10 +122,11 @@ function renderMemberDetailWithData(p) {
   // frame: drop the color border + let it extend (overflow visible); the photo
   // stays circular via its own border-radius.
   var _pfDeco = (typeof playerDecoSrc === 'function') ? playerDecoSrc(p) : '';
-  var _pfFrame = _pfDeco ? 'border:none;overflow:visible' : ('border:3px solid ' + _profColor + ';box-shadow:' + _profShadowCombined + _profAnimCss);
+  var _pfFrame = _pfDeco ? ('border:none;overflow:visible;--pf-deco-inset:' + ((typeof playerDecoPhotoInsetById === 'function') ? playerDecoPhotoInsetById(p && p.equippedCosmetics && p.equippedCosmetics.border) : 16) + '%') : ('border:3px solid ' + _profColor + ';box-shadow:' + _profShadowCombined + _profAnimCss);
   h += '<div class="pf-av pf-hero-av" style="width:104px;height:104px;font-size:40px;' + _pfFrame + '">' + Router.getAvatar(p);
-  var _pfDpct = (_pfDeco && typeof playerDecoPct === 'function') ? playerDecoPct(p) : 110;
-  if (_pfDeco) h += '<img alt="" aria-hidden="true" src="' + _pfDeco + '" style="position:absolute;top:50%;left:50%;width:' + _pfDpct + '%;height:' + _pfDpct + '%;transform:translate(-50%,-50%);pointer-events:none;z-index:3">';
+  // v8.25.231 — frame the photo (don't crop it): overlay the deco across the full hero
+  // box; the photo is inset into the hole via the .pf-av[--pf-deco-inset] CSS hook above.
+  if (_pfDeco) h += '<img alt="" aria-hidden="true" src="' + _pfDeco + '" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3">';
   h += '<div class="pf-av__lvl">' + lvl.level + '</div>';
   h += '</div>';
   h += '<div class="pf-id">';
