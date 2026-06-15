@@ -1909,6 +1909,26 @@
       "tokens_consumed": 0,
       "outcome": "PLACEHOLDER",
       "summary": "Proactive cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260615-0951",
+      "type": "heartbeat",
+      "started_at": "2026-06-15T09:51:05Z",
+      "ended_at": "2026-06-15T09:51:05Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "ship-20260615-1618",
+      "type": "ship",
+      "started_at": "2026-06-15T16:18:24Z",
+      "ended_at": "2026-06-15T16:18:24Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Ship cycle invocation not yet configured"
     }
   ]
 }
