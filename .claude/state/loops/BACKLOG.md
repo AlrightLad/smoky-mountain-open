@@ -33,8 +33,16 @@ Remaining FOUNDATIONAL bugs (next, visual-verified):
   .cal-cellbtn/.cal-chips clips a busy day's wrapping dot-row within the cell. V1: injected
   18 dots across cells incl. the edge column → spillBeyondCell=0, dots wrap+clip cleanly.
 - [ ] SVG nav icons (Home/Play/Courses/Events/More) → 9.5.
-- [ ] Scorecard (shareable): colorway + cosmetics shine; hole-by-hole 9-over-9 (not sideways
-  scroll); consolidate "by the numbers" (dup of strokes/birdies/putts row).
+- [x] Scorecard (shareable) — DONE v8.25.213 (LIVE+V1). Structural asks both shipped on the
+  round-detail page (= the shareable scorecard): (1) hole-by-hole now stacks Front-9 over Back-9
+  (.rd-card-stack, table-layout:fixed + ellipsis-capped label) → fits the phone, NO sideways scroll
+  (V1: 2 blocks, maxRight 414 ≤ 430, scrollW=vw); (2) "by the numbers" deduped — the notice strip
+  no longer repeats strokes/to-par/putts (those live in the By-the-numbers cards + masthead deck);
+  it now shows only the scoring distribution (V1: "0 birdies · 1 par · 4 bogeys · 13 double+").
+  Colorway: the GENERATED share-card IMAGE (router-sharecard.js buildScorecardHTML) already renders
+  9-over-9 + in the active theme colorway — the sideways-scroll was only the on-screen detail (fixed).
+  "Cosmetics shine" (equipped ring/nameplate ON the share card) folds into the Founder-art-gated
+  cosmetics workstream below.
 - [x] Resend wiring — AGENT-SIDE COMPLETE; BLOCKED ON FOUNDER (2 steps, ~3 min). The code is
   built + shipped + deploy-clean: functions/lib/feedback-email.js (Resend REST, per-submitter 12/hr
   throttle, dual writer-shape normalize) wired at functions/index.js:1293; both writers confirmed →
