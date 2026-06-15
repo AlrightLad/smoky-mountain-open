@@ -635,7 +635,17 @@ the SAME gold plate — diversify within the brass/H&B language or consolidate.)
   but the hole may not match the 92px photo → float/clip).
 - [ ] OTHER TYPES to the brass/H&B 9.5 bar AFTER rings: markers (felt-stage done v8.25.194;
   art push), nameplates, cards, banners. Per-type capture → lift → V1 → ship → Founder ≥9.5.
-- [ ] DECORATIONS → SEASONAL DROP + ARCHIVE system (Founder decision 2026-06-15): "even mix
+- [~] DECORATIONS → SEASONAL DROP + ARCHIVE — ARCHIVE SURFACE DONE v8.25.206 (LIVE+V1):
+  "The Archive" section in the shop — a provenance museum rendering all 8 decorations with
+  their art + name + origin (Seasonal Spring/Winter/Fall drop · Earned <condition> · Reach
+  Level N · Pro Shop) + "Est. 2026". Read-only (owned decos still equip via Decorations
+  shelf + Your Locker), zero economy/equip regression. V1-verified: 8 items, 8 art images,
+  correct provenance on the dark felt cabinet. The retention/FOMO engine (#76). REMAINING:
+  the seasonal-WINDOW purchase-gating (active date-range gates buying; out-of-window decos
+  show "Returns next [season]" + the Archive marks retired) — buildable on this foundation,
+  but turning current purchases on/off by date is an economy-availability change; confirm
+  the per-deco windows w/ Founder first (Masters Azalea=Apr, Frost=Dec-Feb, Autumn=Sep-Nov).
+  Original: DECORATIONS → SEASONAL DROP + ARCHIVE system (Founder decision 2026-06-15): "even mix
   of it all" — decorations become THEMED/SEASONAL items purchasable only during a window
   (e.g. Masters Azalea in April, Frost Delay in winter), then the design is RETIRED. Retired
   designs live in a CUSTOMIZATION ARCHIVE showing WHERE + WHEN each came from (provenance), so
