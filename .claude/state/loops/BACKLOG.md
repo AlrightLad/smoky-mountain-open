@@ -29,7 +29,9 @@ Remaining FOUNDATIONAL bugs (next, visual-verified):
   bar on dm-thread/chat (full-screen thread w/ Back) + dropped the under-sized 66px nav-
   reserve + interactive-widget=resizes-content for the keyboard. V1: composer flush at the
   bottom (728→805 of 844), nav gone, Send in bounds, no clip.
-- [ ] Calendar: scheduled-rounds + range dots overflow off the page edge.
+- [x] Calendar: dots overflow — FIXED v8.25.210 (LIVE+V1): overflow:hidden on .cal-cell/
+  .cal-cellbtn/.cal-chips clips a busy day's wrapping dot-row within the cell. V1: injected
+  18 dots across cells incl. the edge column → spillBeyondCell=0, dots wrap+clip cleanly.
 - [ ] SVG nav icons (Home/Play/Courses/Events/More) → 9.5.
 - [ ] Scorecard (shareable): colorway + cosmetics shine; hole-by-hole 9-over-9 (not sideways
   scroll); consolidate "by the numbers" (dup of strokes/birdies/putts row).
