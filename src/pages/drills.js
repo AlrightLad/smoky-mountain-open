@@ -50,14 +50,20 @@ function _drillChips(d) {
   return c;
 }
 
-// Day-stable featured drill (no randomness — same drill all day).
+// Day-stable featured drill id (no randomness — same drill all day). Shared so
+// filterDrills can EXCLUDE it from the list — otherwise the "Drill of the day"
+// hero is duplicated as the first list card (v8.25.203, convergence-critique find).
+function _featuredDrillId() {
+  var all = (typeof DRILL_LIBRARY !== "undefined" ? DRILL_LIBRARY : []);
+  if (!all.length) return null;
+  return all[(new Date().getDate()) % all.length].id;
+}
 function renderDrillFeature() {
   var el = document.getElementById("drill-feature");
   if (!el) return;
   var all = (typeof DRILL_LIBRARY !== "undefined" ? DRILL_LIBRARY : []);
   if (!all.length) { el.innerHTML = ""; return; }
-  var idx = (new Date().getDate()) % all.length;
-  var d = all[idx];
+  var d = all[(new Date().getDate()) % all.length];
   var hero = '<div class="pb-card pb-card--felt drill-feature">';
   hero += '<div class="drill-feature__eyebrow">Drill of the day · ' + escHtml(_drillCatName(d.cat)) + '</div>';
   hero += '<div class="drill-feature__name">' + escHtml(d.name) + '</div>';
@@ -76,6 +82,13 @@ function filterDrills(cat) {
 
   var allDrills = (typeof DRILL_LIBRARY !== "undefined" ? DRILL_LIBRARY : []).concat(typeof customDrills !== "undefined" ? customDrills : []);
   var filtered = cat === "all" ? allDrills : allDrills.filter(function(d) { return d.cat === cat; });
+  // On the default "all" view, drop the drill already shown as the felt "Drill of
+  // the day" hero so it doesn't render twice (v8.25.203). Category tabs keep their
+  // full set (no misleading empty-state when a category's only drill is featured).
+  if (cat === "all") {
+    var _featId = _featuredDrillId();
+    if (_featId) filtered = filtered.filter(function(d) { return d.id !== _featId; });
+  }
 
   if (!filtered.length) {
     el.innerHTML = '<div class="pf-empty"><div class="pf-empty__h">Nothing filed under this one</div><div class="pf-empty__b">Try another category — or add your own drill below.</div></div>';

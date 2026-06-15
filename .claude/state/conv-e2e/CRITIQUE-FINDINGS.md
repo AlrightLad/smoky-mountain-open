@@ -41,15 +41,20 @@ drills.js — comes from a data array; check if the hero'd drill is also in the 
 - merch: duplicated eyebrow label (PARBAUGHS·PRO SHOP vs THE TOUR COLLECTION); per-card
   mono row reads templated/placeholder — verify real per-product values
 
-## REAL LAYOUT BUGS → PRIORITY 2
-- **drills: "Headcover Trap" hero DUPLICATED** — appears as the dark hero AND the first
-  cream list card (both in first viewport). Dedup.
-- **awards mobile: lower ~40% dimmed/grayed, footer floating over it, ghosted "Mr Parbaugh"
-  bleeding through** — looks like a stuck scrim/overlay or scroll-fade escape. VERIFY + fix.
-- findplayers/faq mobile: bottom tab bar overlapping mid-page list — verify bottom content
-  padding clears the 44pt fixed bar (could be capture artifact; confirm on the page).
-- roundhistory mobile: scorecard dot-row may clip at card right edge — verify 18 dots fit.
-- profile mobile masthead: greeting overlaps avatar/icons — crowded at 430px, verify no clip.
+## REAL LAYOUT BUGS — TRIAGED 2026-06-15
+- ✅ **drills: "Headcover Trap" hero DUPLICATED** — REAL, FIXED v8.25.203. The day-featured
+  "Drill of the day" felt hero was also rendered as the first list card. Now excluded from
+  the default "all" list (shared _featuredDrillId()); category tabs keep their full set.
+- ❌ **awards mobile "dimmed/scrim/ghosted"** — NOT a bug. DOM check on staging: ZERO
+  low-opacity/scrim/overlay elements on [data-page=awards]. It was the FIXED BOTTOM-NAV's
+  near-opaque bg overlaying the content band in the fullPage screenshot (capture artifact).
+- ❌ **findplayers/faq "bottom tab bar overlapping mid-page"** — SAME fullPage-capture
+  artifact (position:fixed nav rendered at viewport coords over full-height capture). Pages
+  scroll under the nav normally. NOT bugs. TOOL NOTE: the E2E sweep's fullPage screenshots
+  misrepresent fixed-nav pages → capture viewport-only (or hide .bottom-nav) for accurate
+  per-page V1; don't chase "nav overlap"/"dimmed-lower-portion" as bugs.
+- ⏳ roundhistory mobile scorecard dot-row clip + profile mobile masthead crowding — STILL
+  TO VERIFY (viewport capture next cycle; likely minor/artifact but unconfirmed).
 
 ## DM (already fixed v8.25.200) + further design opportunity
 - dms mobile skeleton = FIXED (.200, V1-verified resolves to the 12-member list).
