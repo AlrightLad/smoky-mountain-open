@@ -66,9 +66,19 @@ Remaining FOUNDATIONAL bugs (next, visual-verified):
   count) preserving sub-version structure inside. Render-time grouping over the existing archive
   (no data migration). V1: probe = 23 Y-sections (v8.23→v8.0) + 3 X-tabs; both render clean staging.
 Bigger phases (research/gen/taste — tracked in the directive doc):
-- [~] BRAND/MERCH ≥9.5 — DONE (5 slices, real art throughout); RINGS/cosmetics = blocked on
-  Founder taste-direction (asked; he called prior attempts "atrocious"; AMD-028 ≥9.5 is his call —
-  generating blind = re-rejection risk). MERCH OVERHAUL COMPLETE: apparel + accessories + leisure
+- [ ] SHOP/COSMETICS overhaul — BREAKTHROUGH + remaining (workflow-diagnosed, fixes captured).
+  KEY INSIGHT: the entire 8-decoration system was already wired (playerDecoSrc + shop catalog +
+  avatar overlay) but DORMANT — the images never existed. Generated them → LIT IT UP. SHIPPED this
+  cycle (LIVE+V1): v8.25.224 the 8 award-winning rubber-hose decorations LIVE in shop + framing
+  photos flush (the #1 "rings haven't changed" complaint RESOLVED) + shop overflow bounded; v8.25.225
+  premium buy CTAs (struck-brass medallion bar + price token + try-it-on pill — the "cheap buttons"
+  complaint); v8.25.226 More page Shop felt-focal restored (the "shop bland on More" regression).
+  REMAINING (5-agent diagnosis in the workflow output, exact fixes captured): (a) pc56_sterling marker
+  gradient-id collision (router.js ~632 — real bug); (b) MEMBER LIST bland + FRIENDS/cross-league
+  viewing (members.js — needs the friends feature, plan in surface 5); (c) caddie voice-packs + feed
+  FLAIR need real raster art (CSS can't draw them); (d) avatar-cutoff robust structural fix (inset
+  photo into the frame hole — decos frame OK now so lower priority).
+- [~] (was) RINGS taste-block — SUPERSEDED: rings now shipped as the 8 real decorations above. MERCH OVERHAUL COMPLETE: apparel + accessories + leisure
   teaser + showcase all real premium art. Proposed ring options surfaced (rubber-hose caddy-peek
   frame vs. clean enamel-on-cream ring) — await his pick, then execute via the proven pipeline.
   Optional/low-priority remaining: kids+adult merch lines (more sections; merch page already full —
