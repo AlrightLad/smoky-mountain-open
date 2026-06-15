@@ -5321,6 +5321,9 @@ img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width:
 .shop-cabinet__eyebrow{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#9fc0aa;margin-bottom:4px}
 .shop-cabinet__title{font-family:var(--font-display);font-size:18px;color:#e6f0e9;margin-bottom:10px}
 .shop-cabinet__earn{font-size:9px;color:#9fc0aa;letter-spacing:.4px;margin-top:6px;font-style:italic}
+/* PL7 — the member HAS earned this cabinet honor → a brass "earned" cue above the
+   Equip button (mirrors the lock cue's weight, but celebratory, not restrictive). */
+.shop-cabinet__unlocked{display:flex;align-items:center;justify-content:center;font-size:9.5px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--cb-brass,var(--gold));margin-top:6px}
 
 /* Arriving state — visible, desired, not yet purchasable */
 .shop-item__state--arriving{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cb-mute);padding:8px 0;border-top:1px dashed var(--cb-mute-3)}

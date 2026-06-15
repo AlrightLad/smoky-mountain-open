@@ -275,6 +275,33 @@ var _shopEconomy = [
 // Small inline coin glyph for buy buttons.
 var _shopCoinSvg = '<svg viewBox="0 0 20 20" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.6" style="flex-shrink:0"><circle cx="10" cy="10" r="8"/><path d="M10 5v10M7.5 7.5h4a1.8 1.8 0 010 3.6H7.5"/></svg>';
 
+// PL7 (v8.25.x) — Trophy-Cabinet honors become EQUIPPABLE once the member meets
+// the condition. Each earned-only SKU maps to the achievement id (PB.getAchievements
+// — the same engine the Trophy Room + member profile use) that proves it. Without
+// this, earnedBy items rendered "Not for sale." FOREVER, so a member who actually
+// carded an eagle / a hole-in-one / won the season could never wear what they earned
+// (the Founder's "Mr Parbaugh meets the requirements but I don't see access"). CTP
+// has no tracked season-leader signal yet, so its marker (pc43) stays honestly
+// earn-on-the-course (no auto-grant) until that stat exists — never a false unlock.
+var EARN_BY_ACHIEVEMENT = {
+  pc24_green_jacket:      'champion',
+  border_deco_champion:   'champion',
+  pc25_ace_marker:        'ace',
+  border_deco_holeinone:  'ace',
+  border_deco_eagle:      'eagle_eye'
+};
+// Standalone (used by the try-it-on preview, which lives outside the render
+// closure). Recomputes once per call; the shop card path uses the cached set below.
+function shopHasEarned(itemId) {
+  var need = EARN_BY_ACHIEVEMENT[itemId];
+  if (!need) return false;
+  try {
+    var u = (typeof currentUser !== "undefined" && currentUser) ? currentUser.uid : null;
+    if (!u || typeof PB === "undefined" || !PB.getAchievements) return false;
+    return (PB.getAchievements(u) || []).some(function(a) { return a && a.id === need; });
+  } catch (e) { return false; }
+}
+
 Router.register("shop", function() {
   var uid = currentUser ? currentUser.uid : null;
   var balance = getParCoinBalance(uid);
@@ -284,6 +311,20 @@ Router.register("shop", function() {
   // so the rarest gear signals dedication, not just a coin balance.
   var myLevel = (typeof PB !== "undefined" && PB.getPlayerLevel && uid) ? ((PB.getPlayerLevel(uid) || {}).level || 1) : 1;
   var owned = (currentProfile && currentProfile.ownedCosmetics) || [];
+
+  // PL7 — which earned-only honors has THIS member actually earned? ONE pass over
+  // the achievement engine for the whole render (the ~6 cabinet cards then read this
+  // cached set, never re-running getAchievements per card). Equippable when met.
+  var _earnedAch = {};
+  try {
+    if (uid && typeof PB !== "undefined" && PB.getAchievements) {
+      (PB.getAchievements(uid) || []).forEach(function(a) { if (a && a.id) _earnedAch[a.id] = true; });
+    }
+  } catch (e) {}
+  function _hasEarned(item) {
+    var need = EARN_BY_ACHIEVEMENT[item.id];
+    return !!(need && _earnedAch[need]);
+  }
 
   // Skip link + editorial masthead (matches roster/HQ pattern)
   var h = '<button type="button" class="roster-skip" onclick="var el=document.getElementById(\'shopCosmetics\');if(el){el.focus();el.scrollIntoView();}">Skip to cosmetics</button>';
@@ -434,12 +475,25 @@ Router.register("shop", function() {
     // v8.25.8 — "Try it on" (Founder: "shop should allow for preview as well").
     // Opens a full-size preview of the piece applied to the member's own avatar /
     // name / card before any coins are spent. Shown for everything with a real
-    // preview (skip earned-only honors — they're not browseable purchases).
-    if (!item.earnedBy) {
+    // preview (earned-only honors are previewable ONCE the member has earned them —
+    // PL7 — so they can see it on before equipping; un-earned honors stay un-browseable).
+    if (!item.earnedBy || _hasEarned(item)) {
       c += '<button type="button" class="shop-item__tryon" onclick="shopPreviewCosmetic(\'' + item.id + '\')" aria-label="Preview ' + escHtml(item.name) + ' on your profile" style="background:none;border:none;color:var(--cb-brass,var(--gold));font-size:10px;font-weight:600;letter-spacing:.4px;cursor:pointer;padding:0 0 6px;text-decoration:underline;text-underline-offset:2px">Try it on</button>';
     }
     if (item.earnedBy) {
-      c += '<div class="shop-cabinet__earn">' + item.earnedBy + '. Not for sale.</div>';
+      // PL7 — if the member has met the earn condition, the honor is THEIRS to wear
+      // (P10: clearly mark it earned + give the Equip action). Otherwise it stays in
+      // the cabinet with its earn-condition copy — the whole point of the cabinet.
+      if (_hasEarned(item)) {
+        if (equipped) {
+          c += '<div class="shop-item__state shop-item__state--equipped">Earned · Equipped</div>';
+        } else {
+          c += '<div class="shop-cabinet__unlocked"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" style="vertical-align:-1px;margin-right:4px"><path d="M5 13l4 4L19 7"/></svg>You earned this</div>';
+          c += '<button class="shop-item__equip" onclick="equipCosmetic(\'' + item.id + '\',\'' + (item.plate ? 'titleplate' : item.cat) + '\')">Equip</button>';
+        }
+      } else {
+        c += '<div class="shop-cabinet__earn">' + item.earnedBy + '. Not for sale.</div>';
+      }
     } else if (item.arriving) {
       c += '<div class="shop-item__state shop-item__state--arriving">Arriving</div>';
     } else if (isOwned && equipped) {
@@ -742,7 +796,9 @@ function shopPreviewCosmetic(itemId) {
   var uid = (typeof currentUser !== "undefined" && currentUser) ? currentUser.uid : null;
   var balance = (uid && typeof getParCoinBalance === "function") ? getParCoinBalance(uid) : 0;
   var owned = (prof && prof.ownedCosmetics) || [];
-  var isOwned = owned.indexOf(item.id) !== -1 || (item.price === 0 && !item.earnedBy);
+  // PL7 — an earned-only honor the member has actually earned counts as owned here,
+  // so the preview offers "Equip it" (not "Not for sale"/Buy).
+  var isOwned = owned.indexOf(item.id) !== -1 || (item.price === 0 && !item.earnedBy) || shopHasEarned(item.id);
   var equippedMap = (prof && prof.equippedCosmetics) || {};
   var equipped = equippedMap[item.cat] === item.id || (item.plate && equippedMap.titleplate === item.id);
 

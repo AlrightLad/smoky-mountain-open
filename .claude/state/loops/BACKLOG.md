@@ -645,3 +645,13 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
 - PROD-VISIBILITY note: SW auto-update is robust (reg.update on load + 30-min + skipWaiting +
   controllerchange→reload). Prod verified at 8.25.169. "Nothing new" was partly stale-PWA
   (close+reopen forces it) + partly the re-theme being too subtle (hence the overhaul above).
+
+## FOUNDER ITEM (2026-06-14) — after existing workload
+- [ ] CADDY CREW bot identity in PULSE FEED (#73 refinement): (a) the bot's displayed
+  NAME should read "Caddy Crew (bot)" in the League Pulse / activity feed (not "The
+  Caddy"/"The Caddies"); (b) the crew avatar there currently shows the four caddie
+  photos as four separate images — replace with a SINGLE cohesive "family photo" of all
+  4 caddies together in ONE frame, same colorway, so it reads as one unified crew
+  portrait. Source: composite/generate the 4 canonical caddies together
+  ([[project_caddy_canon_characters]] — Murphy/Old Tom/Birdie/Bag Room Guy fixed
+  portraits) via the parbaughs-image-gen pipeline. Complete AFTER the current punch-list.
