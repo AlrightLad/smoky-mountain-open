@@ -549,26 +549,38 @@ on staging). Sub-items:
 - [~] TITLES — DONE-pass-1 v8.25.196 (4 brass/H&B materials + 8 new). Next: apply the same
   material bar to the rest (the 6 engraved gold plates read samey — diversify within H&B).
 - [ ] ALL OTHER COSMETIC TYPES to the brass/H&B 9.5 bar: rings (struck-metal done; push to
-  9.5), decorations (currently rubber-hose raster — RECONCILE vs the brass/H&B standard:
-  either reframe premium or keep as the one playful exception — FOUNDER TASTE), markers
-  (felt-stage done v8.25.194; push art to 9.5), nameplates, cards, banners. Per-type
-  capture → lift → V1 → ship → Founder ≥9.5.
+  9.5), markers (felt-stage done v8.25.194; push art to 9.5), nameplates, cards, banners.
+  Per-type capture → lift → V1 → ship → Founder ≥9.5.
+- [ ] DECORATIONS → SEASONAL DROP + ARCHIVE system (Founder decision 2026-06-15): "even mix
+  of it all" — decorations become THEMED/SEASONAL items purchasable only during a window
+  (e.g. Masters Azalea in April, Frost Delay in winter), then the design is RETIRED. Retired
+  designs live in a CUSTOMIZATION ARCHIVE showing WHERE + WHEN each came from (provenance), so
+  a new user who sees one worn on a veteran can learn its origin → FOMO + "encourages users to
+  stay and continue to play" (retention engine #76). Keep an even mix of styles (brass/H&B +
+  rubber-hose character + themed). Build: a `season`/`window` field on decoration SKUs (active
+  date-range gates purchase), a "retired but owned forever" state, and an Archive surface
+  (grid of past drops w/ name + season + year + "first dropped" provenance). Owned ones still
+  equip forever (grandfathered). Ties to the existing 8 rubber-hose decos (they become the
+  first archive entries).
 - [ ] EARNED-FREE cosmetics (Founder: "titles for achievements + leveling, free" + "other
-  cosmetics like that even"): a member EARNS titles (and other cosmetic types) FREE from
-  achievements + level milestones — equippable on earn, exactly like PL7 cabinet cosmetics +
-  PL7b themes. Many achievements already carry a `title:` field (data.js getAchievements:
-  e.g. eagle_eye→"Eagle Eye", parbaugh_veteran→"The Glue Guy", profile_complete→"The
-  Complete Package") + reserved titles (The Ace / Original Four / Commissioner) — WIRE these
-  as free earned/equippable titles in the shop's earned tier (derive from achievements, same
-  exploit-proof model as PL7/PL7b). Add level-milestone titles (Lv5/10/25/50/75/100). Ties to
-  PL7c integrity audit.
-- [ ] NEW COSMETIC TYPE to entice users (Founder asked "if you think we can/should"). AGENT
-  RECOMMENDATION: **Club Crest** — a personal brass+enamel heraldic monogram (member's
-  initials + a chosen motif: crossed clubs / rose / flag) shown on the PROFILE, the SCORECARD,
-  and the SHARE CARD. Rationale: peak H&B (crests/monograms are core prep-luxury); highly
-  collectible+customizable (engagement); and it rides the SHARE CARD = external visibility =
-  growth lever ([[project_market_strategy_2026_06]]). Alt: a hanging brass+leather **Bag Tag**
-  on the profile card. Build after the existing-type lifts; Founder confirms the pick.
+  cosmetics like that even"): members EARN titles (and other types) FREE from achievements +
+  level milestones — equippable on earn, exactly like PL7 cabinet cosmetics + PL7b themes.
+  Many achievements already carry a `title:` field (data.js getAchievements: eagle_eye→"Eagle
+  Eye", parbaugh_veteran→"The Glue Guy", profile_complete→"The Complete Package") + reserved
+  titles (The Ace / Original Four / Commissioner) — WIRE these as free earned/equippable titles
+  in the shop earned tier (derive from achievements, exploit-proof model as PL7/PL7b). Add
+  level-milestone titles (Lv5/10/25/50/75/100). Ties to PL7c.
+- [ ] NEW COSMETIC TYPES — Founder approved BOTH Club Crest + Bag Tag, with the hard
+  constraint: "thoroughly thought out + properly implemented + NO COLLISION with other
+  customizations." PREREQUISITE: author a CUSTOMIZATION SLOT MAP (every display surface +
+  which cosmetic occupies it: avatar ring/deco = the avatar rim; nameplate = behind name;
+  title = under name; card = round card; banner = profile header; marker = green/tee; → Crest =
+  a NEW slot e.g. scorecard + share-card watermark + a profile crest spot; Bag Tag = a NEW slot
+  hanging off the profile card) so the two new types occupy DISTINCT slots that never overlap
+  rings/nameplates/etc. (a) **Club Crest** — personal brass+enamel heraldic monogram (initials
+  + motif: crossed clubs/rose/flag) on profile + scorecard + SHARE CARD (growth lever,
+  [[project_market_strategy_2026_06]]); build Crest FIRST. (b) **Bag Tag** — hanging
+  brass+leather tag on the profile card, second. Both ≥9.5 brass/H&B; Founder signs off.
 
 ## FOUNDER PUNCH-LIST 2026-06-15 (explicit; do NOT stop until ALL [x]; FULL E2E of EVERY function with screenshot evidence, fix-as-you-go)
 - [ ] PL1 — RINGS revamped/redone (the CSS .ring-* cosmetics still not good enough)
