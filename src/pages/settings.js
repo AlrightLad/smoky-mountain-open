@@ -132,7 +132,7 @@ Router.register("settings", function(params) {
   var _activeThemeId = (typeof getCurrentTheme === "function") ? getCurrentTheme() : "clubhouse";
   var _unlockedThemes = (typeof currentProfile !== "undefined" && currentProfile && Array.isArray(currentProfile.unlockedThemes)) ? currentProfile.unlockedThemes : [];
   var _themes = (typeof getAvailableThemes === "function") ? getAvailableThemes(_unlockedThemes) : [];
-  disp += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Theme</div><div class="set-row__desc">Six editorial themes. Three ready today, three to earn. Your pick follows you to any device you sign into.</div></div></div>';
+  disp += '<div class="set-row"><div class="set-row__main"><div class="set-row__label">Theme</div><div class="set-row__desc">Seven editorial themes. Four ready today, three to earn. Your pick follows you to any device you sign into.</div></div></div>';
   disp += '<div class="theme-picker" role="radiogroup" aria-label="Theme">';
   _themes.forEach(function(t) {
     var sw = _THEME_SWATCHES[t.id] || _THEME_SWATCHES.clubhouse;
@@ -622,10 +622,15 @@ function clearLocation() {
 // ── Theme picker (v8.24.12, Ship 0d-ii) ────────────────────────────────────
 // Swatch hexes are data — literal previews of each theme's palette, permitted
 // like Visual Reference hole-dots. MUST mirror base.css [data-theme] blocks.
+// v8.25.18x (Founder PL11): swatches MUST mirror the real base.css [data-theme]
+// palettes so each preview shows its true colorway BEFORE selection. linen_draft
+// is now "Bluebird" (blue, not green); azalea was MISSING (fell back to clubhouse
+// → showed the wrong colorway). Both fixed from base.css canvas/green/brass.
 var _THEME_SWATCHES = {
   clubhouse:       { canvas: "#E7E0CD", green: "#2F4A3A", brass: "#B4893E" },
   twilight_links:  { canvas: "#DACFB6", green: "#1A2A3E", brass: "#C48540" },
-  linen_draft:     { canvas: "#E8DEC5", green: "#2B3A2E", brass: "#B8743A" },
+  linen_draft:     { canvas: "#D7E3EE", green: "#103A5C", brass: "#1F6FB2" },
+  azalea:          { canvas: "#EADBE2", green: "#3A1F33", brass: "#A8506F" },
   champion_sunday: { canvas: "#E0D3B7", green: "#4A1D24", brass: "#C68A3C" },
   bourbon_room:    { canvas: "#DCCAA4", green: "#3D2817", brass: "#B8743A" },
   course_record:   { canvas: "#E3D8BD", green: "#0C2A22", brass: "#8A8572" }

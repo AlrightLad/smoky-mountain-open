@@ -2933,7 +2933,13 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 .set-caddie-group { display: flex; flex-direction: column; gap: 8px; }
 .theme-row__chip--caddie { border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-family: var(--font-display); font-weight: 700; font-size: 16px; line-height: 1; }
 /* v8.25.130 — caddie chip now holds a rubber-hose character portrait */
-.theme-row__chip--photo { overflow: hidden; padding: 0; }
+/* v8.25.18x (Founder PL6/PL12): the breathing img uses will-change:transform,
+   which promotes it to its own compositor layer that ESCAPES a plain
+   overflow:hidden + border-radius clip — so the bobbing caddie floated OUTSIDE
+   the ring (Settings + Store). clip-path:circle() clips composited/transformed
+   descendants reliably; isolation pins the layer. The portrait now bobs WITHIN
+   the ring. */
+.theme-row__chip--photo { overflow: hidden; padding: 0; clip-path: circle(50% at 50% 50%); isolation: isolate; }
 .theme-row__chip--photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
 /* ─────────────────────────────────────────────────────────────────────────
