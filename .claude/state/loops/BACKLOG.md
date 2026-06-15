@@ -66,12 +66,13 @@ Remaining FOUNDATIONAL bugs (next, visual-verified):
   count) preserving sub-version structure inside. Render-time grouping over the existing archive
   (no data migration). V1: probe = 23 Y-sections (v8.23→v8.0) + 3 X-tabs; both render clean staging.
 Bigger phases (research/gen/taste — tracked in the directive doc):
-- [~] BRAND lock + MERCH overhaul + RINGS/cosmetics ≥9.5 — BLOCKED ON FOUNDER (art path). The
-  CSS/presentation scaffolding is built; the ≥9.5 leap needs PREMIUM raster art (rubber-hose golf,
-  brandified) which is unavailable to the agent: free programmatic gen is exhausted (Pollinations
-  walled, Gemini-image needs BILLING enabled — Founder action) and hand-SVG is "comical vs competition"
-  (his words). Path: enable Gemini billing → `node scripts/_gen-gemini-art.mjs` (brand-gate-vetted
-  prompts) OR Figma-Make + his ≥9.5 taste sign-off (AMD-028). Research-the-reference step is ready.
+- [ ] BRAND lock + MERCH overhaul + RINGS/cosmetics ≥9.5 — UNBLOCKED 2026-06-15: the art gate is
+  OPEN via Vertex Imagen 4 (`scripts/_gen-vertex-art.mjs`, staging SA, ~$0.02/img — VERIFIED with a
+  real render; only the AI-Studio key 429s). See [[reference_vertex_imagen_art_gate_open]]. Now
+  agent-actionable: brief the brand → generate via Vertex (image-gen skill doctrine + brand-gate) →
+  finish (`_finish-art.py`) → wire → Founder ≥9.5 sign-off (AMD-028). Covers MERCH (head covers by
+  club, vertical yardage book, branded balls/tees/clothing, kids+adult, realistic photos, P+rose
+  rubber-hose restyle) + RINGS/cosmetics + the HQ-showcase P5 hero/merch art.
 - [~] HQ DESKTOP showcase — P1 SHIPPED (v8.25.216 LIVE+V1, additive/unlinked); P2-P5 + home-wiring
   pending Founder review. Spec+phases: .claude/state/loops/HQ-DESKTOP-SHOWCASE-BUILD-SPEC.md. P1 = the
   6-band full-bleed scaffold (hero/caddies/merch/changelog/community/CTA) diverging from the app via
