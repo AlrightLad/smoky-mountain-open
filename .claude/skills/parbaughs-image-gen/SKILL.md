@@ -54,6 +54,34 @@ hand-drawn hole-map per page — NOT a fat leather journal with a ribbon; the fi
 attempt got this wrong because it wasn't researched). WebSearch the item +
 "<brand> <item>" for 1-2 real reference points, confirm the form, THEN prompt.
 
+## 0.25 Match the APP'S OWN aesthetic — look before you prompt (Founder 2026-06-14)
+
+> Founder: *"If Gemini needs to see the app or another AI to generate a prompt
+> to match the aesthetic of the app for the shop items, that may need to happen,
+> because you seem to miss the branding here."*
+
+Before generating any COSMETIC / character / on-brand asset, **Read the app's own
+canonical brand art and match THAT specific aesthetic** — do not prompt from a
+generic interpretation of a style name. You (or a vision model) must SEE the real
+references first. The canonical PARBAUGHS visual language, observed from the
+shipped art (`public/img/avatars/caddy-*.jpg`, `default-*.jpg`, `img/logo/`):
+
+- **Clean, bold BLACK-ink line art** — friendly hand-drawn 1930s rubber-hose
+  cartoon, RESTRAINED and tidy (not heavy, not ornate).
+- **Vintage aged-CREAM / parchment** grounds with a subtle paper texture, framed
+  by a **thin single or double-ring border**.
+- **Largely ink-on-cream**, with MUTED brand color used sparingly (forest green,
+  brass, brown) — never loud, never glossy.
+- **Flat illustrated** — NOT 3D, NOT glossy metallic relief, NOT shiny.
+
+**Why this matters (the lesson):** the first apex avatar rings were generated as
+shiny ornate 3D brass medallions — Founder: "not on brand, not adequate." They
+missed because they ignored the app's flat-ink-on-vintage-parchment language. An
+on-brand frame is a hand-INKED ornamental ring on aged cream with a thin double
+border and muted accents — the same hand as the caddies — not a metal medal.
+Always composite a new cosmetic beside `caddy-caddy.jpg` and confirm it reads as
+the SAME hand before shipping.
+
 ## 0.5 Two brand lanes + North Stars — pick the lane BEFORE the recipe
 
 PARBAUGHS apparel/imagery splits into two distinct visual lanes with named
