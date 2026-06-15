@@ -91,6 +91,16 @@ Router.register("merch", function () {
   });
   h += '</div></div>';
 
+  // ── The Leisure Line teaser (the rubber-hose graphic line the footer promises) ──
+  h += '<div style="padding:24px 16px 0"><div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:4px">The Leisure Line</div>';
+  h += '<div style="font-family:var(--font-ui);font-size:12px;color:var(--cb-mute);margin-bottom:12px">Off the course — our rubber-hose characters on relaxed graphic tees &amp; hoodies.</div>';
+  h += '<div style="position:relative;border-radius:var(--r-3);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--cb-chalk-3);background:var(--cb-chalk-2);display:flex;align-items:center;gap:14px;padding:14px 16px">';
+  h += '<div style="width:96px;height:96px;flex-shrink:0;border-radius:var(--r-2);overflow:hidden;background:var(--cb-paper)"><img src="' + imgUrl("leisure-caddy.jpg") + '" alt="A rubber-hose cartoon golfer graphic" loading="lazy" style="width:100%;height:100%;object-fit:cover"></div>';
+  h += '<div style="flex:1;min-width:0"><div style="font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--cb-ink);line-height:1.2">Rubber-hose, off the leash.</div>';
+  h += '<div style="font-family:var(--font-ui);font-size:11px;color:var(--cb-mute);margin-top:3px;line-height:1.4">A bolder, more playful streetwear line starring our hand-drawn cartoon crew.</div>';
+  h += '<div style="font-family:var(--font-mono);font-size:8.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--cb-brass-deep);margin-top:7px">Coming Soon</div></div>';
+  h += '</div></div>';
+
   // ── Note + maker's ribbon footer ───────────────────────────────────────────
   h += '<div style="padding:20px 16px 6px"><div style="background:var(--cb-chalk-2);border:1px solid rgba(var(--cb-brass-rgb),.22);border-radius:var(--r-2);padding:14px 16px;font-family:var(--font-ui);font-size:13px;color:var(--cb-charcoal);line-height:1.5">Not for sale yet — Mr Parbaugh will sound the horn when the shop opens. The line drops in seasonal releases, priced in real currency (no ParCoins — those are for the Pro Shop cosmetics). A separate rubber-hose leisure line follows. Member sizing to come.</div></div>';
   h += '<div style="text-align:center;padding:14px 16px 4px"><span style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:3px;color:var(--cb-mute);text-transform:uppercase">Est · York PA · Parbaughs Golf Co.</span></div>';
