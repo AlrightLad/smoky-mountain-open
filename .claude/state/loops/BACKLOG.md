@@ -38,7 +38,13 @@ Remaining FOUNDATIONAL bugs (next, visual-verified):
 - [ ] Resend wiring: bug-report + feature-request → email (Resend live on Cloudflare).
 - [x] Store copy: "Mr Parbaugh will sound the horn" — FIXED v8.25.211 (merch.js; the only
   "sound the horn" instance; shop.js "The Commissioner" is a legit per-league title cosmetic).
-- [ ] Whats-New → X.Y.Z changelog scheme (X major / Y feature+UI / Z daily; dated Y sections).
+- [x] Whats-New → X.Y.Z changelog scheme — DONE v8.25.212 (LIVE+V1): lead "What's New" now
+  labels the current Y (v8.25, full patch stays in hero/footer); "Recent Updates" groups all 23
+  current-major releases into dated Y-sections (Z dailies roll up under their Y, summarised by the
+  X.Y.0 feature headline; date-range when a Y spans months e.g. v8.13 "April–May"); new "Version
+  History" collapses each superseded major (V7/V6/V5) into one lifecycle tab (date-range + release
+  count) preserving sub-version structure inside. Render-time grouping over the existing archive
+  (no data migration). V1: probe = 23 Y-sections (v8.23→v8.0) + 3 X-tabs; both render clean staging.
 Bigger phases (research/gen/taste — tracked in the directive doc):
 - [ ] BRAND lock (research rubber-hose golf → brandify gen) + MERCH overhaul (head covers by
   club, vertical yardage book, branded balls/tees/clothing, kids+adult lines, realistic photos,
