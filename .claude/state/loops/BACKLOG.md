@@ -66,22 +66,7 @@ Remaining FOUNDATIONAL bugs (next, visual-verified):
   count) preserving sub-version structure inside. Render-time grouping over the existing archive
   (no data migration). V1: probe = 23 Y-sections (v8.23→v8.0) + 3 X-tabs; both render clean staging.
 Bigger phases (research/gen/taste — tracked in the directive doc):
-- [ ] SHOP/COSMETICS overhaul — BREAKTHROUGH + remaining (workflow-diagnosed, fixes captured).
-  KEY INSIGHT: the entire 8-decoration system was already wired (playerDecoSrc + shop catalog +
-  avatar overlay) but DORMANT — the images never existed. Generated them → LIT IT UP. SHIPPED this
-  cycle (LIVE+V1): v8.25.224 the 8 award-winning rubber-hose decorations LIVE in shop + framing
-  photos flush (the #1 "rings haven't changed" complaint RESOLVED) + shop overflow bounded; v8.25.225
-  premium buy CTAs (struck-brass medallion bar + price token + try-it-on pill — the "cheap buttons"
-  complaint); v8.25.226 More page Shop felt-focal restored (the "shop bland on More" regression).
-  MEMBER LIST elevated + cross-league surfaced — DONE v8.25.227 (LIVE+V1): brass "N leagues · M
-  shared" chip on multi-league members (existing p.leagues data, zero new collections), hover brass
-  left-bar + felt name, handicap promoted to felt-green focal; Find Players reframed as the
-  cross-league/add-friends on-ramp. REMAINING (workflow fixes captured): (a) pc56_sterling marker
-  gradient-id collision (router.js ~632 — minor render glitch, edge case); (b) TRUE FRIENDS graph
-  (friendIds[] + addFriend/removeFriend in data.js + follow button + Friends tab on Find Players —
-  surface-5 plan; a real feature, build fresh); (c) caddie voice-packs + feed FLAIR raster art (gen
-  via tools + wire); (d) avatar-cutoff robust structural fix (inset photo into the hole — decos
-  frame OK now, lower priority).
+- [x] SHOP/COSMETICS overhaul + member-list/friends — COMPLETE this cycle (12 ships v8.25.219-.230, all V1'd LIVE). Root cause of 'rings never changed': the 8-decoration system was wired but had no images. DELIVERED: 8 award-winning decorations live (.224); shop overflow bounded (.224); premium struck-brass buy CTAs + price token + try-it-on pill (.225); More Shop felt-focal restored (.226); member roster elevated + cross-league chips (.227); merch packshots/accessories/leisure + showcase hero/merch (.219-.223); FRIENDS GRAPHV1 (.228, ★ follow + Friends tab on Find Players, friendIds self-write); pc56_sterling marker gradient collision fixed (.229); caddie voice packs preview real portraits (.230). MINOR follow-ups (not stated, low-pri): feed-flair raster art; avatar-cutoff robust structural fix (decos frame OK now). 5-agent diagnosis workflow specs in the run output.
 - [~] (was) RINGS taste-block — SUPERSEDED: rings now shipped as the 8 real decorations above. MERCH OVERHAUL COMPLETE: apparel + accessories + leisure
   teaser + showcase all real premium art. Proposed ring options surfaced (rubber-hose caddy-peek
   frame vs. clean enamel-on-cream ring) — await his pick, then execute via the proven pipeline.
