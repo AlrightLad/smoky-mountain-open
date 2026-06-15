@@ -17,6 +17,39 @@ agent keeps draining the queue without the Founder re-poking it. Mark items
   blocked turns, the hook allows a stop anyway (logged to `cb.log`) so a stuck
   loop can't spin forever.
 
+## ★★ CONVERGENCE MARATHON — Founder 2026-06-15 night (4 stacked directives; UNATTENDED)
+Founder went to sleep; standing instructions for this unattended run (verbatim intent):
+1. **Image prompts** must be EXTREMELY specific + carry SIZE + PURPOSE + HOW-USED, run
+   through the parbaughs-image-gen skill for senior-pro prompts BEFORE generating (no
+   recreate churn) → brand cohesion. ENFORCED IN CODE: `parbaughs-brand-gate` skill +
+   `scripts/brand-gate.mjs wrap` REFUSES a prompt missing lane/size/purpose/usage. DONE.
+2. **Complete ALL available tasks; run the critique loop until GENUINELY nothing left to
+   resolve.** As you go: hunt + fix BUGS, and do sanity/SPOT-CHECKS on words/spelling/
+   counts. The loop should NARROW each pass (less to resolve) — converge toward zero
+   WITHOUT involving the Founder. Only surface true Founder-presence items.
+3. **EVERY SINGLE PAGE** in the review — incl. games + dropdown/accordion/arrow-revealed
+   content + modals. Everything inspected + SCREENSHOTTED + proven working in E2E.
+4. **HQ (desktop/wide viewport) gets the SAME critique + elevation + E2E as mobile** —
+   every page reviewed at BOTH desktop and phone viewports.
+CLOSE with the full E2E (test user + real user, staging, every function/button: play a
+round, bounty set/win, range, 18, 9, handicap, achievements, themes) — screenshots as
+evidence, data integrity + cohesion everywhere.
+
+CANONICAL ROUTE INVENTORY (53 registered, from Router.register) — the E2E checklist:
+  aces activity admin awards bounties bugreport caddynotes calendar challenges chat
+  courses dm-thread dms drills faq feed findplayers home invite leagues members merch
+  more onboarding partygames playnow profile profile-edit range range-detail records
+  richlist round roundhistory rounds rules scorecard scramble scramble-live seasonrecap
+  settings shop standings syncround tee-create teetimes tournament trips trophycreate
+  trophyroom wagers wrapped
+Each must be: rendered (mobile+desktop), every interactive control exercised, screenshotted,
+copy/count/spelling spot-checked, bugs fixed. Track per-route status in .claude/state/conv-e2e/.
+
+- [x] HARNESS: parbaughs-brand-gate skill + brand-gate.mjs (unskippable brand spec + size/
+  purpose/usage on every gen + 5-pt QC RED-gate) — committed e9f9097f, LIVE. Directive #1 met.
+- [ ] CONVERGENCE E2E — exhaustive per-route capture+critique (mobile+HQ) → fix bugs/copy/
+  counts → re-verify → narrow. Drives directives #2/#3/#4. Track in .claude/state/conv-e2e/.
+
 ## ONLY list agent-actionable items as `- [ ]`
 Founder-gated items (need a secret / his taste / a classifier-walled deploy) go
 under "Blocked on Founder" so the hook never traps the agent on work it cannot
@@ -644,7 +677,14 @@ the SAME gold plate — diversify within the brass/H&B language or consolidate.)
   Figma Make for onboarding/UI flows; (3) Founder decides on a Mobbin acct for taste refs.
 
 ## FOUNDER PUNCH-LIST 2026-06-15 (explicit; do NOT stop until ALL [x]; FULL E2E of EVERY function with screenshot evidence, fix-as-you-go)
-- [ ] PL1 — RINGS revamped/redone (the CSS .ring-* cosmetics still not good enough)
+- [~] PL1 — RINGS: (a) FLUSH FIX DONE v8.25.199 (LIVE prod+staging). Founder "rings
+  should sit flush — I am still seeing some that are not": diagnosed via a render
+  harness (.claude/state/ring-fit) over a real avatar at profile+roster size, ALL rings
+  read; only ring-medallion (laurel inset:-10px → -1px) + ring-gallery-rope (studs -7px →
+  -2px) floated with a gap — pulled both to hug; every other ring already hugs (no
+  over-correction). V1 before+after verified. (b) AESTHETIC REVAMP (generator-first
+  raster, the "atrocious" complaint) — REMAINS, gated through the new parbaughs-brand-gate
+  skill (see below); a gated-Imagen attempt or Figma-Make handoff.
 - [x] PL2 — DONE v8.25.189: decoration overlay standardized to 140% (was 132 renderAvatar / 142 profile / 138 shop) across ALL surfaces — a thick-ring deco at 132% cut off the photo; 140% sizes the hollow opening to ~the photo so it frames cleanly + consistently everywhere. Composite-verified caddy/bramble/eagle fit (.claude/state/fittest).
 - [ ] PL3 — FEED FLAIR enhanced + redesigned (the flair cat)
 - [~] PL4 — TITLES: add more (DONE: +8 on-brand titles v8.25.195) + ENHANCE to ~9.5 (Founder

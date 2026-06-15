@@ -1,0 +1,27 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../../../src/styles/base.css">
+<link rel="stylesheet" href="../../../src/styles/components.css">
+<style>
+  body{background:var(--cb-canvas,#E7E0CD);font-family:system-ui,sans-serif;padding:30px;margin:0}
+  h1{font-size:18px;color:#14130F;margin:0 0 18px}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:40px}
+  .cell{background:var(--cb-paper,#FCFAF5);border:1px solid rgba(20,19,15,.08);border-radius:16px;padding:34px 14px 16px;text-align:center}
+  .av-wrap{display:flex;align-items:center;justify-content:center;min-height:240px}
+  .lbl{font-size:13px;color:#14130F;margin-top:16px;font-family:ui-monospace,monospace}
+</style></head>
+<body>
+<h1>Ring-fit FOCUS — suspects at 200px. A flush ring HUGS the photo edge; a gap = background band between photo and ring.</h1>
+<div class="grid" id="grid"></div>
+<script>
+  var PHOTO = '../../../public/img/avatars/caddy-caddy.jpg';
+  var RINGS = ['ring-gold-struck','ring-medallion','ring-founders-crest','ring-green-jacket','ring-gallery-rope','ring-crest-pin','ring-claret','ring-hickory','ring-wax-seal'];
+  function avatar(cls,size){
+    return '<div class="'+cls+'" style="width:'+size+'px;height:'+size+'px;min-width:'+size+'px;border-radius:50%;position:relative;flex-shrink:0">'+
+      '<div style="width:100%;height:100%;border-radius:50%;overflow:hidden">'+
+      '<img alt="" src="'+PHOTO+'" style="width:100%;height:100%;object-fit:cover;border-radius:inherit"></div></div>';
+  }
+  var g=document.getElementById('grid');
+  RINGS.forEach(function(cls){var c=document.createElement('div');c.className='cell';c.innerHTML='<div class="av-wrap">'+avatar(cls,200)+'</div><div class="lbl">'+cls+'</div>';g.appendChild(c);});
+</script>
+</body></html>
