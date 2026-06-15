@@ -537,6 +537,39 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
   shots are basic blanks) + add the Cuphead leisure-tee print + logo/rubber-hose motif
   per [[project_merch_lineup]] + [[project_brand_rubberhose_x_hb]].
 - [x] Caddy-crew identity (#73) DONE (renamed The Caddies + cohesive crew avatar of real 4): rename bot "The Caddy" -> "The Caddies"/"Caddy Crew" + crew profile photo (composite the 4 caddies)
+## ★ GOVERNING COSMETIC DIRECTION (Founder 2026-06-15) — applies to ALL cosmetic work
+THE NORTH STAR for every cosmetic (rings, decorations, markers, nameplates, titles,
+cards, banners, + any new type): ONE premium standard = **brass + Holderness & Bourne
+understated luxury** (brass / hard-enamel / fine leather / embossed / foil-stamp). We are
+STANDARDIZING on brass + H&B and AWAY from rubber-hose styling FOR THE COSMETIC ITEMS
+(rubber-hose stays the CADDIE + brand-character layer, NOT the shop items). **BRAND
+COHESIVENESS IS PARAMOUNT** — review every surface against the one house style; create
+brand-first. Every item must hit ~9.5 (agent self-caps 9.4 per AMD-028; Founder signs ≥9.5
+on staging). Sub-items:
+- [~] TITLES — DONE-pass-1 v8.25.196 (4 brass/H&B materials + 8 new). Next: apply the same
+  material bar to the rest (the 6 engraved gold plates read samey — diversify within H&B).
+- [ ] ALL OTHER COSMETIC TYPES to the brass/H&B 9.5 bar: rings (struck-metal done; push to
+  9.5), decorations (currently rubber-hose raster — RECONCILE vs the brass/H&B standard:
+  either reframe premium or keep as the one playful exception — FOUNDER TASTE), markers
+  (felt-stage done v8.25.194; push art to 9.5), nameplates, cards, banners. Per-type
+  capture → lift → V1 → ship → Founder ≥9.5.
+- [ ] EARNED-FREE cosmetics (Founder: "titles for achievements + leveling, free" + "other
+  cosmetics like that even"): a member EARNS titles (and other cosmetic types) FREE from
+  achievements + level milestones — equippable on earn, exactly like PL7 cabinet cosmetics +
+  PL7b themes. Many achievements already carry a `title:` field (data.js getAchievements:
+  e.g. eagle_eye→"Eagle Eye", parbaugh_veteran→"The Glue Guy", profile_complete→"The
+  Complete Package") + reserved titles (The Ace / Original Four / Commissioner) — WIRE these
+  as free earned/equippable titles in the shop's earned tier (derive from achievements, same
+  exploit-proof model as PL7/PL7b). Add level-milestone titles (Lv5/10/25/50/75/100). Ties to
+  PL7c integrity audit.
+- [ ] NEW COSMETIC TYPE to entice users (Founder asked "if you think we can/should"). AGENT
+  RECOMMENDATION: **Club Crest** — a personal brass+enamel heraldic monogram (member's
+  initials + a chosen motif: crossed clubs / rose / flag) shown on the PROFILE, the SCORECARD,
+  and the SHARE CARD. Rationale: peak H&B (crests/monograms are core prep-luxury); highly
+  collectible+customizable (engagement); and it rides the SHARE CARD = external visibility =
+  growth lever ([[project_market_strategy_2026_06]]). Alt: a hanging brass+leather **Bag Tag**
+  on the profile card. Build after the existing-type lifts; Founder confirms the pick.
+
 ## FOUNDER PUNCH-LIST 2026-06-15 (explicit; do NOT stop until ALL [x]; FULL E2E of EVERY function with screenshot evidence, fix-as-you-go)
 - [ ] PL1 — RINGS revamped/redone (the CSS .ring-* cosmetics still not good enough)
 - [x] PL2 — DONE v8.25.189: decoration overlay standardized to 140% (was 132 renderAvatar / 142 profile / 138 shop) across ALL surfaces — a thick-ring deco at 132% cut off the photo; 140% sizes the hollow opening to ~the photo so it frames cleanly + consistently everywhere. Composite-verified caddy/bramble/eagle fit (.claude/state/fittest).
