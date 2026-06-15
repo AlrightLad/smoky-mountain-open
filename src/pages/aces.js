@@ -17,7 +17,7 @@ function renderAceList() {
   // has aces; on an empty wall the in-card "Log first ace" is the primary, so
   // the header demotes to outline (no two competing brass primaries).
   var _addBtnClass = aces.length ? 'btn-sm green' : 'btn-sm outline';
-  var h = '<div class="sh"><h2>Ace wall</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'records\')">← Back</button><button class="' + _addBtnClass + '" onclick="Router.go(\'aces\',{add:true})">+ Log ace</button></div></div>';
+  var h = '<div class="sh"><h2>Ace Wall</h2><div style="display:flex;gap:8px"><button class="back" onclick="Router.back(\'records\')">← Back</button><button class="' + _addBtnClass + '" onclick="Router.go(\'aces\',{add:true})">+ Log ace</button></div></div>';
 
   if (aces.length) {
     h += '<div style="text-align:center;padding:8px 16px 16px"><div style="font-size:48px;font-weight:800;color:var(--gold)">' + aces.length + '</div>';
@@ -88,7 +88,7 @@ function renderAceDetail(idx) {
   var isDirectory = courses.some(function(c) { return c.name === ace.course; });
   var player = PB.getPlayers().find(function(p) { return p.name === ace.by; });
 
-  var h = '<div class="sh"><h2>Hole-in-one</h2><button class="back" onclick="Router.back(\'aces\')">← Ace wall</button></div>';
+  var h = '<div class="sh"><h2>Hole-in-one</h2><button class="back" onclick="Router.back(\'aces\')">← Ace Wall</button></div>';
 
   // Hero photo
   if (ace.photo) {
