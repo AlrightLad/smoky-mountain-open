@@ -106,6 +106,34 @@ Apply to PARBAUGHS:
 - The palette-lock below still holds, but **down-weight brass**: treat it as ≤10%
   of any composition, prefer ink/forest/cream for structure and lines.
 
+## 0.4 Avatar decorations must be AWARD-WINNING — study Discord (Founder 2026-06-14)
+
+> Founder: *"These are super bland and not award-winning or worth purchasing.
+> Get inspiration from Discord and search other social apps — you're really
+> struggling, meaning you're not prompting properly or aligned with me."*
+
+Researched Discord avatar decorations + mobile-game frames. The bar for a
+**purchasable** decoration is: **colorful, dimensional, characterful, THEMED**,
+and collectible — not a flat monochrome ring and not a shiny generic medallion
+(both of which were rejected). Discord ships themed COLLECTIONS (Fantasy swords,
+wings, crowns, glowing frames, seasonal pumpkins/foliage, wearable characters,
+animated effects) with "razzle-dazzle." Mobile-game frames add 3D depth, crowns,
+ribbons, glow.
+
+**PARBAUGHS's unfair advantage = the rubber-hose caddies + golf moments.** The
+winning decoration language is the **rubber-hose illustrated cartoon style WITH
+rich full color, cel-shading, dimensional depth, a characterful golf element
+(fluttering pin-flag, crossed hickories, a peeking caddy, confetti/glow), and a
+THEME** — i.e. the same hand as caddy-oldtom.jpg (which is full-color, not flat
+ink), elevated to collectible polish. Target concepts: a caddy character peeking
+over the avatar (Discord wearable-character pattern), a Hole-in-One gold-confetti
+glow frame, a Champion green-jacket/claret-jug frame, seasonal frames (Masters
+azalea bloom, Frost-Delay winter), a fluttering-pennant frame. Generate on a
+keyable bg that contrasts the frame's colors (use chroma-BLUE #1763FF when the
+frame contains greens), carve the hollow center (§6), composite over the photo.
+LESSON: flat-ink = bland; shiny-brass-medallion = off-brand; **colorful
+characterful rubber-hose + golf theme + depth = the bar.**
+
 ## 0.5 Two brand lanes + North Stars — pick the lane BEFORE the recipe
 
 PARBAUGHS apparel/imagery splits into two distinct visual lanes with named
