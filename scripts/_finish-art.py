@@ -334,8 +334,43 @@ COSMETIC_RINGS = {
 }
 
 
+# DECO finishing — award-winning avatar decorations. Key the flat bg (auto green/
+# blue), keep the hollow center (it is the keyable bg), decontaminate, uniform
+# square canvas, NO tint (preserve the full-colour illustration). Also writes a
+# composite over a stand-in avatar for V1. Output -> public/img/cosmetics/.
+DECO_ITEMS = ["deco-caddy-companion", "deco-hole-in-one", "deco-champion",
+              "deco-masters-azalea", "deco-frost-delay"]
+
+def finish_deco(name, avatar_src="public/img/merch/lifestyle-teebox.jpg"):
+    raw = f"{GEN}/{name}.png"
+    if not os.path.exists(raw):
+        print(f"  [SKIP] {name}: no raw"); return
+    img = Image.open(raw).convert("RGB")
+    alpha = key_flat_bg(img, margin=14)
+    alpha = decontaminate(alpha)
+    ring = img.convert("RGBA"); ring.putalpha(alpha)
+    ring = crop_pad(ring, canvas=(512, 512), border_frac=0.01)
+    out = f"public/img/cosmetics/{name}.png"
+    os.makedirs(os.path.dirname(out), exist_ok=True)
+    ring.save(out, "PNG", optimize=True)
+    # V1 composite over a circular avatar
+    photo = Image.open(avatar_src).convert("RGB").resize((512, 512))
+    canvas = Image.new("RGBA", (512, 512), (245, 239, 224, 255))
+    d = int(512 * 0.70); av = photo.resize((d, d))
+    m = Image.new("L", (d, d), 0); ImageDraw.Draw(m).ellipse((0, 0, d, d), fill=255)
+    off = (512 - d) // 2; canvas.paste(av, (off, off), m); canvas.alpha_composite(ring)
+    os.makedirs(".claude/state/decofin", exist_ok=True)
+    canvas.convert("RGB").save(f".claude/state/decofin/{name}-on-avatar.png")
+    print(f"  [DECO]   {name} -> {out}  (bbox {ring.split()[3].getbbox()})")
+
+
 def main():
     mode = sys.argv[1] if len(sys.argv) > 1 else "merch"
+    if mode == "deco":
+        print("FINISH avatar decorations:")
+        for n in DECO_ITEMS:
+            finish_deco(n)
+        return
     if mode == "cosmetic":
         print("FINISH cosmetic ring decorations:")
         for name, (raw, out, tint) in COSMETIC_RINGS.items():
