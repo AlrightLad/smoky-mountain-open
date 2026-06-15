@@ -82,6 +82,30 @@ border and muted accents — the same hand as the caddies — not a metal medal.
 Always composite a new cosmetic beside `caddy-caddy.jpg` and confirm it reads as
 the SAME hand before shipping.
 
+## 0.3 Restraint over ornament — modern luxury minimalism (Founder 2026-06-14)
+
+> Founder: *"Not everything needs to be brass — that's super old school. Look at
+> the high-performing, high-quality brands and you'll notice it's not much brass
+> at all. I need to match that level of professionalism to compete in that space."*
+
+The 2026 premium standard (confirmed by research) is **luxury minimalism**:
+restrained design, **neutral/tonal palettes** (off-white, stone, ink, navy,
+olive, warm earth), **subtle-to-invisible branding**, premium materials and clean
+form doing the work — NOT loud ornament or heavy metallics.
+
+Apply to PARBAUGHS:
+- **Brass/gold is a RARE, small accent — never a default.** Overusing it reads
+  dated/kitschy (the exact "old-school" miss). Most surfaces should be tonal:
+  cream / stone / deep-ink / forest-green, with ink or a single quiet accent.
+- **Lead with material + form + restraint, not shine.** A flat clean ink mark on
+  cream out-classes a glossy gold medallion every time at this tier.
+- **Subtle branding.** The P+rose / rubber-hose identity stays, executed quietly
+  and cleanly — the identity is the value, not the volume.
+- Benchmark professionalism against H&B / Malbon / Linear-Stripe-grade restraint;
+  the bar is "could this sit next to a high-performing premium brand."
+- The palette-lock below still holds, but **down-weight brass**: treat it as ≤10%
+  of any composition, prefer ink/forest/cream for structure and lines.
+
 ## 0.5 Two brand lanes + North Stars — pick the lane BEFORE the recipe
 
 PARBAUGHS apparel/imagery splits into two distinct visual lanes with named
