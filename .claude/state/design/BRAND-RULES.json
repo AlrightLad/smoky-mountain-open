@@ -1,0 +1,81 @@
+{
+  "_doc": "Machine-readable PARBAUGHS brand spec. ALWAYS concatenated into any design-gen prompt preamble (with BRAND-BRIEF.md). The cure for off-brand 'slop': the model reverts to a generic prior without a locked, explicit spec. Verified palette from src/styles/base.css :root (Clubhouse default) 2026-06-15.",
+  "app": "PARBAUGHS — invite-only golf-league PWA; country-club-meets-group-chat; community over competition.",
+  "brand_recipe": "Authentic 1930s rubber-hose (Cuphead-era) cartoon CHARACTER, FINISHED with Holderness&Bourne tour-grade polish. Rubber-hose LEADS; brass/H&B is the premium FRAME around it. NOT two competing looks — one family, two registers (P+rose = formal mark; rubber-hose = voice/character). Like Malbon: unmistakably playful AND premium.",
+  "palette_hex": {
+    "felt_green": "#0F3D2E",
+    "mid_green": "#2F4A3A",
+    "moss": "#5A7D4E",
+    "claret": "#8E3A3A",
+    "brass": "#B4893E",
+    "cream_canvas": "#E7E0CD",
+    "paper": "#FCFAF5",
+    "ink": "#14130F",
+    "sand": "#C9B68A",
+    "slate": "#5A6B78"
+  },
+  "palette_forbidden": [
+    "bright/neon anything",
+    "yellow-gold or shiny 'medal' gold gradients (use ANTIQUE brass #B4893E, restrained)",
+    "Olympic/Roman laurel-gold",
+    "fire-engine red (ours is muted claret #8E3A3A)",
+    "cold pure grey as a primary",
+    "pure #FFFFFF surfaces (use warm cream/paper)"
+  ],
+  "rubber_hose_hallmarks": [
+    "bouncy noodle/hose limbs",
+    "pie-cut (pie-slice) eyes",
+    "white four-finger gloves",
+    "bold confident black ink outlines",
+    "rounded jaunty forms",
+    "warm limited palette on off-white/cream AGED PAPER ground",
+    "subtle halftone/grain texture",
+    "humorous, springy mood",
+    "RESTRAINED — country-club-on-par, NOT full Saturday-morning"
+  ],
+  "lanes": {
+    "tour_HnB": {
+      "use_for": "premium presentation, on-course/competitive, the polish frame, cosmetic ITEMS (brass plate/enamel/leather)",
+      "colorway": "tournament white, tour navy, charcoal/grey + antique brass; what pros wear competing",
+      "feel": "understated prep-luxury, fine materials, restrained brass hardware, hand-enamel, fine leather"
+    },
+    "leisure_rubberhose": {
+      "use_for": "caddies, seasonal decorations, onboarding character art, casual/leisure merch, playful moments",
+      "feel": "1930s rubber-hose cartoon, warm, characterful, fun"
+    }
+  },
+  "marks_and_motifs": {
+    "primary_mark": "P+rose — a P with a white rose climbing through it (MAY be re-styled rubber-hose per Founder 2026-06-15)",
+    "golf_motifs": ["crossed hickory clubs", "claret pennant pin-flag", "tee", "ball", "the cup", "fairway/course", "laurel (sparingly, FELT-GREEN not gold)"],
+    "signature_motif": "the rose + thorn (claret + forest-green vine)",
+    "caddies_canonical": ["Murphy (steady default)", "Old Tom (gruff wisdom)", "Birdie (all-hype)", "Bag Room Guy (heckler)"]
+  },
+  "prohibitions": [
+    "generic stock cartoon / clipart",
+    "anime",
+    "modern flat-vector corporate illustration",
+    "3D Pixar-style render",
+    "HDR / over-detailed mush",
+    "drop-shadow clipart",
+    "default-centered symmetric composition with no focal peak",
+    "photoreal where cartoon is expected (and vice-versa)",
+    "any text/letters in generated art unless explicitly requested",
+    "a generic heraldic crest with a crown + Roman laurel (the rejected 2026-06-15 'Olympic medal' miss)"
+  ],
+  "global_negative": "no generic stock cartoon, no neon, no HDR, no drop-shadow clipart, no anime, no modern flat-vector, no 3D Pixar render, no Olympic-medal gold, no default-centered comp, no crown+Roman-laurel crest, no text/letters",
+  "semantic_anchor": "warm limited Parbaughs palette, off-white aged-paper ground, subtle halftone/grain, confident black ink outline weight, soft vintage-print lighting, one asymmetric focal peak, a PARBAUGHS motif present (rose / crossed hickories / claret pennant)",
+  "qc_5point": [
+    "Would it read as PARBAUGHS even WITHOUT the logo? (must be YES)",
+    "Palette: only the approved hexes + antique brass (no yellow-gold/neon/pure-white)?",
+    "Correct LANE (rubber-hose vs tour/H&B) for the surface?",
+    "A real PARBAUGHS motif present (not generic luxury)?",
+    "Black ink weight + aged-paper ground + restraint (not slop tells)?"
+  ],
+  "recraft_style_ids": {
+    "_note": "Populate after building locked Recraft Custom Styles per lane (from the body-of-work set).",
+    "rubber_hose": null,
+    "tour_realistic": null,
+    "shop_cosmetic": null
+  },
+  "high_risk_assets_need_founder_signoff": ["caddie portraits", "logo/P+rose treatments", "default avatars", "merch product art", "shop cosmetic art", "onboarding hero"]
+}
