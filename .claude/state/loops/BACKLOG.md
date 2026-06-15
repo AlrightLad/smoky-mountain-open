@@ -551,9 +551,23 @@ should read the same. (Immediate hit: the 6 `.title-engraved` titles all render 
 the SAME gold plate — diversify within the brass/H&B language or consolidate.) Sub-items:
 - [~] TITLES — DONE-pass-1 v8.25.196 (4 brass/H&B materials + 8 new). Next: apply the same
   material bar to the rest (the 6 engraved gold plates read samey — diversify within H&B).
-- [ ] ALL OTHER COSMETIC TYPES to the brass/H&B 9.5 bar: rings (struck-metal done; push to
-  9.5), markers (felt-stage done v8.25.194; push art to 9.5), nameplates, cards, banners.
-  Per-type capture → lift → V1 → ship → Founder ≥9.5.
+- [ ] RINGS — GENERATOR-FIRST RASTER REVAMP (Founder 2026-06-15: "the rings are atrocious …
+  need a serious revamp; if you can't do it let me know of a tool"). VERDICT: CSS/SVG rings
+  have hit their ceiling — they don't fit/align AND don't hit the brass/H&B bar. TOOL =
+  Vertex Imagen (the proven pipeline that made the decorations the Founder approves;
+  scripts/_gen-vertex-art.mjs + _finish-art.py, ~$0.02/img, billing-works; Gemini backup).
+  PLAN: (1) RESEARCH real H&B / premium-club ring references (enamel ball-marker bezels,
+  struck-brass laurel rims, rope-and-stanchion) — heavily VET + self-rate prompts BEFORE
+  generating (credit-caution, [[feedback_gemini_cosmetics_credit_caution]]); (2) generate a
+  cohesive set of transparent-PNG ring FRAMES in the brass/H&B house style; (3) finish via
+  _finish-art.py (carve hollow center to the avatar opening — fixes the FIT: concentric +
+  opening==photo); (4) render rings as raster overlays exactly like decorations (playerDecoSrc-
+  style), UNIFYING rings + decorations into ONE raster-frame system (brand cohesion); (5) V1 on
+  real avatars (frame, never cover the photo — [[feedback_rings_frame_not_cover_photo]]), ship
+  per-tier, Founder ≥9.5. ALSO tune the decoration opening-to-photo ratio (decos are concentric
+  but the hole may not match the 92px photo → float/clip).
+- [ ] OTHER TYPES to the brass/H&B 9.5 bar AFTER rings: markers (felt-stage done v8.25.194;
+  art push), nameplates, cards, banners. Per-type capture → lift → V1 → ship → Founder ≥9.5.
 - [ ] DECORATIONS → SEASONAL DROP + ARCHIVE system (Founder decision 2026-06-15): "even mix
   of it all" — decorations become THEMED/SEASONAL items purchasable only during a window
   (e.g. Masters Azalea in April, Frost Delay in winter), then the design is RETIRED. Retired
