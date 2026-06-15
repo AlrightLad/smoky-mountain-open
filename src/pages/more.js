@@ -74,18 +74,17 @@ Router.register("more", function() {
     return sh;
   }
 
-  // ── ParCoin Economy ──
-  h += section("ParCoin Economy", [
+  // ── Play & Compete ── (v8.25.217 — Founder "More: too many sections": merged
+  // the old "ParCoin Economy" + "Competition" into one group. The coin economy and
+  // the head-to-head wagering ARE one loop — keeps every destination, one fewer
+  // section to scan. Felt material (the premium economy treatment).
+  h += section("Play & Compete", [
     {icon:icn('<circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M8.5 8.5h5a2.5 2.5 0 010 5H8.5"/>'), label:"Cosmetics Shop", sub:"Rings, banners, cards, names, titles", page:"shop", accent:true},
-    {icon:icn('<path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/>'), label:"Rich List & Power-Ups", sub:"Top earners, Double XP, Handicap Shield", page:"richlist", accent:true}
-  ], 'felt');
-
-  // ── Competition ──
-  h += section("Competition", [
+    {icon:icn('<path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/>'), label:"Rich List & Power-Ups", sub:"Top earners, Double XP, Handicap Shield", page:"richlist", accent:true},
     {icon:icn('<path d="M13 10V3L4 14h7v7l9-11h-7z"/>'), label:"Wagers", sub:"Head-to-head coin bets", page:"wagers"},
     {icon:icn('<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>'), label:"Bounty Board", sub:"Post and claim coin bounties", page:"bounties"},
     {icon:icn('<path d="M4 21h16"/><path d="M6.5 21L12.5 4"/><path d="M12.5 4l4.2 1.4-4.2 1.4"/><path d="M17.5 21L11.5 4"/><path d="M11.5 4L7.3 5.4l4.2 1.4"/>'), label:"Challenges", sub:"H2H matches and rivalries", page:"challenges"}
-  ]);
+  ], 'felt');
 
   // ── The Season ── (v8.24.13 — baseline IA fix: Standings, Feed, Records,
   // Trophy Room, Awards, Season Recap, and Aces were unreachable from mobile
