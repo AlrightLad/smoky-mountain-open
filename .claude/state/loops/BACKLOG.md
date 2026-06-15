@@ -542,7 +542,15 @@ calendar, global .card lift, rubber-hose course placeholder (v8.25.137–.143).
 - [x] PL2 — DONE v8.25.189: decoration overlay standardized to 140% (was 132 renderAvatar / 142 profile / 138 shop) across ALL surfaces — a thick-ring deco at 132% cut off the photo; 140% sizes the hollow opening to ~the photo so it frames cleanly + consistently everywhere. Composite-verified caddy/bramble/eagle fit (.claude/state/fittest).
 - [ ] PL3 — FEED FLAIR enhanced + redesigned (the flair cat)
 - [ ] PL4 — TITLES: add more + enhance them
-- [ ] PL5 — BALL MARKERS + TEE MARKERS redesigned (currently lazy)
+- [~] PL5 — BALL/TEE MARKERS presentation lift — DONE v8.25.194 (LIVE+V1). Diagnosis: all 12
+  markers already have detailed SVG glyphs (no dead/missing art) — the "lazy" read was the flat
+  PALE shared surface-stage. FIX: new .shop-surface-stage--marker presents each marker as a
+  crafted object resting on FELT (theme-tracked --cb-felt ground + recessed rim + contact-shadow
+  on the glyph, larger 66px), distinct from the pale nameplate stage — "a coin on the card table."
+  V1-verified both shelves on staging (.claude/state/cap-markers/): brass acorn / wooden peg /
+  found coin / sterling all pop on felt. REMAINING (folds into #76 generator-first overhaul): if
+  the Founder wants award-winning RASTER marker art (vs the current vector glyphs), that's a
+  Vertex-Imagen pass — taste call. The presentation is now premium; the glyph art is solid vector.
 - [x] PL6 — DONE v8.25.192 (LIVE+V1). The store Caddies shelf put the border (the "ring")
   directly on the breathing .pb-caddy-live <img> with NO clip wrapper, so the will-change
   compositor layer wobbled the whole bordered circle (the "float"); its onerror swapped the

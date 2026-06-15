@@ -453,8 +453,11 @@ Router.register("shop", function() {
       // v8.24.68 — render the real golf-art glyph (shared with the worn-on-
       // name render via pbMarkerGlyph), not a generic tinted dot. Falls back
       // to the dot only if an item has no art yet.
-      var _mg = (typeof pbMarkerGlyph === 'function') ? pbMarkerGlyph(item.id, 56) : '';
-      c += '<div class="shop-surface-stage">' + (_mg || '<span style="width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,' + item.preview + ',rgba(0,0,0,.35));box-shadow:0 3px 4px -2px rgba(0,0,0,.5)"></span>') + '</div>';
+      // PL5 — present the marker as a crafted object resting on felt (richer
+      // ground + recessed rim + drop shadow under the glyph), larger so the
+      // metalwork reads. Was a flat 56px glyph on the pale shared stage.
+      var _mg = (typeof pbMarkerGlyph === 'function') ? pbMarkerGlyph(item.id, 66) : '';
+      c += '<div class="shop-surface-stage shop-surface-stage--marker">' + (_mg ? '<span class="shop-marker-obj">' + _mg + '</span>' : '<span style="width:24px;height:24px;border-radius:50%;background:radial-gradient(circle at 35% 30%,' + item.preview + ',rgba(0,0,0,.35));box-shadow:0 3px 4px -2px rgba(0,0,0,.5)"></span>') + '</div>';
     } else if (item.cat === 'voice') {
       c += '<div style="height:34px;margin-bottom:8px;display:flex;align-items:center;justify-content:center">' + _shopFlagSvg(20) + '</div>';
     } else if (item.cat === 'title') {
