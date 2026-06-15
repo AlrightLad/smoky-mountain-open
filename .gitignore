@@ -257,3 +257,4 @@ docs/reports/app-health.html
 # Raw AI-gen image scratch (heavy PNGs; optimized JPGs in public/img/merch committed)
 public/img/gen/
 .claude/state/gen/
+.claude/state/theme-sweep/
