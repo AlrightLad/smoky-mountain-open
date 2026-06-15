@@ -724,6 +724,32 @@ Router.register("shop", function() {
     h += '</div></div>';
   }
 
+  // ── The Archive (Founder 2026-06-15): a provenance museum for every avatar
+  //    DECORATION — art + name + how-it's-flown + "Est. 2026". The retention/FOMO
+  //    engine (#76): a newcomer who sees a frame worn on a veteran can learn WHERE
+  //    + WHEN it came from. Read-only reference (owned decos still equip via the
+  //    Decorations shelf + Your Locker) — this is the museum, not the till. Seeds
+  //    from the 8 shipped decos; seasonal drops + retired frames accrue here over time.
+  var _archDecos = COSMETICS_CATALOG.filter(function(c) { return c.deco; });
+  if (_archDecos.length) {
+    var _decoArt = { border_deco_caddy: 'deco-caddy-companion.png', border_deco_holeinone: 'deco-hole-in-one.png', border_deco_champion: 'deco-champion.png', border_deco_azalea: 'deco-masters-azalea.png', border_deco_frost: 'deco-frost-delay.png', border_deco_eagle: 'deco-eagle.png', border_deco_bramble: 'deco-bramble-rose.png', border_deco_autumn: 'deco-autumn.png' };
+    var _decoSeason = { border_deco_azalea: 'Seasonal · Spring drop', border_deco_frost: 'Seasonal · Winter drop', border_deco_autumn: 'Seasonal · Fall drop' };
+    var _archBase = (typeof window !== "undefined" && window.__PB_BASE__) ? window.__PB_BASE__ : "/";
+    h += '<div class="shop-cabinet shop-archive"><div class="shop-cabinet__eyebrow">The Archive</div><div class="shop-cabinet__title">Every frame, and how it\'s flown.</div>';
+    h += '<div class="shop-shelf__rail">';
+    _archDecos.forEach(function(item) {
+      var f = _decoArt[item.id];
+      var prov = _decoSeason[item.id] || (item.earnedBy ? 'Earned · ' + item.earnedBy : (item.lvl ? 'Reach Level ' + item.lvl : 'Pro Shop'));
+      h += '<div class="shop-item shop-archive__item">';
+      h += '<div class="shop-surface-stage shop-archive__stage">' + (f ? '<img alt="" loading="lazy" src="' + _archBase + 'img/cosmetics/' + f + '" class="shop-archive__art">' : '') + '</div>';
+      h += '<div class="shop-item__name">' + escHtml(item.name) + '</div>';
+      h += '<div class="shop-archive__prov">' + escHtml(prov) + ' · Est. 2026</div>';
+      h += '<div class="shop-item__desc">' + escHtml(item.desc) + '</div>';
+      h += '</div>';
+    });
+    h += '</div></div>';
+  }
+
   h += '</section>';
 
   // 3m.D The Economy — entry cards to live feature pages
