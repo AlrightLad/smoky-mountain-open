@@ -124,7 +124,8 @@ function renderMemberDetailWithData(p) {
   var _pfDeco = (typeof playerDecoSrc === 'function') ? playerDecoSrc(p) : '';
   var _pfFrame = _pfDeco ? 'border:none;overflow:visible' : ('border:3px solid ' + _profColor + ';box-shadow:' + _profShadowCombined + _profAnimCss);
   h += '<div class="pf-av pf-hero-av" style="width:104px;height:104px;font-size:40px;' + _pfFrame + '">' + Router.getAvatar(p);
-  if (_pfDeco) h += '<img alt="" aria-hidden="true" src="' + _pfDeco + '" style="position:absolute;top:50%;left:50%;width:140%;height:140%;transform:translate(-50%,-50%);pointer-events:none;z-index:3">';
+  var _pfDpct = (_pfDeco && typeof playerDecoPct === 'function') ? playerDecoPct(p) : 110;
+  if (_pfDeco) h += '<img alt="" aria-hidden="true" src="' + _pfDeco + '" style="position:absolute;top:50%;left:50%;width:' + _pfDpct + '%;height:' + _pfDpct + '%;transform:translate(-50%,-50%);pointer-events:none;z-index:3">';
   h += '<div class="pf-av__lvl">' + lvl.level + '</div>';
   h += '</div>';
   h += '<div class="pf-id">';

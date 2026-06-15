@@ -36,10 +36,12 @@
 // staging and registers index.html as a text/html worker.
 window.__PB_BASE__ = "%BASE_URL%";
 </script>
-<!-- Lighthouse-friendly viewport (accessibility: don't block user zoom).
-     Removed maximum-scale=1 + user-scalable=no per Lighthouse a11y audit
-     2026-05-21. iOS Safari double-tap-to-zoom still works fine. -->
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!-- v8.25.207 (Founder 2026-06-15): LOCK zoom. Pinch/double-tap zoom on this
+     mobile web-app was causing alignment + scroll glitches (content drifting off
+     the edge, accidental refresh on scroll-up). The app is a fixed-layout PWA, not
+     a document, so user-zoom is the wrong affordance here — it re-flows the fixed
+     chrome. (Overrides the 2026-05-21 Lighthouse-a11y removal per Founder direction.) -->
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="description" content="The Parbaughs — invite-only golf league platform for the founding 20. Rounds, scrambles, wagers, calendar, league chat. Real golf, real friends.">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">

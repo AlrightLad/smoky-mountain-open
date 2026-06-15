@@ -29,7 +29,12 @@ select:focus-visible {
   outline: none;
 }
 
-html{background:var(--bg)!important}
+html{background:var(--bg)!important;overscroll-behavior-y:contain}
+/* v8.25.207 — stop the browser's native pull-to-refresh firing accidentally when a
+   member scrolls UP to the top (Founder: "app randomly refreshing when I scroll up").
+   overscroll-behavior:contain blocks the scroll-chain to the browser refresh; a
+   deliberate Twitter-style pull-to-refresh is a separate follow-up. */
+body{overscroll-behavior-y:contain}
 body{font-family:'Inter',sans-serif;background:transparent!important;color:var(--cream);min-height:100vh;min-height:100dvh;max-width:680px;margin:0 auto;overflow-x:hidden;-webkit-font-smoothing:antialiased;letter-spacing:-.01em}
 /* ── #72 (v8.25.135): long user strings must FIT, never run off the screen edge.
    body has overflow-x:hidden, so an over-long username / course name / email was

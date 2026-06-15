@@ -405,6 +405,18 @@ function playerDecoSrc(p) {
   var base = (typeof window !== "undefined" && window.__PB_BASE__) ? window.__PB_BASE__ : "/";
   return base + 'img/cosmetics/' + f;
 }
+// v8.25.207 — PER-DECO overlay %. The raster decoration frames have DIFFERENT
+// transparent-hole sizes, so ONE overlay % can't fit them: the old 140% floated
+// the sparse frames (photo small in the middle, Founder-flagged 2026-06-15 "caddie
+// companion floats instead of sitting flush like Discord") AND would crop the dense
+// ones. Visually tuned per-deco (the photo FILLS the hole + the frame hugs + extends
+// just beyond). Evidence: .claude/state/deco-fit/confirm.png. Default 110 for any
+// future deco. Used wherever a deco overlays a photo-filled circle.
+function playerDecoPctById(borderId) {
+  var m = { border_deco_caddy: 110, border_deco_holeinone: 106, border_deco_champion: 110, border_deco_azalea: 108, border_deco_frost: 112, border_deco_eagle: 110, border_deco_bramble: 112, border_deco_autumn: 120 };
+  return m[borderId] || 110;
+}
+function playerDecoPct(p) { return playerDecoPctById(p && p.equippedCosmetics && p.equippedCosmetics.border); }
 // ── Cosmetic helpers ──
 function getPlayerNameClass(p) {
   if (!p || !p.equippedCosmetics || !p.equippedCosmetics.name) return '';
@@ -491,7 +503,8 @@ function renderAvatar(p, size, clickToProfile) {
   // opening to ~the photo so it frames cleanly, not crops. Standardised across
   // every surface (renderAvatar + profile + shop preview + try-it-on) so the fit
   // is consistent everywhere.
-  var decoOverlay = useDeco ? '<img alt="" aria-hidden="true" src="' + decoSrc + '" style="position:absolute;top:50%;left:50%;width:140%;height:140%;transform:translate(-50%,-50%);pointer-events:none;z-index:2">' : '';
+  var _dpct = useDeco ? playerDecoPct(p) : 110;
+  var decoOverlay = useDeco ? '<img alt="" aria-hidden="true" src="' + decoSrc + '" style="position:absolute;top:50%;left:50%;width:' + _dpct + '%;height:' + _dpct + '%;transform:translate(-50%,-50%);pointer-events:none;z-index:2">' : '';
   // Outer div: border + shadow + animation + ring class (NO overflow:hidden so glow/art/deco renders)
   // Inner div: overflow:hidden clips the image/fallback content to the circle
   return '<div' + (ringCls ? ' class="' + ringCls + '"' : '') + ' style="width:' + size + 'px;height:' + size + 'px;min-width:' + size + 'px;border-radius:50%;position:relative;' + ringStyle + (ringStyle ? ';' : '') + cursor + 'flex-shrink:0"' + click + '><div style="width:100%;height:100%;border-radius:50%;overflow:hidden">' + avatarInner + '</div>' + decoOverlay + '</div>';
