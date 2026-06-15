@@ -4,15 +4,29 @@
 output: the workflow result; ~2M tokens, 178 tool uses). Synthesized + triaged here.
 Scores capped 9.4 (AMD-028). Worst-first. **m/d = mobile/desktop**, B = bland.
 
-## THE DOMINANT FINDING — SYSTEMIC: desktop/HQ is mobile-stretched (directive #4)
-~25 pages score desktop **5.6–7.4** with the IDENTICAL complaint: content pinned to a
-narrow center/left column, **huge dead cream gutters** on the 1440px viewport; the
-desktop layout does not use width. This is THE systemic lever — a desktop layout system
-(content max-width + a real grid/rail, or two-pane where it fits) lifts ~25 desktop
-scores at once. Worst offenders: **leagues** (content in a 325×320 top-left corner, ~70%
-dead), drills/roundhistory/range/caddynotes/profile/activity/rules/awards/findplayers
-(all "~330px column in 1440px, ~500px+ empty gutters"). Mobile is generally strong
-(8.2–9.0); the gap is almost entirely DESKTOP. → **PRIORITY 1.**
+## ⚠️ THE "DOMINANT FINDING" IS LARGELY A FALSE POSITIVE — re-triaged 2026-06-15
+The critique scored ~25 pages desktop **5.6–7.4** for "mobile-stretched / dead cream
+gutters / not designed for width." INVESTIGATED the actual CSS: this is a **DELIBERATE
+design decision** (base.css §"HQ RAW-LIST CONTENT WIDTH", v8.23.10-13). ~30 single-column
+list/form/text pages are INTENTIONALLY capped at `max-width:680px; margin:0 auto`
+(centered reading column) on desktop, with the documented rationale: at the full 1152px
+content area "a title-left/action-right row strands its control across a void and short
+idea-chips float in oversized pills." The team chose the centered column to match peer
+apps (X ≈600px, Strava ≈660px feeds) and to keep the column on the same axis as the
+full-width footer. The shell DOES widen (body → sidebar+1152px @≥960px); data-dense
+pages (standings/members/trophyroom/calendar/shop/home) are deliberately LEFT full-width.
+→ The critique agents applied a generic "desktop must fill width" heuristic WITHOUT the
+rationale. **Autonomously forcing full-width would REGRESS the v8.23 design** (re-create
+stranded controls + floating chips). leagues' "325×320 corner" = the leagues content is
+just SHORT (few leagues) inside its 680px column, not a layout break.
+**THIS IS A FOUNDER DESIGN-DIRECTION CALL, NOT AN ENGINEERING BUG** → surfaced in
+`task-queue/founder/desktop-width-direction-2026-06-15.md`. Keep centered columns
+(premium-doc feel) vs move data-dense pages to full-width grids/two-pane (more app-like,
+larger effort + regression risk) vs hybrid. Do NOT flip autonomously. NOT Priority 1.
+Genuinely-actionable desktop opportunities that AREN'T taste-flips: dms two-pane
+master/detail (real elevation), profile-edit multi-column form + collapse the 40-input
+club-distance ladder (real density win) — but both are page redesigns, fold into the
+Founder direction.
 
 ## SYSTEMIC #2 — contrast (cream-on-cream / faint), WCAG-AA
 home desktop right-rail near-invisible; profile Lv.3 strip + ParCoins washed-out (mobile);
