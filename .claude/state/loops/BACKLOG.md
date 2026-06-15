@@ -77,6 +77,9 @@ Bigger phases (research/gen/taste — tracked in the directive doc):
   • MERCH ACCESSORIES v8.25.221 — Vertex (cream-bg, no-key): 3 leather headcovers BY CLUB TYPE,
     a slim VERTICAL green-linen yardage book (hole maps), branded balls + sleeve → public/img/merch/.
     V1-confirmed in-layout — the merch page is now a complete premium storefront.
+  • SHOWCASE MERCH BAND v8.25.222 — wired the real packshots into the HQ showcase Tour Collection
+    band (was 'Packshot · P5' placeholder). V1: the whole showcase is now real-art throughout
+    (rubber-hose hero + caddie portraits + merch packshots) — cohesive awwwards-direction.
   REMAINING art slices (agent-actionable, generate→finish→wire→V1→Founder ≥9.5): the LEISURE
   rubber-hose graphic line (new merch section, Recraft) + KIDS+ADULT lines; RINGS/cosmetics raster
   (the shop pieces — HIGH taste-risk, previously rejected "atrocious", needs his close ≥9.5 iteration);
