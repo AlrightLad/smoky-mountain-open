@@ -66,11 +66,22 @@ Remaining FOUNDATIONAL bugs (next, visual-verified):
   count) preserving sub-version structure inside. Render-time grouping over the existing archive
   (no data migration). V1: probe = 23 Y-sections (v8.23→v8.0) + 3 X-tabs; both render clean staging.
 Bigger phases (research/gen/taste — tracked in the directive doc):
-- [ ] BRAND lock (research rubber-hose golf → brandify gen) + MERCH overhaul (head covers by
-  club, vertical yardage book, branded balls/tees/clothing, kids+adult lines, realistic photos,
-  P+rose rubber-hose restyle) + RINGS/cosmetics redesign ≥9.5 (through brand-gate).
-- [ ] HQ DESKTOP immersive showcase (brand-immersion-first) · ONBOARDING rebuild · Settings
-  consolidate + More declutter + page animation + standings tournament feel.
+- [~] BRAND lock + MERCH overhaul + RINGS/cosmetics ≥9.5 — BLOCKED ON FOUNDER (art path). The
+  CSS/presentation scaffolding is built; the ≥9.5 leap needs PREMIUM raster art (rubber-hose golf,
+  brandified) which is unavailable to the agent: free programmatic gen is exhausted (Pollinations
+  walled, Gemini-image needs BILLING enabled — Founder action) and hand-SVG is "comical vs competition"
+  (his words). Path: enable Gemini billing → `node scripts/_gen-gemini-art.mjs` (brand-gate-vetted
+  prompts) OR Figma-Make + his ≥9.5 taste sign-off (AMD-028). Research-the-reference step is ready.
+- [~] HQ DESKTOP showcase — P1 SHIPPED (v8.25.216 LIVE+V1, additive/unlinked); P2-P5 + home-wiring
+  pending Founder review. Spec+phases: .claude/state/loops/HQ-DESKTOP-SHOWCASE-BUILD-SPEC.md. P1 = the
+  6-band full-bleed scaffold (hero/caddies/merch/changelog/community/CTA) diverging from the app via
+  body.on-showcase — reachable at Router.go('showcase') on staging+prod for his read. REMAINING: P2-P4
+  band polish (await his direction-read — AMD-028 owns the ≥9.5 taste), **P5 premium hero/merch art
+  (same art gate as brand/merch above)**, + the deliberate wire into the desktop home branch (the spec's
+  signed-out=showcase / signed-in=editorial-HQ fork — Founder confirms). ONBOARDING rebuild = Figma-gated
+  (#57, his idea) + cartoon art. Settings/More: the conservative wins shipped (nav-icons v8.25.214, More
+  'Play & Compete' merge v8.25.217); the DEEPER IA restructure (which sections to merge/promote/hide,
+  what "convoluted" means to him) needs his priority direction to avoid churning a surface he'll re-judge.
 - [~] GPS/course-map + cosmetics-in-play — RESEARCH+PROPOSAL DONE; Lane-C cosmetics shipped;
   MAP BUILD blocked on Founder lane-pick. (a) Research complete (P1): only free hole-geometry =
   OpenStreetMap golf tags via Overpass (ODbL, volunteer-coverage); satellite imagery = paid+off-brand;
@@ -81,7 +92,12 @@ Bigger phases (research/gen/taste — tracked in the directive doc):
   'HOLE 3 [P-disc]' clean. (c) REMAINING (Founder picks lane → fresh-context build): the Lane-A
   illustrated OSM hole map + the live player dot + ball-marker on it. GPS distance-to-pin already live
   (v8.25.55 distance.js). Location-on-signin = covered by the opt-in geolocation already in distance.js.
-- [ ] FULL SERIES E2E (test + real user, every function/button/dropdown/game, screenshots).
+- [~] FULL SERIES E2E — route-capture cycle DONE (cycle 1: all 41 routes captured mobile+desktop,
+  triaged); this session added per-surface V1 on every shipped change (changelog, scorecard, nav,
+  tee-marker, showcase, More). The FUNCTIONAL flow E2E (play a round → bounty → range → 18/9 → handicap
+  → achievements → themes, as test+real user) needs the LOCAL EMULATOR which is wedged (per prior note)
+  or CI — not runnable in-agent against prod. Closeout functional E2E = runs in CI / when the emulator
+  is unblocked (Founder env). Authed-staging captures (the agent path) are exercised every ship.
 
 ## ★★ CONVERGENCE MARATHON — Founder 2026-06-15 night (4 stacked directives; UNATTENDED)
 Founder went to sleep; standing instructions for this unattended run (verbatim intent):
