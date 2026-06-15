@@ -4707,30 +4707,106 @@ img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width:
 .shop-item__state--lvl { color: var(--cb-brass-deep); font-weight: 700; display: inline-flex; align-items: center; }
 /* v8.24.77 — confident minted-brass key (was a 12%-opacity translucent chip
    that read tentative — the actual conversion click). 44pt touch target. */
+/* v8.25.x — Money CTA reads as a struck-brass medallion bar, not a flat chip.
+   Two-stop bevel (highlight->face->deep), inner top rim + bottom shadow give it
+   minted depth; a left felt-recessed coin chip seats the price like a token in
+   a register. This is the highest-intent control on the card — it should look it. */
 .shop-item__buy {
+  position: relative;
   margin-top: 10px;
   width: 100%;
-  min-height: 44px;
+  min-height: 46px;
   font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  padding: 9px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  padding: 10px 12px;
   border-radius: var(--radius-md);
-  background: linear-gradient(180deg, var(--cb-brass-2), var(--cb-brass-deep));
+  background:
+    linear-gradient(180deg, var(--cb-brass-3) 0%, var(--cb-brass) 48%, var(--cb-brass-deep) 100%);
   border: 1px solid var(--cb-brass-deep);
-  color: #241c0c;
+  color: #2A1E08;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 1px 2px rgba(0,0,0,0.25);
-  transition: transform 0.12s ease, filter 0.12s ease;
+  gap: 8px;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.30);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.50),
+    inset 0 -2px 4px rgba(80,52,12,0.40),
+    0 2px 5px rgba(40,28,10,0.30);
+  overflow: hidden;
+  transition: transform 0.12s ease, filter 0.12s ease, box-shadow 0.12s ease;
 }
-.shop-item__buy:hover { filter: brightness(1.06); transform: translateY(-1px); }
-.shop-item__buy:active { transform: translateY(0); box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); }
-@media (prefers-reduced-motion: reduce) { .shop-item__buy:hover, .shop-item__buy:active { transform: none; } }
+/* sheen sweep across the brass face on hover — satisfying "struck metal" affordance */
+.shop-item__buy::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -60%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(105deg, transparent, rgba(255,255,255,0.45), transparent);
+  transform: skewX(-18deg);
+  opacity: 0;
+  pointer-events: none;
+  transition: left 0.5s ease, opacity 0.2s ease;
+}
+.shop-item__buy:hover { filter: brightness(1.05); transform: translateY(-1px); box-shadow: inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -2px 4px rgba(80,52,12,0.40), 0 4px 10px rgba(40,28,10,0.34); }
+.shop-item__buy:hover::after { left: 120%; opacity: 1; }
+.shop-item__buy:active { transform: translateY(0); box-shadow: inset 0 2px 5px rgba(60,40,12,0.45); }
+.shop-item__buy:focus-visible { outline: 2px solid var(--cb-brass-3); outline-offset: 2px; }
+/* the price as a seated token: felt-recessed pill on the brass bar */
+.shop-item__buy .shop-item__price {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(28,18,6,0.16);
+  box-shadow: inset 0 1px 2px rgba(28,18,6,0.30);
+  font-size: 13px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.shop-item__buy .shop-item__price svg { flex-shrink: 0; }
+.shop-item__buy .shop-item__buy-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  opacity: 0.82;
+}
+@media (prefers-reduced-motion: reduce) { .shop-item__buy:hover, .shop-item__buy:active { transform: none; } .shop-item__buy::after { display: none; } }
+/* v8.25.x — "Try it on" promoted from a bare underline to a brass-outline ghost
+   pill: a real, tappable secondary affordance that pairs with the brass Buy bar. */
+.shop-item__tryon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin: 2px 0 8px;
+  padding: 6px 14px;
+  min-height: 30px;
+  border-radius: 999px;
+  font-family: var(--font-ui);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  color: var(--cb-brass-deep);
+  background: rgba(var(--cb-brass-rgb), 0.07);
+  border: 1px solid rgba(var(--cb-brass-rgb), 0.45);
+  cursor: pointer;
+  align-self: center;
+  transition: background 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
+}
+.shop-item__tryon:hover { background: rgba(var(--cb-brass-rgb), 0.14); border-color: var(--cb-brass); transform: translateY(-1px); }
+.shop-item__tryon:active { transform: translateY(0); }
+.shop-item__tryon:focus-visible { outline: 2px solid var(--cb-brass); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .shop-item__tryon:hover, .shop-item__tryon:active { transform: none; } }
+/* v8.25.x — Equip seats on felt with a brass hairline so it reads premium-secondary
+   (the brass Buy bar stays the loud primary; Equip is the calm "you own it" peer). */
 .shop-item__equip {
   margin-top: 10px;
   width: 100%;
@@ -4741,12 +4817,17 @@ img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width:
   min-height: 44px;
   padding: 9px;
   border-radius: var(--radius-md);
-  background: var(--cb-felt);
-  border: 1px solid var(--cb-felt);
+  background: linear-gradient(180deg, #155041, var(--cb-felt));
+  border: 1px solid rgba(var(--cb-brass-rgb), 0.40);
   color: var(--cb-chalk);
   cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 1px 2px rgba(0,0,0,0.22);
+  transition: filter 0.12s ease, transform 0.12s ease;
 }
-.shop-item__equip:hover { filter: brightness(1.1); }
+.shop-item__equip:hover { filter: brightness(1.12); transform: translateY(-1px); }
+.shop-item__equip:active { transform: translateY(0); }
+.shop-item__equip:focus-visible { outline: 2px solid var(--cb-brass); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .shop-item__equip:hover, .shop-item__equip:active { transform: none; } }
 
 /* v8.25.42 — Pro Shop ring preview: present the ornamental ring as a raised
    object on a clean ground (was a 56px disc that hid the art). One soft ground

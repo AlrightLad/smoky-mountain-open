@@ -552,7 +552,7 @@ Router.register("shop", function() {
     // preview (earned-only honors are previewable ONCE the member has earned them —
     // PL7 — so they can see it on before equipping; un-earned honors stay un-browseable).
     if (!item.earnedBy || _hasEarned(item)) {
-      c += '<button type="button" class="shop-item__tryon" onclick="shopPreviewCosmetic(\'' + item.id + '\')" aria-label="Preview ' + escHtml(item.name) + ' on your profile" style="background:none;border:none;color:var(--cb-brass,var(--gold));font-size:10px;font-weight:600;letter-spacing:.4px;cursor:pointer;padding:0 0 6px;text-decoration:underline;text-underline-offset:2px">Try it on</button>';
+      c += '<button type="button" class="shop-item__tryon" onclick="shopPreviewCosmetic(\'' + item.id + '\')" aria-label="Preview ' + escHtml(item.name) + ' on your profile"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.7" style="flex-shrink:0"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>Try it on</button>';
     }
     if (item.earnedBy) {
       // PL7 — if the member has met the earn condition, the honor is THEIRS to wear
@@ -579,7 +579,7 @@ Router.register("shop", function() {
       // PLAYING (not just saving coins), so they read as earned dedication.
       c += '<div class="shop-item__state shop-item__state--locked shop-item__state--lvl"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-1px;margin-right:3px"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>Unlocks at Lv ' + item.lvl + '</div>';
     } else if (canAfford) {
-      c += '<button class="shop-item__buy" onclick="purchaseCosmetic(\'' + item.id + '\')">' + _shopCoinSvg + ' ' + item.price + '</button>';
+      c += '<button class="shop-item__buy" onclick="purchaseCosmetic(\'' + item.id + '\')"><span class="shop-item__buy-label">Buy</span><span class="shop-item__price">' + _shopCoinSvg + ' ' + item.price + '</span></button>';
     } else {
       c += '<div class="shop-item__state shop-item__state--locked">' + item.price + ' · need ' + (item.price - balance) + ' more</div>';
     }
@@ -983,7 +983,7 @@ function shopPreviewCosmetic(itemId) {
   } else if (isOwned) {
     action = '<button type="button" onclick="equipCosmetic(\'' + esc2(item.id) + '\',\'' + (item.plate ? 'titleplate' : item.cat) + '\');shopClosePreview()" style="width:100%;min-height:46px;background:var(--cb-felt);border:none;border-radius:10px;color:var(--cb-chalk);font-weight:700;font-size:14px;cursor:pointer">Equip it</button>';
   } else if (balance >= item.price) {
-    action = '<button type="button" onclick="purchaseCosmetic(\'' + esc2(item.id) + '\');shopClosePreview()" style="width:100%;min-height:46px;background:var(--cb-brass,var(--gold));border:none;border-radius:10px;color:#2A2822;font-weight:700;font-size:14px;cursor:pointer">Buy · ' + item.price + ' ParCoins</button>';
+    action = '<button type="button" onclick="purchaseCosmetic(\'' + esc2(item.id) + '\');shopClosePreview()" style="width:100%;min-height:48px;background:linear-gradient(180deg,var(--cb-brass-3) 0%,var(--cb-brass) 48%,var(--cb-brass-deep) 100%);border:1px solid var(--cb-brass-deep);border-radius:12px;color:#2A1E08;font-weight:800;font-size:14px;letter-spacing:.3px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;text-shadow:0 1px 0 rgba(255,255,255,.30);box-shadow:inset 0 1px 0 rgba(255,255,255,.50),inset 0 -2px 4px rgba(80,52,12,.40),0 3px 8px rgba(40,28,10,.30)">Buy <span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;background:rgba(28,18,6,.16);box-shadow:inset 0 1px 2px rgba(28,18,6,.30);font-variant-numeric:tabular-nums">' + _shopCoinSvg + ' ' + item.price + '</span></button>';
   } else {
     action = '<div style="text-align:center;font-size:12px;color:var(--cb-mute);font-weight:600">' + item.price + ' ParCoins · you need ' + (item.price - balance) + ' more</div>';
   }
