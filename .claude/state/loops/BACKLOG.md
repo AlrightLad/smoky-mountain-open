@@ -66,7 +66,14 @@ Remaining FOUNDATIONAL bugs (next, visual-verified):
   count) preserving sub-version structure inside. Render-time grouping over the existing archive
   (no data migration). V1: probe = 23 Y-sections (v8.23→v8.0) + 3 X-tabs; both render clean staging.
 Bigger phases (research/gen/taste — tracked in the directive doc):
-- [ ] BRAND/MERCH/cosmetics ≥9.5 — art gate OPEN + PROVEN; 2 slices shipped, more to go.
+- [~] BRAND/MERCH ≥9.5 — DONE (5 slices, real art throughout); RINGS/cosmetics = blocked on
+  Founder taste-direction (asked; he called prior attempts "atrocious"; AMD-028 ≥9.5 is his call —
+  generating blind = re-rejection risk). MERCH OVERHAUL COMPLETE: apparel + accessories + leisure
+  teaser + showcase all real premium art. Proposed ring options surfaced (rubber-hose caddy-peek
+  frame vs. clean enamel-on-cream ring) — await his pick, then execute via the proven pipeline.
+  Optional/low-priority remaining: kids+adult merch lines (more sections; merch page already full —
+  hold until he reviews current state). Art gate ([[reference_vertex_imagen_art_gate_open]]) proven
+  on both tools; this whole lane is now throughput-gated on his ≥9.5 sign-off, not on capability.
   Both tools verified ([[reference_vertex_imagen_art_gate_open]]): Vertex Imagen (photoreal) + Recraft
   (illustrated). SHIPPED this cycle (LIVE+V1, awaiting Founder ≥9.5 sign-off per AMD-028):
   • MERCH tour packshots v8.25.219 — Vertex ghost-mannequin white polo / navy quarter-zip / black
