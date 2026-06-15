@@ -32,42 +32,29 @@ Router.register("more", function() {
   // ── Section renderer ── one paper card per group (10px radius, --cb-mute-3
   // hairline border + row separators), mono brass eyebrow, 13px gap between
   // sections. Rows stay above the 44pt floor: 13px pad x2 + 36px tile = 62px.
-  function section(title, items, material) {
-    // Group identity now lives on the CARD material, not smuggled into per-row
-    // accents: ParCoin (the revenue/identity group) is the page's one felt
-    // focal peak; every other group is honest pressed paper. This composes the
-    // .pb-card / .pb-card--felt material classes instead of re-declaring stock,
-    // so the whole page reads as one intentional system instead of one styled
-    // card next to flat hairline rows. (#41 more-page signature move.)
-    var isFelt = material === 'felt';
+  function section(title, items) {
+    // v8.25.218 — COHESION redesign (Founder 2026-06-15: "theme doesn't feel
+    // cohesive · some tabs have a gold line on the far left and others don't").
+    // The More page is NAVIGATION, so it now reads as ONE uniform system: every
+    // group is the same pressed-paper card, every eyebrow is the same brand brass,
+    // every row is identical (icon tile · label · sub · chevron). The old felt
+    // focal section + per-row brass left-bars (only on Shop/Rich-List/Invite/
+    // Leagues) were the "random gold lines" — removed. Focal-peak drama belongs on
+    // content pages (home/showcase), not the menu. Every item carries a one-line
+    // sub so no row is a bare brand name. The `material`/`accent` props are retired
+    // (ignored) so call sites stay valid.
     var sh = '<div style="padding:0 16px;margin-bottom:13px">';
-    sh += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:' + (isFelt ? 'var(--cb-brass-3)' : 'var(--cb-eyebrow)') + ';margin-bottom:6px;padding-left:2px">' + title + '</div>';
-    sh += '<div class="pb-card more-group' + (isFelt ? ' pb-card--felt more-group--felt' : '') + '" style="overflow:hidden">';
+    sh += '<div style="font-family:var(--font-mono);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:6px;padding-left:2px">' + title + '</div>';
+    sh += '<div class="pb-card more-group" style="overflow:hidden">';
     items.forEach(function(l, i) {
-      // Priority rows (revenue/growth) earn a stronger brass wash + a 3px
-      // brass left-edge bar so they read as elevated, not just another tinted
-      // row. Routine rows stay flat. The left bar eats 3px of pad on the left
-      // so the tile/label column still aligns to the same optical gutter.
-      // On felt the brass-wash-on-paper accent treatment fails contrast, so the
-      // accent left-bar + tile route to the on-green brass (--cb-brass-3) and
-      // all text moves to chalk; row separators switch from dark ink to a faint
-      // chalk hairline. On paper, the original AA-safe ink treatment is kept.
-      var rowBg = (l.accent && !isFelt)
-        ? 'background:rgba(var(--cb-brass-rgb),.11);box-shadow:inset 3px 0 0 var(--cb-brass);'
-        : (l.accent && isFelt ? 'box-shadow:inset 3px 0 0 var(--cb-brass-3);' : '');
-      var rowPad = l.accent ? 'padding:14px 14px 14px 11px;' : 'padding:13px 14px;';
-      var sep = isFelt ? 'border-top:1px solid rgba(var(--cb-chalk-rgb) / .12);' : 'border-top:1px solid var(--cb-mute-3);';
-      var tileBg = isFelt ? 'rgba(var(--cb-chalk-rgb) / .08)' : (l.accent ? 'rgba(var(--cb-brass-rgb),.12)' : 'var(--cb-chalk-2)');
-      var tileFg = isFelt ? 'var(--cb-brass-3)' : (l.accent ? 'var(--cb-brass-deep)' : 'var(--cb-ink-2)');
-      var labelFg = isFelt ? 'var(--cb-chalk)' : 'var(--cb-ink)';
-      var subFg = isFelt ? 'var(--cb-mute-3)' : 'var(--cb-mute)';
-      sh += '<div role="button" tabindex="0" onkeydown="if(event.key===\'Enter\')Router.go(\'' + l.page + '\')" onclick="Router.go(\'' + l.page + '\')" style="cursor:pointer;' + rowBg + (i > 0 ? sep : '') + '-webkit-tap-highlight-color:transparent">';
-      sh += '<div style="' + rowPad + 'display:flex;align-items:center;gap:13px">';
-      sh += '<div style="width:36px;height:36px;border-radius:10px;background:' + tileBg + ';color:' + tileFg + ';display:flex;align-items:center;justify-content:center;flex-shrink:0">' + l.icon + '</div>';
-      sh += '<div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:' + (l.accent ? '700' : '600') + ';color:' + labelFg + '">' + l.label + '</div>';
-      if (l.sub) sh += '<div style="font-size:11px;color:' + subFg + ';margin-top:1px">' + l.sub + '</div>';
+      var sep = i > 0 ? 'border-top:1px solid var(--cb-mute-3);' : '';
+      sh += '<div role="button" tabindex="0" onkeydown="if(event.key===\'Enter\')Router.go(\'' + l.page + '\')" onclick="Router.go(\'' + l.page + '\')" style="cursor:pointer;' + sep + '-webkit-tap-highlight-color:transparent">';
+      sh += '<div style="padding:13px 14px;display:flex;align-items:center;gap:13px">';
+      sh += '<div style="width:36px;height:36px;border-radius:10px;background:var(--cb-chalk-2);color:var(--cb-ink-2);display:flex;align-items:center;justify-content:center;flex-shrink:0">' + l.icon + '</div>';
+      sh += '<div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;color:var(--cb-ink)">' + l.label + '</div>';
+      if (l.sub) sh += '<div style="font-size:11px;color:var(--cb-mute);margin-top:1px">' + l.sub + '</div>';
       sh += '</div>';
-      sh += chev(isFelt ? 'var(--cb-brass-3)' : 'var(--cb-mute-2)');
+      sh += chev('var(--cb-mute-2)');
       sh += '</div></div>';
     });
     sh += '</div></div>';
@@ -84,7 +71,7 @@ Router.register("more", function() {
     {icon:icn('<path d="M13 10V3L4 14h7v7l9-11h-7z"/>'), label:"Wagers", sub:"Head-to-head coin bets", page:"wagers"},
     {icon:icn('<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>'), label:"Bounty Board", sub:"Post and claim coin bounties", page:"bounties"},
     {icon:icn('<path d="M4 21h16"/><path d="M6.5 21L12.5 4"/><path d="M12.5 4l4.2 1.4-4.2 1.4"/><path d="M17.5 21L11.5 4"/><path d="M11.5 4L7.3 5.4l4.2 1.4"/>'), label:"Challenges", sub:"H2H matches and rivalries", page:"challenges"}
-  ], 'felt');
+  ]);
 
   // ── The Season ── (v8.24.13 — baseline IA fix: Standings, Feed, Records,
   // Trophy Room, Awards, Season Recap, and Aces were unreachable from mobile
@@ -115,8 +102,8 @@ Router.register("more", function() {
 
   // ── Info ──
   h += section("Info", [
-    {icon:icn('<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'), label:"League Rules", page:"rules"},
-    {icon:icn('<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>'), label:"FAQ", page:"faq"},
+    {icon:icn('<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'), label:"League Rules", sub:"How the league works", page:"rules"},
+    {icon:icn('<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>'), label:"FAQ", sub:"Common questions, answered", page:"faq"},
     {icon:icn('<path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/>'), label:"The Caddy Notes", sub:"Changelog and updates", page:"caddynotes"},
     {icon:icn('<circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/>'), label:"Report a Bug", sub:"Send a note to the Commissioner", page:"bugreport"}
   ]);
