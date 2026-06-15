@@ -17,6 +17,31 @@ agent keeps draining the queue without the Founder re-poking it. Mark items
   blocked turns, the hook allows a stop anyway (logged to `cb.log`) so a stuck
   loop can't spin forever.
 
+## ███ ACTIVE GOVERNING DIRECTIVE — Founder MEGA-BRIEF 2026-06-15 LATE-night ███
+FULL brief + phase plan: `.claude/state/loops/FOUNDER-DIRECTIVE-2026-06-15-night.md`
+(HQ desktop = same-codebase-diverges, brand-immersion-first, awwwards-level; process fix
+= VISUAL/regression/taste verification on EVERY change; research-driven gen). SHIPPED this
+directive (visual-verified): v8.25.207 deco flush-fit (per-deco overlay %) + no-zoom +
+overscroll-contain; v8.25.208 caddie breathing-bob float fix. Loop order: foundational
+bugs → brand/merch/cosmetic art → HQ desktop → UX/IA → features → full E2E.
+Remaining FOUNDATIONAL bugs (next, visual-verified):
+- [ ] Messages thread: input bar + Send button cut off at the bottom (safe-area/nav).
+- [ ] Calendar: scheduled-rounds + range dots overflow off the page edge.
+- [ ] SVG nav icons (Home/Play/Courses/Events/More) → 9.5.
+- [ ] Scorecard (shareable): colorway + cosmetics shine; hole-by-hole 9-over-9 (not sideways
+  scroll); consolidate "by the numbers" (dup of strokes/birdies/putts row).
+- [ ] Resend wiring: bug-report + feature-request → email (Resend live on Cloudflare).
+- [ ] Store copy: "Mr Parbaugh will sound the horn" (not "the commissioner") on merch + cosmetics.
+- [ ] Whats-New → X.Y.Z changelog scheme (X major / Y feature+UI / Z daily; dated Y sections).
+Bigger phases (research/gen/taste — tracked in the directive doc):
+- [ ] BRAND lock (research rubber-hose golf → brandify gen) + MERCH overhaul (head covers by
+  club, vertical yardage book, branded balls/tees/clothing, kids+adult lines, realistic photos,
+  P+rose rubber-hose restyle) + RINGS/cosmetics redesign ≥9.5 (through brand-gate).
+- [ ] HQ DESKTOP immersive showcase (brand-immersion-first) · ONBOARDING rebuild · Settings
+  consolidate + More declutter + page animation + standings tournament feel.
+- [ ] GPS/location-on-signin + animated course-map + cosmetics-in-play (research+plan+build).
+- [ ] FULL SERIES E2E (test + real user, every function/button/dropdown/game, screenshots).
+
 ## ★★ CONVERGENCE MARATHON — Founder 2026-06-15 night (4 stacked directives; UNATTENDED)
 Founder went to sleep; standing instructions for this unattended run (verbatim intent):
 1. **Image prompts** must be EXTREMELY specific + carry SIZE + PURPOSE + HOW-USED, run

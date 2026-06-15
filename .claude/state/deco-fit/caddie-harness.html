@@ -1,0 +1,26 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="../../../src/styles/base.css">
+<link rel="stylesheet" href="../../../src/styles/components.css">
+<style>
+  body{background:#E7E0CD;font-family:system-ui,sans-serif;padding:30px;margin:0}
+  h1{font-size:14px;color:#14130F;margin:0 0 16px}
+  .row{display:flex;align-items:center;gap:40px;margin-bottom:30px}
+  .lbl{font-size:12px;font-family:ui-monospace,monospace;color:#14130F;width:160px}
+  /* force the PEAK bob (amplified to -6px) + animation off, to expose any gap */
+  .force img.pb-caddy-live{animation:none !important;transform:translateY(-6px) scaleX(.985) scaleY(1.02) rotate(-1deg) !important}
+  /* the OLD 100% sizing, to compare */
+  .old img.pb-caddy-live{width:100% !important;height:100% !important}
+</style></head>
+<body>
+<h1>Caddie bob-gap check — chip clipped (clip-path:circle), breath forced to amplified PEAK (-6px). Watch the BOTTOM of the ring for a background sliver.</h1>
+<div class="row force old"><div class="lbl">OLD 100% img<br>(expect bottom gap)</div>
+  <div class="theme-row__chip--caddie theme-row__chip--photo" style="width:88px;height:88px;border:2px solid #B4893E;background:#1e4d3b">
+    <img class="pb-caddy-live" src="../../../public/img/avatars/caddy-caddy.jpg"></div></div>
+<div class="row force"><div class="lbl">NEW 110% img<br>(expect NO gap)</div>
+  <div class="theme-row__chip--caddie theme-row__chip--photo" style="width:88px;height:88px;border:2px solid #B4893E;background:#1e4d3b">
+    <img class="pb-caddy-live" src="../../../public/img/avatars/caddy-caddy.jpg"></div></div>
+<div class="row"><div class="lbl">AT REST (breathing)<br>110% live</div>
+  <div class="theme-row__chip--caddie theme-row__chip--photo" style="width:88px;height:88px;border:2px solid #B4893E;background:#1e4d3b">
+    <img class="pb-caddy-live" src="../../../public/img/avatars/caddy-caddy.jpg"></div></div>
+</body></html>

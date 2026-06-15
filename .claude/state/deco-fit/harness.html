@@ -1,0 +1,44 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- Deco-fit harness: replicates the EXACT renderAvatar deco markup (router.js:494)
+     — photo inner-circle + deco PNG overlay at 140% — over a real avatar photo,
+     so we SEE whether the photo FILLS the deco's hollow (flush, Discord-style) or
+     FLOATS in the middle. This is the visual check that was missing. -->
+<style>
+  body{background:#E7E0CD;font-family:system-ui,sans-serif;padding:24px;margin:0}
+  h1{font-size:15px;color:#14130F;margin:0 0 14px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:30px 20px}
+  .cell{background:#FCFAF5;border:1px solid rgba(20,19,15,.08);border-radius:14px;padding:20px 10px 12px;text-align:center}
+  .av-wrap{display:flex;align-items:center;justify-content:center;gap:16px;min-height:150px}
+  .lbl{font-size:10px;color:#14130F;margin-top:12px;font-family:ui-monospace,monospace}
+  /* a faint ring marks the PHOTO edge so the gap (float) is obvious */
+  .photo-edge{outline:1px dashed rgba(200,40,40,.5)}
+</style></head>
+<body>
+<h1>Deco-fit — does the photo FILL the deco hollow (flush) or FLOAT? Red dashes = photo edge. Deco overlay = 140% (current).</h1>
+<div class="grid" id="grid"></div>
+<script>
+  var PHOTO = '../../../public/img/avatars/caddy-caddy.jpg';
+  var BASE = '../../../public/img/cosmetics/';
+  var DECOS = [
+    ['Caddy Companion','deco-caddy-companion.png'],
+    ['Hole-in-One','deco-hole-in-one.png'],
+    ['Champion','deco-champion.png'],
+    ['Masters Azalea','deco-masters-azalea.png'],
+    ['Frost Delay','deco-frost-delay.png'],
+    ['Eagle','deco-eagle.png'],
+    ['Bramble Rose','deco-bramble-rose.png'],
+    ['Autumn Nine','deco-autumn.png']
+  ];
+  // EXACT renderAvatar deco markup (router.js): outer relative box, inner clipped
+  // photo at 100%, deco <img> overlay at 140% centered.
+  function avatar(src, size){
+    return '<div style="width:'+size+'px;height:'+size+'px;border-radius:50%;position:relative;flex-shrink:0">'+
+      '<div class="photo-edge" style="width:100%;height:100%;border-radius:50%;overflow:hidden">'+
+      '<img alt="" src="'+PHOTO+'" style="width:100%;height:100%;object-fit:cover;border-radius:inherit"></div>'+
+      '<img alt="" aria-hidden="true" src="'+BASE+src+'" style="position:absolute;top:50%;left:50%;width:140%;height:140%;transform:translate(-50%,-50%);pointer-events:none;z-index:2"></div>';
+  }
+  var g=document.getElementById('grid');
+  DECOS.forEach(function(d){var c=document.createElement('div');c.className='cell';c.innerHTML='<div class="av-wrap">'+avatar(d[1],104)+avatar(d[1],44)+'</div><div class="lbl">'+d[0]+'<br>'+d[1]+'</div>';g.appendChild(c);});
+</script>
+</body></html>
