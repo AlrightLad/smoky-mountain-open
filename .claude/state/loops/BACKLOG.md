@@ -56,7 +56,14 @@ socks). REMAINING (work these next, in order; before/after-verify each):
   needs a premium/commissioned asset or a concept change (#67 DO-LAST). Surfaced 3 directions + rec (B:
   smooth ball-flight hero, autonomous-buildable) → task-queue/founder/signin-animation-figure-direction-2026-06-22.md.
 - [x] G6 LEVEL-100 rubber-hose theme — DONE v8.25.238 (LIVE+V1): registered `rubber_hose` theme (warm cream + bold cartoon ink + punchy green/mustard/vermillion), gated on the lvl100 'G.O.A.T.' achievement, shows as a locked teaser in the picker. V1: applies clean on home.
-- [ ] G7 more branding/logos throughout + plan per-league brandable logos (paid feature later).
+- [x] G7 branding — DONE v8.25.243 (LIVE prod+staging, V1'd). Part 1 (more branding): the P+rose mark now
+  leads the two NON-MEMBER growth surfaces it was missing — public share.html (full-color mark on the cream
+  masthead + error states) + landing.html marketing hero (cream/gold knockout mark above the headline). Kept
+  the app interior restraint-branded (mark already app-wide per #65; over-branding avoided). Relative asset
+  paths (the absolute /smoky-mountain-open/ path 404'd on staging — caught+fixed by before/after capture).
+  Part 2 (per-league brandable logos): PLAN written (paid feature, Founder greenlight needed) —
+  task-queue/founder/per-league-brandable-logos-plan.md (3 lanes, additive leagues/{id}.branding model,
+  rules+moderation+IP, entitlement-not-ParCoin gating; recommends built-in-crest Lane A first).
 - [x] T2 Playwright+Vercel scan EVERY page/subpage/tab → DONE (v8.25.240). Built `scripts/.secrets/scan-all-routes.mjs`
   (authed-staging Playwright sweep over 34 routes, false-positive-gated: overflow only if scrollW>vw, broken-img only if
   offsetParent!=null, permission-race console errors filtered). RESULT: app structurally CLEAN — 0 real overflow (the DIV@750
