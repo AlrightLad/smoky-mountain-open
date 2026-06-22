@@ -264,8 +264,11 @@ MERCH = {
                        logo=dict(logo_path=LOGO_FULL, frac_w=0.10, cx=0.39, cy=0.36, opacity=255)),
     "quarterzip": dict(raw="merch-quarterzip", out="public/img/merch/quarterzip.jpg",
                        logo=dict(logo_path=LOGO_GOLD, frac_w=0.10, cx=0.40, cy=0.36, opacity=255)),
-    "tee":        dict(raw="merch-tee",        out="public/img/merch/tee.jpg",
-                       logo=dict(logo_path=LOGO_FULL, frac_w=0.105, cx=0.39, cy=0.34, opacity=255)),
+    # Founder 2026-06-22 tour lineup: vest + hat replace the tee.
+    "vest":       dict(raw="merch-vest",       out="public/img/merch/vest.jpg",
+                       logo=dict(logo_path=LOGO_GOLD, frac_w=0.10, cx=0.40, cy=0.36, opacity=255)),
+    "hat":        dict(raw="merch-hat",        out="public/img/merch/hat.jpg",
+                       logo=dict(logo_path=LOGO_GOLD, frac_w=0.13, cx=0.50, cy=0.44, opacity=255)),
 }
 
 

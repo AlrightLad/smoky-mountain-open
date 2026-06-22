@@ -28,7 +28,11 @@ if (!existsSync(SA)) { console.error('NO staging SA at ' + SA); process.exit(3);
 const sa = JSON.parse(readFileSync(SA, 'utf8'));
 const { GoogleAuth } = await import('google-auth-library');
 const token = (await (await new GoogleAuth({ credentials: sa, scopes: ['https://www.googleapis.com/auth/cloud-platform'] }).getClient()).getAccessToken()).token;
-const PROJ = sa.project_id, LOC = 'us-central1', MODEL = 'imagen-4.0-fast-generate-001';
+// Founder 2026-06-22: "stop using the lowest version" → default to Imagen 4 ULTRA
+// (the highest-quality tier; ~markedly better fabric/lighting/relief than -fast).
+// Override per-run with IMG_MODEL (e.g. imagen-4.0-generate-001 for the cheaper
+// standard tier on bulk/scene work).
+const PROJ = sa.project_id, LOC = 'us-central1', MODEL = process.env.IMG_MODEL || 'imagen-4.0-ultra-generate-001';
 const OUT = 'public/img/gen';   // SCRATCH dir (gitignored). Finishing pass writes the committed asset.
 mkdirSync(OUT, { recursive: true });
 
@@ -56,11 +60,15 @@ function apparel(garment, material, weave, hardware, bg) {
 // chroma-green keyable bg (clean key, no blue-bg blob). The brand accents (forest
 // green / brass / claret) appear only as subtle tonal tipping, never the field.
 const KEYBG = 'bright chroma-green #00B140';
+// Founder 2026-06-22 TOUR lineup: quarter-zip, hoodie (H&B Jackson-Hoodie style),
+// polo, hat (Titleist style), vest (H&B Boyd-vest style). NO tee in tour (the tee
+// moves to the leisure line). Premium, minimal branding (blank for post-composite).
 const MERCH = [
-  ['merch-hoodie',     apparel('pullover hoodie', 'heavyweight deep-black brushed-fleece cotton', 'soft napped fleece and ribbed cuffs and hem', 'a drawn kangaroo pocket and two flat round drawcord tips at the hood', KEYBG), '3:4'],
-  ['merch-polo',       apparel('short-sleeve tour golf polo', 'crisp tournament-white performance cotton pique with a clean self-collar and a single subtle forest-green tipped edge', 'pique waffle weave and the ribbed collar', 'a clean three-button placket with subtle tonal stitching, buttons fastened', KEYBG), '3:4'],
   ['merch-quarterzip', apparel('quarter-zip golf pullover', 'deep tour-navy brushed performance knit', 'brushed knit pile and the rib at the cuff and hem', 'a single brass zip pull with sharp individual teeth, zipped to mid-chest', KEYBG), '3:4'],
-  ['merch-tee',        apparel('short-sleeve crew-neck t-shirt', 'soft heather-grey combed-cotton jersey', 'fine jersey knit and the ribbed crew neckline', '', KEYBG), '3:4'],
+  ['merch-hoodie',     apparel('refined premium quarter-zip pullover hoodie in the elevated Holderness-and-Bourne style, clean minimal and tailored not streetwear', 'heavyweight deep-charcoal brushed merino-blend fleece with a soft hand', 'the fine napped fleece and the rib at the cuff and hem', 'a clean two-tone drawcord with flat metal tips and a single brass quarter-zip pull, hood lying naturally', KEYBG), '3:4'],
+  ['merch-polo',       apparel('short-sleeve tour golf polo', 'crisp tournament-white performance cotton pique with a clean self-collar and a single subtle forest-green tipped edge', 'pique waffle weave and the ribbed collar', 'a clean three-button placket with subtle tonal stitching, buttons fastened', KEYBG), '3:4'],
+  ['merch-vest',       apparel('sleeveless golf vest in the tailored Holderness-and-Bourne Boyd-vest style', 'deep forest-green brushed performance knit with a smooth premium face', 'the brushed knit face and the rib at the armholes and hem', 'a single brass full-zip pull zipped to mid-chest, clean armhole binding, no sleeves', 'bright chroma-blue #1763FF'), '3:4'],
+  ['merch-hat',        'A studio product photograph of a single structured tour golf cap in the premium Titleist style, crisp six-panel cotton-twill crown in tournament white with a tour-navy brim and a small blank front panel ready for an embroidered crest, a clean curved brim and a fabric strap closure, three-quarter front hero angle, the cap centered occupying about 65 percent of frame height. Isolated on one perfectly flat fully-saturated shadowless solid bright chroma-green #00B140 background filling the entire frame, soft directional light from upper left revealing the twill weave, sharp commercial e-commerce product photography, photorealistic, fine cotton-twill texture. Shot on an 85mm lens at f/8.' + PALETTE + ' The cap is the only object in frame; the front panel is a completely blank unmarked field ready for compositing; the background stays one uniform flat green color.', '1:1'],
 ];
 
 // SHOP — premium cosmetics as real objects (macro, two finishes per object).

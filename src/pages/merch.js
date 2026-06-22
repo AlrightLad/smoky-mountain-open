@@ -20,11 +20,15 @@ Router.register("merch", function () {
   }
 
   // THE TOUR CAPSULE — P+rose, premium fabric, minimal branding, tour colorway.
+  // v8.25.236 (Founder 2026-06-22): tour line = quarter-zip, hoodie (H&B Jackson
+  // style), polo, vest (H&B Boyd style), cap (Titleist style). NO tee in tour —
+  // the tee belongs to the leisure line. Imagen-4 ULTRA packshots + composited crest.
   var TOUR = [
-    { img: "polo.jpg",       name: "The Tour Pro Shirt",     note: "Tournament-white performance piqué · clean self-collar" },
     { img: "quarterzip.jpg", name: "The Fairway Quarter-Zip", note: "Tour-navy brushed knit · brass pull" },
-    { img: "hoodie.jpg",     name: "The Clubhouse Hoodie",   note: "Heavyweight black brushed fleece" },
-    { img: "tee.jpg",        name: "The Tour Tee",           note: "Heather-grey combed cotton · soft hand" }
+    { img: "hoodie.jpg",     name: "The Clubhouse Hoodie",    note: "Charcoal merino-blend · quarter-zip hood" },
+    { img: "polo.jpg",       name: "The Tour Pro Shirt",      note: "Tournament-white performance piqué" },
+    { img: "vest.jpg",       name: "The Fairway Vest",        note: "Forest-green knit · brass zip" },
+    { img: "hat.jpg",        name: "The Tour Cap",            note: "Structured twill · tour-navy brim" }
   ];
 
   // THE PRO SHOP — accessories carry the brand accents (forest green / brass).
