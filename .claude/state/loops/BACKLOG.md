@@ -36,7 +36,17 @@ socks). REMAINING (work these next, in order; before/after-verify each):
 - [ ] G1 SIGN-IN animation redesign (taste).
 - [x] G6 LEVEL-100 rubber-hose theme — DONE v8.25.238 (LIVE+V1): registered `rubber_hose` theme (warm cream + bold cartoon ink + punchy green/mustard/vermillion), gated on the lvl100 'G.O.A.T.' achievement, shows as a locked teaser in the picker. V1: applies clean on home.
 - [ ] G7 more branding/logos throughout + plan per-league brandable logos (paid feature later).
-- [ ] T2 Playwright+Vercel scan EVERY page/subpage/tab → repair anything heavily wrong.
+- [x] T2 Playwright+Vercel scan EVERY page/subpage/tab → DONE (v8.25.240). Built `scripts/.secrets/scan-all-routes.mjs`
+  (authed-staging Playwright sweep over 34 routes, false-positive-gated: overflow only if scrollW>vw, broken-img only if
+  offsetParent!=null, permission-race console errors filtered). RESULT: app structurally CLEAN — 0 real overflow (the DIV@750
+  flag was the off-canvas notif drawer), 0 broken images (all deco PNGs HTTP 200, lazy-below-fold). The ONLY real finding:
+  `startTeeTimeListener`+`startRangeSessionListener` were the only two `onSnapshot` listeners app-wide with NO error callback,
+  so during the cold-sign-in rules-propagation race they emitted a raw "Uncaught Error in snapshot listener: permission-denied"
+  to console (every other leagueQuery listener routes the same transient through pbWarn + self-heals). FIXED v8.25.240 (LIVE+V1,
+  instrumented onSnapshot to capture the NOHANDLER path — no guessing): added pbWarn error handlers; before/after capture
+  confirms the raw uncaught SDK log is gone, replaced by the handled pbWarn route (not persisted, self-heals). Deliberately did
+  NOT hard-gate the deferred starter on currentProfile (6s retry ceiling → would risk the features silently never starting for
+  slow-profile users; handle-the-transient is the proven app-wide pattern). Scanner committed as reusable harness tooling.
 - [x] DB DATABASE REVIEW — DONE (5-agent deep research): task-queue/founder/database-stack-review-2026-06-22.md.
   REC: STAY on Firebase + close the cap gap (App Check + billing kill-switch + scoped listeners); cost worry
   is architecture not platform (~$0 now, ~$350-1,800/yr disciplined at 10k). Supabase = best relational fit
