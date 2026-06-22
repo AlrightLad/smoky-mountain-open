@@ -351,7 +351,7 @@ function _renderLiveScoringInner() {
   h += '<div style="font-size:12px;color:var(--red);margin-bottom:8px">Quit this round? Scores will be lost.</div>';
   h += '<div style="display:flex;gap:8px"><button class="btn outline" style="flex:1;font-size:11px" onclick="document.getElementById(\'quit-confirm\').style.display=\'none\'">Cancel</button>';
   h += '<button class="btn" style="flex:1;font-size:11px;background:rgba(var(--red-rgb),.15);color:var(--red)" onclick="clearLiveState(\'abandoned\');updatePresence._force=true;updatePresence();Router.go(\'rounds\')">Quit</button></div></div>';
-  h += '<button class="btn full" style="background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);color:var(--red);font-size:11px;margin-bottom:80px" onclick="document.getElementById(\'quit-confirm\').style.display=\'block\'">Quit round</button>';
+  h += '<button class="btn full" style="background:rgba(var(--red-rgb),.06);border:1px solid rgba(var(--red-rgb),.15);color:var(--red);font-size:11px" onclick="document.getElementById(\'quit-confirm\').style.display=\'block\'">Quit round</button>';
 
   h += '</div>'; // end .ls-pad
   h += '</div>'; // end .ls-wrap

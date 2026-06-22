@@ -187,7 +187,7 @@ var Router = (function() {
       var _b = (typeof window !== "undefined" && window.__PB_BASE__) ? window.__PB_BASE__ : "/";
       imgSrc = _b + "img/avatars/default-" + (Math.abs(hash) % 4 + 1) + ".jpg";
     }
-    var discDiv = '<div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;color:var(--cb-chalk);font-weight:700;font-size:18px;background:' + disc + ';border-radius:inherit">' + initial + '</div>';
+    var discDiv = '<div style="display:none;width:100%;height:100%;align-items:center;justify-content:center;text-align:center;color:var(--cb-chalk);font-weight:700;line-height:1;font-size:42cqmin;container-type:size;overflow:hidden;border-radius:inherit;background:' + disc + '">' + initial + '</div>';
     return '<img alt="" src="' + imgSrc + '" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">' + discDiv;
   }
 

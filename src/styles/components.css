@@ -1186,6 +1186,17 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
   padding-top:max(var(--sp-5), env(safe-area-inset-top));
   padding-bottom:max(var(--sp-5), env(safe-area-inset-bottom));
   text-align:center;
+  background:transparent;
+}
+/* v8.25.232 — full-bleed felt backstop. The felt entrance gradient must paint the
+   entire VISUAL viewport, not the .auth-screen content box — otherwise the beige
+   page ground (html{background:var(--bg)} => --cb-canvas) shows as a bar at the
+   bottom wherever 100dvh (small mobile viewport) falls short, and on the sides of
+   the 680px-centred body on desktop. position:fixed;inset:0 locks it to the visual
+   viewport; the in-flow .auth-screen still scrolls (tall register form). Torn down
+   with the screen via .hidden{display:none}, so it never leaks into #mainApp. */
+.auth-screen::before{
+  content:''; position:fixed; inset:0; z-index:-1; pointer-events:none;
   background:
     radial-gradient(72% 46% at 50% 27%, rgba(var(--cb-brass-rgb), .17), transparent 72%),
     radial-gradient(140% 118% at 50% 40%, transparent 42%, rgba(0,0,0,.34) 100%),
@@ -1285,6 +1296,11 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .cal-body{margin-top:10px}
 .cal-body.pb-card{overflow:hidden;padding:0}
 .cal-body.pb-card .cal-th{padding-top:12px}
+/* v8.25.232 — the month <table> clips edge-to-edge to the card radius (padding:0),
+   but the legend / empty-state / list rows are siblings inside the SAME card — give
+   those non-table children a horizontal inset so they don't butt against the card
+   border (Founder: schedule rows running up against the calendar border). */
+.cal-body.pb-card > :not(.cal-table){padding-left:16px;padding-right:16px}
 .cal-table{width:100%;border-collapse:collapse;table-layout:fixed}
 .cal-th{font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute);text-align:left;padding:8px 8px 10px;border-bottom:1px solid var(--cb-chalk-3)}
 .cal-cell{vertical-align:top;border:1px solid var(--cb-chalk-3);border-top:none;border-left:none;height:114px;padding:0;position:relative;overflow:hidden}
@@ -1328,7 +1344,7 @@ input.s.db{background:rgba(var(--red-rgb),.08);border:1px solid rgba(var(--red-r
 .cal-listpast{font-family:var(--font-mono);font-size:11px;letter-spacing:.5px;color:var(--cb-mute-faint);padding:10px 0 4px;text-align:center}
 .cal-listday{font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-brass-deep);padding:18px 0 8px;border-bottom:1px solid var(--cb-chalk-3);margin-bottom:6px}
 .cal-listsep{font-family:var(--font-display);font-style:italic;font-size:18px;color:var(--cb-mute);text-align:center;padding:22px 0 4px;margin-top:6px;border-top:1px solid var(--cb-chalk-3)}
-.cal-lcard{display:block;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid var(--cb-chalk-3);padding:10px 4px 14px;font:inherit;color:inherit}
+.cal-lcard{display:block;width:100%;text-align:left;background:none;border:none;border-bottom:1px solid var(--cb-chalk-3);padding:10px 0 14px;font:inherit;color:inherit}
 button.cal-lcard{cursor:pointer;transition:background .15s var(--ease-out)}
 button.cal-lcard:hover{background:rgba(var(--cb-brass-rgb),.05)}
 .cal-lcard__eyebrow{display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--cb-mute);margin-bottom:5px}
@@ -2143,7 +2159,12 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
    (the one HQ view where touch optimization is mandatory — tablet-at-cart).
    ────────────────────────────────────────────────────────────────────────── */
 .ls-wrap{max-width:640px;margin:0 auto;padding:18px 16px 0}
-.ls-pad{min-width:0}
+/* v8.25.232 — live-round bottom clearance: the round renders its OWN fixed
+   #liveBottomNav (~64px) while the global .bottom-nav is hidden; #mainApp's nav
+   padding is sized for the global bar, so the entry pad's tail scrolled UNDER the
+   live bar (Founder: scorecard overlaps content when scrolling). Reserve real
+   clearance so nothing sits under the fixed bar. */
+.ls-pad{min-width:0;padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 
 /* Masthead — compact, ~100px */
 .ls-mast{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding-bottom:14px;border-bottom:1px solid var(--cb-chalk-3);margin-bottom:16px}
@@ -2315,8 +2336,11 @@ button.cal-dcard:hover{border-color:var(--cb-brass)}
 
 @media(min-width:980px){
   .ls-wrap{display:flex;align-items:flex-start;gap:36px;max-width:1080px;padding-top:24px}
-  .ls-rail{display:block;flex:0 0 300px;position:sticky;top:84px;background:var(--cb-chalk);border:1px solid var(--cb-chalk-3);border-radius:16px;padding:18px 16px;max-height:calc(100vh - 140px);overflow-y:auto}
-  .ls-pad{flex:1;max-width:600px}
+  /* v8.25.232 — reserve the fixed #liveBottomNav (~64px) at the bottom of the sticky
+     rail window so the scorecard's scroll viewport stops ABOVE the live bar instead
+     of sliding under it (the 'scorecard overlaps when you scroll' report). */
+  .ls-rail{display:block;flex:0 0 300px;position:sticky;top:84px;background:var(--cb-chalk);border:1px solid var(--cb-chalk-3);border-radius:16px;padding:18px 16px;max-height:calc(100vh - 220px);overflow-y:auto}
+  .ls-pad{flex:1;max-width:600px;padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 }
 
 /* ──────────────────────────────────────────────────────────────────────────
@@ -3539,6 +3563,12 @@ img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width:
      masthead — 320ms fade + 640ms brass hairline sweep (entrance only)
    ═══════════════════════════════════════════════════════════════════════════ */
 [data-transition] { --pt-y: 6px; }
+/* v8.25.232 — while a lift transition's translateY animation runs, transform!=none
+   turns [data-page] into the containing block for its position:fixed children
+   (#liveBottomNav, #finish-options), which would otherwise anchor to this scrolling
+   element and overlap content. Pin them to the viewport during the animation window. */
+[data-page="playnow"][data-transition] #liveBottomNav,
+[data-page="playnow"][data-transition] #finish-options { left:0; right:0; }
 
 /* LIFT — forward (default direction) */
 [data-transition="lift"][data-direction="in"]:not([data-nav="back"]) {
@@ -4111,8 +4141,10 @@ img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width:
   background: rgba(var(--cb-brass-rgb), 0.07);
   border-color: var(--cb-brass);
 }
-.tourn-member__left { display: flex; align-items: center; gap: var(--sp-3); min-width: 0; }
+.tourn-member__left { display: flex; align-items: center; gap: var(--sp-3); flex: 1; min-width: 0; }
 .tourn-member__name {
+  flex: 1;
+  min-width: 0;
   font-family: var(--font-ui);
   font-size: 14px;
   font-weight: 500;
