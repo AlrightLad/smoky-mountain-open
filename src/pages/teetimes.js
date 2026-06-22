@@ -12,7 +12,7 @@ function startTeeTimeListener() {
     liveTeeTimes = [];
     snap.forEach(function(doc) { liveTeeTimes.push(Object.assign({_id:doc.id}, doc.data())); });
     if (Router.getPage() === "teetimes") Router.go("teetimes", Router.getParams(), true);
-  });
+  }, function(err) { if (typeof pbWarn === "function") pbWarn("[TeeTimes] listener error:", err && err.message); });
 }
 
 Router.register("teetimes", function() {

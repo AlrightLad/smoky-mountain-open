@@ -130,7 +130,7 @@ function startRangeSessionListener() {
     // Side benefit: closes the discardRangeSession edge case where the
     // global could remain at its declaration default of "rounds".
     if (Router.getPage() === "activity") Router.go("activity", Router.getParams(), true);
-  });
+  }, function(err) { if (typeof pbWarn === "function") pbWarn("[RangeSessions] listener error:", err && err.message); });
 }
 
 function syncRangeSession(s) {
