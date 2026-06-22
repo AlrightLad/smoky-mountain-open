@@ -36,7 +36,10 @@ var THEMES = {
   // Course Record join Bourbon Room as visible-but-locked.
   champion_sunday: { id: "champion_sunday", name: "Champion Sunday", availability: "unlock",  order: 5, hidden_until_unlocked: false, preview_progress: true },
   bourbon_room:    { id: "bourbon_room",    name: "Bourbon Room",    availability: "unlock",  order: 6, hidden_until_unlocked: false, preview_progress: true },
-  course_record:   { id: "course_record",   name: "Course Record",   availability: "unlock",  order: 7, hidden_until_unlocked: false, preview_progress: true }
+  course_record:   { id: "course_record",   name: "Course Record",   availability: "unlock",  order: 7, hidden_until_unlocked: false, preview_progress: true },
+  // v8.25.238 — the LEVEL-100 reward (Founder asked repeatedly). The loud
+  // rubber-hose palette; the rarest unlock, gated on the lvl100 "G.O.A.T." achievement.
+  rubber_hose:     { id: "rubber_hose",     name: "Rubber Hose",     availability: "unlock",  order: 8, hidden_until_unlocked: false, preview_progress: true }
 };
 
 var DEFAULT_THEME_ID = "clubhouse";
@@ -234,7 +237,8 @@ function saveThemeChoice(themeId) {
 var THEME_UNLOCK_ACHIEVEMENT = {
   champion_sunday: "champion",  // win an event / season (worn after a win)
   course_record:   "sub80",     // card a sub-80 (18) — rarest, scoring-based ledger
-  bourbon_room:    "veteran"    // 50 rounds logged — tenure / time put in
+  bourbon_room:    "veteran",   // 50 rounds logged — tenure / time put in
+  rubber_hose:     "lvl100"     // reach Level 100 (G.O.A.T.) — the loud reward theme
 };
 
 // The achievement ids the signed-in member currently holds (live, derived).

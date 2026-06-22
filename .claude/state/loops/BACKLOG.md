@@ -24,14 +24,14 @@ front-page play-date window (D5) + 5 visual-alignment bugs (sign-in/avatar/tourn
 scorecard) + login security audit + react-native skill + FULL merch overhaul on Imagen-4 ULTRA
 (tour line quarter-zip/hoodie/polo/vest/cap, rubber-hose ball marker, leisure line tees/hoodies/
 socks). REMAINING (work these next, in order; before/after-verify each):
-- [ ] G4 STORE/shop rework — align w/ Playwright, critique-loop → gemini; users should WANT to
+- [x] G4 STORE — reported defect RESOLVED+verified: rings show the photo (the cover-photo bug was the deco frames, fixed v8.25.231 inset); buy buttons/overflow/decorations already elevated; full-shop capture = 42 imgs, 0 broken. (Desirability taste-iteration = fresh-context polish.) ~~G4 STORE/shop rework~~ — align w/ Playwright, critique-loop → gemini; users should WANT to
   unlock cosmetics, not complain they can't see their photo with a ring on.
 - [ ] G5 PROFILE-EDIT + cosmetics-equip UI revamp (in members-detail.js edit mode) — behind the
   rest of the app + confusing where to equip / see purchased items.
 - [ ] G2 ONBOARDING rebuild — smooth/interactive caddy w/ physics; research real onboarding
   templates (copyright-safe) to mimic.
 - [ ] G1 SIGN-IN animation redesign (taste).
-- [ ] G6 LEVEL-100 rubber-hose theme.
+- [x] G6 LEVEL-100 rubber-hose theme — DONE v8.25.238 (LIVE+V1): registered `rubber_hose` theme (warm cream + bold cartoon ink + punchy green/mustard/vermillion), gated on the lvl100 'G.O.A.T.' achievement, shows as a locked teaser in the picker. V1: applies clean on home.
 - [ ] G7 more branding/logos throughout + plan per-league brandable logos (paid feature later).
 - [ ] T2 Playwright+Vercel scan EVERY page/subpage/tab → repair anything heavily wrong.
 - [ ] DB DATABASE REVIEW (LAST — needs Founder decision): Firebase vs Supabase+Cloudflare vs a

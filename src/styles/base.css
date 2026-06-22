@@ -602,6 +602,45 @@ button,[onclick],.btn,.btn-sm,.tee-rsvp-btn{touch-action:manipulation;-webkit-ta
   --gold-rgb: 168, 80, 111;
 }
 
+/* Rubber Hose (unlock · LEVEL 100 "G.O.A.T.") — the loudest theme in the club:
+   1930s rubber-hose cartoon energy. Warm aged-cream paper, BOLD near-black cartoon
+   ink (heavy-outline feel), and saturated vintage accents — a punchy forest green,
+   warm mustard-gold, and a vermillion link. Deliberately higher-contrast + more
+   saturated than the muted defaults so reaching 100 feels like a reward. */
+[data-theme="rubber_hose"] {
+  --cb-chalk: #F4E9D2;
+  --cb-chalk-2: #EADDBF;
+  --cb-chalk-3: #D8C7A0;
+  --cb-canvas: #EFE2C8;
+  --cb-paper: #FBF4E3;
+  --cb-green: #1E5A3A;
+  --cb-green-2: #164A2F;
+  --cb-green-3: #2E7D52;
+  --cb-felt: #143E29;
+  --cb-ink: #1C140C;            /* bold cartoon ink — ~13:1 on the cream canvas */
+  --cb-ink-2: #33271A;
+  --cb-ink-soft: #47382A;
+  --cb-charcoal: #4E3D2C;
+  --cb-ink-link: #B0472F;       /* vermillion link — AA on cream */
+  --cb-mute: #6B5840;           /* AA >=4.6:1 on canvas */
+  --cb-mute-1: #665440;
+  --cb-ink-faint: #665440;
+  --cb-mute-2: #B59C78;
+  --cb-mute-3: #D6C29C;
+  --cb-mute-faint: #C6AE85;
+  --cb-brass: #C9912A;          /* punchy mustard-gold accent */
+  --cb-brass-2: #DBA53C;
+  --cb-brass-3: #EEC56E;
+  --cb-brass-deep: #94681A;
+  --cb-ink-rgb: 28, 20, 12;
+  --cb-brass-rgb: 201, 145, 42;
+  --cb-chalk-rgb: 244 233 210;
+  --cb-green-ink-rgb: 20 62 41;
+  --bg-rgb: 244, 233, 210;
+  --cream-rgb: 28, 20, 12;
+  --gold-rgb: 201, 145, 42;
+}
+
 /* Champion Sunday (unlock) — tournament-program burgundy, worn after a win.
    Claret-deep "greens", trophy brass. */
 [data-theme="champion_sunday"] {
