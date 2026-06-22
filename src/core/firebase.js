@@ -253,8 +253,9 @@ function doFirebaseLogin(email, pw, btn) {
   }).catch(function(e) {
     recordLoginFailure();
     var msg = "Login failed";
-    if (e.code === "auth/user-not-found") msg = "No account with that email";
-    else if (e.code === "auth/wrong-password" || e.code === "auth/invalid-credential") msg = "Invalid email or password";
+    // v8.25.235 — no email enumeration: user-not-found + wrong-password both return
+    // the same generic message so an attacker can't probe which emails are registered.
+    if (e.code === "auth/user-not-found" || e.code === "auth/wrong-password" || e.code === "auth/invalid-credential") msg = "Invalid email or password";
     else if (e.code === "auth/too-many-requests") msg = "Too many attempts. Try again later.";
     showError("loginError", msg); unlockButton(btn);
   });
