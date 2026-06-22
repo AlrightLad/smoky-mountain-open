@@ -37,8 +37,11 @@ socks). REMAINING (work these next, in order; before/after-verify each):
 - [x] G6 LEVEL-100 rubber-hose theme — DONE v8.25.238 (LIVE+V1): registered `rubber_hose` theme (warm cream + bold cartoon ink + punchy green/mustard/vermillion), gated on the lvl100 'G.O.A.T.' achievement, shows as a locked teaser in the picker. V1: applies clean on home.
 - [ ] G7 more branding/logos throughout + plan per-league brandable logos (paid feature later).
 - [ ] T2 Playwright+Vercel scan EVERY page/subpage/tab → repair anything heavily wrong.
-- [ ] DB DATABASE REVIEW (LAST — needs Founder decision): Firebase vs Supabase+Cloudflare vs a
-  3rd, 3 options w/ pros/cons + yearly cost + bill-guardrails, for ~10k users. Save for the end.
+- [x] DB DATABASE REVIEW — DONE (5-agent deep research): task-queue/founder/database-stack-review-2026-06-22.md.
+  REC: STAY on Firebase + close the cap gap (App Check + billing kill-switch + scoped listeners); cost worry
+  is architecture not platform (~$0 now, ~$350-1,800/yr disciplined at 10k). Supabase = best relational fit
+  ONLY for a greenfield rebuild. Cloudflare (you have it) = additive R2-media + Durable-Objects-realtime layer,
+  not a DB swap. Smallest first step: move media (share-cards/avatars/art) to R2 (zero egress). FOUNDER DECISION.
 
 ## ███ PRIOR DIRECTIVE — Founder MEGA-BRIEF 2026-06-15 LATE-night ███
 FULL brief + phase plan: `.claude/state/loops/FOUNDER-DIRECTIVE-2026-06-15-night.md`
