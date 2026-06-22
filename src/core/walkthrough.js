@@ -64,15 +64,31 @@
     return h + '</div>';
   }
   function _scrimTapToSkip() {
-    // tap on the overlay background (not the card) = skip
-    _root.addEventListener("click", function (e) { if (e.target === _root) skip(); });
+    // tap on the overlay background OR the branded backdrop (not the card) = skip
+    _root.addEventListener("click", function (e) {
+      if (e.target === _root || (e.target.classList && e.target.classList.contains("pbw-backdrop"))) skip();
+    });
   }
 
-  // ── STAGE card (centered, with the Caddy figure) ─────────────────────────────
-  // opts: { eyebrow, body, pose, primaryLabel, onPrimary, extraHtml, stepIdx, choices }
+  // Resolve the hand-illustrated rubber-hose PORTRAIT for a caddy id (the real
+  // brand art at public/img/avatars/caddy-*.jpg, declared on window.pbCaddies).
+  // v8.25.241 — replaces the crude geometric SVG rig that read "comical vs the
+  // competition" (Founder). Falls back to Murphy (the default) then a hard path.
+  function _caddyImg(id) {
+    var roster = window.pbCaddies || [];
+    for (var i = 0; i < roster.length; i++) { if (roster[i].id === id) return roster[i].img || ""; }
+    return (roster[0] && roster[0].img) || "img/avatars/caddy-caddy.jpg";
+  }
+
+  // ── STAGE card (immersive: branded backdrop + portrait hero + cream sheet) ────
+  // opts: { eyebrow, body, primaryLabel, onPrimary, extraHtml, stepIdx, choices, portrait }
+  // v8.25.241 — was a small card pinned over the fully-visible home (read as a
+  // "pop up window", Founder). Now a full-cover branded backdrop kills the
+  // bleed-through, the real caddy portrait is a warm hero, and the sheet rises in.
   function _stageCard(opts) {
     if (!_root) _mount();
     _clearSpot();
+    _root.classList.add("pbw-stagemode");
     var choicesHtml = "";
     if (opts.choices) {
       choicesHtml = '<div style="display:flex;gap:10px;margin-bottom:12px">';
@@ -84,21 +100,30 @@
     var actionsHtml = opts.primaryLabel
       ? '<div class="pbw-actions"><button class="primary" id="pbw-primary">' + esc(opts.primaryLabel) + '</button></div>'
       : "";
-    _root.innerHTML =
-      '<button class="pbw-skip pbw-skip-tr" id="pbw-skip">Skip the tour</button>' +
-      '<div class="pbw-card" role="document">' +
-        '<div class="pbw-stage" id="pbw-stage"></div>' +
+    var heroHtml = (opts.portrait === false) ? "" :
+      '<div class="pbw-hero"><img class="pbw-portrait" id="pbw-portrait" src="' + esc(_caddyImg(_voice)) + '" alt="Your caddy" draggable="false"></div>';
+    // Copy reads as the caddy SPEAKING — a tailed bubble pointing up to the portrait.
+    var speechHtml =
+      '<div class="pbw-speech">' +
         (opts.eyebrow ? '<div class="pbw-eyebrow">' + esc(opts.eyebrow) + '</div>' : "") +
         '<div class="pbw-body">' + esc(opts.body) + '</div>' +
-        (opts.extraHtml || "") +
-        choicesHtml +
-        actionsHtml +
-        _dots(opts.stepIdx == null ? _step : opts.stepIdx) +
+      '</div>';
+    var lowerHtml = speechHtml + (opts.extraHtml || "") + choicesHtml + actionsHtml + _dots(opts.stepIdx == null ? _step : opts.stepIdx);
+    // SCENE beats (welcome/calibrate) fill the viewport: hero up top, copy+CTA band
+    // at the bottom over a felt scrim. Content-heavy beats keep the bottom sheet.
+    var bodyHtml = opts.scene ? (heroHtml + '<div class="pbw-scene-body">' + lowerHtml + '</div>') : (heroHtml + lowerHtml);
+    _root.innerHTML =
+      '<div class="pbw-backdrop"></div>' +
+      '<button class="pbw-skip pbw-skip-tr' + (opts.quietSkip ? ' pbw-skip--quiet' : '') + '" id="pbw-skip">Skip the tour</button>' +
+      // Scene cards are full-width + animate via their children (portrait pop + the
+      // staggered fade-ups), so they must NOT use pbw-enter — its pbw-rise keyframe
+      // bakes in translateX(-50%) for the centered bottom sheet and would shove a
+      // full-width scene off-screen left. The bottom sheet keeps pbw-enter.
+      '<div class="pbw-card ' + (opts.scene ? 'pbw-card--scene' : 'pbw-enter') + '" role="document">' +
+        bodyHtml +
       '</div>';
     _scrimTapToSkip();
     document.getElementById("pbw-skip").onclick = skip;
-    // mount the caddy figure into the stage + pose it
-    if (window.pbCaddy) { try { window.pbCaddy.mount("#pbw-stage", { size: 140 }); if (opts.pose) window.pbCaddy.setPose(opts.pose); } catch (e) {} }
     if (opts.primaryLabel) { var b = document.getElementById("pbw-primary"); b.focus(); b.onclick = opts.onPrimary; }
     if (opts.choices) {
       Array.prototype.forEach.call(_root.querySelectorAll(".pbw-choice"), function (btn) {
@@ -113,6 +138,7 @@
     opts = opts || {};
     if (!_root) _mount();
     _clearSpot();
+    _root.classList.remove("pbw-stagemode");   // spotlight dims via the ring's box-shadow, no backdrop
     var target = selector ? document.querySelector(selector) : null;
     if (!target) { // degrade gracefully — never point at empty space
       _stageCard({ eyebrow: opts.eyebrow, body: opts.body, pose: "point", primaryLabel: opts.primaryLabel || "Got it", onPrimary: opts.onPrimary || function () {}, stepIdx: opts.stepIdx });
@@ -176,22 +202,25 @@
   // Beat 7 (LAST) — meet your caddy: explain WHAT it is, PREVIEW each voice on
   // tap (not select-and-jump), confirm with "Start playing". Defaults to The Caddy.
   function _beatPickCaddie() {
-    var roster = window.pbCaddies || [{ id: "caddy", name: "Murphy" }];
-    // 2×2 grid — four voices now (The Caddy / Old Tom / Birdie free, Bag Room
-    // Guy earned). A 1×4 row crowded the longer names on a phone-width card.
-    var thumbs = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">';
+    var roster = window.pbCaddies || [{ id: "caddy", name: "Murphy", img: "img/avatars/caddy-caddy.jpg" }];
+    // 2×2 grid of the REAL hand-illustrated rubber-hose PORTRAITS (v8.25.241) —
+    // was text-only name buttons, which buried the brand's best art. Each tile
+    // shows the character's face + name; tapping previews their voice + swaps the
+    // hero portrait above. (The Caddy / Old Tom / Birdie free; Bag Room Guy earned.)
+    var thumbs = '<div class="pbw-caddie-grid">';
     roster.forEach(function (c) {
-      var lockNote = c.locked ? '<div style="font-size:9px;color:var(--cb-mute);margin-top:3px">Earned later</div>' : '';
-      thumbs += '<button class="pbw-caddie-pick" data-id="' + c.id + '" ' + (c.locked ? "disabled" : "") +
-        ' style="min-height:54px;border:1px solid var(--border);background:var(--cb-paper);border-radius:10px;cursor:' + (c.locked ? "not-allowed" : "pointer") + ';opacity:' + (c.locked ? ".5" : "1") + ';padding:8px 6px">' +
-        '<div style="font-family:var(--font-ui);font-weight:700;font-size:12.5px;color:var(--cb-ink)">' + esc(c.name) + '</div>' + lockNote + '</button>';
+      thumbs += '<button class="pbw-caddie-pick' + (c.id === _voice ? " is-on" : "") + '" data-id="' + esc(c.id) + '"' + (c.locked ? " disabled" : "") + '>' +
+        '<img class="pbw-caddie-pic" src="' + esc(c.img || "") + '" alt="" draggable="false">' +
+        '<span class="pbw-caddie-meta"><span class="pbw-caddie-nm">' + esc(c.name) + '</span>' +
+        (c.locked ? '<span class="pbw-caddie-lk">Earned later</span>' : "") + '</span>' +
+      '</button>';
     });
     thumbs += '</div>';
     thumbs += '<div id="pbw-caddie-preview" style="min-height:36px;font-family:var(--font-display);font-style:italic;font-size:14px;line-height:1.4;color:var(--cb-ink);background:var(--cb-chalk-2);border-radius:8px;padding:9px 11px;margin-bottom:12px">Tap a caddy to hear how they talk.</div>';
     _stageCard({
       eyebrow: "Meet your caddy",
       body: "Last thing. Your caddy is your guide here — a voice that calls out your moments and keeps you company on the course. Tap each to preview, then pick your favorite. You can change it any time.",
-      pose: "leanBag", extraHtml: thumbs, primaryLabel: "Start playing", onPrimary: function () { _complete("done"); }, stepIdx: 7
+      extraHtml: thumbs, primaryLabel: "Start playing", onPrimary: function () { _complete("done"); }, stepIdx: 7
     });
     var preview = document.getElementById("pbw-caddie-preview");
     Array.prototype.forEach.call(_root.querySelectorAll(".pbw-caddie-pick"), function (btn) {
@@ -199,26 +228,25 @@
       btn.onclick = function () {
         var id = btn.getAttribute("data-id");
         _voice = id; // tentative; confirmed on "Start playing"
-        Array.prototype.forEach.call(_root.querySelectorAll(".pbw-caddie-pick"), function (b2) { b2.style.borderColor = "var(--border)"; b2.style.background = "var(--cb-paper)"; });
-        btn.style.borderColor = "var(--cb-brass)"; btn.style.background = "var(--cb-chalk-2)";
+        Array.prototype.forEach.call(_root.querySelectorAll(".pbw-caddie-pick"), function (b2) { b2.classList.remove("is-on"); });
+        btn.classList.add("is-on");
         if (preview && window.pbVoices) { preview.textContent = "“" + window.pbVoices.line("frame", id) + "”"; }
-        // Swap the figure to THIS caddy's persona (cap style + tell + accent) so
-        // the four caddies are visibly distinct + previewable, not just 4 names.
-        if (window.pbCaddy) {
-          try { if (window.pbCaddy.setCaddy) window.pbCaddy.setCaddy(id); window.pbCaddy.setPose("tipCap"); } catch (e) {}
-        }
+        // Swap the HERO portrait to the picked caddy + a celebratory pop, so the
+        // choice is felt (the four are visibly distinct real characters, not names).
+        var hero = document.getElementById("pbw-portrait");
+        if (hero) { hero.src = _caddyImg(id); hero.classList.remove("pbw-portrait--win"); void hero.offsetWidth; hero.classList.add("pbw-portrait--win"); }
       };
     });
   }
 
   function _beatFrame() {
-    _stageCard({ eyebrow: "Welcome to the Clubhouse", body: "Welcome to Parbaughs — your crew's private golf league. Quick 60-second tour of where everything lives.", pose: "leanBag",
-      primaryLabel: "Show me around", onPrimary: function () { _beat(1); }, stepIdx: 0 });
+    _stageCard({ eyebrow: "Welcome to the Clubhouse", body: "This is Parbaughs — your crew's private golf league. Quick tour of where everything lives.",
+      scene: true, quietSkip: true, primaryLabel: "Show me around", onPrimary: function () { _beat(1); }, stepIdx: 0 });
   }
 
   function _beatCalibrate() {
     _stageCard({
-      eyebrow: "Quick question", body: "How do you play most — on your own, or with your crew? It tailors your first week.", pose: "nod", stepIdx: 1,
+      eyebrow: "Quick question", body: "How do you play most — solo, or with your crew? It tailors your first week.", scene: true, stepIdx: 1,
       choices: [
         { label: "Just me", onPick: function () { _calib = "solo"; _beat(2); } },
         { label: "With my crew", onPick: function () { _calib = "crew"; _beat(2); } }
@@ -253,21 +281,39 @@
         chips +
         '<div id="pbw-demo-msg" aria-live="polite" style="font-family:var(--font-ui);font-size:12px;color:var(--cb-mute);text-align:center">Tap your score — just once, to feel it.</div>' +
       '</div>';
-    _stageCard({ eyebrow: "Your first card", body: _voiceLine("demoHole"), pose: "leanBag", extraHtml: card, stepIdx: 6 });
+    _stageCard({ eyebrow: "Your first card", body: _voiceLine("demoHole"), extraHtml: card, quietSkip: true, stepIdx: 6 });
+    // The WIN is the emotional peak — a 3-phase beat (anticipation → payoff snap →
+    // reinforcement) with the longest motion budget in the whole tour.
     var fired = false;
     Array.prototype.forEach.call(_root.querySelectorAll(".pbw-demo-score"), function (btn) {
       btn.onclick = function () {
         if (fired) return; fired = true;
-        var v = btn.getAttribute("data-v");
-        Array.prototype.forEach.call(_root.querySelectorAll(".pbw-demo-score"), function (b2) { b2.disabled = true; b2.style.opacity = ".45"; });
-        btn.style.opacity = "1"; btn.style.background = "var(--cb-brass-3)"; btn.style.transform = "scale(1.04)";
-        var msg = document.getElementById("pbw-demo-msg");
-        if (msg) { msg.textContent = _voiceLine("win"); msg.style.color = "var(--cb-ink)"; msg.style.fontWeight = "600"; }
-        if (window.pbCaddy) { try { window.pbCaddy.setPose("pump"); } catch (e) {} }
-        if (window.pbCelebrate) { try { window.pbCelebrate({ key: "ftue-demo" }); } catch (e) {} }
-        var prim = '<div class="pbw-actions" style="margin-top:12px"><button class="primary" id="pbw-finish">One more thing — meet your caddy</button></div>';
-        document.getElementById("pbw-demo-card").insertAdjacentHTML("afterend", prim);
-        document.getElementById("pbw-finish").onclick = function () { _beat(7); };
+        // PHASE 1 — anticipation: the tapped chip swells, siblings dim, BEFORE the burst.
+        Array.prototype.forEach.call(_root.querySelectorAll(".pbw-demo-score"), function (b2) { b2.disabled = true; if (b2 !== btn) b2.style.opacity = ".4"; });
+        btn.style.transition = "transform 200ms cubic-bezier(.2,.8,.25,1)";
+        btn.style.opacity = "1"; btn.style.background = "var(--cb-brass-3)"; btn.style.transform = "scale(1.08)";
+        // PHASE 2 — payoff SNAP (~280ms later): confetti + card flash + haptic + portrait pop, together.
+        setTimeout(function () {
+          if (window.pbCelebrate) { try { window.pbCelebrate({ key: "ftue-demo" }); } catch (e) {} }
+          try { if ("vibrate" in navigator) navigator.vibrate(18); } catch (e) {}
+          var heroEl = document.getElementById("pbw-portrait");
+          if (heroEl) { heroEl.classList.remove("pbw-portrait--win"); void heroEl.offsetWidth; heroEl.classList.add("pbw-portrait--win"); }
+          var dcard = document.getElementById("pbw-demo-card");
+          if (dcard) { dcard.style.transition = "border-color 220ms ease, box-shadow 220ms ease"; dcard.style.borderColor = "var(--cb-brass)"; dcard.style.boxShadow = "0 0 0 2px rgba(var(--cb-brass-rgb), .4)"; }
+          // PHASE 3 — reinforcement line (+150ms) names the behavior just performed.
+          setTimeout(function () {
+            var msg = document.getElementById("pbw-demo-msg");
+            if (msg) { msg.textContent = _voiceLine("win"); msg.style.color = "var(--cb-ink)"; msg.style.fontWeight = "600"; }
+          }, 150);
+          // CTA reveal after the moment lands (~700ms hold) — never double-insert.
+          setTimeout(function () {
+            var dc = document.getElementById("pbw-demo-card");
+            if (dc && !document.getElementById("pbw-finish")) {
+              dc.insertAdjacentHTML("afterend", '<div class="pbw-actions" style="margin-top:14px"><button class="primary" id="pbw-finish">One more thing — meet your caddy</button></div>');
+              document.getElementById("pbw-finish").onclick = function () { _beat(7); };
+            }
+          }, 700);
+        }, 280);
       };
     });
   }

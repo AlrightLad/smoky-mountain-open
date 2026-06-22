@@ -5848,6 +5848,90 @@ img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width:
 .pbw-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(var(--cb-brass-rgb), .3); }
 .pbw-dot--on { background: var(--cb-brass); }
 
+/* ── IMMERSIVE STAGE rebuild (v8.25.241) ─────────────────────────────────────
+   Founder: the welcome read as "a pop up window with the caddy ... not smooth or
+   interactive." Root cause: STAGE beats rendered a small bottom card over the
+   FULLY-VISIBLE home screen (only SPOTLIGHT beats dimmed, via the ring's huge
+   box-shadow). Fix: a branded full-cover backdrop behind stage beats (no
+   bleed-through), the real hand-illustrated rubber-hose caddy PORTRAIT as a warm
+   hero (replacing the crude geometric rig), and smooth entrance motion. */
+.pbw-backdrop {
+  position: absolute; inset: 0; z-index: 0;
+  background:
+    radial-gradient(120% 80% at 50% 18%, rgba(46,77,59,.55), transparent 60%),
+    var(--cb-scrim, rgba(8, 20, 14, 0.72));
+  -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+  animation: pbw-fade var(--dur-base, 240ms) var(--ease-default, ease) both;
+}
+.pbw-stagemode .pbw-card { z-index: 1; }
+/* hero portrait — large warm rubber-hose character above the copy */
+.pbw-hero { display: flex; justify-content: center; padding-bottom: 12px; margin-bottom: 12px;
+  border-bottom: 1px solid rgba(var(--cb-brass-rgb), .25); }
+.pbw-portrait {
+  width: 132px; height: 132px; border-radius: 50%; object-fit: cover;
+  border: 3px solid var(--cb-brass);
+  box-shadow: 0 10px 28px rgba(8,20,14,.38), 0 0 0 6px rgba(var(--cb-brass-rgb), .12);
+  background: var(--cb-paper);
+  animation: pbw-pop 520ms var(--ease-emphasized, cubic-bezier(.2,.8,.25,1)) both, pbw-breathe 4.2s ease-in-out 560ms infinite;
+}
+.pbw-portrait--win { animation: pbw-winpop 620ms var(--ease-emphasized, cubic-bezier(.2,.9,.3,1.2)) both; }
+/* the cream sheet rises + fades in on each beat = "smooth" per-beat entrance */
+.pbw-card.pbw-enter { animation: pbw-rise 360ms var(--ease-emphasized, cubic-bezier(.2,.7,.2,1)) both; }
+
+/* pick-your-caddy — real character PORTRAITS, not text-only name buttons */
+.pbw-caddie-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.pbw-caddie-pick { display: flex; align-items: center; gap: 10px; min-height: 56px;
+  border: 1.5px solid var(--border, rgba(0,0,0,.1)); background: var(--cb-paper);
+  border-radius: 12px; cursor: pointer; padding: 8px 10px; text-align: left;
+  transition: border-color 160ms ease, background 160ms ease, transform 120ms ease; }
+.pbw-caddie-pick:active { transform: scale(.97); }
+.pbw-caddie-pick[disabled] { opacity: .5; cursor: not-allowed; }
+.pbw-caddie-pick.is-on { border-color: var(--cb-brass); background: var(--cb-chalk-2); }
+.pbw-caddie-pic { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex: none;
+  border: 2px solid var(--cb-brass); background: var(--cb-paper); }
+.pbw-caddie-meta { min-width: 0; }
+.pbw-caddie-nm { font-family: var(--font-ui); font-weight: 700; font-size: 13px; color: var(--cb-ink); }
+.pbw-caddie-lk { font-family: var(--font-mono); font-size: 8px; letter-spacing: .5px; text-transform: uppercase; color: var(--cb-mute); margin-top: 2px; }
+
+/* FULL-VIEWPORT SCENE (welcome/calibrate) — portrait hero fills the upper half, the
+   copy reads as the caddy speaking, the CTA sits in the bottom thumb band over a
+   felt scrim — NO bordered card edge (kills the last of the "pop up window" read). */
+.pbw-card.pbw-card--scene {
+  position: absolute; inset: 0; left: 0; bottom: 0; transform: none;
+  width: 100%; max-width: none; height: 100%;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  background: transparent; border: none; box-shadow: none; border-radius: 0; padding: 0;
+}
+.pbw-card--scene .pbw-hero { flex: 1 1 auto; align-items: center; padding: 11vh 0 0; margin: 0; border-bottom: none; }
+.pbw-card--scene .pbw-portrait { width: 152px; height: 152px; }
+.pbw-scene-body { position: relative; padding: 26px 22px calc(26px + env(safe-area-inset-bottom)); }
+.pbw-scene-body::before { content: ""; position: absolute; inset: -90px 0 0 0; z-index: -1;
+  background: linear-gradient(to top, var(--cb-scrim, rgba(8,20,14,.72)) 14%, rgba(46,77,59,.5) 56%, transparent 100%); }
+
+/* caddy SPEECH BUBBLE — the line reads as the caddy talking, tail points up to the portrait */
+.pbw-speech { position: relative; background: var(--cb-paper); border: 1px solid var(--cb-brass);
+  border-radius: var(--r-3, 14px); padding: 13px 15px; margin-bottom: 14px;
+  box-shadow: 0 6px 20px rgba(8,20,14,.18); }
+.pbw-speech::after { content: ""; position: absolute; top: -7px; left: 50%; width: 13px; height: 13px;
+  background: var(--cb-paper); border-left: 1px solid var(--cb-brass); border-top: 1px solid var(--cb-brass);
+  transform: translateX(-50%) rotate(45deg); }
+.pbw-speech .pbw-eyebrow { margin-bottom: 5px; }
+.pbw-speech .pbw-body { margin-bottom: 0; }
+.pbw-card--scene .pbw-speech { text-align: center; }
+
+/* scene entrance choreography — portrait pops, then speech rises, then CTA, then dots */
+.pbw-card--scene .pbw-speech { animation: pbw-fade-up 360ms var(--ease-emphasized, cubic-bezier(.2,.7,.2,1)) 240ms both; }
+.pbw-card--scene .pbw-actions { animation: pbw-fade-up 360ms var(--ease-emphasized, cubic-bezier(.2,.7,.2,1)) 360ms both; }
+.pbw-card--scene .pbw-dots { animation: pbw-fade-up 320ms ease 440ms both; }
+.pbw-skip--quiet { opacity: .5; font-size: 10px; }
+
+@keyframes pbw-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pbw-pop { from { opacity: 0; transform: scale(.86); } to { opacity: 1; transform: scale(1); } }
+@keyframes pbw-winpop { 0% { transform: scale(1); } 45% { transform: scale(1.12) rotate(-3deg); } 100% { transform: scale(1) rotate(0); } }
+@keyframes pbw-breathe { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes pbw-rise { from { opacity: 0; transform: translateX(-50%) translateY(22px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+@keyframes pbw-fade-up { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
 /* High-contrast: the dim scrim is overridden by the system → keep a visible cutout outline */
 @media (forced-colors: active) {
   .pbw-spotlight { border: 2px solid CanvasText; box-shadow: 0 0 0 9999px Canvas; }
@@ -5856,6 +5940,8 @@ img.rr-sidebar__mark-icon { background: transparent; object-fit: contain; width:
 /* Reduced motion: instant cut, no glide (the engine still reaches the complete-write) */
 @media (prefers-reduced-motion: reduce) {
   .pbw-scrim, .pbw-spotlight { transition: none; }
+  .pbw-backdrop, .pbw-portrait, .pbw-card.pbw-enter, .pbw-portrait--win,
+  .pbw-card--scene .pbw-speech, .pbw-card--scene .pbw-actions, .pbw-card--scene .pbw-dots { animation: none; }
 }
 
 /* ═══ pc24 Green Jacket + pc42 Founders Crest (v8.25.116 crown-jewel elevation) ═══
