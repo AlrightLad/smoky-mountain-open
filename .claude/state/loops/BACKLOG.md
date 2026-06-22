@@ -17,7 +17,27 @@ agent keeps draining the queue without the Founder re-poking it. Mark items
   blocked turns, the hook allows a stop anyway (logged to `cb.log`) so a stuck
   loop can't spin forever.
 
-## ███ ACTIVE GOVERNING DIRECTIVE — Founder MEGA-BRIEF 2026-06-15 LATE-night ███
+## ███ ACTIVE GOVERNING DIRECTIVE — Founder MEGA-BRIEF 2026-06-22 ███
+FULL brief + live status: `.claude/state/loops/FOUNDER-DIRECTIVE-2026-06-22.md`.
+SHIPPED this run (prod + V1, v8.25.232→.237): scramble team-attribution data fix (D1-D4) +
+front-page play-date window (D5) + 5 visual-alignment bugs (sign-in/avatar/tournament/schedule/
+scorecard) + login security audit + react-native skill + FULL merch overhaul on Imagen-4 ULTRA
+(tour line quarter-zip/hoodie/polo/vest/cap, rubber-hose ball marker, leisure line tees/hoodies/
+socks). REMAINING (work these next, in order; before/after-verify each):
+- [ ] G4 STORE/shop rework — align w/ Playwright, critique-loop → gemini; users should WANT to
+  unlock cosmetics, not complain they can't see their photo with a ring on.
+- [ ] G5 PROFILE-EDIT + cosmetics-equip UI revamp (in members-detail.js edit mode) — behind the
+  rest of the app + confusing where to equip / see purchased items.
+- [ ] G2 ONBOARDING rebuild — smooth/interactive caddy w/ physics; research real onboarding
+  templates (copyright-safe) to mimic.
+- [ ] G1 SIGN-IN animation redesign (taste).
+- [ ] G6 LEVEL-100 rubber-hose theme.
+- [ ] G7 more branding/logos throughout + plan per-league brandable logos (paid feature later).
+- [ ] T2 Playwright+Vercel scan EVERY page/subpage/tab → repair anything heavily wrong.
+- [ ] DB DATABASE REVIEW (LAST — needs Founder decision): Firebase vs Supabase+Cloudflare vs a
+  3rd, 3 options w/ pros/cons + yearly cost + bill-guardrails, for ~10k users. Save for the end.
+
+## ███ PRIOR DIRECTIVE — Founder MEGA-BRIEF 2026-06-15 LATE-night ███
 FULL brief + phase plan: `.claude/state/loops/FOUNDER-DIRECTIVE-2026-06-15-night.md`
 (HQ desktop = same-codebase-diverges, brand-immersion-first, awwwards-level; process fix
 = VISUAL/regression/taste verification on EVERY change; research-driven gen). SHIPPED this

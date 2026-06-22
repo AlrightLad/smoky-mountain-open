@@ -1,5 +1,32 @@
 # Founder mega-directive 2026-06-22 — work straight through, autonomous, before/after-verified
 
+## ✅ SHIPPED THIS RUN (all prod + V1-verified, v8.25.232→.237)
+- D1-D4 SCRAMBLE data integrity: rounds attribute to the TEAM (stamp scrambleTeamId/teamName/
+  teamMembers/teamMemberNames; feed+scorecard+profile read it; getAllPlayerIds team-list fix;
+  6 prod rounds backfilled; check-round-integrity scramble screen; memory). v8.25.233.
+- D5 front-page staleness: weekly report windows by PLAY date not write-timestamp. v8.25.234.
+- V1-V5 visual: sign-in beige bar, default-avatar containment, tournament text, schedule rows,
+  live-scorecard scroll overlap. v8.25.232.
+- S1 login security audit + email-enumeration hardening + reassurance doc. v8.25.235.
+- T1 react-native-skills skill installed (reference-only; our stack is a PWA). 
+- G3 MERCH overhaul COMPLETE: Imagen-4 ULTRA tour line (quarter-zip/hoodie/polo/vest/cap, no tee),
+  rubber-hose enamel ball marker, premium tees, full Leisure Line (3 tees + hoodie front/back +
+  men's/women's socks). v8.25.236-.237.
+
+## ⏳ REMAINING (next, same loop — large design redesigns; quality bar is high)
+- G4 STORE/shop rework (align w/ Playwright, critique-loop → gemini; users should WANT cosmetics).
+- G5 PROFILE-EDIT + cosmetics equip UI revamp (behind the rest of the app, confusing).
+- G2 ONBOARDING rebuild (smooth/interactive caddy, physics; research real onboarding templates).
+- G1 SIGN-IN animation redesign (taste).
+- G6 LEVEL-100 rubber-hose theme.
+- G7 more branding/logos throughout + plan per-league brandable logos.
+- T2 Playwright+Vercel scan EVERY page/subpage/tab → repair.
+- DB DATABASE REVIEW (LAST; needs Founder decision) — Firebase vs Supabase+Cloudflare vs 3rd, 3
+  options w/ pros/cons + yearly cost + guardrails, for ~10k users.
+
+---
+
+
 Standing rules this run: BEFORE/AFTER screenshot on every visual change, verified by ME
 (Playwright), never ask Founder to check ([[feedback_before_after_verify_self]]). Work
 continuously through ALL items; only the DATABASE REVIEW (item D) needs Founder input and is
