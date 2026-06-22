@@ -23,6 +23,7 @@ a{color:var(--gold);text-decoration:none}
 /* Hero */
 .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 24px 60px;background:linear-gradient(180deg,#0e1118 0%,#111520 40%,#0e1118 100%);position:relative;overflow:hidden}
 .hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(201,168,76,.06) 0%,transparent 70%);pointer-events:none}
+.hero-logo{width:76px;height:auto;margin-bottom:22px;filter:drop-shadow(0 4px 18px rgba(0,0,0,.5))}
 .hero-badge{display:inline-block;padding:6px 16px;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.15);border-radius:20px;font-size:11px;font-weight:600;color:var(--gold);letter-spacing:1px;text-transform:uppercase;margin-bottom:24px}
 .hero h1{font-family:'Playfair Display',serif;font-size:clamp(36px,8vw,64px);font-weight:800;color:var(--cream);line-height:1.1;max-width:600px;margin-bottom:20px}
 .hero h1 span{color:var(--gold)}
@@ -73,6 +74,7 @@ footer a:hover{color:var(--gold)}
 
 <!-- ═══ HERO ═══ -->
 <section class="hero">
+  <img class="hero-logo" src="img/logo/parbaughs-knockout.png" alt="Parbaughs" width="76" height="76">
   <div class="hero-badge">Now available — Start a league free</div>
   <h1>Golf is <span>better</span> together.</h1>
   <p>Start a league. Track scores. Talk trash. Build your legacy. The golf platform where every round matters and every member counts.</p>

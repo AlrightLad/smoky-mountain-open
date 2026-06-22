@@ -15,6 +15,7 @@
   * { margin:0; padding:0; box-sizing:border-box; }
   body { background:var(--canvas); color:var(--ink); font:15px/1.5 -apple-system, "Segoe UI", Roboto, Inter, sans-serif; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:24px 16px 48px; }
   .wrap { width:100%; max-width:560px; }
+  .brandmark { display:block; width:60px; height:auto; margin:6px auto 14px; }
   .masthead { text-align:center; padding:18px 0 22px; }
   .eyebrow { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--brass); margin-bottom:8px; }
   h1 { font-family:Georgia, "Times New Roman", serif; font-size:30px; line-height:1.15; font-weight:700; }
@@ -53,7 +54,8 @@
   var appUrl = "https://alrightlad.github.io/smoky-mountain-open/";
 
   function fail(title, body) {
-    app.innerHTML = '<div class="state"><h2>' + esc(title) + '</h2><div>' + esc(body) + '</div></div>'
+    app.innerHTML = '<img class="brandmark" src="img/logo/parbaughs-logo.png" alt="Parbaughs" width="60" height="60" style="margin-top:34px">'
+      + '<div class="state"><h2>' + esc(title) + '</h2><div>' + esc(body) + '</div></div>'
       + '<a class="cta" href="' + appUrl + '">Visit the Parbaughs Clubhouse</a>';
   }
   if (!id) { fail("That link is missing its key", "Ask your friend to share it again."); }
@@ -65,6 +67,7 @@
         function sv(k) { return f[k] && f[k].stringValue || ""; }
         var rows = (f.rows && f.rows.arrayValue && f.rows.arrayValue.values) || [];
         var h = '<div class="masthead">'
+          + '<img class="brandmark" src="img/logo/parbaughs-logo.png" alt="Parbaughs" width="60" height="60">'
           + '<div class="eyebrow">' + esc(sv("leagueName") || "Parbaughs") + ' &middot; shared from the clubhouse</div>'
           + '<h1>' + esc(sv("title")) + '</h1>'
           + (sv("meta") ? '<div class="meta">' + esc(sv("meta")) + '</div>' : '')
