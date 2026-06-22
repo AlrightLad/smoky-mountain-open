@@ -31,8 +31,20 @@ socks). REMAINING (work these next, in order; before/after-verify each):
   (the 'confusing where to equip' complaint). NOTE: colors already alias to --cb-* (not 'behind'
   on color); the deeper FORM-CHROME visual revamp (legacy .form-section → Clubhouse card system)
   is a fresh-context redesign. The profile LOCKER card (routes to shop) already exists.
-- [ ] G2 ONBOARDING rebuild — smooth/interactive caddy w/ physics; research real onboarding
-  templates (copyright-safe) to mimic.
+- [x] G2 ONBOARDING rebuild — DONE v8.25.241 (LIVE prod+staging, before/after V1-verified every beat).
+  4-agent research pass on best-in-class mobile onboarding (Duolingo/Headspace/Calm/Robinhood/Strava
+  character-led flows) → concrete build spec → built → before/after Playwright capture of all 8 beats
+  (.claude/state/onboarding-rebuild-2026-06-22/{before,after3}/). Fixed all 3 Founder complaints:
+  (1) "pop up window" → welcome+calibrate are now full-viewport SCENES (branded felt backdrop covers the
+  app, no bleed-through; large centered caddy portrait hero; copy+CTA in the bottom thumb band over a
+  scrim) — was a small card pinned over the fully-visible home. (2) crude geometric figure "comical vs
+  competition" → real hand-illustrated rubber-hose caddy PORTRAITS throughout; the pick-your-caddy beat
+  was TEXT-ONLY name buttons, now a 2×2 grid of the four character faces w/ hero+voice-preview swapping
+  live as you tap. (3) "not smooth/interactive" → copy reads as the caddy SPEAKING in a tailed speech
+  bubble; per-beat entrance choreography (portrait pop+breathe, speech/CTA fade-up stagger); the demo-hole
+  WIN is a 3-phase peak (anticipation → confetti+portrait-pop+card-flash+haptic → reinforcement → CTA hold).
+  Reduced-motion safe; _complete()+Rookie-grant untouched; no WALKTHROUGH_MAJOR bump (new members get it
+  automatically; FOUNDER can see it live via Settings → "Replay the welcome tour").
 - [ ] G1 SIGN-IN animation redesign (taste).
 - [x] G6 LEVEL-100 rubber-hose theme — DONE v8.25.238 (LIVE+V1): registered `rubber_hose` theme (warm cream + bold cartoon ink + punchy green/mustard/vermillion), gated on the lvl100 'G.O.A.T.' achievement, shows as a locked teaser in the picker. V1: applies clean on home.
 - [ ] G7 more branding/logos throughout + plan per-league brandable logos (paid feature later).
