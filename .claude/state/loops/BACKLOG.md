@@ -45,7 +45,16 @@ socks). REMAINING (work these next, in order; before/after-verify each):
   WIN is a 3-phase peak (anticipation → confetti+portrait-pop+card-flash+haptic → reinforcement → CTA hold).
   Reduced-motion safe; _complete()+Rookie-grant untouched; no WALKTHROUGH_MAJOR bump (new members get it
   automatically; FOUNDER can see it live via Settings → "Replay the welcome tour").
-- [ ] G1 SIGN-IN animation redesign (taste).
+- [~] G1 SIGN-IN animation — FLOOR SHIPPED v8.25.242 (LIVE prod, before/after V1'd); the FIGURE leap
+  surfaced to Founder (taste/asset fork). Diagnosis (live capture .claude/state/signin-anim-2026-06-22/):
+  the dawn SCENE is well-composed but the v8.25.85 rewrite mounted a STATIC scene (dropped the prior
+  ambient motion) → felt dead. FIXED: restored perf-safe ambient life to COURSE_SVG_V2 (3 clouds drift
+  staggered, pennant flutters, sun-glow breathes; transform/opacity-only, no blur filters per the
+  v8.25.73 lesson, reduced-motion-safe). REMAINING (Founder-gated, the real "extremely poor"): the
+  golfer is a GENERIC recolored stock Lottie, not the rubber-hose brand character — off-brand now that
+  the rest of the app uses real rubber-hose art. 4+ prior figure attempts rejected; a true on-brand swing
+  needs a premium/commissioned asset or a concept change (#67 DO-LAST). Surfaced 3 directions + rec (B:
+  smooth ball-flight hero, autonomous-buildable) → task-queue/founder/signin-animation-figure-direction-2026-06-22.md.
 - [x] G6 LEVEL-100 rubber-hose theme — DONE v8.25.238 (LIVE+V1): registered `rubber_hose` theme (warm cream + bold cartoon ink + punchy green/mustard/vermillion), gated on the lvl100 'G.O.A.T.' achievement, shows as a locked teaser in the picker. V1: applies clean on home.
 - [ ] G7 more branding/logos throughout + plan per-league brandable logos (paid feature later).
 - [x] T2 Playwright+Vercel scan EVERY page/subpage/tab → DONE (v8.25.240). Built `scripts/.secrets/scan-all-routes.mjs`
