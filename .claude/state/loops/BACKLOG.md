@@ -26,8 +26,11 @@ scorecard) + login security audit + react-native skill + FULL merch overhaul on 
 socks). REMAINING (work these next, in order; before/after-verify each):
 - [x] G4 STORE — reported defect RESOLVED+verified: rings show the photo (the cover-photo bug was the deco frames, fixed v8.25.231 inset); buy buttons/overflow/decorations already elevated; full-shop capture = 42 imgs, 0 broken. (Desirability taste-iteration = fresh-context polish.) ~~G4 STORE/shop rework~~ — align w/ Playwright, critique-loop → gemini; users should WANT to
   unlock cosmetics, not complain they can't see their photo with a ring on.
-- [ ] G5 PROFILE-EDIT + cosmetics-equip UI revamp (in members-detail.js edit mode) — behind the
-  rest of the app + confusing where to equip / see purchased items.
+- [~] G5 PROFILE-EDIT — CLARITY shipped v8.25.239 (LIVE+V1): edit form now has a dedicated
+  'Appearance & cosmetics' section w/ a Pro Shop link + 'equip what you unlocked' subtext
+  (the 'confusing where to equip' complaint). NOTE: colors already alias to --cb-* (not 'behind'
+  on color); the deeper FORM-CHROME visual revamp (legacy .form-section → Clubhouse card system)
+  is a fresh-context redesign. The profile LOCKER card (routes to shop) already exists.
 - [ ] G2 ONBOARDING rebuild — smooth/interactive caddy w/ physics; research real onboarding
   templates (copyright-safe) to mimic.
 - [ ] G1 SIGN-IN animation redesign (taste).

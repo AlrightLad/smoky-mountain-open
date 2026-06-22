@@ -81,6 +81,14 @@ function renderMemberEditForm(p) {
   });
   h += '</select></div>';
 
+  // v8.25.239 (Founder 2026-06-22: "confusing where to equip / see purchased items").
+  // A clear cosmetics section header + a Pro Shop link, so it's obvious this is where
+  // you equip what you bought + where to get more. Closes the Basic-info section and
+  // opens an Appearance section around the title/ring/banner pickers.
+  h += '</div>'; // close Basic info
+  h += '<div class="form-section"><div class="form-title" style="display:flex;align-items:center;justify-content:space-between;gap:8px">Appearance &amp; cosmetics<button type="button" class="btn-sm outline" style="font-size:10px;padding:5px 10px" onclick="Router.go(\'shop\')">Pro Shop →</button></div>';
+  h += '<div style="font-size:11px;color:var(--cb-mute);margin:-2px 0 12px;line-height:1.4">Equip the titles, rings &amp; banners you\'ve unlocked. Get more in the Pro Shop.</div>';
+
   // Ring selector — show owned rings from cosmetics
   var ownedCosmetics = p.ownedCosmetics || [];
   var equippedRing = (p.equippedCosmetics && p.equippedCosmetics.border) || "";
