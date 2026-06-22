@@ -95,14 +95,36 @@ Router.register("merch", function () {
   });
   h += '</div></div>';
 
-  // ── The Leisure Line teaser (the rubber-hose graphic line the footer promises) ──
-  h += '<div style="padding:24px 16px 0"><div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-brass);margin-bottom:4px">The Leisure Line</div>';
-  h += '<div style="font-family:var(--font-ui);font-size:12px;color:var(--cb-mute);margin-bottom:12px">Off the course — our rubber-hose characters on relaxed graphic tees &amp; hoodies.</div>';
-  h += '<div style="position:relative;border-radius:var(--r-3);overflow:hidden;box-shadow:var(--shadow-sm);border:1px solid var(--cb-chalk-3);background:var(--cb-chalk-2);display:flex;align-items:center;gap:14px;padding:14px 16px">';
-  h += '<div style="width:96px;height:96px;flex-shrink:0;border-radius:var(--r-2);overflow:hidden;background:var(--cb-paper)"><img src="' + imgUrl("leisure-caddy.jpg") + '" alt="A rubber-hose cartoon golfer graphic" loading="lazy" style="width:100%;height:100%;object-fit:cover"></div>';
-  h += '<div style="flex:1;min-width:0"><div style="font-family:var(--font-display);font-weight:700;font-size:15px;color:var(--cb-ink);line-height:1.2">Rubber-hose, off the leash.</div>';
-  h += '<div style="font-family:var(--font-ui);font-size:11px;color:var(--cb-mute);margin-top:3px;line-height:1.4">A bolder, more playful streetwear line starring our hand-drawn cartoon crew.</div>';
-  h += '<div style="font-family:var(--font-mono);font-size:8.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:var(--cb-brass-deep);margin-top:7px">Coming Soon</div></div>';
+  // ── THE LEISURE LINE (v8.25.237 — loud rubber-hose graphic line per Founder spec:
+  //    graphic tees + hoodies w/ front-chest P+rose & big back design, ankle socks).
+  //    Rubber-hose art via Recraft (vector SVG); socks raster. ──
+  var LEISURE_GRAPHIC = [
+    { img: "leisure-tee1.svg",  name: "Swinger Tee",        note: "The follow-through, loud" },
+    { img: "leisure-tee2.svg",  name: "Caddy Tee",          note: "Your caddy, on a tee" },
+    { img: "leisure-tee3.svg",  name: "The P+Rose Tee",     note: "The mark, crossed clubs" },
+    { img: "leisure-hoodie-front.svg", name: "P+Rose Hoodie · Front", note: "Chest mark · rubber-hose" },
+    { img: "leisure-hoodie-back.svg",  name: "Parbaughs Hoodie · Back", note: "Big swing + the name up top" }
+  ];
+  var LEISURE_SOCK = [
+    { img: "leisure-sock-men.jpg",   name: "Rubber-Hose Socks · Men's",   note: "Ankle · the fella" },
+    { img: "leisure-sock-women.jpg", name: "Rubber-Hose Socks · Women's", note: "Ankle · the lady" }
+  ];
+  h += '<div style="padding:24px 16px 0"><div style="font-family:var(--font-mono);font-size:10px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--cb-claret)">Parbaughs · Leisure</div>';
+  h += '<h2 style="font-family:var(--font-display);font-style:italic;font-weight:700;font-size:22px;color:var(--cb-ink);margin:2px 0 4px">Off the leash.</h2>';
+  h += '<div style="font-family:var(--font-ui);font-size:12px;color:var(--cb-mute);margin-bottom:12px">Loud rubber-hose graphics — tees, hoodies, and socks. <span style="color:var(--cb-brass-deep);font-weight:600">Coming soon.</span></div>';
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">';
+  LEISURE_GRAPHIC.forEach(function (it) {
+    h += '<div style="background:var(--cb-paper);border:1px solid var(--cb-chalk-3);border-radius:var(--r-3);overflow:hidden;box-shadow:var(--shadow-sm)">';
+    h += '<div style="position:relative;background:var(--cb-chalk-2);aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;padding:10px"><img src="' + imgUrl(it.img) + '" alt="' + escHtml(it.name) + '" loading="lazy" style="display:block;width:100%;height:100%;object-fit:contain"></div>';
+    h += '<div style="padding:10px 12px 12px"><div style="font-family:var(--font-display);font-weight:600;font-size:13px;color:var(--cb-ink);line-height:1.2">' + escHtml(it.name) + '</div>';
+    h += '<div style="font-family:var(--font-ui);font-size:11px;color:var(--cb-mute);margin-top:2px;line-height:1.3">' + escHtml(it.note) + '</div></div></div>';
+  });
+  LEISURE_SOCK.forEach(function (it) {
+    h += '<div style="background:var(--cb-paper);border:1px solid var(--cb-chalk-3);border-radius:var(--r-3);overflow:hidden;box-shadow:var(--shadow-sm)">';
+    h += '<div style="position:relative;background:var(--cb-chalk-2);aspect-ratio:1/1"><img src="' + imgUrl(it.img) + '" alt="' + escHtml(it.name) + '" loading="lazy" style="display:block;width:100%;height:100%;object-fit:cover"></div>';
+    h += '<div style="padding:10px 12px 12px"><div style="font-family:var(--font-display);font-weight:600;font-size:13px;color:var(--cb-ink);line-height:1.2">' + escHtml(it.name) + '</div>';
+    h += '<div style="font-family:var(--font-ui);font-size:11px;color:var(--cb-mute);margin-top:2px;line-height:1.3">' + escHtml(it.note) + '</div></div></div>';
+  });
   h += '</div></div>';
 
   // ── Note + maker's ribbon footer ───────────────────────────────────────────
