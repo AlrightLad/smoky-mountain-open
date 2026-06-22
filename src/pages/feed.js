@@ -393,7 +393,15 @@ function _caddyWeeklyReport(items) {
   var dow = (now.getDay() + 6) % 7;                 // 0 = Monday
   var weekStart = new Date(now); weekStart.setDate(now.getDate() - dow); weekStart.setHours(0, 0, 0, 0);
   var ws = weekStart.getTime();
-  var rounds = (items || []).filter(function(it) { return it.type === "round" && !it.isScramble && it.ts >= ws; });
+  // v8.25.234 — filter by the round's PLAY date, not its write timestamp. A round
+  // re-synced recently but PLAYED weeks ago must NOT count as this week (Founder:
+  // a >1-week-old FatalBert round was stuck on the front page). Fall back to ts only
+  // when a round somehow has no date.
+  var rounds = (items || []).filter(function(it) {
+    if (it.type !== "round" || it.isScramble) return false;
+    var playMs = it.date ? new Date(it.date + "T12:00:00").getTime() : it.ts;
+    return playMs >= ws;
+  });
   var report = { weekStart: weekStart, rounds: rounds.length, bullets: [], empty: rounds.length === 0 };
   if (!rounds.length) return report;
 

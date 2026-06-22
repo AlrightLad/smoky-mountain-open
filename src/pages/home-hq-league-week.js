@@ -22,7 +22,9 @@ function _hqLeagueRoundsInRange(startMs, endMs) {
   if (typeof PB === "undefined" || !PB.getRounds) return [];
   var rounds = PB.getRounds() || [];
   return rounds.filter(function(r) {
-    var ts = r.timestamp || (r.date ? new Date(r.date + "T00:00:00").getTime() : 0);
+    // v8.25.234 — window by PLAY date first (when the round happened), not the write
+    // timestamp; a recently re-synced but old round must not re-enter "this week".
+    var ts = r.date ? new Date(r.date + "T12:00:00").getTime() : (r.timestamp || 0);
     return ts >= startMs && ts < endMs;
   });
 }
