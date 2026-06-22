@@ -68,6 +68,19 @@ rounds.forEach(d => {
   if (lid && Array.isArray(lids) && lids.indexOf(lid) === -1) issues.push({ sev: 'HIGH', kind: 'leagueIds-mismatch', id, detail: 'leagueId=' + lid + ' not in leagueIds=' + JSON.stringify(lids) });
 });
 
+// 1b. Scramble linkage (Founder 2026-06-22 — scramble rounds were posting as the
+// logger, not the team). Every scramble-format round MUST carry the team stamp
+// (scrambleTeamId + teamName + teamMembers[]) so it attributes to the team on the
+// feed/scorecard/profile. A scramble round missing the link is the exact bug.
+rounds.forEach(d => {
+  const id = d.name.split('/').pop(); const f = d.fields || {};
+  const fmt = v(f.format);
+  if (fmt === 'scramble' || fmt === 'scramble4') {
+    const missing = ['scrambleTeamId', 'teamName', 'teamMembers'].filter(k => f[k] === undefined || f[k] === null || ('nullValue' in (f[k] || {})));
+    if (missing.length) issues.push({ sev: 'HIGH', kind: 'scramble-unlinked', id, detail: 'scramble round missing team link (' + missing.join(',') + ') — will post as the logger not the team. player=' + v(f.playerName) + ' course=' + v(f.course) + ' date=' + v(f.date) });
+  }
+});
+
 // 2. Silent-drop: completed liveround with roundId + >=9 holes but no rounds doc
 liverounds.forEach(d => {
   const uid = d.name.split('/').pop(); const f = d.fields || {};

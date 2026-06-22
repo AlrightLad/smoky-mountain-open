@@ -124,10 +124,13 @@ function loadHomeActivityFeed() {
       var isScramble = r.format === "scramble" || r.format === "scramble4";
 
       if (isScramble) {
-        // Group scramble rounds into one feed entry
-        var groupKey = (r.course||"") + "|" + (r.date||"");
+        // Group scramble rounds into one feed entry. v8.25.233 — prefer the round's
+        // STAMPED team identity (scrambleTeamId/teamName/teamMembers) so the entry
+        // reads "The Chuds logged…" not the logger; key by team when present so two
+        // teams at the same course+date don't merge.
+        var groupKey = (r.scrambleTeamId ? r.scrambleTeamId : "anon") + "|" + (r.course||"") + "|" + (r.date||"");
         if (!scrambleGroups[groupKey]) {
-          scrambleGroups[groupKey] = { course: r.course, date: r.date, score: r.score, tee: r.tee, players: [], ts: tsMillis(r.createdAt), rid: rid, likes: r.likes || [], comments: r.comments || [] };
+          scrambleGroups[groupKey] = { course: r.course, date: r.date, score: r.score, tee: r.tee, players: [], ts: tsMillis(r.createdAt), rid: rid, likes: r.likes || [], comments: r.comments || [], teamName: r.teamName || null, scrambleTeamId: r.scrambleTeamId || null, teamMembers: r.teamMembers || null, teamMemberNames: r.teamMemberNames || null };
         }
         scrambleGroups[groupKey].players.push(r.playerName || "Parbaugh");
         return;
@@ -147,9 +150,18 @@ function loadHomeActivityFeed() {
     });
     // Add grouped scramble entries
     Object.values(scrambleGroups).forEach(function(g) {
-      var teamObj = PB.getScrambleTeams().find(function(t){ return g.players.some(function(pn){ return t.members.some(function(mid){ var mp = PB.getPlayer(mid); return mp && mp.name === pn; }); }); });
-      var teamName = teamObj ? teamObj.name : "Scramble Team";
-      var playerList = g.players.join(", ");
+      // v8.25.233 — prefer the STAMPED team identity; fall back to id lookup, then
+      // the legacy name-match heuristic only for un-stamped legacy rounds.
+      var teamObj = g.scrambleTeamId ? PB.getScrambleTeams().find(function(t){ return t.id === g.scrambleTeamId; }) : null;
+      if (!teamObj) teamObj = PB.getScrambleTeams().find(function(t){ return g.players.some(function(pn){ return t.members.some(function(mid){ var mp = PB.getPlayer(mid); return mp && mp.name === pn; }); }); });
+      var teamName = g.teamName || (teamObj ? teamObj.name : "Scramble Team");
+      // Roster = the team's full membership when known (so it reads as the TEAM,
+      // not just whoever logged); else the players who logged.
+      var roster = (g.teamMemberNames && g.teamMemberNames.length) ? g.teamMemberNames
+        : ((teamObj && teamObj.members && teamObj.members.length)
+        ? teamObj.members.map(function(mid){ var mp = PB.getPlayer(mid); if (mp && (mp.name||mp.username)) return mp.name || mp.username; if (typeof fbMemberCache !== "undefined" && fbMemberCache[mid]) return fbMemberCache[mid].name || fbMemberCache[mid].username; return null; }).filter(Boolean)
+        : g.players);
+      var playerList = roster.join(", ");
       var teeLabel = g.tee ? " · " + g.tee : "";
       var isLiked = currentUser ? g.likes.indexOf(currentUser.uid) !== -1 : false;
       items.push({type:"round", roundId:g.rid, name:teamName + " posted a scramble", sub:(g.course||"") + teeLabel + " · " + g.score + " · Scramble", quip:playerList, score:g.score, date:g.date||"", ts:g.ts, dest:"Router.go('rounds',{roundId:'" + g.rid + "'})", likeCount:g.likes.length, commentCount:g.comments.length, isLiked:isLiked, timeAgo:feedTimeAgo(g.ts)});

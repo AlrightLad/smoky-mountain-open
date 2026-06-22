@@ -780,14 +780,19 @@ function renderMemberDetailWithData(p) {
   }
   h += profSection("achieve-" + pid, "Achievements (" + achievements.length + ")", achieveContent, false, "Trophy case");
   var teams = PB.getScrambleTeams();
-  // Match team membership by UID, claimedFrom seed ID, or username
+  // v8.25.233 — match team membership across ALL of this player's identity aliases
+  // (UID + seed id + claimedFrom), via getAllPlayerIds. The prior pid/claimedFrom/
+  // username check missed teams that store a DIFFERENT alias than the profile's pid
+  // (e.g. Birdie Bros/The Chuds store UIDs while the profile renders as the seed),
+  // which is why a real member saw "no teams" / the wrong team.
   var pClaimedFrom = p.claimedFrom || null;
   var pUsername = p.username || null;
+  var _pAliases = (typeof PB.getAllPlayerIds === "function") ? PB.getAllPlayerIds(pid) : [pid];
+  if (pClaimedFrom && _pAliases.indexOf(pClaimedFrom) === -1) _pAliases.push(pClaimedFrom);
+  if (pUsername && _pAliases.indexOf(pUsername) === -1) _pAliases.push(pUsername);
   var playerTeams = teams.filter(function(t) {
     if (!t.members) return false;
-    return t.members.indexOf(pid) !== -1 ||
-           (pClaimedFrom && t.members.indexOf(pClaimedFrom) !== -1) ||
-           (pUsername && t.members.indexOf(pUsername) !== -1);
+    return t.members.some(function(mid){ return _pAliases.indexOf(mid) !== -1; });
   });
   var teamContent = '';
   if (playerTeams.length) {

@@ -539,6 +539,27 @@ function renderRoundDetail(roundId, prefetched) {
 
   var playerName = player ? (player.name || player.username || round.playerName || "A Parbaugh") : (round.playerName || "A Parbaugh");
   var firstName = playerName.split(" ")[0] || "Score";
+  // v8.25.233 — scramble rounds belong to a TEAM, not the logger. If the round
+  // carries a team stamp, the masthead + deck speak as the team and list members
+  // (Founder: scorecard showed only "jordyn" instead of "The Chuds" + roster).
+  var _rdScr = (round.format === "scramble" || round.format === "scramble4");
+  var _rdTeamName = _rdScr ? (round.teamName || (round.scrambleTeamId && typeof PB !== "undefined" && PB.getScrambleTeams ? (PB.getScrambleTeams().find(function(t){return t.id===round.scrambleTeamId;})||{}).name : null)) : null;
+  var _rdTeamMembers = _rdScr ? (round.teamMembers || (round.scrambleTeamId && PB.getScrambleTeams ? (PB.getScrambleTeams().find(function(t){return t.id===round.scrambleTeamId;})||{}).members : null)) : null;
+  // Resolve member names across BOTH the local player store AND the Firestore
+  // member cache (team rosters store UIDs that PB.getPlayer often can't resolve
+  // client-side — that's why the roster came back empty).
+  function _rdMemberName(mid) {
+    var mp = PB.getPlayer(mid);
+    if (mp && (mp.name || mp.username)) return mp.name || mp.username;
+    if (typeof fbMemberCache !== "undefined" && fbMemberCache[mid]) return fbMemberCache[mid].name || fbMemberCache[mid].username || null;
+    return null;
+  }
+  // Prefer the denormalized names stamped on the round (no UID→name resolution
+  // needed); fall back to resolving member ids only for legacy rounds.
+  var _rdRoster = (round.teamMemberNames && round.teamMemberNames.length)
+    ? round.teamMemberNames.join(", ")
+    : ((_rdTeamMembers && _rdTeamMembers.length) ? _rdTeamMembers.map(_rdMemberName).filter(Boolean).join(", ") : "");
+  if (_rdTeamName) { playerName = _rdTeamName; firstName = _rdTeamName; }
 
   var h = '<div class="rd-wrap">';
   h += '<button class="rd-back" onclick="Router.back(\'home\')"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 3L5 8l5 5"/></svg>Back</button>';
@@ -548,7 +569,11 @@ function renderRoundDetail(roundId, prefetched) {
   h += '<div class="roster-eyebrow">Round · Final</div>';
   h += '<h1 class="roster-headline">' + escHtml(round.course) + ', <em class="rd-headline__score">' + round.score + '.</em></h1>';
   var deckToPar = diff === null ? "" : (diff === 0 ? "even par" : (diff < 0 ? Math.abs(diff) + " under par" : diff + " over par"));
-  h += '<p class="rd-deck">' + escHtml(firstName) + (deckToPar ? ' went ' + deckToPar : ' turned in a round') + ' across ' + holeLabel.toLowerCase() + ' at ' + escHtml(round.course) + '.</p>';
+  if (_rdTeamName) {
+    h += '<p class="rd-deck"><strong>' + escHtml(_rdTeamName) + '</strong>' + (deckToPar ? ' went ' + deckToPar : ' turned in a scramble') + ' across ' + holeLabel.toLowerCase() + ' at ' + escHtml(round.course) + '.' + (_rdRoster ? ' <span style="color:var(--cb-mute)">Team: ' + escHtml(_rdRoster) + '</span>' : '') + '</p>';
+  } else {
+    h += '<p class="rd-deck">' + escHtml(firstName) + (deckToPar ? ' went ' + deckToPar : ' turned in a round') + ' across ' + holeLabel.toLowerCase() + ' at ' + escHtml(round.course) + '.</p>';
+  }
   var dateBits = [dateLine, fmtLabel];
   if (roundTee) dateBits.push(roundTee + " tees");
   h += '<div class="rd-dateline">' + dateBits.filter(Boolean).join(' · ') + '</div>';

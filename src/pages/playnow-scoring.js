@@ -771,6 +771,12 @@ function finishLiveRound() {
   // Enables /round/:roundId lookup to find the same round across both
   // collections (Ship 4a Gate 1).
   var _pName = currentProfile ? (currentProfile.name || currentProfile.username || liveState.player) : liveState.player;
+  // Scramble team link (Founder 2026-06-22 data-integrity fix): stamp the TEAM
+  // identity onto the round so the feed/scorecard/profile attribute it to the team
+  // ("The Chuds logged…") not the logger, group it per team, and show all members.
+  var _isScr = liveState.format === "scramble" || liveState.format === "scramble4";
+  var _scrTeam = (_isScr && liveState.scrambleTeamId && typeof PB !== "undefined" && PB.getScrambleTeams)
+    ? PB.getScrambleTeams().find(function(t){ return t.id === liveState.scrambleTeamId; }) : null;
   var round = PB.addRound({
     id: liveState.roundId || undefined,
     player: liveState.player,
@@ -781,6 +787,10 @@ function finishLiveRound() {
     rating: completed <= 9 ? (liveState.rating || 72) / 2 : (liveState.rating || 72),
     slope: liveState.slope,
     format: liveState.format,
+    scrambleTeamId: _isScr ? (liveState.scrambleTeamId || null) : undefined,
+    teamName: _scrTeam ? _scrTeam.name : undefined,
+    teamMembers: _scrTeam ? (_scrTeam.members || []).slice() : undefined,
+    teamMemberNames: _scrTeam ? (_scrTeam.members || []).map(function(mid){ var mp = PB.getPlayer(mid); if (mp && (mp.name||mp.username)) return mp.name||mp.username; if (typeof fbMemberCache !== "undefined" && fbMemberCache[mid]) return fbMemberCache[mid].name||fbMemberCache[mid].username; return mid; }) : undefined,
     holesPlayed: completed,
     holesMode: liveState.holesMode || "18",
     holeScores: liveState.scores.slice(),
