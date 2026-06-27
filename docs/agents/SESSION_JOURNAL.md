@@ -1120,3 +1120,7 @@ If this file exceeds 10,000 lines, archive older portion to `docs/agents/session
 [2026-06-27T12:09:06Z] [SHIP-CYCLE-START] cycle_id=ship-20260627-1209. Lock acquired. Pre-flight: pending checks.
 [2026-06-27T12:09:06Z] [SHIP-CYCLE-END] cycle_id=ship-20260627-1209. Duration: 0m. Outcome: PLACEHOLDER (Claude Code invocation pending configuration).
 [2026-06-27T12:09:06Z] [CYCLE-LOCK-RELEASE] cycle_type=ship. github_run_id=28288736540.
+[2026-06-27T13:05:30Z] [CYCLE-LOCK-ACQUIRE] cycle_type=heartbeat. github_run_id=28290056257.
+[2026-06-27T13:05:30Z] [HEARTBEAT-CYCLE-START] cycle_id=heartbeat-20260627-1305. Lock acquired. Pre-flight: pending checks.
+[2026-06-27T13:05:30Z] [HEARTBEAT-CYCLE-END] cycle_id=heartbeat-20260627-1305. Duration: 0m. Outcome: PLACEHOLDER (Claude Code invocation pending configuration).
+[2026-06-27T13:05:30Z] [CYCLE-LOCK-RELEASE] cycle_type=heartbeat. github_run_id=28290056257.
