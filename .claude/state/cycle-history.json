@@ -6519,6 +6519,16 @@
       "tokens_consumed": 0,
       "outcome": "PLACEHOLDER",
       "summary": "Heartbeat cycle invocation not yet configured"
+    },
+    {
+      "cycle_id": "heartbeat-20260820-2025",
+      "type": "heartbeat",
+      "started_at": "2026-08-20T20:25:25Z",
+      "ended_at": "2026-08-20T20:25:25Z",
+      "duration_seconds": 0,
+      "tokens_consumed": 0,
+      "outcome": "PLACEHOLDER",
+      "summary": "Heartbeat cycle invocation not yet configured"
     }
   ]
 }
